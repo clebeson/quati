@@ -1,0 +1,12 @@
+stateDiagram-v2
+    [*] --> INPUT_RECEIVED
+    INPUT_RECEIVED --> CLASSIFIED: interpreted [authorized_request]
+    CLASSIFIED --> RESPOND: social_or_simple [always]
+    CLASSIFIED --> REGISTER_WORK: work [safe_to_begin]
+    CLASSIFIED --> ASK_CLARIFICATION: critical_ambiguity [authorized_request]
+    ASK_CLARIFICATION --> REGISTER_WORK: clarified [safe_to_begin]
+    ASK_CLARIFICATION --> WAIT: no_reply [under_budget]
+    WAIT --> CLASSIFIED: resumed [under_budget]
+    REGISTER_WORK --> RESPOND: acknowledged [authorized_request]
+    RESPOND --> CLOSED: completed [always]
+    CLOSED --> [*]

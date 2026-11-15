@@ -1,0 +1,11 @@
+flowchart TD
+  R[Request] --> P{Safe deterministic greeting shortcut?}
+  P -->|Yes| A[Brief reply, no task]
+  P -->|No| L[Small LLM typed intent decision]
+  L --> V[Schema and trusted policy validation]
+  V --> C{Provider/tool capability and confidence adequate?}
+  C -->|No| S[Escalate to approved stronger model or ask focused question]
+  C -->|Yes| D[SCS search and select]
+  S --> D
+  D --> E[Capability-specific state controller]
+  E --> Q[Evidence review and concise delivery]

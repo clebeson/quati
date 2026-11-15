@@ -1,0 +1,19 @@
+{
+  "package": "SECMA v8 English canonical specification",
+  "version": "8.0",
+  "module_prds": 31,
+  "module_redteams": 31,
+  "rfcs": 12,
+  "adrs": 12,
+  "schemas": 14,
+  "diagrams": 11,
+  "seed_cases": 50,
+  "observed_application_status": "NOT_IMPLEMENTED",
+  "document_check_tier": "L0_ONLY",
+  "live_model": "NOT_RUN",
+  "durable_database_faults": "NOT_RUN",
+  "external_provider_smokes": "NOT_VERIFIED_EXTERNAL",
+  "requirements_and_acceptance_rows": 155,
+  "module_threat_rows": 62,
+  "cross_layer_risk_cases": 46
+}

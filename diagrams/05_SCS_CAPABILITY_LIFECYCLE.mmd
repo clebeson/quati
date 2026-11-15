@@ -1,0 +1,9 @@
+stateDiagram-v2
+  [*] --> DRAFT
+  DRAFT --> VALIDATED: schema and semantic checks
+  VALIDATED --> STAGED: binding/fixtures/policy approved
+  STAGED --> ENABLED: required assurance evidence
+  ENABLED --> DEPRECATED: replaced, existing work drained
+  ENABLED --> DISABLED: operator or safety rollback
+  DEPRECATED --> DISABLED: no active work
+  DISABLED --> STAGED: corrected candidate and reevaluation

@@ -1,0 +1,17 @@
+# A capability advertised by a harness is NOT verified until bound, authorized and evaluated.
+id: chart-specialist-1
+version: 1.0.0
+kind: external_harness
+transport: sdk_or_subprocess
+command_ref: approved-installation/chart-specialist
+claims:
+  capabilities: [artifacts.chart-edit]
+  supports: [invoke, status, cancel, artifact_refs]
+  does_not_support: [resume, streaming]
+authority:
+  allowed_scopes: [workspace.read, workspace.write_approved]
+  tenant_mode: per_request
+tests:
+  contract_suite: tests/adapters/chart-specialist
+  external_smoke: NOT_VERIFIED_EXTERNAL
+status: STAGED

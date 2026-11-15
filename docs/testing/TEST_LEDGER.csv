@@ -1,0 +1,47 @@
+case_id,family,modules,gate,required_tier,observable_scenario,why_not_redundant,status
+SOC-01,social,M03/M04/M31,S00,L3,Greeting triggers no job,Wrong job and cost on every conversation,NOT_RUN
+SOC-02,simple,M03/M31,S00,L3,Question answer does not load irrelevant tools,Avoid gratuitous latency,NOT_RUN
+INT-01,intent,M04/M05,S01,L3,PRD safe work starts with optional question,Core assistant experience,NOT_RUN
+INT-02,intent,M04/M05,S01,L3,Missing high-risk approval prevents write,Risk changes clarification,NOT_RUN
+INT-03,intent,M03/M07,S02,L2,Follow-up updates root commitment revision,Prevent duplicate job and context loss,NOT_RUN
+CAP-01,discovery,M14/M15,S00,L3,Install unadvertised capability; spontaneous call,Core portability claim,NOT_RUN
+CAP-02,discovery,M15/M31,S00,L3,Confusable capabilities; correct target,Avoid keyword-only routing,NOT_RUN
+CAP-03,discovery,M15/M25,S00,L1+L3,Disabled capability cannot invoke,No policy bypass,NOT_RUN
+CAP-04,discovery,M15/M31,S00,L3,Non-tool question abstains from tools,Avoid overdelegation,NOT_RUN
+CAP-05,discovery,M17/M31,S00,L3,Model without tools rejected/prohibited for dynamic routing,Provider features vary,NOT_RUN
+CMP-01,compiler,M30,S00,L0,Same config produces same prompt digest,Audit and reproducibility,NOT_RUN
+CMP-02,compiler,M30/M25,S00,L0+L1,Unsafe guard/action name rejected,No prompt-generated authority,NOT_RUN
+CMP-03,compiler,M30,S00,L0,Dead-end/unreachable state rejected,Avoid stuck commitments,NOT_RUN
+CMP-04,compiler,M30,S00,L0,Config rollback restores previous digest,Reversible customization,NOT_RUN
+MOD-01,small-model,M17/M31,S00,L3,Cheap model role calibrated with real tool calls,Cannot infer competence from context size,NOT_RUN
+MOD-02,small-model,M17/M31,S01,L3,Escalation when answer high-risk/uncertain,Safety and quality,NOT_RUN
+REL-01,relationship,M03/M05,S01,L3,Additional scope during active research,Human continuity,NOT_RUN
+REL-02,relationship,M06,S02,L2+L3,Meaningful progress by due time without spam,Stakeholder trust,NOT_RUN
+REL-03,relationship,M10,S02,L2,Different human/system envelopes share same result,Correct recipient semantics,NOT_RUN
+DUR-01,durability,M07,S02,L2,Crash before commitment storage,No false receipt,NOT_RUN
+DUR-02,durability,M07,S02,L2,Crash after durable commit and before worker,Accepted work survives,NOT_RUN
+DUR-03,durability,M07/M10,S02,L2,Possible side effect before ACK; uncertain reconciled,Avoid duplicate external effects,NOT_RUN
+DUR-04,durability,M07,S02,L2,Two workers same idempotency key,Avoid duplicate commitments,NOT_RUN
+DUR-05,durability,M07/M28,S02,L2,100 due commitments bounded worker memory,Avoid long DBOS sleeps,NOT_RUN
+SUF-01,quality,M09,S02,L2+L3,Weak evidence cannot cause complete state,Prevent polished but false output,NOT_RUN
+SUF-02,quality,M09,S02,L2+L3,Bounded reinvestigation and partial result,Avoid infinite loop,NOT_RUN
+MEM-01,context,M11/M04,S03,L3,Recall last week correct source and tenant,Memory correctness,NOT_RUN
+MEM-02,context,M11/M04,S03,L3,Two similar references trigger clarification,No hallucinated references,NOT_RUN
+ART-01,artifacts,M12,S03,L2,Chart edit retains original data and version,Reproducible updates,NOT_RUN
+PREF-01,preferences,M13,S03,L1+L3,"Explicit correction updates style, not permissions",Learning with bounds,NOT_RUN
+HNS-01,harness,M18,S04,L2,Harness killed mid job; root commitment persists,Provider independence,NOT_RUN
+HNS-02,harness,M18,S04,L4,One actual supported Codex or Hermes adapter,Proof beyond mock,NOT_RUN
+BRN-01,brain,M20/M02,S04,L2,ACL filtered local brain search,Prevent leaked sources,NOT_RUN
+BRN-02,brain,M20,S04,L2,Unavailable remote brain degrades gracefully,Local-first promise,NOT_RUN
+MCP-01,tools,M19/M25,S04,L2,Untrusted MCP tool claims elevated privileges,Boundary security,NOT_RUN
+CHN-01,channels,M29,S04,L2,Fake signed Slack event/replay and 429,Correct local provider semantics,NOT_RUN
+CHN-02,channels,M29,S04,L4,Authorized live Slack smoke,Local mocks != external compatibility,NOT_RUN
+DIS-01,discovery,M21,S05,L2,Circular RFC links + partial inaccessible source,Bounded exhaustive discovery,NOT_RUN
+DIS-02,discovery,M21/M22,S05,L2,Infer PRD standard with explicit exceptions,Avoid false convention,NOT_RUN
+INC-01,incident,M23/M09,S05,L3,Misleading incident timeline; alternatives,No false RCA,NOT_RUN
+CAU-01,causal,M24/M09,S05,L2+L3,Simpson paradox and selection bias fixture,Prevent invalid causal inference,NOT_RUN
+EVO-01,evolution,M27/M30,S06,L1+L3,"Prompt improvement overfits seed, fails holdout",Avoid regression,NOT_RUN
+EVO-02,evolution,M27/M25,S06,L1,Agent-proposed permission change rejected,No self-grant privilege,NOT_RUN
+OPS-01,portability,M28/M01,S07,L5,Native Windows/macOS/Linux install without Docker,Credible personal product,NOT_RUN
+OPS-02,enterprise,M28/M17,S07,L5,Corporate proxy/CA/egress allowlist,Enterprise adoption,NOT_RUN
+OPS-03,resources,M28/M07,S07,L5,Idle CPU/RAM and 100 pending jobs measured,Resource-lean claims,NOT_RUN

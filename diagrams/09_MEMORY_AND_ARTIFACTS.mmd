@@ -1,0 +1,14 @@
+flowchart TD
+  U[Request: last week's study] --> R[Identity filtered reference resolver]
+  R --> C[(Commitment ledger)]
+  R --> A[(Versioned artifact index)]
+  R --> E[(Episodic memory)]
+  R --> B[(Connected second brains)]
+  B --> G[Local Markdown / Git / Remote adapters]
+  C --> V[Provenance + ACL verification]
+  A --> V
+  E --> V
+  G --> V
+  V --> D{One sufficiently supported reference?}
+  D -->|Yes| H[Reuse method/edit source artifact]
+  D -->|No| Q[One focused disambiguation question]

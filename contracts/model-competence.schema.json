@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "title": "Empirical competence per model and policy",
+  "type": "object",
+  "required": [
+    "model_id",
+    "provider_id",
+    "prompt_hash",
+    "test_suite_hash",
+    "samples",
+    "features",
+    "measured",
+    "status"
+  ],
+  "properties": {
+    "model_id": {
+      "type": "string"
+    },
+    "provider_id": {
+      "type": "string"
+    },
+    "prompt_hash": {
+      "type": "string"
+    },
+    "test_suite_hash": {
+      "type": "string"
+    },
+    "samples": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "tool_calling": {
+          "type": "boolean"
+        },
+        "structured_output": {
+          "type": "boolean"
+        },
+        "streaming": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "measured": {
+      "type": "object",
+      "properties": {
+        "routing_accuracy": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "safe_abstention_accuracy": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "median_latency_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "enum": [
+        "UNPROBED",
+        "PROBED",
+        "EVALUATED",
+        "DISABLED"
+      ]
+    }
+  }
+}

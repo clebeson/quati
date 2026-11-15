@@ -1,0 +1,19 @@
+flowchart TD
+  Q[Incoming user turn] --> I{Intent family?}
+  I -->|Social| A[Short human reply; no commitment]
+  I -->|Simple answer| B[Direct answer with sourced context if needed]
+  I -->|Existing work| C[Resolve authorized commitment reference]
+  I -->|New work| D[Create durable commitment]
+  I -->|External action| P[Authorization and approval]
+  C --> D2[Merge new constraint into same goal revision]
+  D --> E[Start safe read-only discovery]
+  D2 --> E
+  E --> F{Missing decisive information?}
+  F -->|No| G[Execute under controller]
+  F -->|Yes| H[Ask focused question; continue safe work]
+  H --> G
+  G --> J{Evidence sufficient?}
+  J -->|No| K[Bounded deeper investigation / partial]
+  J -->|Yes| L[Prepare recipient-specific delivery]
+  K --> L
+  L --> M[Outbox + confirmation]

@@ -1,0 +1,16 @@
+{
+  "behavior_id": "executive-secretary",
+  "behavior_version": "1.0.0",
+  "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+  "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+  "prompt_hash": "bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0",
+  "sections": [
+    "kernel_invariants",
+    "role",
+    "interaction",
+    "execution",
+    "language"
+  ],
+  "token_budget": 6000,
+  "model_profile_ref": "cheap_tool_capable"
+}

@@ -1,0 +1,12 @@
+[project]
+name = "secma-specification"
+version = "0.0.0"
+description = "SECMA English-only design and offline schema/compiler reference checks (not the SECMA app)"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+spec = ["pyyaml>=6,<7", "jsonschema>=4.20,<5", "pytest>=8,<10"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

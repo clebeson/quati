@@ -1,0 +1,3 @@
+# Synthetic Causal Fixture — Ads Positions
+
+Generate a synthetic dataset with position (1, 3, 4, 5), cohort, impression count, conversion count, date, algorithm change flag and pre-treatment covariates. Deliberately include a cohort mix shift that can produce Simpson's paradox when aggregated. Expected qualitative output: explain that observed position-specific conversion declines may be caused by allocation and cohort differences, not automatically by the algorithm flag; require causal identification assumptions or an experiment before claiming cause. Do not encode golden labels into model-visible data source descriptions.

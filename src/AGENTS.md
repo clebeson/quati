@@ -1,0 +1,3 @@
+# AGENTS.md — Future SECMA Runtime Source
+
+This directory is intentionally unimplemented in the specification package. Codex Work creates the production Python source within the selected implementation slice. Keep `domain/` free of imports from Pydantic AI, DBOS, LLM vendor SDKs and transport adapters. Application ports express business requirements. All internal documentation and comments in English. Use protected authorization and durable ledger guards before external side effects. Never treat `spec_tools/` reference code as production security validation without writing and verifying equivalent domain-level checks.

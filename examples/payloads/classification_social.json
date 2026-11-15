@@ -1,0 +1,12 @@
+{
+  "intent": "social",
+  "work_needed": false,
+  "complexity": "trivial",
+  "risk": "none",
+  "uncertainty": "low",
+  "safe_work_allowed": false,
+  "next_action": "respond",
+  "reason_code": "SOCIAL_GREETING",
+  "commitment_ref": null,
+  "confidence": 0.94
+}

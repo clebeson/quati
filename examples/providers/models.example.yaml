@@ -1,0 +1,19 @@
+# No real API keys, model IDs or provider eligibility are asserted here.
+providers:
+  - id: openrouter-test
+    transport: openai_compatible
+    base_url: https://openrouter.ai/api/v1
+    secret_ref: env:OPENROUTER_API_KEY
+    model_id: REPLACE_WITH_TOOL_CAPABLE_MODEL
+    allowed_data_classes: [public, internal_synthetic]
+    probe_required: [tools, structured_output]
+    max_usd_per_run: 0.50
+    status: NOT_PROBED
+  - id: corporate-model
+    transport: corporate_compatible
+    base_url: REPLACE_WITH_APPROVED_ENDPOINT
+    secret_ref: corporate-vault:approved-model
+    model_id: REPLACE_WITH_APPROVED_MODEL
+    allowed_data_classes: [public, internal]
+    probe_required: [tools, structured_output]
+    status: NOT_CONFIGURED

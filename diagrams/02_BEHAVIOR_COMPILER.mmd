@@ -1,0 +1,14 @@
+flowchart TD
+  O[Operator config] --> V[Schema/semantic validator]
+  A[Agent-proposed draft: untrusted] --> V
+  K[Protected kernel requirements] --> C[Deterministic Behavior Compiler]
+  V --> C
+  S[SCS capability summaries] --> C
+  P[Versioned profiles] --> C
+  C --> H[Prompt receipt / hashes]
+  C --> M[Validated statechart table]
+  H --> E[Blind real-LLM evaluation]
+  M --> E
+  E --> G{Risk gates and authorized promotion?}
+  G -->|Yes| Q[Active immutable version]
+  G -->|No| B[Reject / Rollback]

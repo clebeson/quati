@@ -1,0 +1,26 @@
+# Profiles may tune behavior, not change protected authorization or integrity rules.
+routing:
+  social:
+    model_role: cheap_optional
+    required_capabilities: []
+    execution_depth: none
+  quick_answer:
+    model_role: cheap_tool_capable
+    execution_depth: quick
+  professional_work:
+    model_role: cheap_tool_capable
+    execution_depth: progressive
+    action: start_safe_read_work_if_authorized
+  deep_investigation:
+    model_role: approved_strong_when_needed
+    execution_depth: deep
+    required_capabilities: [research.analytical-investigation]
+    require_independent_evidence: true
+  external_action:
+    model_role: approved_strong_when_needed
+    required_authorization: true
+    execution_depth: controlled
+limits:
+  max_candidate_tools_visible: 5
+  max_review_loops: 2
+  ask_when_scope_blocking: true

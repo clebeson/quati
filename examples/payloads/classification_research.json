@@ -1,0 +1,12 @@
+{
+  "intent": "deep_investigation",
+  "work_needed": true,
+  "complexity": "investigative",
+  "risk": "low",
+  "uncertainty": "high",
+  "safe_work_allowed": true,
+  "next_action": "start_safe_work",
+  "reason_code": "RESEARCH_REQUEST",
+  "commitment_ref": null,
+  "confidence": 0.79
+}

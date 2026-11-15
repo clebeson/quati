@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "title": "Deterministic prompt build receipt",
+  "type": "object",
+  "required": [
+    "behavior_id",
+    "behavior_version",
+    "behavior_hash",
+    "statechart_hash",
+    "prompt_hash",
+    "sections",
+    "token_budget",
+    "model_profile_ref"
+  ],
+  "properties": {
+    "behavior_id": {
+      "type": "string"
+    },
+    "behavior_version": {
+      "type": "string"
+    },
+    "behavior_hash": {
+      "type": "string"
+    },
+    "statechart_hash": {
+      "type": "string"
+    },
+    "prompt_hash": {
+      "type": "string"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "token_budget": {
+      "type": "integer",
+      "minimum": 256
+    },
+    "model_profile_ref": {
+      "type": "string"
+    }
+  }
+}

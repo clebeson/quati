@@ -1,0 +1,18 @@
+flowchart TD
+  U[Human / System Requester] --> C[CLI or Authorized Channel Adapter]
+  C --> I[Identity + Policy Gate]
+  I --> E[ERI: Conversation and Relationship Intelligence]
+  E <--> B[Behavior Compiler + Context Envelope]
+  B --> R[Model Router: cheap / specialist by measured competence]
+  E --> S[SCS Capability Search / Describe / Resolve]
+  S --> H[Plug-in Harness / MCP / A2A / Brain Adapter]
+  H --> V[Evidence + Sufficiency Assessment]
+  V --> D[Delivery Translator: Human / Machine]
+  E --> L[Commitment Ledger + Outbox]
+  L <--> X[DurableRunner: DBOS Adapter]
+  X --> W[Bounded Worker + Due-Time Supervisor]
+  W --> D
+  L --> T[Audit + Observability]
+  D --> T
+  D --> U
+  P[Trusted Policy and Identity] -->|Authorization before effect| H

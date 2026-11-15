@@ -1,0 +1,5 @@
+# RFC-008 — Assurance, Model Evaluation and Governed Self-Improvement
+
+A capability or prompt candidate may be improved by an agent but may only be **promoted** by a trusted registry pipeline. Candidate generation reads traces and failure clusters, proposes instructions/profile/statechart changes, compiles them, runs deterministic tests and independent LLM evaluation, compares against baseline and sealed holdouts, and requests review for higher-risk modifications. No candidate can modify kernel permissions or redefine evidence thresholds through its own instructions.
+
+Separate measurements: syntax validity, contract behavior, autonomous selection accuracy, real outcome sufficiency, context recovery, timing, safety refusal, cost/latency and external interoperability. Prefer fewer discriminating tests over thousands of shallow schema assertions. Gold labels do not appear in model-visible prompts or tool registry metadata. Judge disagreement must be surfaced rather than averaged to a false certainty.

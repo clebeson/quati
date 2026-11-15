@@ -1,0 +1,19 @@
+providers:
+  - id: local-markdown
+    kind: local_directory
+    root: $SECMA_WORKSPACE/knowledge
+    features: [list, search, read]
+    allowed_scopes: [personal]
+    write: disabled
+  - id: approved-corporate-repo
+    kind: git_repository
+    root: REPLACE_WITH_APPROVED_LOCAL_CLONE
+    features: [list, search, read]
+    allowed_scopes: [team]
+    write: disabled
+  - id: future-remote-brain
+    kind: external_provider
+    adapter: REPLACE_WITH_APPROVED_ADAPTER
+    features: [list, search, read]
+    allowed_scopes: [team]
+    status: NOT_CONFIGURED

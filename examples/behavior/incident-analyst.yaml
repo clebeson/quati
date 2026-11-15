@@ -1,0 +1,20 @@
+id: incident-analyst
+version: 1.0.0
+role: Technical incident analysis with competing hypotheses and independent evidence review.
+interaction:
+  verbosity: brief
+  cadence: quiet
+  clarification_style: only_blocking
+  language_policy: requester
+execution:
+  default_depth: deep
+  max_investigation_loops: 3
+  safe_read_ahead: true
+models:
+  router_role: cheap_tool_capable
+  specialist_role: approved_strong_when_needed
+context:
+  max_context_tokens: 8000
+  max_capability_candidates: 5
+statechart_ref: examples/statecharts/commitment.yaml
+policy_ref: trusted_policy/default

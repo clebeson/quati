@@ -1,0 +1,87 @@
+{
+  "schema_version": "scs/1.0",
+  "id": "research.analytical-investigation",
+  "version": "1.0.0",
+  "name": "Analytical investigation",
+  "description": "Investigate technical or data anomalies with authorized evidence gathering, alternative hypotheses, explicit uncertainty and an independently reviewed outcome.",
+  "intents": {
+    "positive_examples": [
+      "Investigate why the dashboard suddenly lost one tenant",
+      "Explain which hypotheses account for a conversion decline by ad placement"
+    ],
+    "negative_examples": [
+      "Good morning",
+      "What is the definition of a PRD?"
+    ]
+  },
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "research_question"
+    ],
+    "properties": {
+      "research_question": {
+        "type": "string"
+      },
+      "scope": {
+        "type": "object"
+      }
+    },
+    "additionalProperties": false
+  },
+  "output_schema": {
+    "type": "object",
+    "required": [
+      "status",
+      "findings",
+      "evidence_refs",
+      "uncertainties"
+    ],
+    "properties": {
+      "status": {
+        "enum": [
+          "complete",
+          "partial",
+          "inconclusive"
+        ]
+      },
+      "findings": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "evidence_refs": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "uncertainties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "additionalProperties": false
+  },
+  "outcomes": {
+    "criteria": [
+      "Explicitly relate findings to the original question",
+      "Separate evidence-supported explanations from unresolved hypotheses"
+    ]
+  },
+  "permissions": [
+    "repo.read",
+    "docs.read"
+  ],
+  "effects": "read",
+  "requires_approval": false,
+  "dependencies": [],
+  "lifecycle": "staged",
+  "assurance": "C1",
+  "evaluation": [
+    "evals/seed_eri.jsonl#CASE-07"
+  ]
+}

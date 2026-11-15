@@ -1,0 +1,156 @@
+id,module,slice,type,text,acceptance_ref,redteam_ref,implementation_status
+M01-FR-01,M01,S00,MUST,Provide ask/tell/status/messages/config/doctor with stable machine-readable JSON and English diagnostics.,M01-AT-01,M01-RT-01,NOT_RUN
+M01-FR-02,M01,S00,MUST,Distinguish a received request from a launched workflow and an actually delivered result.,M01-AT-01,M01-RT-01,NOT_RUN
+M01-FR-03,M01,S00,MUST,Run with a user-scoped native install; Docker remains optional and no web UI is started.,M01-AT-01,M01-RT-01,NOT_RUN
+M01-AT-01,M01,S00,ACCEPT,Fresh CLI install is usable on at least the reference OS and reports a provider-disabled configuration.,M01-AT-01,,NOT_RUN
+M01-AT-02,M01,S00,ACCEPT,A social greeting returns without generating a commitment; an asynchronous request prints a real commitment ID.,M01-AT-02,,NOT_RUN
+M02-FR-01,M02,S00,MUST,Authenticate request origin; do not accept self-asserted identity inside untrusted text.,M02-AT-01,M02-RT-01,NOT_RUN
+M02-FR-02,M02,S00,MUST,"Bind tenant, user, channel and delegated actor to each request, event, capability and artifact.",M02-AT-01,M02-RT-01,NOT_RUN
+M02-FR-03,M02,S00,MUST,Implement deny-by-default on missing or expired authority and offer a clear reauthorization route.,M02-AT-01,M02-RT-01,NOT_RUN
+M02-AT-01,M02,S00,ACCEPT,Forged author in imported transcript cannot create an authorized action.,M02-AT-01,,NOT_RUN
+M02-AT-02,M02,S00,ACCEPT,Identical remembered phrases for two users never cross tenant or identity scope.,M02-AT-02,,NOT_RUN
+M03-FR-01,M03,S01,MUST,Separate conversational politeness from work commitment and real progress.,M03-AT-01,M03-RT-01,NOT_RUN
+M03-FR-02,M03,S01,MUST,"Choose message, silence, question, start safe work or deliver based on context and relationship preference.",M03-AT-01,M03-RT-01,NOT_RUN
+M03-FR-03,M03,S01,MUST,Bind follow-up instructions and async executor results to correct commitment without promising unseen actions.,M03-AT-01,M03-RT-01,NOT_RUN
+M03-AT-01,M03,S01,ACCEPT,A greeting stays conversational; a PRD request starts safe discovery; subsequent changes update the same work.,M03-AT-01,,NOT_RUN
+M03-AT-02,M03,S01,ACCEPT,An async result for commitment B never interrupts unrelated conversation A.,M03-AT-02,,NOT_RUN
+M04-FR-01,M04,S01,MUST,"Distinguish social, answer, context lookup, compound work, investigation and external action.",M04-AT-01,M04-RT-01,NOT_RUN
+M04-FR-02,M04,S01,MUST,Represent multiple plausible references with confidence and evidence; ask one focused question if ambiguous.,M04-AT-01,M04-RT-01,NOT_RUN
+M04-FR-03,M04,S01,MUST,"Capture open assumptions, scope changes and explicit user corrections as events.",M04-AT-01,M04-RT-01,NOT_RUN
+M04-AT-01,M04,S01,ACCEPT,“Do the study again for company X” resolves its prior method and scope with permission checks.,M04-AT-01,,NOT_RUN
+M04-AT-02,M04,S01,ACCEPT,Two plausible “last week” artifacts trigger a brief disambiguation instead of an invented selection.,M04-AT-02,,NOT_RUN
+M05-FR-01,M05,S01,MUST,"Start authorized, reversible reading while optional details remain unresolved.",M05-AT-01,M05-RT-01,NOT_RUN
+M05-FR-02,M05,S01,MUST,"Ask only for decisions that materially affect scope, risk, cost or outcome; account for user interruption cost.",M05-AT-01,M05-RT-01,NOT_RUN
+M05-FR-03,M05,S01,MUST,Support answer-in-parallel: revise work after the user supplies detail rather than creating a second job.,M05-AT-01,M05-RT-01,NOT_RUN
+M05-AT-01,M05,S01,ACCEPT,Missing optional preference does not block research.,M05-AT-01,,NOT_RUN
+M05-AT-02,M05,S01,ACCEPT,Missing tenant or irreversible-write approval blocks action with a specific question.,M05-AT-02,,NOT_RUN
+M06-FR-01,M06,S02,MUST,Store next-contact commitment and escalation trigger with a durable timestamp.,M06-AT-01,M06-RT-01,NOT_RUN
+M06-FR-02,M06,S02,MUST,"Distinguish receipt, meaningful progress, blocking question, delay notice, partial result and final delivery.",M06-AT-01,M06-RT-01,NOT_RUN
+M06-FR-03,M06,S02,MUST,Respect recipient availability and notification preferences but allow justified urgent alerts.,M06-AT-01,M06-RT-01,NOT_RUN
+M06-AT-01,M06,S02,ACCEPT,Simulated time advance triggers due update without requiring the LLM to be running.,M06-AT-01,,NOT_RUN
+M06-AT-02,M06,S02,ACCEPT,No repeated “still working” messages unless policy and actual context justify them.,M06-AT-02,,NOT_RUN
+M07-FR-01,M07,S02,MUST,"Keep root commitment, immutable events, optimistic revision, outbox, effect-intent and execution mapping.",M07-AT-01,M07-RT-01,NOT_RUN
+M07-FR-02,M07,S02,MUST,Run DBOS behind minimal DurableRunner application port; extend port only for actual use cases.,M07-AT-01,M07-RT-01,NOT_RUN
+M07-FR-03,M07,S02,MUST,"Reconcile unknown external effects, cancel best-effort and preserve workflow ownership on worker restart.",M07-AT-01,M07-RT-01,NOT_RUN
+M07-AT-01,M07,S02,ACCEPT,SIGKILL worker between read and report; resume without duplicate commitment.,M07-AT-01,,NOT_RUN
+M07-AT-02,M07,S02,ACCEPT,"Crash after simulated external send and before ACK yields uncertain effect, never false exactly-once.",M07-AT-02,,NOT_RUN
+M08-FR-01,M08,S03,MUST,"Classify social/quick/context/work/deep/action separately from difficulty, urgency and risk.",M08-AT-01,M08-RT-01,NOT_RUN
+M08-FR-02,M08,S03,MUST,"Support versioned routing policy, prompt reference, model role and capability preferences with diff/simulate/rollback.",M08-AT-01,M08-RT-01,NOT_RUN
+M08-FR-03,M08,S03,MUST,Apply resource budgets and unknown-risk escalation before delegating work.,M08-AT-01,M08-RT-01,NOT_RUN
+M08-AT-01,M08,S03,ACCEPT,Operator changes a deep-investigation profile without code and simulator reports changed outcomes.,M08-AT-01,,NOT_RUN
+M08-AT-02,M08,S03,ACCEPT,Ambiguous task routes to safe discovery/clarification rather than blind write tool.,M08-AT-02,,NOT_RUN
+M09-FR-01,M09,S02,MUST,"Evaluate claim coverage, conflicting evidence, recency and whether further investigation likely changes the decision.",M09-AT-01,M09-RT-01,NOT_RUN
+M09-FR-02,M09,S02,MUST,Require independently recorded outcome assessment before final delivery for nontrivial work.,M09-AT-01,M09-RT-01,NOT_RUN
+M09-FR-03,M09,S02,MUST,"Return complete, partial, blocked or inconclusive with bounded follow-up, never fabricated certainty.",M09-AT-01,M09-RT-01,NOT_RUN
+M09-AT-01,M09,S02,ACCEPT,Misleading correlation cannot be reported as causal proof.,M09-AT-01,,NOT_RUN
+M09-AT-02,M09,S02,ACCEPT,Insufficient report triggers a bounded retry or partial delivery with specific open gaps.,M09-AT-02,,NOT_RUN
+M10-FR-01,M10,S02,MUST,"Use shared result ID with audience adapters for human, system and group destinations.",M10-AT-01,M10-RT-01,NOT_RUN
+M10-FR-02,M10,S02,MUST,Deliver concise summary with expand-on-demand and links to versioned evidence.,M10-AT-01,M10-RT-01,NOT_RUN
+M10-FR-03,M10,S02,MUST,"Persist delivery attempts, acknowledgement and last confirmed channel status.",M10-AT-01,M10-RT-01,NOT_RUN
+M10-AT-01,M10,S02,ACCEPT,Human receives concise finding; machine receives schema-valid result for same execution.,M10-AT-01,,NOT_RUN
+M10-AT-02,M10,S02,ACCEPT,Duplicate callback does not create duplicate final notification.,M10-AT-02,,NOT_RUN
+M11-FR-01,M11,S03,MUST,Keep factual episodic records separate from inferred preference and summarization.,M11-AT-01,M11-RT-01,NOT_RUN
+M11-FR-02,M11,S03,MUST,"Search by requester, time, project, method and commitment, and provide source-linked references.",M11-AT-01,M11-RT-01,NOT_RUN
+M11-FR-03,M11,S03,MUST,Apply updates/retention/corrections without silently overwriting original evidence.,M11-AT-01,M11-RT-01,NOT_RUN
+M11-AT-01,M11,S03,ACCEPT,A request for “the study from last week” resolves or asks focused clarification.,M11-AT-01,,NOT_RUN
+M11-AT-02,M11,S03,ACCEPT,Conflicting memory evidence remains marked uncertain and does not contaminate another user.,M11-AT-02,,NOT_RUN
+M12-FR-01,M12,S03,MUST,"Store artifact IDs, immutable versions, content hashes, source lineage and format metadata.",M12-AT-01,M12-RT-01,NOT_RUN
+M12-FR-02,M12,S03,MUST,Route incremental edit to a capable handler when the source format is genuinely editable.,M12-AT-01,M12-RT-01,NOT_RUN
+M12-FR-03,M12,S03,MUST,Maintain user-facing summary separate from full generated deliverable.,M12-AT-01,M12-RT-01,NOT_RUN
+M12-AT-01,M12,S03,ACCEPT,Old chart can be revised with one additional data series while retaining original version.,M12-AT-01,,NOT_RUN
+M12-AT-02,M12,S03,ACCEPT,"Non-editable source triggers honest request or conversion plan, never invented data.",M12-AT-02,,NOT_RUN
+M13-FR-01,M13,S03,MUST,"Distinguish explicit, observed and inferred preferences, each with confidence and scope.",M13-AT-01,M13-RT-01,NOT_RUN
+M13-FR-02,M13,S03,MUST,"Allow inspect, correction, expiration, and rollback of profile updates.",M13-AT-01,M13-RT-01,NOT_RUN
+M13-FR-03,M13,S03,MUST,Separate communication preferences from permissions and quality requirements.,M13-AT-01,M13-RT-01,NOT_RUN
+M13-AT-01,M13,S03,ACCEPT,"Repeated request for shorter replies updates a low-risk style preference, not audit policy.",M13-AT-01,,NOT_RUN
+M13-AT-02,M13,S03,ACCEPT,User correction removes stale inferred preference from future decisions.,M13-AT-02,,NOT_RUN
+M14-FR-01,M14,S00,MUST,"Validate namespaced IDs, semver, typed input/output, positive/negative intents, outcome and evidence contracts.",M14-AT-01,M14-RT-01,NOT_RUN
+M14-FR-02,M14,S00,MUST,"Maintain definitions, executable bindings and measured assurance as separate records.",M14-AT-01,M14-RT-01,NOT_RUN
+M14-FR-03,M14,S00,MUST,Publish packages only after static/semantic checks and authorized lifecycle promotion.,M14-AT-01,M14-RT-01,NOT_RUN
+M14-AT-01,M14,S00,ACCEPT,Installing an unknown capability makes it discoverable on next run with no root prompt edits.,M14-AT-01,,NOT_RUN
+M14-AT-02,M14,S00,ACCEPT,Invalid capability requesting destructive effects under read-only policy is rejected.,M14-AT-02,,NOT_RUN
+M15-FR-01,M15,S00,MUST,"Expose search, describe, invoke and status via stable tool schemas and progressive disclosure.",M15-AT-01,M15-RT-01,NOT_RUN
+M15-FR-02,M15,S00,MUST,"Rank candidates by outcome fit, permission, assurance, cost, model compatibility and health.",M15-AT-01,M15-RT-01,NOT_RUN
+M15-FR-03,M15,S00,MUST,Enforce output contracts and execution-state guards; support graceful unavailability and fallback.,M15-AT-01,M15-RT-01,NOT_RUN
+M15-AT-01,M15,S00,ACCEPT,"Real LLM selects a newly installed, unnamed capability from a distracting catalog.",M15-AT-01,,NOT_RUN
+M15-AT-02,M15,S00,ACCEPT,"Disabled, incompatible or unauthorized capability cannot be invoked even if LLM requests it.",M15-AT-02,,NOT_RUN
+M16-FR-01,M16,S03,MUST,Read skills with explicit manifest and trusted boundary; discover incrementally rather than injecting all instructions.,M16-AT-01,M16-RT-01,NOT_RUN
+M16-FR-02,M16,S03,MUST,Validate included scripts/assets and reject auto-execution of downloaded code.,M16-AT-01,M16-RT-01,NOT_RUN
+M16-FR-03,M16,S03,MUST,"Maintain version, provenance, permission mapping and execution evidence.",M16-AT-01,M16-RT-01,NOT_RUN
+M16-AT-01,M16,S03,ACCEPT,Skill installed from local directory is only visible to eligible capability.,M16-AT-01,,NOT_RUN
+M16-AT-02,M16,S03,ACCEPT,Malicious SKILL.md cannot rewrite approval policy or leak secrets.,M16-AT-02,,NOT_RUN
+M17-FR-01,M17,S00,MUST,Support OpenRouter/OpenAI-compatible plus explicit native API adapters for nonportable features.,M17-AT-01,M17-RT-01,NOT_RUN
+M17-FR-02,M17,S00,MUST,"Probe tool calls, JSON output, timeouts, concurrency, streaming, region, budgets and pricing instead of guessing.",M17-AT-01,M17-RT-01,NOT_RUN
+M17-FR-03,M17,S00,MUST,"Route to small model for safe simple work, escalate to stronger approved provider on failure or ambiguity.",M17-AT-01,M17-RT-01,NOT_RUN
+M17-AT-01,M17,S00,ACCEPT,A tool-incompatible model is rejected before capability invocation.,M17-AT-01,,NOT_RUN
+M17-AT-02,M17,S00,ACCEPT,"Failing small-model schema parsing triggers bounded repair/escalation, not silent success.",M17-AT-02,,NOT_RUN
+M18-FR-01,M18,S04,MUST,Provider capability declaration includes invoke/status/resume/cancel/stream and artifact support.,M18-AT-01,M18-RT-01,NOT_RUN
+M18-FR-02,M18,S04,MUST,"Use signed/approved executable, sandbox, scopes, quotas and stable correlation IDs.",M18-AT-01,M18-RT-01,NOT_RUN
+M18-FR-03,M18,S04,MUST,Handle killed/uninstalled harness through typed degradation and rerouting without losing root commitment.,M18-AT-01,M18-RT-01,NOT_RUN
+M18-AT-01,M18,S04,ACCEPT,New Excel chart agent installed from a descriptor is discoverable after approval and passing capability eval.,M18-AT-01,,NOT_RUN
+M18-AT-02,M18,S04,ACCEPT,Removal of active harness marks execution degraded; secretary remains responsive.,M18-AT-02,,NOT_RUN
+M19-FR-01,M19,S04,MUST,Support MCP client discovery; map tool metadata to scopes and side-effect level.,M19-AT-01,M19-RT-01,NOT_RUN
+M19-FR-02,M19,S04,MUST,"Require identity-specific authorization, policy and consent before dispatch, even if model requested tool.",M19-AT-01,M19-RT-01,NOT_RUN
+M19-FR-03,M19,S04,MUST,"Record effect intent, outcome, unknown status and available compensation.",M19-AT-01,M19-RT-01,NOT_RUN
+M19-AT-01,M19,S04,ACCEPT,Read-only simulated MCP tool executes with proof of no state changes.,M19-AT-01,,NOT_RUN
+M19-AT-02,M19,S04,ACCEPT,Tool advertising read-only but mutating state is detected in contract harness where observable.,M19-AT-02,,NOT_RUN
+M20-FR-01,M20,S04,MUST,Declare read/search/list/write/watch capabilities and permissions; no universal writable-brain assumption.,M20-AT-01,M20-RT-01,NOT_RUN
+M20-FR-02,M20,S04,MUST,"Maintain source references, ACL filtering, ingestion cursors, timestamps, provenance and conflict resolution.",M20-AT-01,M20-RT-01,NOT_RUN
+M20-FR-03,M20,S04,MUST,Support offline local provider and mock remote provider before adding optional real integrations.,M20-AT-01,M20-RT-01,NOT_RUN
+M20-AT-01,M20,S04,ACCEPT,Folder knowledge query returns cited accessible records.,M20-AT-01,,NOT_RUN
+M20-AT-02,M20,S04,ACCEPT,Remote brain unavailable does not prevent normal greeting or unrelated work.,M20-AT-02,,NOT_RUN
+M21-FR-01,M21,S05,MUST,"Traverse authorized doc/repo references recursively with cycle, scope, depth and cost limits.",M21-AT-01,M21-RT-01,NOT_RUN
+M21-FR-02,M21,S05,MUST,Distinguish observed standard from inferred convention based on corpus evidence.,M21-AT-01,M21-RT-01,NOT_RUN
+M21-FR-03,M21,S05,MUST,"Check license, maintenance, source credibility, compatibility and provenance before recommending code reuse.",M21-AT-01,M21-RT-01,NOT_RUN
+M21-AT-01,M21,S05,ACCEPT,Discover corporate PRD conventions from fixture repo and identify exceptions.,M21-AT-01,,NOT_RUN
+M21-AT-02,M21,S05,ACCEPT,Graph of circular RFC references terminates with complete coverage report.,M21-AT-02,,NOT_RUN
+M22-FR-01,M22,S05,MUST,"Discover and cite local standards before writing; separate evidence, assumptions and recommendations.",M22-AT-01,M22-RT-01,NOT_RUN
+M22-FR-02,M22,S05,MUST,Link cross-document requirements and identify missing decisions before decomposing work.,M22-AT-01,M22-RT-01,NOT_RUN
+M22-FR-03,M22,S05,MUST,Deliver versioned specs with traceability and bounded acceptance tests.,M22-AT-01,M22-RT-01,NOT_RUN
+M22-AT-01,M22,S05,ACCEPT,Novel PRD based on repository docs includes source trace links and uncertainty.,M22-AT-01,,NOT_RUN
+M22-AT-02,M22,S05,ACCEPT,"Conflicting ADRs trigger an explicit conflict decision, not fabricated harmonization.",M22-AT-02,,NOT_RUN
+M23-FR-01,M23,S05,MUST,"Construct incident timeline from authorized logs/events, identify competing hypotheses.",M23-AT-01,M23-RT-01,NOT_RUN
+M23-FR-02,M23,S05,MUST,"Distinguish cause, correlate and unsupported speculation with source provenance.",M23-AT-01,M23-RT-01,NOT_RUN
+M23-FR-03,M23,S05,MUST,"Request missing SME input when worth its interruption cost, using permissioned communication.",M23-AT-01,M23-RT-01,NOT_RUN
+M23-AT-01,M23,S05,ACCEPT,Missing dashboard company investigation identifies a concrete permission or data-path hypothesis.,M23-AT-01,,NOT_RUN
+M23-AT-02,M23,S05,ACCEPT,Misleading timestamp coincidence does not become RCA without corroboration.,M23-AT-02,,NOT_RUN
+M24-FR-01,M24,S05,MUST,"Verify data lineage, cohorts, units, selection effects and measurement biases.",M24-AT-01,M24-RT-01,NOT_RUN
+M24-FR-02,M24,S05,MUST,Represent causal DAG/hypotheses and choose appropriate tests if supported.,M24-AT-01,M24-RT-01,NOT_RUN
+M24-FR-03,M24,S05,MUST,Report observed associations and unknown identification assumptions explicitly.,M24-AT-01,M24-RT-01,NOT_RUN
+M24-AT-01,M24,S05,ACCEPT,Simpson paradox dataset prevents false causal conclusion.,M24-AT-01,,NOT_RUN
+M24-AT-02,M24,S05,ACCEPT,Ads position 4/5 decline vs 1/3 includes selection-confounding caveat.,M24-AT-02,,NOT_RUN
+M25-FR-01,M25,S00,MUST,"Grant authorities through trusted configuration, not from prompts or memory.",M25-AT-01,M25-RT-01,NOT_RUN
+M25-FR-02,M25,S00,MUST,"Evaluate actor, tenant, destination, requested effect, data class, consent and expiry.",M25-AT-01,M25-RT-01,NOT_RUN
+M25-FR-03,M25,S00,MUST,"Deny, defer approval, or allow with auditable decision and narrowed credentials.",M25-AT-01,M25-RT-01,NOT_RUN
+M25-AT-01,M25,S00,ACCEPT,Forged instruction in Slack message cannot self-approve a write.,M25-AT-01,,NOT_RUN
+M25-AT-02,M25,S00,ACCEPT,Unapproved external message is never sent even when all prompts request it.,M25-AT-02,,NOT_RUN
+M26-FR-01,M26,S00,MUST,Assign correlation IDs and immutable event records with versioned contracts.,M26-AT-01,M26-RT-01,NOT_RUN
+M26-FR-02,M26,S00,MUST,"Record model/agent/config/prompt/capability hashes, timestamps, costs, evidence links, decisions and status.",M26-AT-01,M26-RT-01,NOT_RUN
+M26-FR-03,M26,S00,MUST,Support sanitized trace replay without reexecuting irreversible actions.,M26-AT-01,M26-RT-01,NOT_RUN
+M26-AT-01,M26,S00,ACCEPT,Operator can explain why a capability was chosen for a task.,M26-AT-01,,NOT_RUN
+M26-AT-02,M26,S00,ACCEPT,Secrets and restricted content are redacted before trace export.,M26-AT-02,,NOT_RUN
+M27-FR-01,M27,S06,MUST,"Create staged candidate changes with baseline, targeted eval and sealed holdout comparison.",M27-AT-01,M27-RT-01,NOT_RUN
+M27-FR-02,M27,S06,MUST,"Require semantic compatibility, risk checks, approvals and instant rollback for promotion.",M27-AT-01,M27-RT-01,NOT_RUN
+M27-FR-03,M27,S06,MUST,Monitor post-promotion regressions and record attribution of improvement.,M27-AT-01,M27-RT-01,NOT_RUN
+M27-AT-01,M27,S06,ACCEPT,Candidate that increases unsafe tool-use accuracy regression fails promotion.,M27-AT-01,,NOT_RUN
+M27-AT-02,M27,S06,ACCEPT,A small-model-optimized prompt can be rolled back without affecting ledger.,M27-AT-02,,NOT_RUN
+M28-FR-01,M28,S07,MUST,"Support user-scoped install, config doctor, backup/restore and process supervisor by OS.",M28-AT-01,M28-RT-01,NOT_RUN
+M28-FR-02,M28,S07,MUST,"Profile RAM/CPU/storage, sleep behavior, proxy, corporate CA, offline setup and approved provider allowlists.",M28-AT-01,M28-RT-01,NOT_RUN
+M28-FR-03,M28,S07,MUST,Keep durable engine behind port and distinguish local dev reliability from enterprise HA.,M28-AT-01,M28-RT-01,NOT_RUN
+M28-AT-01,M28,S07,ACCEPT,Windows/macOS/Linux native smoke without Docker.,M28-AT-01,,NOT_RUN
+M28-AT-02,M28,S07,ACCEPT,Offline enterprise profile refuses disallowed egress and works with supplied authorized assets.,M28-AT-02,,NOT_RUN
+M29-FR-01,M29,S04,MUST,"Capture authentic sender, channel, conversation thread, request ID and delivery intent.",M29-AT-01,M29-RT-01,NOT_RUN
+M29-FR-02,M29,S04,MUST,"Use inbox/outbox, retries, idempotency where provided, expiry and uncertain-delivery reconciliation.",M29-AT-01,M29-RT-01,NOT_RUN
+M29-FR-03,M29,S04,MUST,"Treat notification preferences and channels as user-specific, not provider-wide.",M29-AT-01,M29-RT-01,NOT_RUN
+M29-AT-01,M29,S04,ACCEPT,Fake Slack HMAC/replay and rate-limit tests pass locally without Slack credentials.,M29-AT-01,,NOT_RUN
+M29-AT-02,M29,S04,ACCEPT,"Real-provider absence returns NOT_VERIFIED_EXTERNAL, not validated.",M29-AT-02,,NOT_RUN
+M30-FR-01,M30,S00,MUST,"Compile immutable system constraints, selected interaction profile, active capacity contracts and bounded context into a prompt receipt.",M30-AT-01,M30-RT-01,NOT_RUN
+M30-FR-02,M30,S00,MUST,Validate declarative statechart states/edges/guards; reject unsafe or unreachable transitions and missing terminal paths.,M30-AT-01,M30-RT-01,NOT_RUN
+M30-FR-03,M30,S00,MUST,Expose propose/validate/render/simulate/diff/promote/rollback with review gates; never eval executable expressions from YAML.,M30-AT-01,M30-RT-01,NOT_RUN
+M30-AT-01,M30,S00,ACCEPT,"Given profile change, compiled prompt/statechart hash changes predictably and rollback restores previous digest.",M30-AT-01,,NOT_RUN
+M30-AT-02,M30,S00,ACCEPT,"Malformed machine with dead-end state, privilege-changing guard or infinite unbudgeted cycle is rejected.",M30-AT-02,,NOT_RUN
+M31-FR-01,M31,S00,MUST,"Build small, typed per-decision context envelopes with current goal, state, relevant history, tool descriptions and uncertainty.",M31-AT-01,M31-RT-01,NOT_RUN
+M31-FR-02,M31,S00,MUST,Calibrate model support and empirical routing performance separately by model/provider/config hash.,M31-AT-01,M31-RT-01,NOT_RUN
+M31-FR-03,M31,S00,MUST,"Use deterministic fallback, repair budget and optional stronger model escalation while preserving task ownership.",M31-AT-01,M31-RT-01,NOT_RUN
+M31-AT-01,M31,S00,ACCEPT,Small model handles greeting without tool calling and complex task routes to safe capability discovery.,M31-AT-01,,NOT_RUN
+M31-AT-02,M31,S00,ACCEPT,Context update after user correction changes only relevant prompt segment and keeps validated instructions stable.,M31-AT-02,,NOT_RUN

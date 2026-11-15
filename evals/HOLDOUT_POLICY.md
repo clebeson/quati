@@ -1,0 +1,3 @@
+# Sealed Holdout Policy
+
+The included seed dataset is public development material and its labels MUST NOT be placed in the model-visible prompt, runtime capability descriptions or tool arguments. A human/independent evaluator must create and securely store an additional sealed set of at least 30 novel cases after the first implementation candidate; changing prompt/behavior based on these cases requires replacing them with a new sealed holdout before the next official gate. Real LLM calls, captured tool trajectories, verified environment and scoring artifacts are mandatory for L3. Seed tests are not proof of generalization.
