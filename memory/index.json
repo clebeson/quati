@@ -1,0 +1,87 @@
+{
+  "schema_version": "secma-memory-index/1",
+  "records": [
+    {
+      "record_id": "ACH-001",
+      "version": 1,
+      "record_type": "achievement",
+      "status": "OPEN",
+      "path": "memory/achievements/ACH-001.json",
+      "requirement_ids": [
+        "SH-13"
+      ],
+      "scope": "ENGINEERING_PROCESS"
+    },
+    {
+      "record_id": "BUG-2026-001",
+      "version": 1,
+      "record_type": "bug",
+      "status": "OPEN",
+      "path": "memory/bugs/BUG-2026-001.json",
+      "requirement_ids": [
+        "M30-FR-02",
+        "M30-AT-02"
+      ],
+      "scope": "RUNTIME_CANDIDATE"
+    },
+    {
+      "record_id": "BUG-2026-002",
+      "version": 1,
+      "record_type": "bug",
+      "status": "OPEN",
+      "path": "memory/bugs/BUG-2026-002.json",
+      "requirement_ids": [
+        "M01-FR-02",
+        "K1",
+        "K6"
+      ],
+      "scope": "RUNTIME_CANDIDATE"
+    },
+    {
+      "record_id": "DEBT-001",
+      "version": 1,
+      "record_type": "debt",
+      "status": "OPEN",
+      "path": "memory/debt/DEBT-001.json",
+      "requirement_ids": [
+        "M30-FR-02"
+      ],
+      "scope": "ENGINEERING_PROCESS"
+    },
+    {
+      "record_id": "DEC-001",
+      "version": 1,
+      "record_type": "decision",
+      "status": "OPEN",
+      "path": "memory/decisions/DEC-001.json",
+      "requirement_ids": [
+        "SH-10",
+        "SH-13"
+      ],
+      "scope": "ENGINEERING_PROCESS"
+    },
+    {
+      "record_id": "FIXTURE-ERI-SEED-001",
+      "version": 1,
+      "record_type": "fixture",
+      "status": "OPEN",
+      "path": "memory/fixtures/FIXTURE-ERI-SEED-001.json",
+      "requirement_ids": [
+        "M31-FR-02"
+      ],
+      "scope": "ENGINEERING_PROCESS"
+    },
+    {
+      "record_id": "LESSON-001",
+      "version": 1,
+      "record_type": "lesson",
+      "status": "OPEN",
+      "path": "memory/lessons/LESSON-001.json",
+      "requirement_ids": [
+        "SH-13"
+      ],
+      "scope": "ENGINEERING_PROCESS"
+    }
+  ],
+  "lookup_rule": "Read matching requirement_ids and always_include records; OPEN/BLOCKED entries mandatory. Immutable record versions are authoritative, index is a rebuildable locator."
+}

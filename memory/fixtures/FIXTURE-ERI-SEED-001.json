@@ -1,0 +1,30 @@
+{
+  "record_id": "FIXTURE-ERI-SEED-001",
+  "record_type": "fixture",
+  "version": 1,
+  "status": "OPEN",
+  "owner": "SECMA specification maintainer",
+  "created_at": "2026-11-15T17:28:23.792130+00:00",
+  "requirement_ids": [
+    "M31-FR-02"
+  ],
+  "evidence_refs": [
+    "evals/seed_eri.jsonl",
+    "evals/HOLDOUT_POLICY.md"
+  ],
+  "supersedes": null,
+  "details": {
+    "source_classification": "synthetic development seeds supplied in original package",
+    "license": "Package source; no external data license claim",
+    "purpose": "Development scenarios only, not sealed holdout",
+    "construction_recipe": "Use supplied 50 JSONL entries unchanged; preserve source hash",
+    "seed": null,
+    "sha256": "8147c30ded2ae3bcfccd813d90514bd0a9890ad7b8844e24703d4150bdda0a47",
+    "allowed_use": "Offline development and authorized synthetic model evaluation",
+    "privacy_class": "public_synthetic",
+    "oracle_location": "Public seed labels; never count as independent holdout",
+    "case_ids": [
+      "MOD-01"
+    ]
+  }
+}

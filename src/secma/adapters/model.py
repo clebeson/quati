@@ -23,7 +23,7 @@ from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.usage import RunUsage, UsageLimits
 from openai import AsyncOpenAI, DefaultAsyncHttpxClient
 
-from secma.application.ports import ModelRun, ProviderConfig, ProviderError
+from secma.application.ports import ModelRun, ProviderConfig, ProviderError, valid_endpoint
 
 
 class Classification(BaseModel):
@@ -55,15 +55,7 @@ class ModelAdapter:
     def _validate(self) -> None:
         if not self.config.base_url or not self.config.model:
             raise ProviderError("NOT_CONFIGURED", "An explicit model endpoint and model identifier are required.")
-        try:
-            url = urlsplit(self.config.base_url)
-            valid = (url.scheme == "https" and bool(url.hostname) and
-                     not url.username and not url.password and
-                     not url.query and not url.fragment)
-            valid = valid and not any(c.isspace() or ord(c) < 32 for c in self.config.base_url)
-            _ = url.port
-        except (ValueError, TypeError):
-            valid = False
+        valid = valid_endpoint(self.config.base_url)
         if not valid:
             raise ProviderError("INVALID_ENDPOINT", "An explicit HTTPS endpoint without embedded credentials, query or fragment is required.")
         if not self.config.model or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", self.config.api_key_env):

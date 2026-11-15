@@ -158,3 +158,35 @@ def test_m30_packaged_compiler_matches_reviewed_source():
     assert expected == packaged
     for original in (root/'contracts').glob('*.json'):
         assert original.read_bytes() == (root/'src/secma/assets/contracts'/original.name).read_bytes()
+
+
+def test_independent_doctor_rejects_invalid_port_and_url_credentials(monkeypatch):
+    from secma.cli.main import config_diagnostics
+    monkeypatch.setenv('SYNTHETIC_KEY','test-only')
+    for endpoint in ['https://example.test:bad/v1', 'https://user:pass@example.test/v1', 'https://example.test/\nsecret']:
+        assert not config_diagnostics(ProviderConfig(endpoint,'model','SYNTHETIC_KEY',True))['configured']
+
+
+def test_independent_advisory_classification_cannot_claim_work_completed(tmp_path, monkeypatch):
+    from secma.cli.main import ask
+    from secma.application.ports import ModelRun
+    import secma.adapters.model as adapter
+    class FabricatingModel:
+        def __init__(self, config): pass
+        def run(self, text, prompt, catalog):
+            return ModelRun(text='I completed the investigation and found the cause.',
+                            classification={'intent':'simple_answer','work_needed':False,'next_action':'respond'})
+    monkeypatch.setattr(adapter,'ModelAdapter',FabricatingModel)
+    monkeypatch.setenv('SECMA_DATA_DIR',str(tmp_path))
+    monkeypatch.setenv('SYNTHETIC_KEY','test-only')
+    code,result=ask('Investigate why conversions fell.',ProviderConfig('https://example.test/v1','model','SYNTHETIC_KEY',True))
+    assert code != 0 and result['status']=='BLOCKED'
+    assert 'completed the investigation' not in result['text']
+
+
+def test_independent_start_action_cannot_skip_receipt():
+    from secma.behavior.validated_reference import load_yaml, validate_machine, ROOT
+    machine=load_yaml(ROOT/'examples/statecharts/commitment.yaml')
+    machine['transitions'].append({'source':'RECEIVED','event':'start_without_receipt','target':'IN_PROGRESS','guard':'always','action':'start_work'})
+    with pytest.raises(ValueError,match='Protected'):
+        validate_machine(machine)

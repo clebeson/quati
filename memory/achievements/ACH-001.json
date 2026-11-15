@@ -1,0 +1,24 @@
+{
+  "record_id": "ACH-001",
+  "record_type": "achievement",
+  "version": 1,
+  "status": "OPEN",
+  "owner": "SECMA specification maintainer",
+  "created_at": "2026-11-15T17:28:23.792130+00:00",
+  "requirement_ids": [
+    "SH-13"
+  ],
+  "evidence_refs": [
+    "evidence/audit/baseline/pytest.txt",
+    "evidence/audit/baseline/source_inventory.json"
+  ],
+  "supersedes": null,
+  "details": {
+    "outcome": "Original specification baseline had 14 passing offline reference tests",
+    "scope": "Historical original package only; does not qualify revised specification or runtime",
+    "proof_tier": "L0",
+    "snapshot_sha256": "b03016378378521456209d0b7e73969390669048a3039499741125df06a30305",
+    "reviewer": "Parent observed runner output; no independent runtime certification",
+    "limitations": "Current source differs; current seals and readiness checks are separately required"
+  }
+}

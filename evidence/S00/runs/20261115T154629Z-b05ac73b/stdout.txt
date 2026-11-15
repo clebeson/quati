@@ -1,0 +1,1 @@
+{"status": "BLOCKED", "proof_tier": "L3", "reason": "Authorized provider configuration is missing", "missing": ["SECMA_BASE_URL: approved HTTPS endpoint required", "SECMA_MODEL", "SECMA_API_KEY_ENV: configured secret reference required", "SECMA_ALLOW_LIVE=1"], "actual_model_calls": 0, "competence_holdout": "NOT_RUN"}

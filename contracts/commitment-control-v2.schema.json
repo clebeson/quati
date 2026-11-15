@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "initial",
+    "terminal",
+    "states",
+    "transitions",
+    "invariants",
+    "budget"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "secma-control-table/2"
+    },
+    "initial": {
+      "type": "string",
+      "minLength": 1
+    },
+    "terminal": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "states": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "transitions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "event",
+          "target",
+          "guard",
+          "action"
+        ],
+        "properties": {
+          "source": {
+            "enum": [
+              "ACKNOWLEDGED",
+              "BLOCKED",
+              "CANCEL_REQUESTED",
+              "CLASSIFIED",
+              "EFFECT_UNCERTAIN",
+              "EVIDENCE_REVIEW",
+              "IN_PROGRESS",
+              "NEEDS_RECONCILIATION",
+              "READY_TO_DELIVER",
+              "RECEIVED",
+              "SEND_PENDING",
+              "WAITING_INPUT"
+            ]
+          },
+          "event": {
+            "enum": [
+              "accepted",
+              "acknowledged",
+              "blocking_question",
+              "budget_exhausted",
+              "cancel_requested",
+              "candidate",
+              "classified",
+              "confirmed_delivered",
+              "confirmed_no_effect",
+              "deadline",
+              "dispatch",
+              "feedback",
+              "insufficient",
+              "known_effects",
+              "no_effects",
+              "partial",
+              "progress",
+              "response_lost",
+              "resume_delivery",
+              "resume_execution",
+              "resume_reconciliation",
+              "start",
+              "sufficient",
+              "unknown_effects"
+            ]
+          },
+          "target": {
+            "enum": [
+              "ACKNOWLEDGED",
+              "BLOCKED",
+              "CANCELLED",
+              "CANCELLED_WITH_EFFECTS",
+              "CANCEL_REQUESTED",
+              "CLASSIFIED",
+              "DELIVERED",
+              "EFFECT_UNCERTAIN",
+              "EVIDENCE_REVIEW",
+              "IN_PROGRESS",
+              "NEEDS_RECONCILIATION",
+              "READY_TO_DELIVER",
+              "SEND_PENDING",
+              "WAITING_INPUT"
+            ]
+          },
+          "guard": {
+            "enum": [
+              "all_effects_confirmed_absent_and_dispatch_stopped",
+              "all_effects_reconciled_and_dispatch_stopped",
+              "any_effect_unknown",
+              "authenticated_current_delivery_receipt",
+              "authenticated_request",
+              "authorized_and_no_accepted_or_pending_effect",
+              "authorized_and_under_budget",
+              "authorized_current_cancel_request",
+              "authorized_effect_intent_committed",
+              "authorized_feedback_current_revision",
+              "budget_exhausted",
+              "cancellation_not_yet_reconciled",
+              "critical_input_missing",
+              "current_goal_evidenced_partial",
+              "current_goal_independent_accept",
+              "deadline_elapsed",
+              "delivery_block_resolved_current_evidence",
+              "dispatch_may_have_occurred",
+              "execution_block_resolved_authorized_budget",
+              "ledger_acceptance_committed",
+              "provider_proves_no_effect_and_retry_budget",
+              "under_reinvestigation_budget",
+              "under_transition_budget",
+              "unknown_effect_requires_reconciliation"
+            ]
+          },
+          "action": {
+            "enum": [
+              "claim_dispatch",
+              "merge_feedback",
+              "prepare_delivery",
+              "prepare_partial_delivery",
+              "prepare_retry",
+              "record_blocker_with_owner",
+              "record_blocking_question",
+              "record_cancel_request",
+              "record_cancelled",
+              "record_candidate",
+              "record_classification",
+              "record_delivery",
+              "record_effectful_cancellation",
+              "record_escalation_and_next_review",
+              "record_progress",
+              "record_receipt",
+              "request_more_evidence",
+              "resume_delivery",
+              "resume_execution",
+              "schedule_reconciliation",
+              "start_execution"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "invariants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "budget": {
+      "type": "object",
+      "required": [
+        "max_transitions",
+        "max_reinvestigations",
+        "on_exhaustion"
+      ],
+      "properties": {
+        "max_transitions": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "max_reinvestigations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "on_exhaustion": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

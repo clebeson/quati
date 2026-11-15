@@ -1,6 +1,7 @@
 """Provider-neutral S00 boundary; never carries credentials or vendor types."""
 from dataclasses import dataclass, field
 import os
+from urllib.parse import urlsplit
 from typing import Protocol
 
 
@@ -43,3 +44,15 @@ class ModelRun:
 class ModelPort(Protocol):
     def run(self, text: str, prompt: str, catalog) -> ModelRun: ...
     def probe(self) -> dict: ...
+
+
+def valid_endpoint(endpoint: str) -> bool:
+    """Single endpoint shape check shared by diagnostics and transport."""
+    try:
+        parts = urlsplit(endpoint)
+        _ = parts.port
+        return bool(parts.scheme == 'https' and parts.hostname and not parts.username and not parts.password
+                    and not parts.query and not parts.fragment
+                    and not any(c.isspace() or ord(c) < 32 for c in endpoint))
+    except (ValueError, TypeError):
+        return False

@@ -19,3 +19,29 @@ Scope: synchronous fixture-only discovery prototype. No job, worker, durable acc
 Tests begin red against CLI, policy/catalog, compiler and adapter ports. Offline injected-model tests are L1 harness integration, not L3. Live harness launches normal `secma ask` processes with natural-language requests; expected labels stay in evaluator only. It checks ordered search/describe/invoke, exact typed arguments/outcome, confusable target discrimination, greeting without work, policy rejection and prompt identity. Missing configuration returns BLOCKED with nonzero exit. No later slice starts until every S00 gate meets its required tier.
 
 Contract schema changes in this audit occur before a released runtime exists. Historical source evidence is retained; newly generated evidence is append-only and identifies the implementation commit and file hashes.
+
+## Explicit fixture installation and evidence capture
+
+`secma capabilities install manifest.json --fixture-handler incident|causal --enable-fixture`
+installs only a definition against one of two compiled synthetic handlers. Input/output
+schemas must match that measured local handler, effects remain read-only, and no
+manifest dependency or code is loaded. The activation flag is explicit local operator
+approval for this fixture, not approval of external capability effects. Definition
+claims of assurance never establish provider competence. A newly installed definition
+is visible on the next ask without prompt edits.
+
+`secma ask TEXT --synthetic-evidence` explicitly opts into recording the synthetic
+model tool arguments/results for evaluation. Default receipts contain hashes only.
+Do not use the opt-in for private business inputs. The S00 smoke is not the sealed
+30-case competence benchmark; promotion to a calibrated model role remains blocked
+until that separate benchmark is executed and reviewed.
+
+## Independent-review fail-closed refinement
+
+S00 only displays deterministic greetings or application-owned synthetic fixture
+findings. A model classification of `simple_answer` cannot make unverified work
+appear complete. General model-generated informational answers and localized
+professional delivery remain S01/later behavior until their evaluation gates pass.
+The model's final text is hashed and can be inspected in synthetic evaluations; it
+is not authoritative proof of completed work. Diagnostics and transport share the
+same HTTPS endpoint validation, including port and whitespace checks.

@@ -1,0 +1,28 @@
+{
+  "record_id": "DEC-001",
+  "record_type": "decision",
+  "version": 1,
+  "status": "OPEN",
+  "owner": "SECMA specification maintainer",
+  "created_at": "2026-11-15T17:28:23.792130+00:00",
+  "requirement_ids": [
+    "SH-10",
+    "SH-13"
+  ],
+  "evidence_refs": [
+    "AGENTS.md",
+    "IMPLEMENTATION_READY_INDEX.md"
+  ],
+  "supersedes": null,
+  "details": {
+    "adr_rfc_ref": "docs/governance/DELIVERY_GOVERNANCE.md",
+    "question": "Whether to continue runtime implementation during this task",
+    "alternatives": [
+      "Continue implementation",
+      "Audit and finish specifications while retaining candidate source"
+    ],
+    "choice": "SPECIFICATION_ONLY; retain existing code as unapproved candidate",
+    "rationale": "Explicit user correction; ready-to-implement package and smaller-model clarity take priority",
+    "consequences": "No new runtime features or live tests; future implementation needs explicit authorization"
+  }
+}

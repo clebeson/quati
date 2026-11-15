@@ -1,0 +1,384 @@
+{
+  "schema_version": "secma-control-table/2",
+  "initial": "RECEIVED",
+  "terminal": [
+    "DELIVERED",
+    "CANCELLED",
+    "CANCELLED_WITH_EFFECTS"
+  ],
+  "states": [
+    "ACKNOWLEDGED",
+    "BLOCKED",
+    "CANCELLED",
+    "CANCELLED_WITH_EFFECTS",
+    "CANCEL_REQUESTED",
+    "CLASSIFIED",
+    "DELIVERED",
+    "EFFECT_UNCERTAIN",
+    "EVIDENCE_REVIEW",
+    "IN_PROGRESS",
+    "NEEDS_RECONCILIATION",
+    "READY_TO_DELIVER",
+    "RECEIVED",
+    "SEND_PENDING",
+    "WAITING_INPUT"
+  ],
+  "transitions": [
+    {
+      "source": "RECEIVED",
+      "event": "classified",
+      "target": "CLASSIFIED",
+      "guard": "authenticated_request",
+      "action": "record_classification"
+    },
+    {
+      "source": "CLASSIFIED",
+      "event": "accepted",
+      "target": "ACKNOWLEDGED",
+      "guard": "ledger_acceptance_committed",
+      "action": "record_receipt"
+    },
+    {
+      "source": "ACKNOWLEDGED",
+      "event": "start",
+      "target": "IN_PROGRESS",
+      "guard": "authorized_and_under_budget",
+      "action": "start_execution"
+    },
+    {
+      "source": "IN_PROGRESS",
+      "event": "progress",
+      "target": "IN_PROGRESS",
+      "guard": "under_transition_budget",
+      "action": "record_progress"
+    },
+    {
+      "source": "IN_PROGRESS",
+      "event": "blocking_question",
+      "target": "WAITING_INPUT",
+      "guard": "critical_input_missing",
+      "action": "record_blocking_question"
+    },
+    {
+      "source": "WAITING_INPUT",
+      "event": "feedback",
+      "target": "IN_PROGRESS",
+      "guard": "authorized_feedback_current_revision",
+      "action": "merge_feedback"
+    },
+    {
+      "source": "IN_PROGRESS",
+      "event": "candidate",
+      "target": "EVIDENCE_REVIEW",
+      "guard": "under_transition_budget",
+      "action": "record_candidate"
+    },
+    {
+      "source": "EVIDENCE_REVIEW",
+      "event": "insufficient",
+      "target": "IN_PROGRESS",
+      "guard": "under_reinvestigation_budget",
+      "action": "request_more_evidence"
+    },
+    {
+      "source": "EVIDENCE_REVIEW",
+      "event": "sufficient",
+      "target": "READY_TO_DELIVER",
+      "guard": "current_goal_independent_accept",
+      "action": "prepare_delivery"
+    },
+    {
+      "source": "EVIDENCE_REVIEW",
+      "event": "partial",
+      "target": "READY_TO_DELIVER",
+      "guard": "current_goal_evidenced_partial",
+      "action": "prepare_partial_delivery"
+    },
+    {
+      "source": "READY_TO_DELIVER",
+      "event": "dispatch",
+      "target": "SEND_PENDING",
+      "guard": "authorized_effect_intent_committed",
+      "action": "claim_dispatch"
+    },
+    {
+      "source": "SEND_PENDING",
+      "event": "acknowledged",
+      "target": "DELIVERED",
+      "guard": "authenticated_current_delivery_receipt",
+      "action": "record_delivery"
+    },
+    {
+      "source": "SEND_PENDING",
+      "event": "response_lost",
+      "target": "EFFECT_UNCERTAIN",
+      "guard": "dispatch_may_have_occurred",
+      "action": "schedule_reconciliation"
+    },
+    {
+      "source": "SEND_PENDING",
+      "event": "deadline",
+      "target": "EFFECT_UNCERTAIN",
+      "guard": "dispatch_may_have_occurred",
+      "action": "schedule_reconciliation"
+    },
+    {
+      "source": "EFFECT_UNCERTAIN",
+      "event": "confirmed_delivered",
+      "target": "DELIVERED",
+      "guard": "authenticated_current_delivery_receipt",
+      "action": "record_delivery"
+    },
+    {
+      "source": "EFFECT_UNCERTAIN",
+      "event": "confirmed_no_effect",
+      "target": "READY_TO_DELIVER",
+      "guard": "provider_proves_no_effect_and_retry_budget",
+      "action": "prepare_retry"
+    },
+    {
+      "source": "BLOCKED",
+      "event": "resume_execution",
+      "target": "IN_PROGRESS",
+      "guard": "execution_block_resolved_authorized_budget",
+      "action": "resume_execution"
+    },
+    {
+      "source": "BLOCKED",
+      "event": "resume_delivery",
+      "target": "READY_TO_DELIVER",
+      "guard": "delivery_block_resolved_current_evidence",
+      "action": "resume_delivery"
+    },
+    {
+      "source": "BLOCKED",
+      "event": "resume_reconciliation",
+      "target": "EFFECT_UNCERTAIN",
+      "guard": "unknown_effect_requires_reconciliation",
+      "action": "schedule_reconciliation"
+    },
+    {
+      "source": "ACKNOWLEDGED",
+      "event": "cancel_requested",
+      "target": "CANCEL_REQUESTED",
+      "guard": "authorized_current_cancel_request",
+      "action": "record_cancel_request"
+    },
+    {
+      "source": "IN_PROGRESS",
+      "event": "cancel_requested",
+      "target": "CANCEL_REQUESTED",
+      "guard": "authorized_current_cancel_request",
+      "action": "record_cancel_request"
+    },
+    {
+      "source": "WAITING_INPUT",
+      "event": "cancel_requested",
+      "target": "CANCEL_REQUESTED",
+      "guard": "authorized_current_cancel_request",
+      "action": "record_cancel_request"
+    },
+    {
+      "source": "EVIDENCE_REVIEW",
+      "event": "cancel_requested",
+      "target": "CANCEL_REQUESTED",
+      "guard": "authorized_current_cancel_request",
+      "action": "record_cancel_request"
+    },
+    {
+      "source": "READY_TO_DELIVER",
+      "event": "cancel_requested",
+      "target": "CANCEL_REQUESTED",
+      "guard": "authorized_current_cancel_request",
+      "action": "record_cancel_request"
+    },
+    {
+      "source": "SEND_PENDING",
+      "event": "cancel_requested",
+      "target": "CANCEL_REQUESTED",
+      "guard": "authorized_current_cancel_request",
+      "action": "record_cancel_request"
+    },
+    {
+      "source": "EFFECT_UNCERTAIN",
+      "event": "cancel_requested",
+      "target": "CANCEL_REQUESTED",
+      "guard": "authorized_current_cancel_request",
+      "action": "record_cancel_request"
+    },
+    {
+      "source": "BLOCKED",
+      "event": "cancel_requested",
+      "target": "CANCEL_REQUESTED",
+      "guard": "authorized_current_cancel_request",
+      "action": "record_cancel_request"
+    },
+    {
+      "source": "RECEIVED",
+      "event": "cancel_requested",
+      "target": "CANCELLED",
+      "guard": "authorized_and_no_accepted_or_pending_effect",
+      "action": "record_cancelled"
+    },
+    {
+      "source": "CLASSIFIED",
+      "event": "cancel_requested",
+      "target": "CANCELLED",
+      "guard": "authorized_and_no_accepted_or_pending_effect",
+      "action": "record_cancelled"
+    },
+    {
+      "source": "CANCEL_REQUESTED",
+      "event": "no_effects",
+      "target": "CANCELLED",
+      "guard": "all_effects_confirmed_absent_and_dispatch_stopped",
+      "action": "record_cancelled"
+    },
+    {
+      "source": "CANCEL_REQUESTED",
+      "event": "known_effects",
+      "target": "CANCELLED_WITH_EFFECTS",
+      "guard": "all_effects_reconciled_and_dispatch_stopped",
+      "action": "record_effectful_cancellation"
+    },
+    {
+      "source": "CANCEL_REQUESTED",
+      "event": "unknown_effects",
+      "target": "NEEDS_RECONCILIATION",
+      "guard": "any_effect_unknown",
+      "action": "schedule_reconciliation"
+    },
+    {
+      "source": "CANCEL_REQUESTED",
+      "event": "deadline",
+      "target": "NEEDS_RECONCILIATION",
+      "guard": "cancellation_not_yet_reconciled",
+      "action": "schedule_reconciliation"
+    },
+    {
+      "source": "NEEDS_RECONCILIATION",
+      "event": "no_effects",
+      "target": "CANCELLED",
+      "guard": "all_effects_confirmed_absent_and_dispatch_stopped",
+      "action": "record_cancelled"
+    },
+    {
+      "source": "NEEDS_RECONCILIATION",
+      "event": "known_effects",
+      "target": "CANCELLED_WITH_EFFECTS",
+      "guard": "all_effects_reconciled_and_dispatch_stopped",
+      "action": "record_effectful_cancellation"
+    },
+    {
+      "source": "RECEIVED",
+      "event": "deadline",
+      "target": "BLOCKED",
+      "guard": "deadline_elapsed",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "CLASSIFIED",
+      "event": "deadline",
+      "target": "BLOCKED",
+      "guard": "deadline_elapsed",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "ACKNOWLEDGED",
+      "event": "deadline",
+      "target": "BLOCKED",
+      "guard": "deadline_elapsed",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "IN_PROGRESS",
+      "event": "deadline",
+      "target": "BLOCKED",
+      "guard": "deadline_elapsed",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "WAITING_INPUT",
+      "event": "deadline",
+      "target": "BLOCKED",
+      "guard": "deadline_elapsed",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "EVIDENCE_REVIEW",
+      "event": "deadline",
+      "target": "BLOCKED",
+      "guard": "deadline_elapsed",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "READY_TO_DELIVER",
+      "event": "deadline",
+      "target": "BLOCKED",
+      "guard": "deadline_elapsed",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "EFFECT_UNCERTAIN",
+      "event": "deadline",
+      "target": "BLOCKED",
+      "guard": "deadline_elapsed",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "NEEDS_RECONCILIATION",
+      "event": "deadline",
+      "target": "BLOCKED",
+      "guard": "deadline_elapsed",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "ACKNOWLEDGED",
+      "event": "budget_exhausted",
+      "target": "BLOCKED",
+      "guard": "budget_exhausted",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "IN_PROGRESS",
+      "event": "budget_exhausted",
+      "target": "BLOCKED",
+      "guard": "budget_exhausted",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "EVIDENCE_REVIEW",
+      "event": "budget_exhausted",
+      "target": "BLOCKED",
+      "guard": "budget_exhausted",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "READY_TO_DELIVER",
+      "event": "budget_exhausted",
+      "target": "BLOCKED",
+      "guard": "budget_exhausted",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "BLOCKED",
+      "event": "deadline",
+      "target": "BLOCKED",
+      "guard": "deadline_elapsed",
+      "action": "record_escalation_and_next_review"
+    }
+  ],
+  "invariants": [
+    "Expected revision and authenticated context checked on every transition",
+    "Every nonterminal has persisted owner, next action and deadline",
+    "Guards are pure code registry functions; configuration cannot define expressions",
+    "Status actions only record intent; dispatch occurs after committed intent and renewed authority",
+    "Unknown effect history never deleted by blocking or cancellation",
+    "Goal revision change invalidates assessment and prevents stale delivery"
+  ],
+  "budget": {
+    "max_transitions": 120,
+    "max_reinvestigations": 2,
+    "on_exhaustion": "BLOCKED; retain responsible owner and next action"
+  }
+}

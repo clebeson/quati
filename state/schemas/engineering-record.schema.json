@@ -1,0 +1,497 @@
+{
+  "type": "object",
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "record_type": {
+      "enum": [
+        "fixture",
+        "bug",
+        "debt",
+        "achievement",
+        "decision",
+        "lesson"
+      ]
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "OPEN",
+        "IN_PROGRESS",
+        "BLOCKED",
+        "VERIFIED",
+        "RESOLVED",
+        "SUPERSEDED"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "requirement_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "supersedes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "details": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "record_id",
+    "record_type",
+    "version",
+    "status",
+    "owner",
+    "created_at",
+    "requirement_ids",
+    "evidence_refs",
+    "supersedes",
+    "details"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "record_type": {
+            "const": "fixture"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "type": "object",
+            "required": [
+              "source_classification",
+              "license",
+              "purpose",
+              "construction_recipe",
+              "seed",
+              "sha256",
+              "allowed_use",
+              "privacy_class",
+              "oracle_location",
+              "case_ids"
+            ],
+            "properties": {
+              "source_classification": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "license": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "purpose": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "construction_recipe": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "seed": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "sha256": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "allowed_use": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "privacy_class": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "oracle_location": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "case_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_type": {
+            "const": "bug"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "type": "object",
+            "required": [
+              "severity",
+              "trigger",
+              "expected",
+              "observed",
+              "reproduction",
+              "root_cause",
+              "regression_case",
+              "resolution"
+            ],
+            "properties": {
+              "severity": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "trigger": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "expected": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "observed": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "reproduction": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "root_cause": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "regression_case": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "resolution": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_type": {
+            "const": "debt"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "type": "object",
+            "required": [
+              "shortcut",
+              "reason",
+              "risk",
+              "expiry_trigger",
+              "repair_plan",
+              "boundary_tests"
+            ],
+            "properties": {
+              "shortcut": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "risk": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "expiry_trigger": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "repair_plan": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "boundary_tests": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_type": {
+            "const": "achievement"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "type": "object",
+            "required": [
+              "outcome",
+              "scope",
+              "proof_tier",
+              "snapshot_sha256",
+              "reviewer",
+              "limitations"
+            ],
+            "properties": {
+              "outcome": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "scope": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "proof_tier": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "snapshot_sha256": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "reviewer": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "limitations": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_type": {
+            "const": "decision"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "type": "object",
+            "required": [
+              "adr_rfc_ref",
+              "question",
+              "alternatives",
+              "choice",
+              "rationale",
+              "consequences"
+            ],
+            "properties": {
+              "adr_rfc_ref": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "question": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "alternatives": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "choice": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "rationale": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "consequences": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_type": {
+            "const": "lesson"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "type": "object",
+            "required": [
+              "source_records",
+              "observation",
+              "applicable_boundary",
+              "preventive_change",
+              "regression_link"
+            ],
+            "properties": {
+              "source_records": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "observation": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "applicable_boundary": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "preventive_change": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "regression_link": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "secma-context/1",
+  "request_id": "req-example",
+  "trace_id": "trace-example",
+  "actor_id": "",
+  "tenant_id": "tenant-T1",
+  "channel": "cli",
+  "authenticated_origin_ref": "os-process-example",
+  "policy_version": "policy-1",
+  "deadline_at": "not-a-timestamp"
+}

@@ -1,0 +1,14 @@
+{
+  "status": "BLOCKED",
+  "data": null,
+  "evidence_refs": [],
+  "uncertainties": [
+    "Provider not configured"
+  ],
+  "next_action": "Configure approved provider reference",
+  "error": {
+    "code": "NOT_CONFIGURED",
+    "message": "Provider not configured",
+    "retryable": false
+  }
+}

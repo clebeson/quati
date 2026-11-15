@@ -1,0 +1,28 @@
+{
+  "record_id": "BUG-2026-002",
+  "record_type": "bug",
+  "version": 1,
+  "status": "OPEN",
+  "owner": "SECMA specification maintainer",
+  "created_at": "2026-11-15T17:28:23.792130+00:00",
+  "requirement_ids": [
+    "M01-FR-02",
+    "K1",
+    "K6"
+  ],
+  "evidence_refs": [
+    "docs/audit/S00_INDEPENDENT_RUNTIME_REVIEW.md",
+    "evidence/S00/independent_regression_red.txt"
+  ],
+  "supersedes": null,
+  "details": {
+    "severity": "P1",
+    "trigger": "Advisory simple-answer classification returns fabricated completed investigation text",
+    "expected": "No successful work claim without verified outcome evidence",
+    "observed": "Prior candidate returned RESPONDED with no capability calls",
+    "reproduction": "Use FabricatingModel reproduction in independent runtime review",
+    "root_cause": "Application trusted model classification and prose as sufficient response",
+    "regression_case": "tests/unit/test_runtime.py::test_independent_advisory_classification_cannot_claim_work_completed",
+    "resolution": "Candidate narrowed to fixture findings; full S01 informational behavior still requires specified evaluation"
+  }
+}

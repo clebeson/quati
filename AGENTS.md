@@ -2,6 +2,17 @@
 
 These instructions apply to Codex Work and any other implementation agent. Read `README.md` and the **specific** slice handoff before modifying source. Every artifact, prompt, test fixture, report and code comment authored for the project MUST be in English; the SECMA product must answer end users in their selected or detected language.
 
+## Current execution authorization
+
+Current mode is SPECIFICATION_ONLY, as recorded in canonical state. Do not implement
+new runtime features until the user explicitly authorizes implementation. Audit,
+specification corrections, offline specification validators and test definitions
+are permitted. Retained candidate source is not normative or approved.
+
+Before future implementation, read `IMPLEMENTATION_READY_INDEX.md`, project layout,
+`DELIVERY_GOVERNANCE.md`, `PERSISTENT_STATE_AND_MEMORY.md`, the work-package DAG and
+its selected handoff. English is mandatory for every authored internal artifact.
+
 ## Scope discipline and authority
 1. Work on only the earliest slice whose gate is not `PASS`; do not skip a failed gate or implement unrelated downstream modules because their PRDs exist.
 2. Build the simplest cohesive Python implementation with clear internal package boundaries; **do not create one microservice per PRD**.

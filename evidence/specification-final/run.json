@@ -1,0 +1,48 @@
+{
+  "tier": "L0",
+  "timestamp": "2026-11-15T17:44:09.176393+00:00",
+  "runtime_qualified": false,
+  "runs": [
+    {
+      "command": [
+        "../.venv/bin/python",
+        "spec_tools/validate_spec.py"
+      ],
+      "exit_code": 0,
+      "output": "evidence/specification-final/check-1.txt",
+      "sha256": "5f0ac5db201fc1c6298c9eef415bb2885ad052caf31b395692e4ccb4a8f24ea8"
+    },
+    {
+      "command": [
+        "../.venv/bin/python",
+        "spec_tools/validate_readiness.py"
+      ],
+      "exit_code": 0,
+      "output": "evidence/specification-final/check-2.txt",
+      "sha256": "882c0773bdafc5e4f99c5f0e02ae6e9a9df28bf1f6270a8b1d61908dadfaa9df"
+    },
+    {
+      "command": [
+        "../.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_reference_compiler.py",
+        "tests/test_audit_regressions.py",
+        "tests/test_spec_readiness.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "output": "evidence/specification-final/check-3.txt",
+      "sha256": "7919d6e000511bf67df758ba4ae513d27881f269dd5c03c5a552f2468041ee1d"
+    }
+  ],
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "packages": {
+      "pytest": "9.2.0",
+      "PyYAML": "6.0.3",
+      "jsonschema": "4.26.0"
+    }
+  }
+}

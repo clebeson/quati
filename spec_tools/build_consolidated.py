@@ -3,6 +3,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SECTIONS = [
+    ('0. Execution and Governance Index', 'IMPLEMENTATION_READY_INDEX.md'),
+    ('0.1 Project Structure', 'docs/architecture/PROJECT_STRUCTURE.md'),
+    ('0.2 Boundary Contracts', 'docs/architecture/BOUNDARY_CONTRACTS.md'),
+    ('0.3 Delivery Governance', 'docs/governance/DELIVERY_GOVERNANCE.md'),
+    ('0.4 Persistent State and Memory', 'docs/governance/PERSISTENT_STATE_AND_MEMORY.md'),
+    ('0.5 Test Execution Protocol', 'docs/testing/TEST_EXECUTION_PROTOCOL.md'),
     ('1. Product Definition', 'docs/vision/PRODUCT_PRD.md'),
     ('2. Technical Reference', 'docs/trd/TECHNICAL_REFERENCE.md'),
     ('3. Module Inventory', 'docs/vision/MODULE_MAP.md'),

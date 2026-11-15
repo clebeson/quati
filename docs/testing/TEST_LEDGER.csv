@@ -1,18 +1,18 @@
 case_id,family,modules,gate,required_tier,observable_scenario,why_not_redundant,status
 SOC-01,social,M03/M04/M31,S00,L3,Greeting triggers no job,Wrong job and cost on every conversation,NOT_RUN
-SOC-02,simple,M03/M31,S00,L3,Question answer does not load irrelevant tools,Avoid gratuitous latency,NOT_RUN
+SOC-02,simple,M03/M31,S01,L3,Question answer does not load irrelevant tools,Avoid gratuitous latency,NOT_RUN
 INT-01,intent,M04/M05,S01,L3,PRD safe work starts with optional question,Core assistant experience,NOT_RUN
 INT-02,intent,M04/M05,S01,L3,Missing high-risk approval prevents write,Risk changes clarification,NOT_RUN
 INT-03,intent,M03/M07,S02,L2,Follow-up updates root commitment revision,Prevent duplicate job and context loss,NOT_RUN
 CAP-01,discovery,M14/M15,S00,L3,Install unadvertised capability; spontaneous call,Core portability claim,NOT_RUN
 CAP-02,discovery,M15/M31,S00,L3,Confusable capabilities; correct target,Avoid keyword-only routing,NOT_RUN
 CAP-03,discovery,M15/M25,S00,L1+L3,Disabled capability cannot invoke,No policy bypass,NOT_RUN
-CAP-04,discovery,M15/M31,S00,L3,Non-tool question abstains from tools,Avoid overdelegation,NOT_RUN
+CAP-04,discovery,M15/M31,S01,L3,Non-tool question abstains from tools,Avoid overdelegation,NOT_RUN
 CAP-05,discovery,M17/M31,S00,L3,Model without tools rejected/prohibited for dynamic routing,Provider features vary,NOT_RUN
 CMP-01,compiler,M30,S00,L0,Same config produces same prompt digest,Audit and reproducibility,NOT_RUN
 CMP-02,compiler,M30/M25,S00,L0+L1,Unsafe guard/action name rejected,No prompt-generated authority,NOT_RUN
 CMP-03,compiler,M30,S00,L0,Dead-end/unreachable state rejected,Avoid stuck commitments,NOT_RUN
-CMP-04,compiler,M30,S00,L0,Config rollback restores previous digest,Reversible customization,NOT_RUN
+CMP-04,compiler,M30,S03,L0,Config rollback restores previous digest,Reversible customization,NOT_RUN
 MOD-01,small-model,M17/M31,S00,L3,Cheap model role calibrated with real tool calls,Cannot infer competence from context size,NOT_RUN
 MOD-02,small-model,M17/M31,S01,L3,Escalation when answer high-risk/uncertain,Safety and quality,NOT_RUN
 REL-01,relationship,M03/M05,S01,L3,Additional scope during active research,Human continuity,NOT_RUN
@@ -45,3 +45,4 @@ EVO-02,evolution,M27/M25,S06,L1,Agent-proposed permission change rejected,No sel
 OPS-01,portability,M28/M01,S07,L5,Native Windows/macOS/Linux install without Docker,Credible personal product,NOT_RUN
 OPS-02,enterprise,M28/M17,S07,L5,Corporate proxy/CA/egress allowlist,Enterprise adoption,NOT_RUN
 OPS-03,resources,M28/M07,S07,L5,Idle CPU/RAM and 100 pending jobs measured,Resource-lean claims,NOT_RUN
+EVD-01,evidence,M26/M02,S07,L1+L5,"Audit log actor/tenant ACL, bounded retention and denial export privacy",Trace privacy and retention are not established by redaction alone,NOT_RUN

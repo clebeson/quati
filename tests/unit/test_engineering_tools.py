@@ -23,6 +23,7 @@ def cli(script, *args, **kwargs):
 
 def test_checkpoint_state_requires_cas_and_never_skips_incomplete_slice(tmp_path):
     state = json.loads((ROOT / "docs/implementation/implementation_state.json").read_text())
+    state["revision"] = 0
     path = tmp_path / "state.json"
     path.write_text(json.dumps(state))
 
@@ -37,6 +38,7 @@ def test_checkpoint_state_requires_cas_and_never_skips_incomplete_slice(tmp_path
 
 def test_checkpoint_state_writes_atomically_with_revision_and_gates(tmp_path):
     state = json.loads((ROOT / "docs/implementation/implementation_state.json").read_text())
+    state["revision"] = 0
     path = tmp_path / "state.json"
     path.write_text(json.dumps(state))
     result = cli("checkpoint_state.py", "--state", path, "--expected-revision", "0", "--slice", "S00", "--status", "IN_PROGRESS", "--gate", "S00-GATE-01=PASS")

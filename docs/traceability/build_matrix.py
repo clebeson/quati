@@ -73,6 +73,15 @@ for item in json.loads((OUT/'SHARED_OBLIGATIONS.json').read_text()):
  ns=item['modules'];base=next(r for r in rows if r['id']==f'M{ns[0]:02}-FR-01').copy()
  base.update(id=item['id'],kind='DERIVED',source=item['source'],module=';'.join(f'M{n:02}' for n in ns),first_slice=item['first_slice'],full_verification_horizon=item['horizon'],requirement=item['requirement'],planned_case='PLAN-'+item['id'],planned_test='tests/planned/test_shared.py::test_'+item['id'].lower().replace('-','_'),scenario=item['scenario'],required_tiers=item['tiers'],acceptance_refs=item.get('acceptance_refs','Shared acceptance: '+item['scenario']))
  rows.append(base)
+plan_file=ROOT/'docs/testing/REQUIREMENT_TEST_PLANS.json'
+plan_lookup={p['requirement_id']:p for p in json.loads(plan_file.read_text())['plans']} if plan_file.is_file() else {}
+for row in rows:
+ p=plan_lookup.get(row['id'],{})
+ row['test_plan_ref']='docs/testing/REQUIREMENT_TEST_PLANS.json#'+p.get('plan_id','') if p else ''
+ row['test_owner_task']=p.get('test_owner_task','')
+ row['shared_case_refs']=';'.join(p.get('shared_case_refs',[]))
+ row['normative_boundary_ref']='docs/architecture/BOUNDARY_CONTRACTS.md;docs/architecture/TYPE_CATALOG.md'
+ row['coverage_extent']='PLANNED_NOT_EXECUTED'
 with (OUT/'FULL_REQUIREMENTS_MATRIX.csv').open('w',newline='') as f:
  w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
 # Correct original FR acceptance mapping, add omitted red-team rows without inventing PASS.

@@ -1,5 +1,5 @@
 {
-  "compiler_version": "1.1.0",
+  "compiler_version": "1.1.1",
   "policy_ref": "trusted_policy/default",
   "policy_hash": "d4d8687ea30638650ea9e6879e170c891d15ddf785155a59d26b74b86e9c5791",
   "source_versions": {

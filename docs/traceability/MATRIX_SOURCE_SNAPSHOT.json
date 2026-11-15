@@ -9,7 +9,7 @@
   },
   "sources": {
     "docs/governance/FACTORY_OPERATING_RULES.md": "8b8ccfbb00fbfa0dcf19c53c2d460d46fbdbc81d139bdd658ade6c0eccd3926d",
-    "docs/implementation/S00_RUNTIME_CONTRACT.md": "a4c42aceb9aab8b0ed7bf21dc90d1f3baade0b03bb838bbb7c0b9350af5be51c",
+    "docs/implementation/S00_RUNTIME_CONTRACT.md": "7c54a139110b4480642902b8b82cd90ca5783c0e3edca4757c3dfe7c1c81ab62",
     "docs/prds/M01.md": "dd859d79c4196f0f34a9af83f87218e4cd635e91e0e67017a1a7fe483c92ef7f",
     "docs/prds/M02.md": "2e2b8b09773e42ba2b9974b1049dd3308c759a033c58c9275bde421b87ebee3e",
     "docs/prds/M03.md": "353ce93575ca8c8a1160712633178abd86e26f7855f5317617fdbd80b8794557",
@@ -50,8 +50,8 @@
     "docs/rfcs/RFC-010_BEHAVIOR_COMPILER.md": "fe1cbd96d0f6e07ee4930aa46dc5b72f6c8ed4e951a24692d6c41bd9c03b0631",
     "docs/rfcs/RFC-011_STATECHART_MODEL.md": "be0c72123197a62774a01cf5980c3182ea078f351dc6995f9a7adfd1eb734e29",
     "docs/rfcs/RFC-012_SMALL_MODEL_CONTEXT.md": "f9f66ea78411d415310983241811665e7f8d083e42996b593da8272f7db3d13f",
-    "docs/testing/TEST_LEDGER.csv": "be17a0a08b5344a5a4f5a2c93e7185f09efd82e1e3627959efb17f62ece7f7bb",
-    "docs/traceability/SHARED_OBLIGATIONS.json": "a0ae0cdfe5f02764b7d93f934ed91ac9212edfe00ba6b6ecd9ad69af1f7a9df5",
+    "docs/testing/TEST_LEDGER.csv": "ea9a92c8bb288df26581c5219cfe6097ee7db262e57d42ec0bd960fbfacf7310",
+    "docs/traceability/SHARED_OBLIGATIONS.json": "8eb64933135dd08e42c0763f6abb1bd0286ccf68ed291729db0b3c6da137b118",
     "docs/vision/PRODUCT_PRD.md": "c2ead48b7a81a5b59cf2c1708d010b3226e2780a9b299af16728edfcb31695e2"
   }
 }

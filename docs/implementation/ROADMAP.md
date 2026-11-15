@@ -49,3 +49,16 @@ These assignments preserve all original FR/AT/RT obligations. The traceability m
 S00/S01 may exercise safe fixture work but cannot promise durable acceptance. The in-process S01 runner is replaced by the S02 durable runner. No production release is permitted before the product invariants and all applicable release gates have evidence.
 
 The corrected executable S00 boundary is defined by `S00_RUNTIME_CONTRACT.md`; this narrows first-slice implementation without deleting deferred product obligations.
+
+## Detailed execution and governance authority
+
+`WORK_PACKAGES.json` contains 35 bounded tasks; `work_packages/S00.md`–`S07.md`
+provide ordered handoffs. They refine this roadmap without permitting skipped
+slice gates. Read PROJECT_STRUCTURE, BOUNDARY_CONTRACTS, DELIVERY_GOVERNANCE and
+PERSISTENT_STATE_AND_MEMORY before implementing. SPECIFICATION_ONLY mode prohibits
+new runtime implementation until explicitly authorized.
+
+Phase corrections: informational-answer SOC-02/CAP-04 are S01; runtime profile
+rollback CMP-04 is S03; full trace ACL/retention EVD-01 is S07, with local private
+receipt checks starting in S00. S00-GATE-02 includes blind discovery plus MOD-01
+low-risk role calibration. No full-module completion is inferred from a first slice.

@@ -1,0 +1,27 @@
+{
+  "record_id": "BUG-2026-001",
+  "record_type": "bug",
+  "version": 1,
+  "status": "OPEN",
+  "owner": "SECMA specification maintainer",
+  "created_at": "2026-11-15T17:28:23.792130+00:00",
+  "requirement_ids": [
+    "M30-FR-02",
+    "M30-AT-02"
+  ],
+  "evidence_refs": [
+    "docs/audit/S00_INDEPENDENT_RUNTIME_REVIEW.md",
+    "evidence/S00/independent_regression_red.txt"
+  ],
+  "supersedes": null,
+  "details": {
+    "severity": "P1",
+    "trigger": "Candidate control graph includes RECEIVED to IN_PROGRESS with always/start_work",
+    "expected": "Protected acceptance stage cannot be bypassed",
+    "observed": "Independent review reproduced acceptance before correction",
+    "reproduction": "Use the exact Python reproduction in the independent runtime review",
+    "root_cause": "Protected target/action checks did not cover start_work semantics",
+    "regression_case": "tests/unit/test_runtime.py::test_independent_start_action_cannot_skip_receipt",
+    "resolution": "Static validator corrected; candidate source must be requalified against revised specification during future implementation"
+  }
+}

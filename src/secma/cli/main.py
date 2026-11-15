@@ -9,7 +9,7 @@ import sys
 import uuid
 from urllib.parse import urlsplit
 
-from secma.application.ports import ProviderConfig, ProviderError
+from secma.application.ports import ProviderConfig, ProviderError, valid_endpoint
 from secma.application.catalog import CatalogSession, fixture_catalog, canonical_hash
 from secma.domain.policy import Principal, Policy
 from secma.behavior.compiler import compile_profile
@@ -24,9 +24,8 @@ class Parser(argparse.ArgumentParser):
 
 def config_diagnostics(config):
     valid_name = bool(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', config.api_key_env))
-    parts = urlsplit(config.base_url)
-    endpoint_ok = bool(parts.scheme == 'https' and parts.hostname and not parts.username and not parts.password
-                       and not parts.query and not parts.fragment)
+    endpoint_ok = valid_endpoint(config.base_url)
+    parts = urlsplit(config.base_url) if endpoint_ok else None
     missing = []
     if not endpoint_ok: missing.append('SECMA_BASE_URL: approved HTTPS endpoint required')
     if not config.model: missing.append('SECMA_MODEL')
@@ -71,10 +70,8 @@ def ask(text, config, synthetic_evidence=False):
                 if synthetic_evidence:
                     result['synthetic_model_trace'] = run.calls
                 if catalog.results:
-                    result.update(status='FIXTURE_RESULT', text=run.text, results=catalog.results,
+                    result.update(status='FIXTURE_RESULT', text='Synthetic fixture result: ' + ' '.join(item['finding'] for item in catalog.results), results=catalog.results,
                                   uncertainties=['Synthetic fixtures only; no professional investigation or durable commitment.'])
-                elif run.classification.get('next_action') in {'respond','ask'} and not run.classification.get('work_needed'):
-                    result.update(status='RESPONDED', text=run.text)
                 else:
                     result.update(status='BLOCKED', text='No verified fixture result was produced.',
                                   next_action='Review classification and provider/tool evidence; no work was accepted.')

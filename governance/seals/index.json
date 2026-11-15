@@ -1,0 +1,5 @@
+{
+  "schema_version": "secma-seal-index/1",
+  "records": [],
+  "lookup_rule": "Canonical state names exact seal refs. Verify immutable record hash, scope/kind, issuer independence, all artifact digests and supersession. Missing or ambiguous current valid seal blocks gate. Never choose by timestamp alone."
+}

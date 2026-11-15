@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SECMA normative runtime boundary records, not authentication proof",
+  "$defs": {
+    "RequestContext": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "secma-context/1"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trace_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tenant_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "channel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authenticated_origin_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "deadline_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "schema_version",
+        "request_id",
+        "trace_id",
+        "actor_id",
+        "tenant_id",
+        "channel",
+        "authenticated_origin_ref",
+        "policy_version",
+        "deadline_at"
+      ],
+      "additionalProperties": false
+    },
+    "EffectIntent": {
+      "type": "object",
+      "properties": {
+        "effect_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tenant_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capability_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capability_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "destination_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "effect_class": {
+          "enum": [
+            "none",
+            "read",
+            "write",
+            "dangerous"
+          ]
+        },
+        "data_class": {
+          "enum": [
+            "public_synthetic",
+            "public",
+            "internal",
+            "confidential",
+            "restricted"
+          ]
+        }
+      },
+      "required": [
+        "effect_id",
+        "actor_id",
+        "tenant_id",
+        "capability_id",
+        "capability_version",
+        "binding_id",
+        "binding_version",
+        "operation",
+        "destination_ref",
+        "policy_version",
+        "idempotency_key",
+        "input_digest",
+        "effect_class",
+        "data_class"
+      ],
+      "additionalProperties": false
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "enum": [
+            "INVALID_INPUT",
+            "UNAUTHENTICATED",
+            "FORBIDDEN",
+            "APPROVAL_REQUIRED",
+            "REVISION_CONFLICT",
+            "IDEMPOTENCY_CONFLICT",
+            "NOT_FOUND",
+            "NOT_CONFIGURED",
+            "UNSUPPORTED",
+            "TEMPORARILY_UNAVAILABLE",
+            "DEADLINE_EXCEEDED",
+            "BUDGET_EXCEEDED",
+            "OUTPUT_INVALID",
+            "EVIDENCE_INSUFFICIENT",
+            "EFFECT_UNCERTAIN",
+            "INTERNAL_ERROR"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "additionalProperties": false
+    },
+    "Response": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "SUCCEEDED",
+            "PARTIAL",
+            "BLOCKED",
+            "DENIED",
+            "UNAVAILABLE",
+            "CONFLICT"
+          ]
+        },
+        "data": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "next_action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "data",
+        "evidence_refs",
+        "uncertainties",
+        "next_action",
+        "error"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "SUCCEEDED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "error": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "BLOCKED",
+                  "DENIED",
+                  "UNAVAILABLE",
+                  "CONFLICT"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "next_action": {
+                "type": "string",
+                "minLength": 1
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/RequestContext"
+    },
+    {
+      "$ref": "#/$defs/EffectIntent"
+    },
+    {
+      "$ref": "#/$defs/Response"
+    }
+  ]
+}

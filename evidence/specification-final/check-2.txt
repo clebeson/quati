@@ -1,0 +1,1 @@
+{"fixture_recipes": 78, "requirement_plans": 240, "requirements": 240, "runtime_qualified": false, "semantic_coverage_requires_review": true, "shared_cases": 47, "status": "PASS", "tier": "L0", "work_packages": 35}

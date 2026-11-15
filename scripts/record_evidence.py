@@ -38,8 +38,8 @@ def git_metadata():
 
 def default_source_files():
     source_suffixes = {".py", ".toml", ".yaml", ".yml", ".json"}
-    files = []
-    for directory in (ROOT / "src", ROOT / "scripts", ROOT / "tests"):
+    files = [ROOT / "pyproject.toml"]
+    for directory in (ROOT / "src", ROOT / "scripts", ROOT / "tests", ROOT / "spec_tools", ROOT / "contracts"):
         if directory.is_dir():
             files.extend(path for path in directory.rglob("*")
                          if path.is_file() and path.suffix in source_suffixes
@@ -80,7 +80,7 @@ def main(argv=None):
     if not command:
         print("A command is required after --", file=sys.stderr)
         return 2
-    secret_env_name = os.environ.get("SECMA_API_KEY_ENV", "")
+    secret_env_name = os.environ.get("SECMA_API_KEY_ENV", "SECMA_API_KEY")
     secret = os.environ.get(secret_env_name, "") if secret_env_name else ""
     started_at = datetime.now(timezone.utc)
     start = time.monotonic()

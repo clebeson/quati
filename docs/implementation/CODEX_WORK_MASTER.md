@@ -1,3 +1,10 @@
+# Authorization precondition
+
+This is a FUTURE implementation handoff. Current user instruction is specification
+audit only. Do not execute runtime implementation from this file until explicitly
+authorized. Use WORK_PACKAGES.json and SMALL_MODEL_EXECUTION_PROMPT.md for bounded
+steps, seals, evidence and persistent resume. Retained code is an unapproved candidate.
+
 # Codex Work Master Handoff — SECMA v8
 
 Implement SECMA from this English-only authoritative specification. Your job is to produce working, testable Python code, not merely to recreate more PRDs. Start exclusively with `S00`; do not implement downstream slices or a GUI. The canonical order is `README.md` → `AGENTS.md` → `docs/vision/PRODUCT_PRD.md` → `docs/trd/TECHNICAL_REFERENCE.md` → `docs/rfcs/RFC-010_BEHAVIOR_COMPILER.md` → `docs/rfcs/RFC-011_STATECHART_MODEL.md` → `docs/implementation/SLICES/S00.md`.

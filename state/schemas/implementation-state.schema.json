@@ -1,0 +1,1116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Canonical SECMA engineering progress state",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "revision",
+    "project",
+    "source_spec_version",
+    "current_slice",
+    "slices",
+    "owner",
+    "last_updated_at",
+    "known_unverified",
+    "work_mode",
+    "execution_authorized",
+    "active_work",
+    "specification_audit",
+    "seal_registry_ref",
+    "memory_registry_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "secma-implementation-state/3"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "project": {
+      "type": "string"
+    },
+    "source_spec_version": {
+      "type": "string"
+    },
+    "current_slice": {
+      "enum": [
+        "S00",
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07"
+      ]
+    },
+    "slices": {
+      "type": "object",
+      "required": [
+        "S00",
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07"
+      ],
+      "properties": {
+        "S00": {
+          "type": "object",
+          "required": [
+            "status",
+            "gates",
+            "evidence_refs",
+            "blockers",
+            "commit",
+            "gate_seal_refs"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "gates": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "enum": [
+                  "NOT_RUN",
+                  "IN_PROGRESS",
+                  "PASS",
+                  "FAIL",
+                  "BLOCKED"
+                ]
+              }
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "gate_seal_refs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "seal_id",
+                    "path",
+                    "record_sha256",
+                    "kind",
+                    "scope_id"
+                  ],
+                  "properties": {
+                    "seal_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "record_sha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "gates": {
+                    "additionalProperties": {
+                      "const": "PASS"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "S01": {
+          "type": "object",
+          "required": [
+            "status",
+            "gates",
+            "evidence_refs",
+            "blockers",
+            "commit",
+            "gate_seal_refs"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "gates": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "enum": [
+                  "NOT_RUN",
+                  "IN_PROGRESS",
+                  "PASS",
+                  "FAIL",
+                  "BLOCKED"
+                ]
+              }
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "gate_seal_refs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "seal_id",
+                    "path",
+                    "record_sha256",
+                    "kind",
+                    "scope_id"
+                  ],
+                  "properties": {
+                    "seal_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "record_sha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "gates": {
+                    "additionalProperties": {
+                      "const": "PASS"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "S02": {
+          "type": "object",
+          "required": [
+            "status",
+            "gates",
+            "evidence_refs",
+            "blockers",
+            "commit",
+            "gate_seal_refs"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "gates": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "enum": [
+                  "NOT_RUN",
+                  "IN_PROGRESS",
+                  "PASS",
+                  "FAIL",
+                  "BLOCKED"
+                ]
+              }
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "gate_seal_refs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "seal_id",
+                    "path",
+                    "record_sha256",
+                    "kind",
+                    "scope_id"
+                  ],
+                  "properties": {
+                    "seal_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "record_sha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "gates": {
+                    "additionalProperties": {
+                      "const": "PASS"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "S03": {
+          "type": "object",
+          "required": [
+            "status",
+            "gates",
+            "evidence_refs",
+            "blockers",
+            "commit",
+            "gate_seal_refs"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "gates": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "enum": [
+                  "NOT_RUN",
+                  "IN_PROGRESS",
+                  "PASS",
+                  "FAIL",
+                  "BLOCKED"
+                ]
+              }
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "gate_seal_refs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "seal_id",
+                    "path",
+                    "record_sha256",
+                    "kind",
+                    "scope_id"
+                  ],
+                  "properties": {
+                    "seal_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "record_sha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "gates": {
+                    "additionalProperties": {
+                      "const": "PASS"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "S04": {
+          "type": "object",
+          "required": [
+            "status",
+            "gates",
+            "evidence_refs",
+            "blockers",
+            "commit",
+            "gate_seal_refs"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "gates": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "enum": [
+                  "NOT_RUN",
+                  "IN_PROGRESS",
+                  "PASS",
+                  "FAIL",
+                  "BLOCKED"
+                ]
+              }
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "gate_seal_refs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "seal_id",
+                    "path",
+                    "record_sha256",
+                    "kind",
+                    "scope_id"
+                  ],
+                  "properties": {
+                    "seal_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "record_sha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "gates": {
+                    "additionalProperties": {
+                      "const": "PASS"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "S05": {
+          "type": "object",
+          "required": [
+            "status",
+            "gates",
+            "evidence_refs",
+            "blockers",
+            "commit",
+            "gate_seal_refs"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "gates": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "enum": [
+                  "NOT_RUN",
+                  "IN_PROGRESS",
+                  "PASS",
+                  "FAIL",
+                  "BLOCKED"
+                ]
+              }
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "gate_seal_refs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "seal_id",
+                    "path",
+                    "record_sha256",
+                    "kind",
+                    "scope_id"
+                  ],
+                  "properties": {
+                    "seal_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "record_sha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "gates": {
+                    "additionalProperties": {
+                      "const": "PASS"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "S06": {
+          "type": "object",
+          "required": [
+            "status",
+            "gates",
+            "evidence_refs",
+            "blockers",
+            "commit",
+            "gate_seal_refs"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "gates": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "enum": [
+                  "NOT_RUN",
+                  "IN_PROGRESS",
+                  "PASS",
+                  "FAIL",
+                  "BLOCKED"
+                ]
+              }
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "gate_seal_refs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "seal_id",
+                    "path",
+                    "record_sha256",
+                    "kind",
+                    "scope_id"
+                  ],
+                  "properties": {
+                    "seal_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "record_sha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "gates": {
+                    "additionalProperties": {
+                      "const": "PASS"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "S07": {
+          "type": "object",
+          "required": [
+            "status",
+            "gates",
+            "evidence_refs",
+            "blockers",
+            "commit",
+            "gate_seal_refs"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "gates": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "enum": [
+                  "NOT_RUN",
+                  "IN_PROGRESS",
+                  "PASS",
+                  "FAIL",
+                  "BLOCKED"
+                ]
+              }
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "gate_seal_refs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "seal_id",
+                    "path",
+                    "record_sha256",
+                    "kind",
+                    "scope_id"
+                  ],
+                  "properties": {
+                    "seal_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "record_sha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "PASS"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "gates": {
+                    "additionalProperties": {
+                      "const": "PASS"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "owner": {
+      "type": "string"
+    },
+    "last_updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "known_unverified": {
+      "type": "array"
+    },
+    "work_mode": {
+      "enum": [
+        "SPECIFICATION_ONLY",
+        "IMPLEMENTATION_AUTHORIZED"
+      ]
+    },
+    "execution_authorized": {
+      "type": "boolean"
+    },
+    "active_work": {
+      "type": "object",
+      "required": [
+        "work_package_id",
+        "phase",
+        "owner",
+        "lease_token",
+        "lease_expires_at",
+        "input_snapshot_ref",
+        "completed_steps",
+        "next_action",
+        "owned_files",
+        "pending_findings",
+        "evidence_refs",
+        "memory_refs"
+      ],
+      "properties": {
+        "work_package_id": {
+          "type": "string"
+        },
+        "phase": {
+          "enum": [
+            "DISCOVER",
+            "SDD",
+            "TDD_RED",
+            "IMPLEMENT",
+            "EDD",
+            "AUDIT",
+            "CHECKPOINT"
+          ]
+        },
+        "owner": {
+          "type": "string"
+        },
+        "lease_token": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lease_expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "input_snapshot_ref": {
+          "type": "string"
+        },
+        "completed_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "next_action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owned_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pending_findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "memory_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "specification_audit": {
+      "type": "object"
+    },
+    "seal_registry_ref": {
+      "const": "governance/seals/index.json"
+    },
+    "memory_registry_ref": {
+      "const": "memory/index.json"
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "work_mode": {
+            "const": "SPECIFICATION_ONLY"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_authorized": {
+            "const": false
+          },
+          "active_work": {
+            "properties": {
+              "phase": {
+                "enum": [
+                  "DISCOVER",
+                  "SDD",
+                  "AUDIT",
+                  "CHECKPOINT"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

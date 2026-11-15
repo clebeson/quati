@@ -1,0 +1,61 @@
+..............FFF                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_independent_doctor_rejects_invalid_port_and_url_credentials _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f46028ec050>
+
+    def test_independent_doctor_rejects_invalid_port_and_url_credentials(monkeypatch):
+        from secma.cli.main import config_diagnostics
+        monkeypatch.setenv('SYNTHETIC_KEY','test-only')
+        for endpoint in ['https://example.test:bad/v1', 'https://user:pass@example.test/v1', 'https://example.test/\nsecret']:
+>           assert not config_diagnostics(ProviderConfig(endpoint,'model','SYNTHETIC_KEY',True))['configured']
+E           assert not True
+
+tests/unit/test_runtime.py:167: AssertionError
+_____ test_independent_advisory_classification_cannot_claim_work_completed _____
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_independent_advisory_clas0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f4602930080>
+
+    def test_independent_advisory_classification_cannot_claim_work_completed(tmp_path, monkeypatch):
+        from secma.cli.main import ask
+        from secma.application.ports import ModelRun
+        import secma.adapters.model as adapter
+        class FabricatingModel:
+            def __init__(self, config): pass
+            def run(self, text, prompt, catalog):
+                return ModelRun(text='I completed the investigation and found the cause.',
+                                classification={'intent':'simple_answer','work_needed':False,'next_action':'respond'})
+        monkeypatch.setattr(adapter,'ModelAdapter',FabricatingModel)
+        monkeypatch.setenv('SECMA_DATA_DIR',str(tmp_path))
+        monkeypatch.setenv('SYNTHETIC_KEY','test-only')
+        code,result=ask('Investigate why conversions fell.',ProviderConfig('https://example.test/v1','model','SYNTHETIC_KEY',True))
+>       assert code != 0 and result['status']=='BLOCKED'
+E       assert (0 != 0)
+
+tests/unit/test_runtime.py:183: AssertionError
+______________ test_independent_start_action_cannot_skip_receipt _______________
+
+    def test_independent_start_action_cannot_skip_receipt():
+        from secma.behavior.validated_reference import load_yaml, validate_machine, ROOT
+        machine=load_yaml(ROOT/'examples/statecharts/commitment.yaml')
+        machine['transitions'].append({'source':'RECEIVED','event':'start_without_receipt','target':'IN_PROGRESS','guard':'always','action':'start_work'})
+>       with pytest.raises(ValueError,match='Protected'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/test_runtime.py:191: Failed
+=============================== warnings summary ===============================
+../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_runtime.py::test_independent_doctor_rejects_invalid_port_and_url_credentials
+FAILED tests/unit/test_runtime.py::test_independent_advisory_classification_cannot_claim_work_completed
+FAILED tests/unit/test_runtime.py::test_independent_start_action_cannot_skip_receipt
+3 failed, 14 passed, 1 warning in 1.54s

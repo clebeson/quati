@@ -1,6 +1,14 @@
+# Current task mode — specification audit only
+
+The user has explicitly paused new runtime implementation. This package defines the
+project structure, SDD/TDD/EDD workflow, exact test obligations, governance seals,
+engineering memory and resumable state for a later authorized implementation.
+Start with `IMPLEMENTATION_READY_INDEX.md`. Candidate code may be retained but
+must be audited against this specification before reuse; it grants no gate PASS.
+
 # SECMA — Executive Cognitive Secretary and Portable Capabilities, v8 (English-only)
 
-**Status:** AUTHORITATIVE DESIGN PACKAGE — NOT WORKING SOFTWARE. **Target:** Codex Work, CLI-only implementation, local-first with optional corporate deployment. **Supersedes:** all earlier SECMA design, PRD, TRD, SCS and roadmap packages to the extent of conflicts. Earlier packages are research input, not an executable instruction source.
+**Status:** AUDITED IMPLEMENTATION BLUEPRINT; EXECUTION PAUSED BY USER. End-to-end SECMA is not implemented. Existing S00 source is an unapproved partial candidate, retained for review only. **Target:** Codex Work, CLI-only implementation, local-first with optional corporate deployment. **Supersedes:** all earlier SECMA design, PRD, TRD, SCS and roadmap packages to the extent of conflicts. Earlier packages are research input, not an executable instruction source.
 
 ## The product in one paragraph
 SECMA is a professional executive secretary that takes responsibility for work, not merely a chat interface to other agents. It interprets requests, begins safe work, asks worthwhile questions, manages concurrent commitments, communicates at the right moment, restores old context, evaluates outcomes and hands off specialist execution through interchangeable adapters. It must remain useful with smaller, inexpensive models; stronger models are optional for more demanding decisions.

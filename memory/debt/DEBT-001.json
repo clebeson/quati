@@ -1,0 +1,28 @@
+{
+  "record_id": "DEBT-001",
+  "record_type": "debt",
+  "version": 1,
+  "status": "OPEN",
+  "owner": "SECMA specification maintainer",
+  "created_at": "2026-11-15T17:28:23.792130+00:00",
+  "requirement_ids": [
+    "M30-FR-02"
+  ],
+  "evidence_refs": [
+    "docs/architecture/BOUNDARY_CONTRACTS.md"
+  ],
+  "supersedes": null,
+  "details": {
+    "shortcut": "Version1 control chart retained as historical compiler fixture",
+    "reason": "Preserve existing L0 reproducibility while defining normative durable v2 design",
+    "risk": "Accidental activation of incomplete cancellation/recovery behavior",
+    "expiry_trigger": "Before S02 CONTRACT_READY or any effect-bearing durable acceptance",
+    "repair_plan": "Implement and qualify the normative v2 transition table and migration; reject v1 activation",
+    "boundary_tests": [
+      "DUR-01",
+      "DUR-02",
+      "DUR-03",
+      "DUR-04"
+    ]
+  }
+}

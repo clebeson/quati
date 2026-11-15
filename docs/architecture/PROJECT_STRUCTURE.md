@@ -1,0 +1,94 @@
+# SECMA project structure and ownership
+
+Status: normative implementation blueprint. Existing source is an unapproved partial candidate; its presence never overrides the specification. All authored files, tests, prompts, comments and internal records are English. User-facing product language follows requester preference.
+
+## Single repository, modular Python application
+
+```text
+SECMA/
+  AGENTS.md                         # Rules inherited by all agents
+  README.md                         # Current status and entry point
+  pyproject.toml                    # Package/dependency declaration
+  requirements-lock.txt             # Qualified environment pins, platform scope stated
+  contracts/                       # Portable JSON Schema contracts and versions
+  docs/
+    vision/                        # Product intent, invariants and bounded modules
+    prds/                          # M01–M31 requirements with stable FR/AT/RT IDs
+    trd/                           # Technology decisions and constraints
+    architecture/                  # Directory ownership and exact port behavior
+    rfcs/                          # Cross-module protocol contracts
+    adrs/                          # Decisions, alternatives and migration rationale
+    implementation/
+      CODEX_WORK_MASTER.md          # Future authorized execution entry point
+      implementation_state.json     # ONLY authoritative execution progress state
+      ROADMAP.md                    # Dependency order and first/full module scope
+      WORK_PACKAGES.json            # Bounded ordered tasks and completion gates
+      work_packages/               # Agent-readable handoffs, one slice per file
+      SLICES/                      # User outcome and slice-level gates
+    testing/
+      ACCEPTANCE_CASES.json         # Detailed shared test case definitions
+      REQUIREMENT_TEST_PLANS.json   # Explicit obligations not covered by shared cases
+      fixtures/                    # Fixture construction and licensing rules
+      TEST_LEDGER.csv               # Case identity, tier and planned execution phase
+    traceability/                  # Requirement→contract→case→task→evidence mapping
+    governance/                    # Workflow, seal policy, memory and resume protocol
+    audit/                         # Independent reports and correction/disposition records
+    research/                      # Sources, retrieval dates and verification limits
+  src/secma/
+    domain/                        # Pure types, reducers, authorization invariants
+    application/                   # Use cases and provider-neutral ports
+    behavior/                      # Trusted prompt/context/statechart compiler
+    adapters/                      # Model, DBOS, PostgreSQL, filesystem, provider transports
+    cli/                           # Parsing/presentation only; no authority decisions
+    assets/                        # Generated packaged copies of canonical schemas/examples
+  tests/
+    specification/                 # Future consolidated L0 lane; current L0 files also retained
+    unit/                          # L1 guards, reducers, validation and application boundaries
+    integration/                   # L2 real DBOS/PostgreSQL plus explicitly synthetic providers
+    chaos/                         # Process termination, partial commits and reconciliation
+    evals/                         # L3 genuine model behavior; labels not visible to model
+    external/                      # L4 authorized live provider smoke
+    packaging/                     # L5 native OS/corporate/resource checks
+  evals/
+    seed_eri.jsonl                  # Public development cases; never called a holdout
+    HOLDOUT_POLICY.md               # Sealed dataset access and separation rules
+  examples/                        # Valid/invalid contract examples and declarative policies
+  spec_tools/                      # Offline validators, source aggregation; never runtime proof
+  scripts/                         # Engineering state/evidence/checkpoint commands
+  governance/seals/                # Immutable seal records, indexed by scope+digest
+  memory/
+    fixtures/                      # Provenance/version/seed/checksum registry
+    bugs/                          # Reproductions, regression tests and resolution evidence
+    debt/                          # Bounded shortcuts, owner, expiry; no safety waivers
+    achievements/                  # Proven outcomes at their actual evidence tier
+    decisions/                     # Index linking ADR/RFC decisions and supersession
+    lessons/                       # Reusable lessons linked to incidents and evidence
+  state/schemas/                   # Engineering state/memory/seal schemas, not product DB
+  evidence/
+    audit/                         # Original inventory, L0 red/green and independent checks
+    S00/...S07/<run-id>/            # Immutable per-run command output and manifests
+  diagrams/                        # Architecture and generated control diagrams
+  CHECKPOINT.md                    # Human resume pointer, never a second progress authority
+```
+
+Directories are created when their first owned artifact is needed. Empty directories do not prove implementation. Do not create a service, agent or database for every directory. S00–S01 have no production worker. DBOS and PostgreSQL enter only in S02.
+
+## Ownership and import rules
+
+| Area | Single owner | Allowed dependencies | Prohibited dependencies |
+|---|---|---|---|
+| domain | core maintainer | Python standard library, pure domain contracts | SDKs, database drivers, network/filesystem calls, adapters |
+| application | use-case maintainer | domain and application ports | concrete model/DBOS/MCP provider types |
+| behavior | compiler maintainer | canonical schema validation and trusted registries | executable YAML, eval, implicit privilege grants |
+| adapters | one owner per adapter | application ports, SDKs and storage | rewriting domain policy or ledger ownership |
+| cli | interface maintainer | application facade, composition root | direct provider dispatch bypassing use cases |
+| contracts/state/policy/ledger/outbox | one active writer per work item | reviewed versions | concurrent edits by uncoordinated agents |
+| tests/evals/audit | reviewer separate from implementer where required | public entry paths | gold labels in model-visible catalogs/prompts |
+
+Application use cases receive an EvidenceSink port; filesystem receipt writing is an adapter. Schema validation may use jsonschema in a boundary adapter, not provider-specific SDK types in domain. Packaged assets are generated from contracts/examples and verified for byte equivalence; never independently edited. Existing candidate deviations are tracked as defects and repaired only after implementation is authorized.
+
+## Naming and compatibility
+
+Python: snake_case modules/functions, PascalCase types. Requirement IDs remain Mxx-FR/AT/RT-yy. New shared obligations use SH-xx; planned tests have stable case IDs. Work packages are Sxx-Tyy. Events and contracts carry schema_version; IDs are opaque strings, never filesystem paths or authorization tokens. UTC timestamps include an offset; scheduling also preserves the original IANA zone and local intent. No secrets, production data, user transcripts or model chain-of-thought belong in this repository.
+
+A contract change updates schema, valid/invalid examples, compatibility/migration note, affected consumers, tests, traceability and seals together. Historical evidence stays immutable. The consolidated specification is generated convenience text; canonical source files win on accidental drift and validation must reject stale aggregates.

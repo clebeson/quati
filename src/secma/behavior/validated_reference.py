@@ -31,7 +31,7 @@ def digest(value):
     raw=json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=True).encode()
     return hashlib.sha256(raw).hexdigest()
 
-COMPILER_VERSION = '1.1.0'
+COMPILER_VERSION = '1.1.1'
 TRUSTED_POLICY = {
     'id': 'trusted_policy/default', 'version': '1.0.0',
     'invariants': ['authenticated_identity', 'authorization_before_effect',
@@ -101,6 +101,14 @@ def validate_machine(machine):
         key=(t['source'],t['event'])
         if key in seen: raise ValueError('Ambiguous transition for event: '+str(key))
         seen.add(key);edges[t['source']].append(t['target'])
+        action_edges = {
+            'start_work': {('ACKNOWLEDGED', 'IN_PROGRESS', 'safe_to_begin')},
+            'resume_work': {('BLOCKED', 'IN_PROGRESS', 'safe_to_begin')},
+            'deepen_work': {('EVIDENCE_REVIEW', 'IN_PROGRESS', 'under_reinvestigation_budget')},
+            'review_evidence': {('IN_PROGRESS', 'EVIDENCE_REVIEW', 'under_budget')},
+        }
+        if t['action'] in action_edges and (t['source'], t['target'], t['guard']) not in action_edges[t['action']]:
+            raise ValueError('Protected action cannot bypass its required lifecycle stage')
         # Protected stages cannot be bypassed by recombining registered names.
         # This is static semantics, not proof that runtime guards are enforced.
         protected_incoming = {
@@ -108,6 +116,11 @@ def validate_machine(machine):
                            ('INPUT_RECEIVED', 'authorized_request', 'record_classification'),
                            ('WAIT', 'under_budget', 'merge_context')},
             'ACKNOWLEDGED': {('CLASSIFIED', 'authorized_request', 'commit_receipt')},
+            'IN_PROGRESS': {('ACKNOWLEDGED', 'safe_to_begin', 'start_work'),
+                            ('IN_PROGRESS', 'under_budget', 'record_progress'),
+                            ('WAITING_INPUT', 'valid_feedback', 'merge_context'),
+                            ('EVIDENCE_REVIEW', 'under_reinvestigation_budget', 'deepen_work'),
+                            ('BLOCKED', 'safe_to_begin', 'resume_work')},
             'EVIDENCE_REVIEW': {('IN_PROGRESS', 'under_budget', 'review_evidence')},
             'READY_TO_DELIVER': {('EVIDENCE_REVIEW', 'has_evidence', 'prepare_delivery'),
                                  ('EVIDENCE_REVIEW', 'has_evidence', 'prepare_partial_delivery')},
