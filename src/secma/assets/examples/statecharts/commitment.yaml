@@ -1,0 +1,27 @@
+id: commitment-control
+version: 1.0.0
+initial: RECEIVED
+states: [RECEIVED, CLASSIFIED, ACKNOWLEDGED, IN_PROGRESS, WAITING_INPUT, EVIDENCE_REVIEW, READY_TO_DELIVER, BLOCKED, DELIVERED, CANCELLED]
+terminal: [DELIVERED, CANCELLED]
+budget:
+  max_transitions: 120
+  max_reinvestigations: 2
+transitions:
+  - {source: RECEIVED, event: classified, target: CLASSIFIED, guard: authorized_request, action: record_classification}
+  - {source: CLASSIFIED, event: accepted, target: ACKNOWLEDGED, guard: authorized_request, action: commit_receipt}
+  - {source: CLASSIFIED, event: cancelled, target: CANCELLED, guard: always, action: record_cancel}
+  - {source: ACKNOWLEDGED, event: start, target: IN_PROGRESS, guard: safe_to_begin, action: start_work}
+  - {source: ACKNOWLEDGED, event: cancel, target: CANCELLED, guard: always, action: record_cancel}
+  - {source: IN_PROGRESS, event: progress, target: IN_PROGRESS, guard: under_budget, action: record_progress}
+  - {source: IN_PROGRESS, event: requires_input, target: WAITING_INPUT, guard: authorized_request, action: ask_user}
+  - {source: WAITING_INPUT, event: user_replied, target: IN_PROGRESS, guard: valid_feedback, action: merge_context}
+  - {source: WAITING_INPUT, event: cancel, target: CANCELLED, guard: always, action: record_cancel}
+  - {source: IN_PROGRESS, event: candidate_result, target: EVIDENCE_REVIEW, guard: under_budget, action: review_evidence}
+  - {source: EVIDENCE_REVIEW, event: insufficient, target: IN_PROGRESS, guard: under_reinvestigation_budget, action: deepen_work}
+  - {source: EVIDENCE_REVIEW, event: sufficient, target: READY_TO_DELIVER, guard: has_evidence, action: prepare_delivery}
+  - {source: EVIDENCE_REVIEW, event: inconclusive, target: READY_TO_DELIVER, guard: has_evidence, action: prepare_partial_delivery}
+  - {source: IN_PROGRESS, event: dependency_failed, target: BLOCKED, guard: always, action: record_blocker}
+  - {source: BLOCKED, event: recovered, target: IN_PROGRESS, guard: safe_to_begin, action: resume_work}
+  - {source: BLOCKED, event: cancel, target: CANCELLED, guard: always, action: record_cancel}
+  - {source: READY_TO_DELIVER, event: provider_acknowledged, target: DELIVERED, guard: delivery_acknowledged, action: record_delivery}
+  - {source: READY_TO_DELIVER, event: provider_failed, target: BLOCKED, guard: always, action: record_blocker}

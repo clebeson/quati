@@ -1,0 +1,26 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_m17_unconfigured_provider_reports_missing_configuration _________
+
+    def test_m17_unconfigured_provider_reports_missing_configuration():
+        with pytest.raises(ProviderError) as error:
+            ModelAdapter(ProviderConfig()).probe()
+>       assert error.value.code == "NOT_CONFIGURED"
+E       AssertionError: assert 'INVALID_ENDPOINT' == 'NOT_CONFIGURED'
+E         
+E         - NOT_CONFIGURED
+E         + INVALID_ENDPOINT
+
+tests/unit/test_model_adapter.py:188: AssertionError
+=============================== warnings summary ===============================
+../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_model_adapter.py::test_m17_unconfigured_provider_reports_missing_configuration
+1 failed, 1 warning in 0.70s

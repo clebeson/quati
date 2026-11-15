@@ -1,0 +1,23 @@
+...........F                                                             [100%]
+=================================== FAILURES ===================================
+_________ test_m14_new_definition_requires_explicit_fixture_activation _________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-10/test_m14_new_definition_requir0')
+
+    def test_m14_new_definition_requires_explicit_fixture_activation(tmp_path):
+>       from secma.adapters.catalog_store import install_fixture, load_catalog
+E       ModuleNotFoundError: No module named 'secma.adapters.catalog_store'
+
+tests/unit/test_runtime.py:124: ModuleNotFoundError
+=============================== warnings summary ===============================
+../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_runtime.py::test_m14_new_definition_requires_explicit_fixture_activation
+1 failed, 11 passed, 1 warning in 0.51s

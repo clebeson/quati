@@ -1,0 +1,16 @@
+id: interaction-control
+version: 1.0.0
+initial: INPUT_RECEIVED
+states: [INPUT_RECEIVED, CLASSIFIED, RESPOND, REGISTER_WORK, ASK_CLARIFICATION, WAIT, CLOSED]
+terminal: [CLOSED]
+budget: {max_transitions: 20, max_reinvestigations: 1}
+transitions:
+  - {source: INPUT_RECEIVED, event: interpreted, target: CLASSIFIED, guard: authorized_request, action: record_classification}
+  - {source: CLASSIFIED, event: social_or_simple, target: RESPOND, guard: always, action: prepare_delivery}
+  - {source: CLASSIFIED, event: work, target: REGISTER_WORK, guard: safe_to_begin, action: commit_receipt}
+  - {source: CLASSIFIED, event: critical_ambiguity, target: ASK_CLARIFICATION, guard: authorized_request, action: ask_user}
+  - {source: ASK_CLARIFICATION, event: clarified, target: REGISTER_WORK, guard: safe_to_begin, action: commit_receipt}
+  - {source: ASK_CLARIFICATION, event: no_reply, target: WAIT, guard: under_budget, action: record_progress}
+  - {source: WAIT, event: resumed, target: CLASSIFIED, guard: under_budget, action: merge_context}
+  - {source: REGISTER_WORK, event: acknowledged, target: RESPOND, guard: authorized_request, action: prepare_delivery}
+  - {source: RESPOND, event: completed, target: CLOSED, guard: always, action: record_delivery}

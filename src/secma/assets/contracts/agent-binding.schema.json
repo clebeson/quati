@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Execution binding",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "capability_id",
+    "capability_version",
+    "adapter_type",
+    "implementation_ref",
+    "enabled",
+    "requirements",
+    "verification"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "scs-binding/1.0"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adapter_type": {
+      "type": "string",
+      "enum": [
+        "mock",
+        "pydantic",
+        "dbos",
+        "codex",
+        "claude",
+        "hermes",
+        "tamandua",
+        "a2a",
+        "mcp",
+        "http",
+        "cli",
+        "custom"
+      ]
+    },
+    "implementation_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "verification": {
+      "type": "string",
+      "enum": [
+        "UNVERIFIED",
+        "CONTRACT",
+        "LOCAL",
+        "LLM_REAL",
+        "EXTERNAL",
+        "PRODUCTION"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
