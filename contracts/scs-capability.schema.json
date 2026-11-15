@@ -124,6 +124,7 @@
       "type": "string",
       "enum": [
         "draft",
+        "validated",
         "staged",
         "enabled",
         "deprecated",
@@ -134,6 +135,7 @@
       "type": "string",
       "enum": [
         "DRAFT",
+        "C0",
         "C1",
         "C2",
         "C3",

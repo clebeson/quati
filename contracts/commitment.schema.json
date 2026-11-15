@@ -35,16 +35,15 @@
       "type": "string",
       "enum": [
         "RECEIVED",
-        "UNDERSTANDING",
-        "ACCEPTED",
-        "EXECUTING",
+        "CLASSIFIED",
+        "ACKNOWLEDGED",
+        "IN_PROGRESS",
         "WAITING_INPUT",
-        "REVIEWING",
-        "COMPLETED",
-        "PARTIAL",
+        "EVIDENCE_REVIEW",
+        "READY_TO_DELIVER",
         "BLOCKED",
-        "CANCELLED",
-        "FAILED"
+        "DELIVERED",
+        "CANCELLED"
       ]
     },
     "revision": {

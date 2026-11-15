@@ -8,7 +8,7 @@ interaction:
   language_policy: requester
 execution:
   default_depth: deep
-  max_investigation_loops: 3
+  max_investigation_loops: 2
   safe_read_ahead: true
 models:
   router_role: cheap_tool_capable

@@ -55,5 +55,26 @@
       ]
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "ACCEPT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidence_refs": {
+            "minItems": 1
+          },
+          "gaps": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
 }

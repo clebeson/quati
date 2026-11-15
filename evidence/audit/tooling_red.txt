@@ -1,0 +1,64 @@
+.FFF                                                                     [100%]
+=================================== FAILURES ===================================
+_______ test_checkpoint_state_writes_atomically_with_revision_and_gates ________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-4/test_checkpoint_state_writes_a0')
+
+    def test_checkpoint_state_writes_atomically_with_revision_and_gates(tmp_path):
+        state = json.loads((ROOT / "docs/implementation/implementation_state.json").read_text())
+        path = tmp_path / "state.json"
+        path.write_text(json.dumps(state))
+        result = cli("checkpoint_state.py", "--state", path, "--expected-revision", "0", "--slice", "S00", "--status", "IN_PROGRESS", "--gate", "S00-GATE-01=PASS")
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: /workspace/scratch/32f1d0693393/.venv/bin/python: can't open file '/workspace/scratch/32f1d0693393/SECMA_SPEC_V8_EN/scripts/checkpoint_state.py': [Errno 2] No such file or directory
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/workspace/scratch/32f1d0693393/.venv/bin/python', '/workspace/scratch/32f1d0693393/SECMA_SPEC...'/workspace/scratch/32f1d0693393/SECMA_SPEC_V8_EN/scripts/checkpoint_state.py': [Errno 2] No such file or directory\n").returncode
+
+tests/unit/test_engineering_tools.py:43: AssertionError
+___________ test_record_evidence_redacts_secret_and_omits_arguments ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-4/test_record_evidence_redacts_s0')
+
+    def test_record_evidence_redacts_secret_and_omits_arguments(tmp_path):
+        secret = "fixture-secret-do-not-persist"
+        evdir = tmp_path / "evidence"
+        result = cli(
+            "record_evidence.py", "--evidence-dir", evdir, "--source", ROOT / "AGENTS.md", "--",
+            str(PYTHON), "-c", f"import sys; print(sys.argv[1]); print('{secret}', file=sys.stderr)", secret,
+            env={**os.environ, "SECMA_API_KEY_ENV": "SECMA_TEST_SECRET", "SECMA_TEST_SECRET": secret},
+        )
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: /workspace/scratch/32f1d0693393/.venv/bin/python: can't open file '/workspace/scratch/32f1d0693393/SECMA_SPEC_V8_EN/scripts/record_evidence.py': [Errno 2] No such file or directory
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/workspace/scratch/32f1d0693393/.venv/bin/python', '/workspace/scratch/32f1d0693393/SECMA_SPEC... '/workspace/scratch/32f1d0693393/SECMA_SPEC_V8_EN/scripts/record_evidence.py': [Errno 2] No such file or directory\n").returncode
+
+tests/unit/test_engineering_tools.py:58: AssertionError
+_______ test_record_evidence_preserves_failure_exit_and_never_overwrites _______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-4/test_record_evidence_preserves0')
+
+    def test_record_evidence_preserves_failure_exit_and_never_overwrites(tmp_path):
+        evdir = tmp_path / "evidence"
+        for _ in range(2):
+            result = cli("record_evidence.py", "--evidence-dir", evdir, "--", str(PYTHON), "-c", "raise SystemExit(7)")
+>           assert result.returncode == 7
+E           assert 2 == 7
+E            +  where 2 = CompletedProcess(args=['/workspace/scratch/32f1d0693393/.venv/bin/python', '/workspace/scratch/32f1d0693393/SECMA_SPEC... '/workspace/scratch/32f1d0693393/SECMA_SPEC_V8_EN/scripts/record_evidence.py': [Errno 2] No such file or directory\n").returncode
+
+tests/unit/test_engineering_tools.py:75: AssertionError
+=============================== warnings summary ===============================
+../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_engineering_tools.py::test_checkpoint_state_writes_atomically_with_revision_and_gates
+FAILED tests/unit/test_engineering_tools.py::test_record_evidence_redacts_secret_and_omits_arguments
+FAILED tests/unit/test_engineering_tools.py::test_record_evidence_preserves_failure_exit_and_never_overwrites
+3 failed, 1 passed, 1 warning in 0.07s

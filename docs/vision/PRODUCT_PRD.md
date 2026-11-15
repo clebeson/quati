@@ -62,3 +62,7 @@ SECMA is not a humanoid simulation, universal AGI, alternate operating system, a
 
 ## Traceability
 All detailed product requirements are in `docs/prds/M01.md`–`M31.md` with stable FR/AT/RT identifiers and coverage in `docs/traceability/REQUIREMENTS.csv`. The implementation roadmap is normative and limits expansion despite the complete long-term vision.
+
+## Prototype boundary before S02
+
+S00 and S01 are restricted development prototypes, not releases satisfying the durable-commitment success definition. Their transient request/work identifiers MUST NOT be represented as persistent commitments; responses explicitly disclose in-process lifetime whenever work spans turns. They cannot promise continuation after exit/restart or accept unattended durable obligations. K2 remains an unchanged release blocker and becomes executable at S02. S00 fixture capabilities demonstrate discovery, not professional investigation outcomes.

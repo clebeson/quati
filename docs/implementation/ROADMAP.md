@@ -31,3 +31,21 @@ Only distinct fixture sets, documentation, independent provider adapters and OS 
 
 ## Definition of milestone complete
 The declared public-path acceptance tests pass at required L0/L1/L2/L3/L4 level; actual evidence exists; resource/cost bounded; no P0 blocker remains; all incomplete integrations are stated; state revision atomically advanced. Do not pre-generate “all steps done” status.
+
+## Partial module obligations and dependency closure
+
+| Boundary | First slice obligation | Deferred completion and evidence |
+|---|---|---|
+| M01 CLI | S00 ask/doctor with configuration diagnostics and safe synchronous fixture responses | S02 tell/status/messages and real durable IDs; S07 native OS lifecycle |
+| M02 identity | S00 trusted local principal and deny-by-default runtime scope | S03 memory isolation; S04 authenticated callbacks/transcripts; S07 enterprise identity |
+| M14/M15 registry | S00 separate definition/binding/assurance, controlled fixture activation, search/describe/invoke validation | S04 external executor feature interoperability; no early provider certification |
+| M17/M31 model/context | S00 one approved real tool provider, typed decisions, bounded repair/context and measured discovery | Broader competence remains unverified until role-specific benchmark; additional providers only as needed |
+| M25/M26 policy/evidence | S00 preventive denial of writes and redacted trace integrity | S02 effect/outbox reconciliation; S04 dispatch credentials; S07 enterprise controls |
+| M30 behavior | S00 deterministic compile/validate/render and protected runtime enforcement | S03 human profile versions/rollback; S06 agent proposals and governed promotion |
+| M03/M04/M05/M08 ERI | S01 transient work and reference fixtures with explicit lifetime limits | S02 persistent commitments; S03 historical retrieval and full routing profiles |
+
+These assignments preserve all original FR/AT/RT obligations. The traceability matrix records partial verification separately from whole-requirement PASS. Commands whose supporting slice has not passed return an explicit unavailable response and must never simulate success.
+
+S00/S01 may exercise safe fixture work but cannot promise durable acceptance. The in-process S01 runner is replaced by the S02 durable runner. No production release is permitted before the product invariants and all applicable release gates have evidence.
+
+The corrected executable S00 boundary is defined by `S00_RUNTIME_CONTRACT.md`; this narrows first-slice implementation without deleting deferred product obligations.

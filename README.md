@@ -30,7 +30,7 @@ SECMA is a professional executive secretary that takes responsibility for work, 
 - 31 individual PRDs and 31 module red-team sheets
 - Product PRD, technical reference, model/provider matrix, diagrams and versioned decisions
 - 12 RFCs including capability interoperability, prompt compiler, statechart compiler and model competence calibration
-- 12 ADRs and a deployment/packaging RFC
+- 12 ADRs; deployment/packaging requirements in the technical reference, M28 and S07
 - JSON schemas, declarative YAML examples, test fixtures and an *offline specification validator/reference statechart renderer*
 - Risk-based coverage report and requirement-to-proof registry
 - Codex Work instructions, short vertical slices, resumption state, defect and technical-debt rules

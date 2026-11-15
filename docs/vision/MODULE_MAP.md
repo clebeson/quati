@@ -11,7 +11,7 @@ The architecture contains **31 responsibility modules** but deliberately starts 
 | M05 | [Initiative and clarification economy](../prds/M05.md) | S01 | M04 M25 M30 |
 | M06 | [Expectation and communication management](../prds/M06.md) | S02 | M07 M10 M13 M30 |
 | M07 | [Commitment ledger and durable execution](../prds/M07.md) | S02 | M02 M25 M26 |
-| M08 | [Triage, prioritization and task planning](../prds/M08.md) | S03 | M04 M05 M14 M15 M30 M31 |
+| M08 | [Triage, prioritization and task planning](../prds/M08.md) | S01 (foundation), S03 (completion) | M04 M05 M14 M15 M30 M31 |
 | M09 | [Sufficiency, evidence and stopping judgment](../prds/M09.md) | S02 | M07 M10 M26 |
 | M10 | [Audience-aware delivery and artifact packaging](../prds/M10.md) | S02 | M06 M07 M12 |
 | M11 | [Episodic and semantic memory](../prds/M11.md) | S03 | M02 M07 M25 M26 |

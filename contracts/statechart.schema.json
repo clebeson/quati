@@ -22,14 +22,16 @@
       "pattern": "^\\d+\\.\\d+\\.\\d+$"
     },
     "initial": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$"
     },
     "states": {
       "type": "array",
       "minItems": 2,
       "uniqueItems": true,
       "items": {
-        "type": "string"
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]*$"
       }
     },
     "terminal": {
@@ -37,7 +39,8 @@
       "minItems": 1,
       "uniqueItems": true,
       "items": {
-        "type": "string"
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]*$"
       }
     },
     "budget": {
@@ -74,19 +77,24 @@
         ],
         "properties": {
           "source": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$"
           },
           "event": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
           },
           "target": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$"
           },
           "guard": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
           },
           "action": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
           }
         },
         "additionalProperties": false

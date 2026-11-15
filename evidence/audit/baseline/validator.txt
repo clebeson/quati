@@ -1,0 +1,1 @@
+L0 SPEC VALIDATION: PASS (schemas, machines, example, 31 PRDs and 31 red teams). NO APP RUNTIME PROOF.

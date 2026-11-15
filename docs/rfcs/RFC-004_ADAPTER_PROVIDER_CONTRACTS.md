@@ -6,3 +6,7 @@
 Providers MUST describe actual support as capability flags and report `UNSUPPORTED`, `NOT_CONFIGURED`, `UNAUTHORIZED`, `TEMPORARILY_UNAVAILABLE` or `NOT_VERIFIED_EXTERNAL`, not fake success. A new specialized Excel chart agent binds a manifest to a harness executor, declares input/output and tests editability; disabling it must not break greetings or the secretary's committed-task ledger.
 
 Transport options include MCP (tools), A2A (agent tasks), local CLI subprocess with timeouts, SDK APIs, filesystem/Git repositories and corporate proxies. Vendor credentials are not interchangeable. OpenAI-compatible gateways vary by tool and JSON support; probe the exact configured model. Do not assume a UI-centric Work product exposes a supported local agent API. If available, Codex SDK/app-server and managed Agents API are separate integrations.
+
+## Observed versus attested metadata
+
+Feature reports distinguish observed protocol behavior, configuration, provider/operator attestation, and UNKNOWN. Network success does not prove data residency, retention, licensing or pricing. Preserve source/version/as-of information for attested metadata and refuse unsupported claims.

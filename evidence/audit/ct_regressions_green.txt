@@ -1,0 +1,24 @@
+...........................F.                                            [100%]
+=================================== FAILURES ===================================
+_____________________ test_ct08_invalid_timestamp_rejected _____________________
+
+    def test_ct08_invalid_timestamp_rejected():
+        document = {key: 'x' for key in ['provider_id', 'document_id', 'version', 'tenant_id', 'title', 'content_ref', 'source_uri', 'acl_ref']}
+        document.update(visibility='private', retrieved_at='not-a-time')
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_regressions.py:93: Failed
+=============================== warnings summary ===============================
+../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_audit_regressions.py::test_ct08_invalid_timestamp_rejected
+1 failed, 28 passed, 1 warning in 0.34s

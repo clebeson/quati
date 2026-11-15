@@ -15,16 +15,20 @@
   ],
   "properties": {
     "model_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "provider_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "prompt_hash": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     },
     "test_suite_hash": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     },
     "samples": {
       "type": "integer",
@@ -82,5 +86,37 @@
         "DISABLED"
       ]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "EVALUATED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "samples": {
+            "minimum": 1
+          },
+          "measured": {
+            "required": [
+              "routing_accuracy",
+              "safe_abstention_accuracy",
+              "median_latency_ms"
+            ]
+          },
+          "features": {
+            "required": [
+              "tool_calling",
+              "structured_output",
+              "streaming"
+            ]
+          }
+        }
+      }
+    }
+  ]
 }

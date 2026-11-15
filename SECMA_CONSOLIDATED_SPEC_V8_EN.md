@@ -2,13 +2,13 @@
 
 ---
 
-> **Design only:** not an implemented SECMA application. Canonical detail remains in source files and their IDs.
+> Generated reading bundle. Canonical detail remains in source files and their IDs. Design requirements do not constitute runtime evidence. Rebuild with `python spec_tools/build_consolidated.py`.
 
 ---
 
 ## 1. Product Definition
 
----
+Source: `docs/vision/PRODUCT_PRD.md`
 
 # PRD-000 — SECMA: Executive Cognitive Secretary
 
@@ -75,12 +75,15 @@ SECMA is not a humanoid simulation, universal AGI, alternate operating system, a
 ## Traceability
 All detailed product requirements are in `docs/prds/M01.md`–`M31.md` with stable FR/AT/RT identifiers and coverage in `docs/traceability/REQUIREMENTS.csv`. The implementation roadmap is normative and limits expansion despite the complete long-term vision.
 
+## Prototype boundary before S02
+
+S00 and S01 are restricted development prototypes, not releases satisfying the durable-commitment success definition. Their transient request/work identifiers MUST NOT be represented as persistent commitments; responses explicitly disclose in-process lifetime whenever work spans turns. They cannot promise continuation after exit/restart or accept unattended durable obligations. K2 remains an unchanged release blocker and becomes executable at S02. S00 fixture capabilities demonstrate discovery, not professional investigation outcomes.
 
 ---
 
 ## 2. Technical Reference
 
----
+Source: `docs/trd/TECHNICAL_REFERENCE.md`
 
 # TRD-000 — Technical Reference Architecture (v8)
 
@@ -177,12 +180,11 @@ The spec agent owns FR→contract→test generation; the implementation agent ow
 - Cross-engine workflow migration requires drain/checkpoint strategy and is not simple history import.
 - External connectors require owner authorization before full live smoke.
 
-
 ---
 
 ## 3. Module Inventory
 
----
+Source: `docs/vision/MODULE_MAP.md`
 
 # SECMA v8 — Module Inventory
 
@@ -197,7 +199,7 @@ The architecture contains **31 responsibility modules** but deliberately starts 
 | M05 | [Initiative and clarification economy](docs/prds/M05.md) | S01 | M04 M25 M30 |
 | M06 | [Expectation and communication management](docs/prds/M06.md) | S02 | M07 M10 M13 M30 |
 | M07 | [Commitment ledger and durable execution](docs/prds/M07.md) | S02 | M02 M25 M26 |
-| M08 | [Triage, prioritization and task planning](docs/prds/M08.md) | S03 | M04 M05 M14 M15 M30 M31 |
+| M08 | [Triage, prioritization and task planning](docs/prds/M08.md) | S01 (foundation), S03 (completion) | M04 M05 M14 M15 M30 M31 |
 | M09 | [Sufficiency, evidence and stopping judgment](docs/prds/M09.md) | S02 | M07 M10 M26 |
 | M10 | [Audience-aware delivery and artifact packaging](docs/prds/M10.md) | S02 | M06 M07 M12 |
 | M11 | [Episodic and semantic memory](docs/prds/M11.md) | S03 | M02 M07 M25 M26 |
@@ -224,12 +226,11 @@ The architecture contains **31 responsibility modules** but deliberately starts 
 
 Modules M30 and M31 are **new canonical additions**: configuration-to-behavior compilation and competence-aware context engineering. The previous 29-module inventory is retained as M01–M29, with each PRD rewritten in English and updated to fit the new controller design.
 
-
 ---
 
 ## 4. Implementation Roadmap
 
----
+Source: `docs/implementation/ROADMAP.md`
 
 # SECMA Implementation Roadmap v8
 
@@ -265,12 +266,29 @@ Only distinct fixture sets, documentation, independent provider adapters and OS 
 ## Definition of milestone complete
 The declared public-path acceptance tests pass at required L0/L1/L2/L3/L4 level; actual evidence exists; resource/cost bounded; no P0 blocker remains; all incomplete integrations are stated; state revision atomically advanced. Do not pre-generate “all steps done” status.
 
+## Partial module obligations and dependency closure
+
+| Boundary | First slice obligation | Deferred completion and evidence |
+|---|---|---|
+| M01 CLI | S00 ask/doctor with configuration diagnostics and safe synchronous fixture responses | S02 tell/status/messages and real durable IDs; S07 native OS lifecycle |
+| M02 identity | S00 trusted local principal and deny-by-default runtime scope | S03 memory isolation; S04 authenticated callbacks/transcripts; S07 enterprise identity |
+| M14/M15 registry | S00 separate definition/binding/assurance, controlled fixture activation, search/describe/invoke validation | S04 external executor feature interoperability; no early provider certification |
+| M17/M31 model/context | S00 one approved real tool provider, typed decisions, bounded repair/context and measured discovery | Broader competence remains unverified until role-specific benchmark; additional providers only as needed |
+| M25/M26 policy/evidence | S00 preventive denial of writes and redacted trace integrity | S02 effect/outbox reconciliation; S04 dispatch credentials; S07 enterprise controls |
+| M30 behavior | S00 deterministic compile/validate/render and protected runtime enforcement | S03 human profile versions/rollback; S06 agent proposals and governed promotion |
+| M03/M04/M05/M08 ERI | S01 transient work and reference fixtures with explicit lifetime limits | S02 persistent commitments; S03 historical retrieval and full routing profiles |
+
+These assignments preserve all original FR/AT/RT obligations. The traceability matrix records partial verification separately from whole-requirement PASS. Commands whose supporting slice has not passed return an explicit unavailable response and must never simulate success.
+
+S00/S01 may exercise safe fixture work but cannot promise durable acceptance. The in-process S01 runner is replaced by the S02 durable runner. No production release is permitted before the product invariants and all applicable release gates have evidence.
+
+The corrected executable S00 boundary is defined by `S00_RUNTIME_CONTRACT.md`; this narrows first-slice implementation without deleting deferred product obligations.
 
 ---
 
 ## 5. Test Coverage Rationale
 
----
+Source: `docs/testing/RISK_COVERAGE_REPORT.md`
 
 # Test Coverage Justification and Gap Report (Design v8)
 
@@ -312,12 +330,11 @@ S00: actual supported-model tool choice and safe abstention; S01: human dialogue
 ## Coverage audit procedure
 Auditor reads each module's PRD AT/RT without looking at its implementation, checks one public-entry proof and one nonredundant negative, then identifies missing safety branches. Audit status is `NO-GO` if a required L2/L3/L4 proof was substituted by L0/L1 or if a P0 invariant is knowingly violated. Record gaps in `OPEN_RISKS.md`, not a fabricated “pass rate.”
 
-
 ---
 
 ## 6. Prompt and Statechart Compiler
 
----
+Source: `docs/rfcs/RFC-010_BEHAVIOR_COMPILER.md`
 
 # RFC-010 — Behavior Package Compiler: Who Generates Prompts and Behavioral Programs?
 
@@ -342,12 +359,11 @@ Produce explicit responsibilities, decision enum, examples including when **not*
 ## Rejection rules
 A prompt builder MUST reject a profile that requests nonexistent capabilities, unknown guard names, privilege elevation, conflicting output-language priorities, invalid state references, absence of audit, unbounded retries or secret interpolation. User-facing responses may be localized after the English internal decision; documentation/internal manifests remain English.
 
-
 ---
 
 ## 7. Statechart Invariants
 
----
+Source: `docs/rfcs/RFC-011_STATECHART_MODEL.md`
 
 # RFC-011 — Statechart Contract Compiler and Controlled Agency
 
@@ -367,12 +383,11 @@ Represent control states and transitions in declarative YAML conforming to a JSO
 ## Complexity thresholds
 Use an enum/reducer for five to ten predictable states; add declarative `transitions` only when more than one stateful workflow actually benefits. Do not generate arbitrary Python workflow code from a natural-language prompt and trust it. Agent-produced machine drafts must be reviewed for changed authority and tested before promotion.
 
-
 ---
 
 ## 8. Small Model Context Engineering
 
----
+Source: `docs/rfcs/RFC-012_SMALL_MODEL_CONTEXT.md`
 
 # RFC-012 — Context Engineering, Weak-Model Routing and Decision Quality
 
@@ -390,12 +405,11 @@ A provider descriptor contains observed tool-calling reliability, JSON validity,
 ## Evaluation
 Blind holdouts include paraphrases, novel installed capabilities, near-match distractors, disabled providers, greetings, long-context interruption, contradictions and adversarial tool descriptions. Record actual tool calls and rejected attempts. No role is called “supported” until behavior has been measured under that exact provider configuration; test with multiple seeds/trials as variance requires, rather than arbitrary 100% model success claims.
 
-
 ---
 
 ## 9. Technology Evidence
 
----
+Source: `docs/research/SOURCE_EVIDENCE.md`
 
 # Source and Technology Evidence Register
 
@@ -417,12 +431,11 @@ Research checked for the SECMA v8 architecture; public product claims must be re
 ## Assumptions deliberately NOT asserted
 No empirical local RAM/CPU benchmark; no claim that a personal subscription provides an API key; no guaranteed model tool use from an OpenAI-compatible label; no claim that DBOS open-source suspends arbitrarily many parked jobs without resources; no guaranteed migration of DBOS workflow histories to Temporal; no live corporate model availability or Slack account; no implementation of the SECMA runtime from this documentation package.
 
-
 ---
 
 ## Module M01
 
----
+Source: `docs/prds/M01.md`
 
 # M01 — CLI, packaging and local lifecycle
 
@@ -490,12 +503,15 @@ An implementer can demonstrate both M01-AT cases from the public entry path, sho
 
 Target phase: S00. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M02
 
----
+Source: `docs/prds/M02.md`
 
 # M02 — Identity, requester and authorization context
 
@@ -563,12 +579,15 @@ An implementer can demonstrate both M02-AT cases from the public entry path, sho
 
 Target phase: S00. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M03
 
----
+Source: `docs/prds/M03.md`
 
 # M03 — Executive Relationship Intelligence (ERI)
 
@@ -636,12 +655,15 @@ An implementer can demonstrate both M03-AT cases from the public entry path, sho
 
 Target phase: S01. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M04
 
----
+Source: `docs/prds/M04.md`
 
 # M04 — Intent, reference and ambiguity resolution
 
@@ -709,12 +731,15 @@ An implementer can demonstrate both M04-AT cases from the public entry path, sho
 
 Target phase: S01. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M05
 
----
+Source: `docs/prds/M05.md`
 
 # M05 — Initiative and clarification economy
 
@@ -782,12 +807,15 @@ An implementer can demonstrate both M05-AT cases from the public entry path, sho
 
 Target phase: S01. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M06
 
----
+Source: `docs/prds/M06.md`
 
 # M06 — Expectation and communication management
 
@@ -855,12 +883,15 @@ An implementer can demonstrate both M06-AT cases from the public entry path, sho
 
 Target phase: S02. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M07
 
----
+Source: `docs/prds/M07.md`
 
 # M07 — Commitment ledger and durable execution
 
@@ -928,16 +959,19 @@ An implementer can demonstrate both M07-AT cases from the public entry path, sho
 
 Target phase: S02. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M08
 
----
+Source: `docs/prds/M08.md`
 
 # M08 — Triage, prioritization and task planning
 
-**Specification status:** PROPOSED, NOT IMPLEMENTED. **Delivery slice:** S03. **Normative language:** MUST/SHOULD/MAY.
+**Specification status:** PROPOSED, NOT IMPLEMENTED. **Delivery slice:** S01 foundations; S03 completion. **Normative language:** MUST/SHOULD/MAY.
 
 ## 1. Purpose and outcome
 
@@ -1001,12 +1035,15 @@ An implementer can demonstrate both M08-AT cases from the public entry path, sho
 
 Target phase: S03. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M09
 
----
+Source: `docs/prds/M09.md`
 
 # M09 — Sufficiency, evidence and stopping judgment
 
@@ -1074,12 +1111,15 @@ An implementer can demonstrate both M09-AT cases from the public entry path, sho
 
 Target phase: S02. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M10
 
----
+Source: `docs/prds/M10.md`
 
 # M10 — Audience-aware delivery and artifact packaging
 
@@ -1147,12 +1187,15 @@ An implementer can demonstrate both M10-AT cases from the public entry path, sho
 
 Target phase: S02. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M11
 
----
+Source: `docs/prds/M11.md`
 
 # M11 — Episodic and semantic memory
 
@@ -1220,12 +1263,15 @@ An implementer can demonstrate both M11-AT cases from the public entry path, sho
 
 Target phase: S03. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M12
 
----
+Source: `docs/prds/M12.md`
 
 # M12 — Versioned artifacts and reproducible edits
 
@@ -1293,12 +1339,15 @@ An implementer can demonstrate both M12-AT cases from the public entry path, sho
 
 Target phase: S03. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M13
 
----
+Source: `docs/prds/M13.md`
 
 # M13 — Personalization and relationship preferences
 
@@ -1366,12 +1415,15 @@ An implementer can demonstrate both M13-AT cases from the public entry path, sho
 
 Target phase: S03. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M14
 
----
+Source: `docs/prds/M14.md`
 
 # M14 — SCS capability manifest and registry
 
@@ -1439,12 +1491,15 @@ An implementer can demonstrate both M14-AT cases from the public entry path, sho
 
 Target phase: S00. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M15
 
----
+Source: `docs/prds/M15.md`
 
 # M15 — Capability discovery, resolver and execution controller
 
@@ -1512,12 +1567,15 @@ An implementer can demonstrate both M15-AT cases from the public entry path, sho
 
 Target phase: S00. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M16
 
----
+Source: `docs/prds/M16.md`
 
 # M16 — Agent Skills discovery and packaging
 
@@ -1585,12 +1643,15 @@ An implementer can demonstrate both M16-AT cases from the public entry path, sho
 
 Target phase: S03. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M17
 
----
+Source: `docs/prds/M17.md`
 
 # M17 — LLM providers, routing and competence profiles
 
@@ -1608,7 +1669,7 @@ This module owns its observable outcome; it must not independently reinterpret i
 
 - **M17-FR-01 (MUST):** Support OpenRouter/OpenAI-compatible plus explicit native API adapters for nonportable features.
 
-- **M17-FR-02 (MUST):** Probe tool calls, JSON output, timeouts, concurrency, streaming, region, budgets and pricing instead of guessing.
+- **M17-FR-02 (MUST):** Probe tool calls, JSON output, timeouts, concurrency and streaming; enforce configured budgets. Record region and pricing as separately sourced operator/provider attestations or UNKNOWN, never infer them from protocol success.
 
 - **M17-FR-03 (MUST):** Route to small model for safe simple work, escalate to stronger approved provider on failure or ambiguity.
 
@@ -1658,12 +1719,15 @@ An implementer can demonstrate both M17-AT cases from the public entry path, sho
 
 Target phase: S00. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M18
 
----
+Source: `docs/prds/M18.md`
 
 # M18 — Agent and harness adapters
 
@@ -1731,12 +1795,15 @@ An implementer can demonstrate both M18-AT cases from the public entry path, sho
 
 Target phase: S04. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M19
 
----
+Source: `docs/prds/M19.md`
 
 # M19 — MCP and action gateway
 
@@ -1804,12 +1871,15 @@ An implementer can demonstrate both M19-AT cases from the public entry path, sho
 
 Target phase: S04. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M20
 
----
+Source: `docs/prds/M20.md`
 
 # M20 — Second-brain provider adapters
 
@@ -1877,12 +1947,15 @@ An implementer can demonstrate both M20-AT cases from the public entry path, sho
 
 Target phase: S04. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M21
 
----
+Source: `docs/prds/M21.md`
 
 # M21 — Knowledge, ecosystem and repository discovery
 
@@ -1950,12 +2023,15 @@ An implementer can demonstrate both M21-AT cases from the public entry path, sho
 
 Target phase: S05. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M22
 
----
+Source: `docs/prds/M22.md`
 
 # M22 — Software engineering discovery and specifications
 
@@ -2023,12 +2099,15 @@ An implementer can demonstrate both M22-AT cases from the public entry path, sho
 
 Target phase: S05. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M23
 
----
+Source: `docs/prds/M23.md`
 
 # M23 — Incident investigation and root-cause analysis
 
@@ -2096,12 +2175,15 @@ An implementer can demonstrate both M23-AT cases from the public entry path, sho
 
 Target phase: S05. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M24
 
----
+Source: `docs/prds/M24.md`
 
 # M24 — Data analysis and causal inquiry
 
@@ -2169,12 +2251,15 @@ An implementer can demonstrate both M24-AT cases from the public entry path, sho
 
 Target phase: S05. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M25
 
----
+Source: `docs/prds/M25.md`
 
 # M25 — Preventive policy and approvals
 
@@ -2242,12 +2327,15 @@ An implementer can demonstrate both M25-AT cases from the public entry path, sho
 
 Target phase: S00. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M26
 
----
+Source: `docs/prds/M26.md`
 
 # M26 — Audit, observability and evidence
 
@@ -2315,12 +2403,15 @@ An implementer can demonstrate both M26-AT cases from the public entry path, sho
 
 Target phase: S00. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M27
 
----
+Source: `docs/prds/M27.md`
 
 # M27 — Evaluation-driven improvement and self-evolution
 
@@ -2388,12 +2479,15 @@ An implementer can demonstrate both M27-AT cases from the public entry path, sho
 
 Target phase: S06. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M28
 
----
+Source: `docs/prds/M28.md`
 
 # M28 — Portability, operations and enterprise deployment
 
@@ -2461,12 +2555,15 @@ An implementer can demonstrate both M28-AT cases from the public entry path, sho
 
 Target phase: S07. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M29
 
----
+Source: `docs/prds/M29.md`
 
 # M29 — Channel and inbound/outbound messaging
 
@@ -2534,12 +2631,15 @@ An implementer can demonstrate both M29-AT cases from the public entry path, sho
 
 Target phase: S04. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M30
 
----
+Source: `docs/prds/M30.md`
 
 # M30 — Behavior package, prompt and statechart compiler
 
@@ -2607,12 +2707,15 @@ An implementer can demonstrate both M30-AT cases from the public entry path, sho
 
 Target phase: S00. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
 
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.
 
 ---
 
 ## Module M31
 
----
+Source: `docs/prds/M31.md`
 
 # M31 — Context engineering and model competence calibration
 
@@ -2679,3 +2782,7 @@ An implementer can demonstrate both M31-AT cases from the public entry path, sho
 ## 10. Implementation handoff
 
 Target phase: S00. Start from `AGENTS.md`, the canonical TRD, behavior compiler RFC and this PRD. Maintain SDD → TDD → EDD traceability; use a fresh branch and record actual coverage.
+
+## Milestone interpretation
+
+The delivery slice identifies first implementation, not automatic completion of every requirement in this module. `docs/implementation/ROADMAP.md` and the requirements traceability matrix define partial obligations and later dependency gates. An unmet AT/RT remains NOT_RUN/BLOCKED; passing an early slice does not mark the whole module PASS. Shared contract, safety and scope requirements remain mandatory at every exercised boundary.

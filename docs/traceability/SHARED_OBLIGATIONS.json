@@ -1,0 +1,132 @@
+[
+  {
+    "id": "SH-01",
+    "modules": [1, 2, 4, 9, 10, 14, 15, 17, 19, 20, 22, 25, 29, 31],
+    "source": "docs/rfcs/RFC-001_SCS_PORTABLE_CAPABILITY.md#public-manifest",
+    "first_slice": "S00",
+    "horizon": "S07",
+    "requirement": "Capability and machine boundaries use explicit typed inputs and outputs, positive and negative intent, desired result, side-effect class, required evidence, authority scope and compatibility; syntactic validity alone does not establish availability or competence.",
+    "scenario": "Submit valid and malformed requests and manifests; assert schema rejection for malformed contracts and typed unavailable/unsupported status for unbound, disabled or unassured implementations.",
+    "tiers": "L0/L1/L3"
+  },
+  {
+    "id": "SH-02",
+    "modules": [7, 14, 15, 17, 18, 20, 28],
+    "source": "docs/rfcs/RFC-004_ADAPTER_PROVIDER_CONTRACTS.md#provider-status",
+    "first_slice": "S00",
+    "horizon": "S07",
+    "requirement": "Domain behavior depends on typed provider-neutral ports; vendor SDK and transport types remain in adapters. Providers report per-feature support and truthful UNSUPPORTED, NOT_CONFIGURED, UNAUTHORIZED, TEMPORARILY_UNAVAILABLE or NOT_VERIFIED_EXTERNAL outcomes.",
+    "scenario": "Run the same port contract against a conforming fake and configured provider, inject unsupported features and provider failures, and verify domain imports contain no vendor adapter dependencies.",
+    "tiers": "L1/L2/L4"
+  },
+  {
+    "id": "SH-03",
+    "modules": [3, 5, 7, 11, 12, 13, 14, 26, 27, 30],
+    "source": "docs/rfcs/RFC-011_STATECHART_MODEL.md#revisioned-transitions",
+    "first_slice": "S02",
+    "horizon": "S07",
+    "requirement": "Mutable commitment, state, artifact and behavior records are versioned; state changes compare the expected revision, preserve prior versions and apply atomically with a recoverable next action.",
+    "scenario": "Race two updates at the same expected revision and interrupt persistence around commit; assert one valid successor, preserved history and explicit conflict or recovery without silent overwrite.",
+    "tiers": "L1/L2"
+  },
+  {
+    "id": "SH-04",
+    "modules": [2, 7, 15, 19, 25, 29],
+    "source": "docs/rfcs/RFC-007_POLICY_AUDIT_EVENTS.md#approval-binding",
+    "first_slice": "S00",
+    "horizon": "S07",
+    "requirement": "Trusted code authorizes each effect before invocation and binds approval to authenticated actor, tenant, capability and binding version, operation, normalized destination, canonical input digest, policy version, expiry and idempotency key; any mismatch or revocation fails closed.",
+    "scenario": "Mutate each approval-bound field in turn and inject forged authority in retrieved content; assert dispatch is denied before the side-effect spy is called and a reason is audited.",
+    "tiers": "L1/L2/L4"
+  },
+  {
+    "id": "SH-05",
+    "modules": [9, 10, 21, 22, 23, 24],
+    "source": "docs/rfcs/RFC-008_EVALUATION_AND_EVOLUTION.md#outcome-sufficiency",
+    "first_slice": "S03",
+    "horizon": "S05",
+    "requirement": "Executor text or schema-valid output is not proof of outcome sufficiency; claims require independent evidence rules, provenance and explicit uncertainty, and evaluator disagreement or evidence gaps remain visible.",
+    "scenario": "Return a plausible but unsupported executor conclusion and conflicting evaluator judgments; assert completion is withheld and evidence gaps or disagreement are surfaced.",
+    "tiers": "L1/L3"
+  },
+  {
+    "id": "SH-06",
+    "modules": [6, 7, 10, 19, 25, 29],
+    "source": "docs/rfcs/RFC-003_DURABLE_EXECUTION_PORT.md#delivery-and-reconciliation",
+    "first_slice": "S02",
+    "horizon": "S07",
+    "requirement": "A delivery is complete only after a recorded acknowledgement; a lost acknowledgement or uncertain external effect is reconciled before retry, and idempotency plus attempt history prevent false delivery and blind duplicate effects.",
+    "scenario": "Drop acknowledgement after simulated provider acceptance, restart and replay the request; assert state remains uncertain until reconciliation and no blind duplicate send occurs.",
+    "tiers": "L2/L4"
+  },
+  {
+    "id": "SH-07",
+    "modules": [2, 4, 11, 12, 13, 20, 21, 22, 23, 24],
+    "source": "docs/rfcs/RFC-005_MEMORY_AND_ARTIFACT_PROVENANCE.md#retrieval-and-lineage",
+    "first_slice": "S03",
+    "horizon": "S05",
+    "requirement": "Retrieved memories, documents and artifacts retain source, version, authorization scope, freshness and correction lineage; tenant and ACL filtering applies before retrieval and after source fetch, and private information is not silently promoted to shared scope.",
+    "scenario": "Query stale, corrected and cross-tenant records through search and source fetch; assert unauthorized and stale material is excluded or labeled and corrections retain original lineage.",
+    "tiers": "L1/L2"
+  },
+  {
+    "id": "SH-08",
+    "modules": [8, 13, 14, 27, 30],
+    "source": "docs/rfcs/RFC-010_BEHAVIOR_COMPILER.md#validation-and-promotion",
+    "first_slice": "S00",
+    "horizon": "S06",
+    "requirement": "Behavior and statechart changes are proposed, schema and semantic validated, rendered, simulated and evaluated as applicable before authorized atomic promotion; protected authorization, commitment, delivery, evidence and audit invariants cannot be disabled, and rollback restores the prior content-addressed version.",
+    "scenario": "Submit a valid style change and drafts that remove audit, elevate privilege, use unknown guards or create unbounded cycles; assert unsafe drafts are rejected and only approved valid versions promote with exact rollback.",
+    "tiers": "L0/L1/L3"
+  },
+  {
+    "id": "SH-09",
+    "modules": [8, 14, 17, 27, 30, 31],
+    "source": "docs/rfcs/RFC-012_SMALL_MODEL_CONTEXT.md#measurement-and-routing",
+    "first_slice": "S00",
+    "horizon": "S07",
+    "requirement": "Model support and competence are measured for the exact provider, model and configuration; confidence, abstention and bounded escalation are explicit, and competence cannot transfer from another model, prompt or provider configuration.",
+    "scenario": "Change model and prompt identity while reusing an earlier successful profile; assert the prior evidence is not attributed to the changed configuration and unknown features or exhausted budgets trigger bounded abstention.",
+    "tiers": "L1/L3/L4"
+  },
+  {
+    "id": "SH-10",
+    "modules": [3, 6, 7, 10, 25],
+    "source": "docs/vision/PRODUCT_PRD.md#prototype-boundary-before-s02",
+    "first_slice": "S00",
+    "horizon": "S02",
+    "requirement": "S00 and S01 transient work identifiers are not represented as persistent commitments; prototype responses disclose in-process lifetime and do not promise restart continuation or accept unattended durable obligations. Durable commitment claims require S02 evidence.",
+    "scenario": "Run a prototype request across process exit and restart; assert no persistent-commitment claim or unattended continuation promise is made before the S02 durable ledger gate.",
+    "tiers": "L1/L2"
+  },
+  {
+    "id": "SH-11",
+    "modules": [1, 17, 18, 20, 28],
+    "source": "docs/implementation/S00_RUNTIME_CONTRACT.md#provider-configuration",
+    "first_slice": "S00",
+    "horizon": "S07",
+    "requirement": "External model calls require explicit bounded live authorization and an environment-variable secret reference; credentials are not inferred from ambient sessions, logged or embedded in artifacts, and offline/local behavior remains usable where specified.",
+    "scenario": "Omit explicit live authorization, supply malformed provider URLs and place a sentinel secret in the provider environment; assert no outbound request occurs and neither logs nor evidence contain the secret.",
+    "tiers": "L1/L4"
+  },
+  {
+    "id": "SH-12",
+    "modules": [1, 3, 4, 5, 6, 10, 12, 17, 22, 30],
+    "source": "docs/vision/PRODUCT_PRD.md#personalization-contract",
+    "first_slice": "S00",
+    "horizon": "S06",
+    "requirement": "Internal prompts, contracts, logs and documentation are authored in English; user-facing responses follow the user's selected or detected language, while preference changes affect presentation and cannot alter security policy.",
+    "scenario": "Use a non-English user preference and a preference asking to bypass approval; assert localized user output while internal artifacts remain English and trusted policy still denies the unauthorized effect.",
+    "tiers": "L1/L3"
+  },
+  {
+    "id": "SH-13",
+    "modules": [1, 2, 7, 8, 9, 14, 17, 25, 26, 27, 28, 30, 31],
+    "source": "docs/governance/FACTORY_OPERATING_RULES.md#proof-tiers",
+    "first_slice": "S00",
+    "horizon": "S07",
+    "requirement": "Claims are limited to the evidence tier actually obtained; fixtures, mocks, schemas and offline tests cannot be relabeled as live model discovery, authorized external integration or operational deployment, and blocked or unverified outcomes remain explicit.",
+    "scenario": "Present fixture-only and schema-only results to the reporting path for live-provider and deployment gates; assert they remain NOT_RUN, BLOCKED or NOT_VERIFIED_EXTERNAL at the corresponding higher tier.",
+    "tiers": "L0/L1/L2/L3/L4/L5"
+  }
+]

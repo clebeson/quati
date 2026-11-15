@@ -1,0 +1,237 @@
+FFFFFFFFFFFFFFF                                                          [100%]
+=================================== FAILURES ===================================
+____________ test_ct02_invalid_embedded_capability_schema_rejected _____________
+
+    def test_ct02_invalid_embedded_capability_schema_rejected():
+        capability = json.loads((ROOT / 'examples/capabilities/example_analytic_research.json').read_text())
+        capability['input_schema'] = {'type': 'not-a-type'}
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_regressions.py:21: Failed
+__________________ test_ct02_remote_schema_reference_rejected __________________
+
+    def test_ct02_remote_schema_reference_rejected():
+        capability = json.loads((ROOT / 'examples/capabilities/example_analytic_research.json').read_text())
+        capability['input_schema'] = {'$ref': 'https://untrusted.invalid/schema'}
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_regressions.py:28: Failed
+_________________ test_ct03_protected_delivery_bypass_rejected _________________
+
+    def test_ct03_protected_delivery_bypass_rejected():
+        machine = load_yaml(ROOT / 'examples/statecharts/commitment.yaml')
+        machine['transitions'].append({'source': 'RECEIVED', 'event': 'bypass', 'target': 'DELIVERED', 'guard': 'always', 'action': 'record_delivery'})
+>       with pytest.raises(ValueError, match='Protected'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_regressions.py:35: Failed
+_____________________ test_ct03_guard_replacement_rejected _____________________
+
+    def test_ct03_guard_replacement_rejected():
+        machine = load_yaml(ROOT / 'examples/statecharts/commitment.yaml')
+        machine['transitions'][0]['guard'] = 'always'
+>       with pytest.raises(ValueError, match='Protected'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_regressions.py:42: Failed
+_ test_ct04_effective_options_change_prompt[interaction-clarification_style-only_blocking] _
+
+section = 'interaction', field = 'clarification_style', value = 'only_blocking'
+
+    @pytest.mark.parametrize(('section', 'field', 'value'), [
+        ('interaction', 'clarification_style', 'only_blocking'),
+        ('execution', 'max_investigation_loops', 1),
+        ('execution', 'safe_read_ahead', False),
+        ('models', 'specialist_role', 'another_approved_role'),
+        ('context', 'max_capability_candidates', 3),
+    ])
+    def test_ct04_effective_options_change_prompt(section, field, value):
+        document = profile()
+        before, _ = validate_behavior(document)
+        document[section][field] = value
+        after, _ = validate_behavior(document)
+>       assert before['prompt_hash'] != after['prompt_hash']
+E       AssertionError: assert 'bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0' != 'bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0'
+
+tests/test_audit_regressions.py:58: AssertionError
+_ test_ct04_effective_options_change_prompt[execution-max_investigation_loops-1] _
+
+section = 'execution', field = 'max_investigation_loops', value = 1
+
+    @pytest.mark.parametrize(('section', 'field', 'value'), [
+        ('interaction', 'clarification_style', 'only_blocking'),
+        ('execution', 'max_investigation_loops', 1),
+        ('execution', 'safe_read_ahead', False),
+        ('models', 'specialist_role', 'another_approved_role'),
+        ('context', 'max_capability_candidates', 3),
+    ])
+    def test_ct04_effective_options_change_prompt(section, field, value):
+        document = profile()
+        before, _ = validate_behavior(document)
+        document[section][field] = value
+        after, _ = validate_behavior(document)
+>       assert before['prompt_hash'] != after['prompt_hash']
+E       AssertionError: assert 'bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0' != 'bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0'
+
+tests/test_audit_regressions.py:58: AssertionError
+__ test_ct04_effective_options_change_prompt[execution-safe_read_ahead-False] __
+
+section = 'execution', field = 'safe_read_ahead', value = False
+
+    @pytest.mark.parametrize(('section', 'field', 'value'), [
+        ('interaction', 'clarification_style', 'only_blocking'),
+        ('execution', 'max_investigation_loops', 1),
+        ('execution', 'safe_read_ahead', False),
+        ('models', 'specialist_role', 'another_approved_role'),
+        ('context', 'max_capability_candidates', 3),
+    ])
+    def test_ct04_effective_options_change_prompt(section, field, value):
+        document = profile()
+        before, _ = validate_behavior(document)
+        document[section][field] = value
+        after, _ = validate_behavior(document)
+>       assert before['prompt_hash'] != after['prompt_hash']
+E       AssertionError: assert 'bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0' != 'bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0'
+
+tests/test_audit_regressions.py:58: AssertionError
+_ test_ct04_effective_options_change_prompt[models-specialist_role-another_approved_role] _
+
+section = 'models', field = 'specialist_role', value = 'another_approved_role'
+
+    @pytest.mark.parametrize(('section', 'field', 'value'), [
+        ('interaction', 'clarification_style', 'only_blocking'),
+        ('execution', 'max_investigation_loops', 1),
+        ('execution', 'safe_read_ahead', False),
+        ('models', 'specialist_role', 'another_approved_role'),
+        ('context', 'max_capability_candidates', 3),
+    ])
+    def test_ct04_effective_options_change_prompt(section, field, value):
+        document = profile()
+        before, _ = validate_behavior(document)
+        document[section][field] = value
+        after, _ = validate_behavior(document)
+>       assert before['prompt_hash'] != after['prompt_hash']
+E       AssertionError: assert 'bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0' != 'bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0'
+
+tests/test_audit_regressions.py:58: AssertionError
+_ test_ct04_effective_options_change_prompt[context-max_capability_candidates-3] _
+
+section = 'context', field = 'max_capability_candidates', value = 3
+
+    @pytest.mark.parametrize(('section', 'field', 'value'), [
+        ('interaction', 'clarification_style', 'only_blocking'),
+        ('execution', 'max_investigation_loops', 1),
+        ('execution', 'safe_read_ahead', False),
+        ('models', 'specialist_role', 'another_approved_role'),
+        ('context', 'max_capability_candidates', 3),
+    ])
+    def test_ct04_effective_options_change_prompt(section, field, value):
+        document = profile()
+        before, _ = validate_behavior(document)
+        document[section][field] = value
+        after, _ = validate_behavior(document)
+>       assert before['prompt_hash'] != after['prompt_hash']
+E       AssertionError: assert 'bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0' != 'bba178a43e0b93001b1ac02ca644994f09c05d61ac3755ca9f035b1f69194fe0'
+
+tests/test_audit_regressions.py:58: AssertionError
+______________ test_ct04_profile_cannot_exceed_machine_loop_limit ______________
+
+    def test_ct04_profile_cannot_exceed_machine_loop_limit():
+        document = profile()
+        document['execution']['max_investigation_loops'] = 9
+>       with pytest.raises(ValueError, match='budget'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_regressions.py:64: Failed
+________________ test_ct05_language_override_requires_language _________________
+
+    def test_ct05_language_override_requires_language():
+        document = profile()
+        document['interaction']['language_policy'] = 'explicit_override'
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_regressions.py:71: Failed
+__________________ test_ct06_receipt_includes_trusted_inputs ___________________
+
+    def test_ct06_receipt_includes_trusted_inputs():
+        receipt, _ = validate_behavior(profile())
+>       assert receipt['compiler_version']
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'compiler_version'
+
+tests/test_audit_regressions.py:77: KeyError
+____________________ test_ct07_duplicate_yaml_keys_rejected ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_ct07_duplicate_yaml_keys_0')
+
+    def test_ct07_duplicate_yaml_keys_rejected(tmp_path):
+        path = tmp_path / 'duplicate.yaml'
+        path.write_text('policy_ref: trusted_policy/default\npolicy_ref: untrusted\n')
+>       with pytest.raises(ValueError, match='Duplicate'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_regressions.py:86: Failed
+_____________________ test_ct08_invalid_timestamp_rejected _____________________
+
+    def test_ct08_invalid_timestamp_rejected():
+        document = {key: 'x' for key in ['provider_id', 'document_id', 'version', 'tenant_id', 'title', 'content_ref', 'source_uri', 'acl_ref']}
+        document.update(visibility='private', retrieved_at='not-a-time')
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_regressions.py:93: Failed
+______________ test_ct01_reference_states_fit_commitment_contract ______________
+
+    def test_ct01_reference_states_fit_commitment_contract():
+        machine = load_yaml(ROOT / 'examples/statecharts/commitment.yaml')
+        schema = json.loads((ROOT / 'contracts/commitment.schema.json').read_text())
+>       assert set(machine['states']) == set(schema['properties']['state']['enum'])
+E       AssertionError: assert {'ACKNOWLEDGE..._REVIEW', ...} == {'ACCEPTED', ...'FAILED', ...}
+E         
+E         Extra items in the left set:
+E         'EVIDENCE_REVIEW'
+E         'READY_TO_DELIVER'
+E         'CLASSIFIED'
+E         'ACKNOWLEDGED'
+E         'IN_PROGRESS'...
+E         
+E         ...Full output truncated, use '-vv' to show
+
+tests/test_audit_regressions.py:100: AssertionError
+=============================== warnings summary ===============================
+../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_audit_regressions.py::test_ct02_invalid_embedded_capability_schema_rejected
+FAILED tests/test_audit_regressions.py::test_ct02_remote_schema_reference_rejected
+FAILED tests/test_audit_regressions.py::test_ct03_protected_delivery_bypass_rejected
+FAILED tests/test_audit_regressions.py::test_ct03_guard_replacement_rejected
+FAILED tests/test_audit_regressions.py::test_ct04_effective_options_change_prompt[interaction-clarification_style-only_blocking]
+FAILED tests/test_audit_regressions.py::test_ct04_effective_options_change_prompt[execution-max_investigation_loops-1]
+FAILED tests/test_audit_regressions.py::test_ct04_effective_options_change_prompt[execution-safe_read_ahead-False]
+FAILED tests/test_audit_regressions.py::test_ct04_effective_options_change_prompt[models-specialist_role-another_approved_role]
+FAILED tests/test_audit_regressions.py::test_ct04_effective_options_change_prompt[context-max_capability_candidates-3]
+FAILED tests/test_audit_regressions.py::test_ct04_profile_cannot_exceed_machine_loop_limit
+FAILED tests/test_audit_regressions.py::test_ct05_language_override_requires_language
+FAILED tests/test_audit_regressions.py::test_ct06_receipt_includes_trusted_inputs
+FAILED tests/test_audit_regressions.py::test_ct07_duplicate_yaml_keys_rejected
+FAILED tests/test_audit_regressions.py::test_ct08_invalid_timestamp_rejected
+FAILED tests/test_audit_regressions.py::test_ct01_reference_states_fit_commitment_contract
+15 failed, 1 warning in 0.23s
