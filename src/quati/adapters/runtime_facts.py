@@ -16,10 +16,13 @@ import sqlite3
 import stat
 from pathlib import Path
 
+from quati.adapters.local_identity import IDENTIFIER_FIELDS
+
 REFERENCE_OS = "Linux"            # M01-AT-01: the only OS qualified so far
 KNOWN_OS = ("Linux", "Darwin", "Windows")
-# The installation-record fields every S00 command reads (RFC-013 section 4); each is a non-empty string.
-RECORD_FIELDS = ("tenant_id", "principal_id", "personal_space_id", "organization_space_id", "public_key")
+# The installation-record fields every S00 command reads (RFC-013 section 4); each is a non-empty string:
+# the identifiers the identity adapter itself requires (``LocalIdentity._load``) and the device public key.
+RECORD_FIELDS = (*IDENTIFIER_FIELDS, "public_key")
 RECORD_MAX_BYTES = 16384
 
 

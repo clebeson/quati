@@ -16,8 +16,31 @@ test = ["pytest==9.2.0", "coverage==7.16.1"]
 [project.scripts]
 quati = "quati.cli.main:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+# The wheel carries the contract schemas and the active behavior package, statecharts and default LOCAL policy
+# as package data under quati/assets, laid out as in the repository (contracts/, examples/...), so an installed
+# copy needs no repository checkout (quati.behavior.contracts.asset_root). The files stay where they are in
+# the repository: each asset directory is mapped as a data-only package. The package list is explicit because
+# of that mapping; tests/unit/test_s00_integration7.py checks it against the source tree.
+[tool.setuptools]
+packages = [
+    "quati", "quati.adapters", "quati.adapters.providers", "quati.application", "quati.behavior", "quati.cli",
+    "quati.domain",
+    "quati.assets.contracts", "quati.assets.examples.behavior", "quati.assets.examples.statecharts",
+    "quati.assets.examples.policies",
+]
+
+[tool.setuptools.package-dir]
+"" = "src"
+"quati.assets.contracts" = "contracts"
+"quati.assets.examples.behavior" = "examples/behavior"
+"quati.assets.examples.statecharts" = "examples/statecharts"
+"quati.assets.examples.policies" = "examples/policies"
+
+[tool.setuptools.package-data]
+"quati.assets.contracts" = ["*.json"]
+"quati.assets.examples.behavior" = ["*.yaml", "*.json"]
+"quati.assets.examples.statecharts" = ["*.yaml"]
+"quati.assets.examples.policies" = ["*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

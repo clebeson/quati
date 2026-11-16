@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from datetime import datetime
 import functools
+import importlib.resources
 import json
 import math
 from pathlib import Path
@@ -30,7 +31,25 @@ from quati.domain.diagnostics import ContractViolation, Diagnostic, ErrorCode
 DEFAULT_MAX_BYTES = 1024 * 1024
 MAX_DEPTH = 64
 MAX_YAML_EVENTS = 100_000
-CONTRACTS_DIR = Path(__file__).resolve().parents[3] / "contracts"
+PACKAGED_ASSETS = "assets"
+
+
+def asset_root(package: Path | None = None) -> Path:
+    """The directory that holds ``contracts/`` and ``examples/`` for the package directory ``package``.
+
+    An installed wheel carries them as package data in ``quati/assets`` (pyproject.toml,
+    ``tool.setuptools.package-dir``); a source checkout has no such directory and uses the repository
+    root, two levels above the package. The files are the same bytes in both layouts and references
+    stay relative to this root (``examples/behavior/...``), so no compiled hash depends on the layout.
+    """
+    if package is None:
+        package = Path(str(importlib.resources.files("quati")))
+    packaged = Path(package) / PACKAGED_ASSETS
+    return packaged if packaged.is_dir() else Path(package).resolve().parents[1]
+
+
+ASSET_ROOT = asset_root()
+CONTRACTS_DIR = ASSET_ROOT / "contracts"
 
 FORMATS = FormatChecker()
 _TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}[Tt]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[Zz]|[+-]\d{2}:\d{2})")
@@ -71,7 +90,15 @@ class ContractCatalog:
 
     def _validator(self, schema_name: str):
         if schema_name not in self._validators:
-            schema = json.loads((self.contracts_dir / schema_name).read_text(encoding="utf-8"))
+            try:
+                text = (self.contracts_dir / schema_name).read_text(encoding="utf-8")
+            except OSError:
+                # A broken installation (no contract schemas) is a typed diagnostic that names the schema
+                # file and no local path; it is never an unhandled error of the command that needed it.
+                raise ContractViolation([Diagnostic(
+                    ErrorCode.NOT_FOUND, f"contracts/{schema_name}", "CONTRACT_NOT_FOUND",
+                    f"contract schema {schema_name} is not installed")], 1) from None
+            schema = json.loads(text)
             Draft202012Validator.check_schema(schema)
             self._validators[schema_name] = StrictValidator(schema, format_checker=FORMATS)
         return self._validators[schema_name]

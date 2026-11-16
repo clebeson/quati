@@ -1,9 +1,27 @@
-"""Closed error-code list (BOUNDARY_CONTRACTS.md) and typed contract diagnostics."""
+"""Closed error-code list (BOUNDARY_CONTRACTS.md), typed contract diagnostics and the local-store exit rule."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+
+
+# M01 "Exit codes (stable)" rows 4 and 5: UNAVAILABLE whose ``data.reason`` names a local store (the audit
+# log, the receipts, the data directory) is not caused by a provider and exits 4; a provider failure exits 5.
+LOCAL_STORE_REASONS = ("audit_unavailable", "audit_store_unavailable", "state_dir_unsafe")
+
+
+def local_store_failure(value: dict) -> bool:
+    """True when the Response ``value`` reports a failure of a local store, not of a provider."""
+    data = value.get("data")
+    return isinstance(data, dict) and data.get("reason") in LOCAL_STORE_REASONS
+
+
+def settled_exit(code: int, value: dict) -> int:
+    """The M01 exit code of a result whose table code is ``code``: a local store failure is 4, never 5.
+
+    The one mapping used by the use cases and by the presentation boundary, so they cannot disagree."""
+    return 4 if code == 5 and local_store_failure(value) else code
 
 
 class ErrorCode(str, Enum):

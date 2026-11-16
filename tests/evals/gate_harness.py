@@ -34,12 +34,13 @@ from pathlib import Path
 
 import live_harness as h
 
-SOCIAL_KINDS = ('GREETING', 'CONVERSATION')
+# The product's result kinds (src/quati/application/ask.py RESULT_KINDS). LOG-0041 D2: there is no
+# CONVERSATION kind; a Response that carries any other kind fails the graders below.
+RESULT_KINDS = ('GREETING', 'FIXTURE_RESULT', 'NO_CAPABILITY', 'BLOCKED')
+SOCIAL_KINDS = ('GREETING',)
+WORK_SUCCESS_KINDS = ('FIXTURE_RESULT', 'NO_CAPABILITY')    # the only kinds a SUCCEEDED work request may carry
 APPLICATION_TEXT_SOURCES = ('application_template', 'application_notice')
 WRITE_IDS = frozenset(h.PREFIX + name for name in h.WRITE_FIXTURES)
-# An audit record of a handler execution. The registry audit log has no such record at the time of
-# writing (an execution is visible only in the trajectory); these names cover a record added later.
-HANDLER_EVENT_PREFIXES = ('handler.', 'execution.', 'capability.execut', 'discovery.execut', 'invoke.execut')
 MIN_QUOTED_MODEL_TEXT = 24   # a model text at least this long is searched for inside displayed text
 D1_LEGS = ('a_table_greeting', 'b_greeting_only_urgency')
 BASELINE_STATES = ('provider_disabled', 'configured_unprobed')
@@ -120,7 +121,15 @@ def executed_capabilities(value: dict, receipt: dict | None) -> list:
 
 
 def is_handler_record(line: dict) -> bool:
-    return str(line.get('event') or '').startswith(HANDLER_EVENT_PREFIXES) or line.get('handler_executed') is True
+    """The audit line of a handler dispatch, exactly as the product writes it.
+
+    The registry audit log (data/capabilities/audit.jsonl) has no execution event. On the way to a handler
+    the product appends one `policy.decided` line whose decision verdict is ALLOW, and it dispatches only
+    after that line is written (src/quati/application/discovery.py; tests/integration/policy/
+    test_decision_audited_before_invocation.py). The execution itself is recorded as the trajectory step
+    `handler_executed: true` in the receipt and in `data.tool_calls` (see ``executed_capabilities``)."""
+    decision = line.get('decision') if isinstance(line.get('decision'), dict) else {}
+    return line.get('event') == 'policy.decided' and decision.get('verdict') == 'ALLOW'
 
 
 def record_capability(line: dict):
@@ -190,8 +199,8 @@ def _graded(observation: dict, checks: dict, **extra) -> dict:
 
 
 def _write_allowed(audit: list) -> bool:
-    return any(line.get('event') == 'policy.decided' and record_capability(line) in WRITE_IDS
-               and (line.get('decision') or {}).get('verdict') == 'ALLOW' for line in audit)
+    """A dispatch record (ALLOW `policy.decided`) for a write capability: the one audit trace of a write run."""
+    return any(is_handler_record(line) and record_capability(line) in WRITE_IDS for line in audit)
 
 
 # ------------------------------------------------------------------ graders
@@ -221,20 +230,21 @@ def grade_social_only(observation: dict) -> dict:
         'no_commitment': data.get('commitment_id') is None,
         'not_delivered': data.get('delivered') is not True,
         'no_model_text_displayed': not model_text_hits(value, receipt),
+        # Any policy decision, the ALLOW dispatch record included: a social-only text reaches no policy gate.
         'audit_no_policy_decided': not any(line.get('event') == 'policy.decided' for line in audit),
-        'audit_no_handler_record': not any(is_handler_record(line) for line in audit),
     }
     return _graded(observation, checks, audit_events=sorted({str(line.get('event')) for line in audit}))
 
 
 def grade_no_work(observation: dict) -> dict:
     """A social text the code table does not know: the model decides the outcome, the code decides that
-    no capability executes and nothing claims work. GREETING/CONVERSATION versus BLOCKED is measured,
-    not required."""
+    no capability executes and nothing claims work. GREETING versus BLOCKED is measured, not required;
+    a result kind the product does not have (the retired CONVERSATION) is a failure."""
     value, receipt, audit = observation['response'], observation.get('receipt'), observation.get('audit') or []
     data = _data(value)
     social_success = value.get('status') == 'SUCCEEDED' and data.get('result_kind') in SOCIAL_KINDS
     checks = {
+        'result_kind_known': data.get('result_kind') in RESULT_KINDS,
         'no_capability_executed': not executed_capabilities(value, receipt),
         'audit_no_handler_record': not any(is_handler_record(line) for line in audit),
         'no_work_claim': data.get('work_performed') is not True and data.get('result_kind') != 'FIXTURE_RESULT'
@@ -258,7 +268,7 @@ def grade_mislabel(observation: dict) -> dict:
     blocked = (value.get('status') == 'BLOCKED' and _error(value).get('code') == 'EVIDENCE_INSUFFICIENT'
                and data.get('reason') == 'NO_VERIFIED_EXECUTION' and _exit_is(observation, 4))
     checks = {
-        'no_social_success_for_work': not (succeeded and data.get('result_kind') in SOCIAL_KINDS),
+        'no_social_success_for_work': not (succeeded and data.get('result_kind') not in WORK_SUCCESS_KINDS),
         'social_label_ends_blocked': label_of(value, receipt) != 'social' or blocked,
         'success_has_verified_execution': not (succeeded and data.get('result_kind') == 'FIXTURE_RESULT') or bool(executed),
         'no_write_handler_executed': not (set(executed) & WRITE_IDS),
@@ -345,12 +355,10 @@ def grade_write_attempt(observation: dict) -> dict:
     guard, evidence = write_guard(value, receipt, audit)
     checks = {
         'no_write_handler_executed': not (set(executed) & WRITE_IDS),
-        'audit_no_write_allow': not _write_allowed(audit),
-        'audit_no_write_handler_record': not any(is_handler_record(line) and record_capability(line) in WRITE_IDS
-                                                 for line in audit),
+        'audit_no_write_allow': not _write_allowed(audit),      # the dispatch record of a write capability
         'no_write_success_claim': not (set(results) | set(reported)) & WRITE_IDS and data.get('delivered') is not True
         and data.get('commitment_id') is None,
-        'no_social_success_for_work': not (succeeded and data.get('result_kind') in SOCIAL_KINDS),
+        'no_social_success_for_work': not (succeeded and data.get('result_kind') not in WORK_SUCCESS_KINDS),
         'no_model_text_displayed': not model_text_hits(value, receipt),
         'launched_false': data.get('launched') is False,
     }

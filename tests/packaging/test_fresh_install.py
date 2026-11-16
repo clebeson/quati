@@ -13,6 +13,7 @@ import importlib.util
 import json
 import os
 import platform
+import shutil
 import socket
 import subprocess
 import sys
@@ -97,17 +98,40 @@ def test_doctor_reports_provider_not_configured(tmp_path: Path, monkeypatch, cap
     'fresh-wheel install NOT VERIFIED here: the build backend declared in pyproject.toml (setuptools>=75) is not '
     'importable in this environment and no package index is reachable offline'))
 def test_doctor_from_a_freshly_installed_wheel(tmp_path: Path) -> None:
-    """Build the wheel, install it alone into an empty directory and run doctor from it."""
-    wheels, target, profile = tmp_path / 'wheels', tmp_path / 'site', tmp_path / 'profile'
+    """Build the wheel, install it alone into an empty directory and run it from there.
+
+    The wheel is built from a copy of the packaged inputs (pyproject.toml, src/, contracts/, examples/), so
+    the build leaves nothing in the repository. The installed copy has no repository beside it: the contract
+    schemas, the active behavior package and the default LOCAL policy must come from its package data
+    (``quati/assets``), and they must compile to the repository's reference hashes.
+    """
+    project, wheels, target, profile = tmp_path / 'project', tmp_path / 'wheels', tmp_path / 'site', tmp_path / 'profile'
+    project.mkdir()
+    shutil.copy2(REPOSITORY_ROOT / 'pyproject.toml', project / 'pyproject.toml')
+    for name in ('src', 'contracts', 'examples'):
+        shutil.copytree(REPOSITORY_ROOT / name, project / name, ignore=shutil.ignore_patterns('__pycache__', '*.egg-info'))
     pip = [sys.executable, '-m', 'pip', '--disable-pip-version-check', '--no-input']
     subprocess.run([*pip, 'wheel', '--no-deps', '--no-index', '--no-build-isolation', '--wheel-dir', str(wheels),
-                    str(REPOSITORY_ROOT)], check=True, capture_output=True, cwd=tmp_path)
+                    str(project)], check=True, capture_output=True, cwd=tmp_path)
     wheel, = wheels.glob('quati-*.whl')
     subprocess.run([*pip, 'install', '--no-deps', '--no-index', '--target', str(target), str(wheel)], check=True,
                    capture_output=True, cwd=tmp_path)
+    shutil.rmtree(project)                                        # nothing but the installed copy remains
+    environment = fresh_environment(profile, str(target))
     probe = subprocess.run([sys.executable, '-c', 'import quati; print(quati.__file__)'], cwd=tmp_path, text=True,
-                           env=fresh_environment(profile, str(target)), capture_output=True, check=True)
+                           env=environment, capture_output=True, check=True)
     assert Path(probe.stdout.strip()).is_relative_to(target)      # the wheel copy runs, not the checkout
-    completed = subprocess.run([sys.executable, '-m', 'quati', 'doctor', '--json'], cwd=tmp_path, text=True,
-                               env=fresh_environment(profile, str(target)), capture_output=True)
-    assert_fresh_report(completed, profile)
+    assert (target / 'quati' / 'assets' / 'contracts' / 'behavior-package.schema.json').is_file()
+
+    def quati(*argv: str) -> subprocess.CompletedProcess:
+        return subprocess.run([sys.executable, '-m', 'quati', *argv], cwd=tmp_path, text=True, env=environment,
+                              capture_output=True)
+    data = assert_fresh_report(quati('doctor', '--json'), profile)
+    reference = json.loads((REPOSITORY_ROOT / 'examples' / 'behavior' / 'compiled_receipt.reference.json').read_bytes())
+    assert data['behavior']['status'] == 'VALID'
+    assert {name: data['behavior'][name] for name in ('behavior_hash', 'statechart_hash', 'prompt_hash')} == {
+        name: reference[name] for name in ('behavior_hash', 'statechart_hash', 'prompt_hash')}
+    initialized = quati('init', '--json')
+    assert initialized.returncode == 0 and json.loads(initialized.stdout)['data']['policy']['action'] == 'INSTALLED'
+    greeting = quati('ask', 'Hello', '--json')
+    assert greeting.returncode == 0 and json.loads(greeting.stdout)['data']['result_kind'] == 'GREETING'

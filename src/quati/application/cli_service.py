@@ -355,6 +355,9 @@ class CLIService:
                               ['MODEL_INCOMPATIBLE', f"TOOLS_{gate['tools']}",
                                *([gate['reason']] if gate['reason'] else [])])
             return self._record(text, context, 4, result, extra={'feature_gate': gate})
+        # M01 "Data directory" rule 2: the registry directory is verified before the registry, its audit log,
+        # a handler or the model is used, with the refusal every registry command gives (state_dir_unsafe).
+        self._require_state('capabilities')
         try:
             runtime = self.ask_runtime(context)
         except ContractViolation as exc:
@@ -396,7 +399,8 @@ class CLIService:
                   'principal_hash': hashlib.sha256(context.actor_id.encode()).hexdigest(),
                   'request_hash': hashlib.sha256(text.encode()).hexdigest(),
                   'output_hash': hashlib.sha256(canonical_bytes(result)).hexdigest(),
-                  'status': result['status'], 'policy_version': context.policy_version,
+                  'status': result['status'], 'result_kind': result['data'].get('result_kind'),
+                  'policy_version': context.policy_version,
                   'proof_tier': proof_tier, 'provider_used': False, 'cost_usd': None, **(extra or {})}
         receipt = self.evidence_sink(record)
         result['evidence_refs'] = [f"sha256:{receipt['sha256']}:{receipt['path']}"]

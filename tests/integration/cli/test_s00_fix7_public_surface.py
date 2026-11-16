@@ -348,11 +348,8 @@ def test_n13_the_receipt_writer_alone_makes_a_permissive_data_directory_private(
 
 
 def test_n13_everything_quati_creates_under_a_zero_umask_is_owner_only(profile: Profile) -> None:
-    """Under umask 000 every directory is 0700 and every file 0600.
-
-    ``fixture_sources/`` itself is 0700, so nothing below it is reachable by another user; the files
-    its writer (``fixture_capabilities.write_package``) creates below it are listed separately.
-    """
+    """Under umask 000 every directory is 0700 and every file 0600, the fixture source tree included
+    (``fixture_capabilities.write_fixture_package`` makes the tree it writes private; integration item B1)."""
     zero = {'umask': 0}
     assert profile.run('init', '--json', scenario=zero).code == 0
     assert profile.run('capabilities', 'install-fixture', 'calendar-read', '--enable-fixture', '--json',
@@ -361,7 +358,8 @@ def test_n13_everything_quati_creates_under_a_zero_umask_is_owner_only(profile: 
     run = profile.scripted('ask', WORK_TEXT, '--json', script=READ_SCRIPT, **zero)
     assert run.code == 0 and run.kinds('handler') == [['handler', 'calendar-read']], run.out
     assert stat.S_IMODE((profile.data / 'fixture_sources').stat().st_mode) == 0o700
-    assert [entry for entry in _modes(profile) if not entry[0].startswith('data/fixture_sources/')] == []
+    assert any(path.is_file() for path in (profile.data / 'fixture_sources').rglob('*'))
+    assert _modes(profile) == []
 
 
 # ----------------------------------------------------------------- N13 / N15: the audit log on the public path

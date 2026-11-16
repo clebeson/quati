@@ -1,0 +1,124 @@
+# S00 integration step after fix round 7 (LOG-0042 open items): GREEN run on the final tree (HEAD 8eed83f + working tree).
+# Local paths are replaced by <REPO>, <SCRATCH> and <TMP>. No provider call was made; QUATI_ALLOW_LIVE is set only by the
+# scripted-fake child runners of the tests (a transport that cannot open a connection).
+
+## 1. The red selection, now green
+$ .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_s00_integration7.py tests/integration/cli/test_s00_integration7_public.py tests/unit/test_eval_harness_soc01.py tests/unit/test_eval_harness_grader.py tests/integration/test_identity.py tests/integration/cli/test_s00_fix7_public_surface.py -k 'integration7 or eval_harness or decision_log_unavailable or zero_umask'
+........................................................................ [ 50%]
+......................................................................   [100%]
+142 passed, 148 deselected in 13.76s
+
+## 2. Full suite
+$ .venv/bin/python -m pytest -q -p no:cacheprovider   (last line)
+1622 passed, 10 skipped in 290.20s (0:04:50)
+# 10 skipped: unchanged from HEAD (live/opt-in lanes and the wheel leg, which needs the setuptools build backend; see section 5).
+
+## 3. Coverage (branch mode; CLI child processes measured through tests/coverage/sitecustomize.py; isolated data file)
+# rcfile: [run] branch = True, parallel = True, source = <REPO>/src/quati, data_file = <SCRATCH>/cov2/.coverage; [report] show_missing = True
+$ QUATI_TEST_COVERAGE_BOOTSTRAP=<REPO>/tests/coverage COVERAGE_PROCESS_START=<rcfile> .venv/bin/python -m coverage run --rcfile=<rcfile> -m pytest -q -p no:cacheprovider   (last line)
+1622 passed, 10 skipped in 521.09s (0:08:41)
+$ .venv/bin/python -m coverage combine --rcfile=<rcfile> && .venv/bin/python -m coverage report --rcfile=<rcfile> --precision=2
+Name                                                Stmts   Miss Branch BrPart   Cover   Missing
+------------------------------------------------------------------------------------------------
+src/quati/__init__.py                                   1      0      0      0 100.00%
+src/quati/__main__.py                                   2      0      0      0 100.00%
+src/quati/adapters/__init__.py                          0      0      0      0 100.00%
+src/quati/adapters/capability_store.py                154      0     18      0 100.00%
+src/quati/adapters/evidence.py                         42      0      6      0 100.00%
+src/quati/adapters/feature_reports.py                  42      0      8      0 100.00%
+src/quati/adapters/fixture_capabilities.py            137      0     14      0 100.00%
+src/quati/adapters/fts_index.py                        17      0      2      0 100.00%
+src/quati/adapters/local_identity.py                  131      5     24      3  94.84%   49, 92, 108-109, 128
+src/quati/adapters/policy_gate.py                      46      0      4      0 100.00%
+src/quati/adapters/private_fs.py                       95      0     30      0 100.00%
+src/quati/adapters/providers/__init__.py                4      0      0      0 100.00%
+src/quati/adapters/providers/_sdk.py                   99      0     54      0 100.00%
+src/quati/adapters/providers/anthropic.py              57      0     16      0 100.00%
+src/quati/adapters/providers/cli.py                   317      0     92      0 100.00%
+src/quati/adapters/providers/openai_compatible.py     112      0     36      0 100.00%
+src/quati/adapters/runtime_facts.py                   101      0     30      0 100.00%
+src/quati/adapters/trace_store.py                      32      0     10      0 100.00%
+src/quati/application/__init__.py                       0      0      0      0 100.00%
+src/quati/application/ask.py                          397      0    108      0 100.00%
+src/quati/application/behavior_commands.py             55      0      6      0 100.00%
+src/quati/application/capability_commands.py           91      0     24      0 100.00%
+src/quati/application/capability_registry.py          372      0     86      0 100.00%
+src/quati/application/cli_service.py                  304      0    106      0 100.00%
+src/quati/application/code_identity.py                 14      0      0      0 100.00%
+src/quati/application/context_envelope.py              93      0     18      0 100.00%
+src/quati/application/discovery.py                    257      0     78      0 100.00%
+src/quati/application/discovery_tools.py               83      0     20      0 100.00%
+src/quati/application/identity.py                     138      1     34      1  98.84%   48
+src/quati/application/ports.py                         29      0      0      0 100.00%
+src/quati/application/providers.py                    535      0    166      0 100.00%
+src/quati/application/trace_commands.py               221      0     68      0 100.00%
+src/quati/behavior/__init__.py                          0      0      0      0 100.00%
+src/quati/behavior/compiler.py                        189      0     56      0 100.00%
+src/quati/behavior/contracts.py                       186      0     66      0 100.00%
+src/quati/behavior/fsutil.py                           39      0      4      0 100.00%
+src/quati/behavior/manifest.py                        136      0     64      0 100.00%
+src/quati/behavior/store.py                           223      0     64      0 100.00%
+src/quati/behavior/trusted_config.py                   94      0     26      0 100.00%
+src/quati/cli/__init__.py                               0      0      0      0 100.00%
+src/quati/cli/chat.py                                  66      0     26      0 100.00%
+src/quati/cli/composition.py                           45      0      0      0 100.00%
+src/quati/cli/local_policy.py                          37      0      8      0 100.00%
+src/quati/cli/main.py                                 162      2     30      1  98.44%   291, 304
+src/quati/cli/rendering.py                             45      0     20      0 100.00%
+src/quati/domain/__init__.py                            0      0      0      0 100.00%
+src/quati/domain/canonical.py                          31      0     16      0 100.00%
+src/quati/domain/capability_import.py                  27      0      8      0 100.00%
+src/quati/domain/capability_lint.py                    29      0     16      0 100.00%
+src/quati/domain/capability_registry.py               155      0     50      0 100.00%
+src/quati/domain/decision_policy.py                    42      0     18      0 100.00%
+src/quati/domain/diagnostics.py                        55      0      2      0 100.00%
+src/quati/domain/discovery.py                         103      0     16      0 100.00%
+src/quati/domain/policy.py                            321      0    106      0 100.00%
+src/quati/domain/social.py                             60      0     28      0 100.00%
+src/quati/domain/statechart.py                        157      0     92      0 100.00%
+------------------------------------------------------------------------------------------------
+TOTAL                                                6180      8   1774      5  99.84%
+$ .venv/bin/python -m coverage report --rcfile=<rcfile> --precision=2 --include="*/quati/domain/*,*/quati/behavior/*" | tail -1
+TOTAL                                      1847      0    632      0  100.00%
+# Previous round (evidence/S00/T05-fix7-store-cli-2026-11-16/green.txt): TOTAL 6165 stmts, 8 missed, 1772 branches, 5 partial, 99.84%; the same 8 lines are missed now.
+
+## 4. L0 validators (consolidated specification rebuilt as the last edit)
+$ .venv/bin/python docs/traceability/build_matrix.py
+{"rows": 243, "unexecuted": 243, "status": "PLANNING_ONLY"}
+$ .venv/bin/python spec_tools/build_consolidated.py && .venv/bin/python spec_tools/validate_spec.py
+L0 SPEC VALIDATION: PASS (contracts, examples, reference freshness, states, requirement references). NO APP RUNTIME PROOF.
+$ .venv/bin/python spec_tools/validate_readiness.py
+{"fixture_recipes": 125, "requirement_plans": 243, "requirements": 243, "runtime_qualified": false, "semantic_coverage_requires_review": true, "shared_cases": 101, "status": "PASS", "tier": "L0", "work_packages": 35}
+
+## 5. Packaging (item D): wheel built offline with setuptools 78.1.1 taken from the system wheel cache (not installed in .venv)
+# The wheel leg of tests/packaging is skipped in the plain suite (no build backend in .venv). It was run with the backend on PYTHONPATH:
+$ PYTHONPATH=<SCRATCH>/wheel/st .venv/bin/python -m pytest -q -p no:cacheprovider tests/packaging
+2 passed in 1.93s
+# Behavior hashes of the active package, repository layout before the change (HEAD) / after / installed wheel: identical.
+# before (HEAD): {"behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8", "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426", "diagnostics": [], "profile_ref": "examples/behavior/executive-secretary.yaml", "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d", "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43", "status": "VALID"}
+# after        : {"behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8", "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426", "diagnostics": [], "profile_ref": "examples/behavior/executive-secretary.yaml", "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d", "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43", "status": "VALID"}
+# classification schema digest before / after: eee5d9647253fb20f795cb8d81c939fa51117be2f8a44cad511407401f0aa42a / eee5d9647253fb20f795cb8d81c939fa51117be2f8a44cad511407401f0aa42a
+# code digest before (HEAD) / after: 4356c967f57cbcdada2de1e456fca74edceb53227b9626794a728ff9c2fdd095 / 96d0708298d5ff21013ed03c1972f34d41e37b01f4fb47f115b0641493d74d65
+# An editable build (setuptools build_editable) of a copy was also installed and run: quati imported from the copy's src/, asset root = the copy's root, doctor VALID with the same hashes.
+
+## 6. Mutation check of the source changes (scratch copy; script alongside: mutation_check_script.py)
+KILLED    A sink does not stamp the code digest :: src/quati/adapters/evidence.py :: FAILED tests/unit/test_s00_integration7.py::test_a_the_evidence_sink_stamps_the_code_digest_on_every_record
+KILLED    A caller may choose the code digest :: src/quati/adapters/evidence.py :: FAILED tests/unit/test_s00_integration7.py::test_a_the_evidence_sink_stamps_the_code_digest_on_every_record
+KILLED    B1 fixture tree keeps the umask modes :: src/quati/adapters/fixture_capabilities.py :: FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_everything_quati_creates_under_a_zero_umask_is_owner_only
+KILLED    B2 identifiers are not validated :: src/quati/adapters/local_identity.py :: FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[empty-tenant_id]
+KILLED    B2 an empty identifier is accepted :: src/quati/adapters/local_identity.py :: FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[empty-tenant_id]
+KILLED    B3 authorizer ignores the injected clock :: src/quati/cli/composition.py :: FAILED tests/unit/test_s00_integration7.py::test_b3_registry_authorizer_decides_and_logs_through_the_public_composition_function
+KILLED    B4 capability use case exits 5 for a local store :: src/quati/application/capability_commands.py :: FAILED tests/unit/test_s00_integration7.py::test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case[audit_unavail
+KILLED    B4 ask use case exits 5 for a local store :: src/quati/application/ask.py :: FAILED tests/unit/test_s00_integration7.py::test_b4_the_ask_use_case_itself_returns_exit_4_for_an_unusable_audit_log
+KILLED    B4 a reason is dropped from the shared list :: src/quati/domain/diagnostics.py :: FAILED tests/unit/test_s00_integration7.py::test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case[state_dir_uns
+KILLED    B5 result_kind is not recorded :: src/quati/application/cli_service.py :: FAILED tests/integration/cli/test_s00_integration7_public.py::test_b5_trace_show_reports_the_result_kind_of_a_greeting_and_of_a_refused_request
+KILLED    B5 trace falls back to the record kind when the outcome kind is malformed :: src/quati/application/trace_commands.py :: FAILED tests/integration/cli/test_trace_commands.py::test_forged_receipt_fields_are_never_displayed_and_the_digest_exposes_the_edit
+KILLED    B5 trace ignores the record kind :: src/quati/application/trace_commands.py :: FAILED tests/integration/cli/test_s00_integration7_public.py::test_b5_trace_show_reports_the_result_kind_of_a_greeting_and_of_a_refused_request
+KILLED    B6 ask does not verify the capabilities directory :: src/quati/application/cli_service.py :: FAILED tests/integration/cli/test_s00_integration7_public.py::test_b6_ask_and_registry_commands_give_the_same_refusal_for_an_unusable_capabilities_dir
+KILLED    D packaged assets are never used :: src/quati/behavior/contracts.py :: FAILED tests/unit/test_s00_integration7.py::test_d_asset_root_is_the_packaged_copy_when_present_and_the_checkout_otherwise
+KILLED    D a missing contract schema is an unhandled error :: src/quati/behavior/contracts.py :: FAILED tests/unit/test_s00_integration7.py::test_d_a_missing_contract_schema_is_a_typed_diagnostic_without_a_path
+KILLED    D the missing-schema diagnostic leaks the directory :: src/quati/behavior/contracts.py :: FAILED tests/unit/test_s00_integration7.py::test_d_a_missing_contract_schema_is_a_typed_diagnostic_without_a_path
+16 of 16 mutants killed
+
+## 7. Harness binding (item A), NOT_GATE_EVIDENCE: see binding_preflight_real_cli.txt, estimate_only_stdout.txt, dryrun_stdout_NOT_GATE_EVIDENCE.txt and dryrun/
+# dry run binding: {"bound": 425, "expected_code_digest": "96d0708298d5ff21013ed03c1972f34d41e37b01f4fb47f115b0641493d74d65", "mismatched": 0, "missing": 0, "missing_by_kind": {}, "offenders_total": 0, "pass": true, "receipts": 425, "receipts_in_scope": 425, "scope": "all", "unreadable": 0}

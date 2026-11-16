@@ -17,6 +17,7 @@ from typing import Any, Callable, Mapping
 
 import jsonschema
 
+from quati.adapters.private_fs import private_tree
 from quati.domain.canonical import digest
 from quati.domain.discovery import ScopeGrant
 
@@ -321,7 +322,10 @@ def write_package(root: Path, manifest: Mapping[str, Any], extra_files: Mapping[
 
 
 def write_fixture_package(sources_dir: Path, name: str) -> Path:
-    return write_package(Path(sources_dir) / name, FIXTURE_MANIFESTS[name])
+    """Write one built-in fixture package below ``sources_dir`` and make the written tree owner-only
+    (directories 0700, files 0600, whatever the umask), like every other path under the data directory.
+    A symlink, special file, extra hard link or foreign owner inside it raises ``UnsafeStatePath``."""
+    return private_tree(write_package(Path(sources_dir) / name, FIXTURE_MANIFESTS[name]))
 
 
 def install_fixture(registry, context, name: str, sources_dir: Path, *, enable_fixture: bool = True,

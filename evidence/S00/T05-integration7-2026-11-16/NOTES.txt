@@ -1,0 +1,15 @@
+T05 integration step after fix round 7 (2026-11-16): evidence of the integration work only. No live provider call was made.
+
+red.txt                       New and changed tests run before any change under src/ or contracts/ (61 failed, 80 passed).
+green.txt                     The same selection, the full suite, coverage, L0 validators, packaging and mutation summary
+                              on the final tree.
+mutation_check.txt            16 single-point mutants of the source changes, each killed by a named test (script alongside).
+estimate_only_stdout.txt      NOT_GATE_EVIDENCE. `--estimate-only` output of the gate requalification command (no call made).
+binding_preflight_real_cli.txt
+                              NOT_GATE_EVIDENCE. The harness's free binding preflight against the real public CLI with no
+                              provider variable: init, install and greeting receipts all carry the pre-registered code digest.
+dryrun_stdout_NOT_GATE_EVIDENCE.txt, dryrun/
+                              NOT_GATE_EVIDENCE. Dry run with --dry-run-scripted (public CLI + the scripted fake model of the
+                              unit tests, network-free), default --binding-scope all, reduced repetitions. The binding check
+                              passed: 425 receipts, 425 bound, 0 missing, 0 mismatched. The scripted policy is a stand-in, so
+                              the pass or fail of a model-dependent case (CAP-01 and CAP-02 fail here) says nothing about a model.

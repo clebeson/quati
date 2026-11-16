@@ -52,16 +52,16 @@ import json
 import random
 from dataclasses import dataclass, replace
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any, Callable
 
-import quati
 from quati.application.code_identity import current_code_digest
 from quati.application.context_envelope import ContextEnvelope, EnvelopeError, build_envelope
 from quati.application.discovery_tools import DISCOVERY_TOOLS, execute_tool_call, honest_no_capability, \
     redacted_trajectory
 from quati.application.providers import Message, ModelRequest, ProbeProfile, ProviderError, ToolSpec
+from quati.behavior.contracts import default_catalog
 from quati.domain.canonical import digest
+from quati.domain.diagnostics import settled_exit
 from quati.domain.discovery import MAX_TOOL_CALLS_PER_TURN
 from quati.domain.social import social_match
 
@@ -228,8 +228,7 @@ def _strip_annotations(schema: Any) -> Any:
 
 
 def classification_schema() -> dict:
-    path = Path(quati.__file__).resolve().parents[2] / "contracts" / "request-classification.schema.json"
-    return _strip_annotations(json.loads(path.read_text(encoding="utf-8")))
+    return _strip_annotations(default_catalog().schema("request-classification.schema.json"))
 
 
 def ask_probe_profile() -> ProbeProfile:
@@ -637,7 +636,8 @@ class AskSession:
                  "package_sha256": snapshot.records[entry.key].get("package_sha256")} for entry in snapshot.entries]
 
     def finish(self, value: dict, envelope: ContextEnvelope | None) -> tuple[int, dict, dict]:
-        code = exit_code(value["status"], (value["error"] or {}).get("code"))
+        # M01 exit table rows 4 and 5: a refusal caused by a local store (the audit log) is not a provider failure.
+        code = settled_exit(exit_code(value["status"], (value["error"] or {}).get("code")), value)
         digests = self.digests(envelope)
         observed = sorted({call["model_id"] for call in self.model_calls if call["model_id"]})
         provider = {"provider_id": self.provider.transport, "transport": self.provider.transport,

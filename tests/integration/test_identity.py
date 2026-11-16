@@ -741,7 +741,7 @@ def test_idn_02_fault_decision_log_unavailable_refuses_the_read(profile: Profile
     session.commands.discovery.audit_sink = failing
     code, value = session.commands.search(CALENDAR_QUERY)
     assert (code, value['status'], value['error']['code'], value['data']) == (
-        5, 'UNAVAILABLE', 'TEMPORARILY_UNAVAILABLE', {'reason': 'audit_unavailable'})
+        4, 'UNAVAILABLE', 'TEMPORARILY_UNAVAILABLE', {'reason': 'audit_unavailable'})   # M01 exit table row 4: local store
     assert session.registry_reads == []
     session = Session(profile, DirectoryFixture(profile.config, grants=(personal,)))
     session.commands.discovery.audit_sink = failing

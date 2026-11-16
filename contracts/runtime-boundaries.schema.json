@@ -66,7 +66,7 @@
             "minLength": 1
           },
           "uniqueItems": true,
-          "description": "Spaces explicitly targeted by this request; readable scope is still resolved live by AuthorizationPort."
+          "description": "Spaces named by the authenticated request. Informational in S00: the AuthorizationPort does not read this field. The readable scope and the space that owns a resource are resolved at every check from the signed installation record (RFC-013 section 12.1; identity.schema.json LocalInstallationRecord), never from the request. In S00 the LOCAL identity adapter fills it from that record (personal space first) and its first entry only labels the space of an effect intent."
         },
         "act": {
           "type": [

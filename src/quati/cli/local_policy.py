@@ -10,13 +10,13 @@ import json
 import os
 from pathlib import Path
 
-import quati
+from quati.behavior.contracts import ASSET_ROOT
 from quati.behavior.fsutil import atomic_write, locked
 from quati.behavior.trusted_config import load_policy, load_trusted_policy, read_policy_snapshot, save_policy_registry
 from quati.domain.canonical import canonical_bytes
 from quati.domain.policy import PolicyFileSnapshot, PolicyRegistry, PolicyState, PolicyVersionRecord
 
-TEMPLATE = Path(quati.__file__).resolve().parents[2] / 'examples' / 'policies' / 'local-default.policy.json'
+TEMPLATE = ASSET_ROOT / 'examples' / 'policies' / 'local-default.policy.json'
 POLICY_FILE = 'policy.json'
 REGISTRY_FILE = 'policy.registry.json'
 

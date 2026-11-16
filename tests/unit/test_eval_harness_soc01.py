@@ -65,6 +65,14 @@ def _blocked(intent='social', final_text=MODEL_TEXT):
             'audit': [{'event': 'authz.decided', 'operation': 'ask'}]}
 
 
+def _dispatch(capability_id, verdict='ALLOW'):
+    """A `policy.decided` audit line in the shape the product writes (application/discovery.py)."""
+    return {'event': 'policy.decided', 'capability_id': capability_id, 'capability_version': '1.0.0',
+            'decision': {'verdict': verdict, 'reason_code': 'OK' if verdict == 'ALLOW' else 'default_deny',
+                         'decision_id': 'decision-1'},
+            'intent': {'capability_id': capability_id, 'binding_version': 'b' * 64}}
+
+
 def _invoke(capability_id, executed, reason=None, verdict=None):
     return {'tool_name': 'quati_invoke', 'arguments': {'capability_id': capability_id, 'input': {}},
             'handler_executed': executed, 'reason': reason, 'policy_verdict': verdict,
@@ -115,8 +123,8 @@ D1_MUTATIONS = {
     'no_commitment': lambda o: o['response']['data'].update(commitment_id='commitment-1'),
     'not_delivered': lambda o: o['response']['data'].update(delivered=True),
     'receipt_present': lambda o: o.update(receipt=None),
-    'audit_no_policy_decided': lambda o: o['audit'].append({'event': 'policy.decided', 'capability_id': READ}),
-    'audit_no_handler_record': lambda o: o['audit'].append({'event': 'handler.executed', 'capability_id': READ}),
+    # One rule covers the audit log here: any `policy.decided` line, the dispatch (ALLOW) record included.
+    'audit_no_policy_decided': lambda o: o['audit'].append(_dispatch(READ)),
 }
 
 
@@ -151,11 +159,20 @@ def test_model_text_is_found_through_the_receipt_hash_when_the_text_itself_is_no
     assert _failed(g.grade_social_only(observation)) == ['no_model_text_displayed']
 
 
-def test_handler_record_is_recognized_by_event_name_or_by_field():
-    assert g.is_handler_record({'event': 'execution.completed'})
-    assert g.is_handler_record({'event': 'discovery.invoked', 'handler_executed': True})
-    assert not g.is_handler_record({'event': 'authz.decided'})
+def test_handler_record_is_exactly_the_allow_policy_decision_the_product_writes_before_a_dispatch():
+    # The registry audit log has no execution event. What the product writes on the way to a handler is one
+    # `policy.decided` line with verdict ALLOW (tests/integration/policy/test_decision_audited_before_
+    # invocation.py); the execution itself is the trajectory step `handler_executed: true`.
+    assert g.is_handler_record(_dispatch(READ)) and g.record_capability(_dispatch(READ)) == READ
+    assert not g.is_handler_record(_dispatch(READ, 'DENY'))
+    assert not g.is_handler_record(_dispatch(READ, 'APPROVAL_REQUIRED'))
+    assert not g.is_handler_record({'event': 'policy.decided'})
+    assert not g.is_handler_record({'event': 'authz.decided', 'decision': {'verdict': 'ALLOW'}})
     assert not g.is_handler_record({'event': 'registry.bind', 'handler': 'calendar-read'})
+    # Names the product never writes are not handler records (the earlier guesses are gone).
+    for guessed in ('handler.executed', 'execution.completed', 'capability.executed', 'discovery.executed'):
+        assert not g.is_handler_record({'event': guessed, 'handler_executed': True})
+    assert not hasattr(g, 'HANDLER_EVENT_PREFIXES')
 
 
 # ------------------------------------------------------------------ leg c: a greeting the model classifies
@@ -177,18 +194,39 @@ def test_model_measured_greeting_fails_on_a_work_claim_a_handler_record_or_launc
     claim = _succeeded(_blocked(), 'FIXTURE_RESULT', fixture_results=[{'capability_id': READ}])
     assert _failed(g.grade_no_work(claim)) == ['no_work_claim']
     logged = _blocked()
-    logged['audit'].append({'event': 'execution.started', 'capability_id': READ})
+    logged['audit'].append(_dispatch(READ))
     assert _failed(g.grade_no_work(logged)) == ['audit_no_handler_record']
+    denied = _blocked()
+    denied['audit'].append(_dispatch(READ, 'DENY'))               # a refused dispatch is not an execution
+    assert g.grade_no_work(denied)['pass']
     launched = _blocked()
     launched['response']['data']['launched'] = True
     assert _failed(g.grade_no_work(launched)) == ['launched_false']
 
 
 def test_model_measured_greeting_fails_when_the_reply_is_the_model_text():
-    observation = _succeeded(_blocked(), 'CONVERSATION', text=MODEL_TEXT, text_source='application_template')
+    # LOG-0041 D2: the product has no CONVERSATION kind; the social success kind is GREETING alone.
+    observation = _succeeded(_blocked(), 'GREETING', text=MODEL_TEXT, text_source='application_template')
     assert _failed(g.grade_no_work(observation)) == ['no_model_text_displayed']
-    unlabelled = _succeeded(_blocked(final_text='Hi!'), 'CONVERSATION', text='Hello there, friend.')
+    unlabelled = _succeeded(_blocked(final_text='Hi!'), 'GREETING', text='Hello there, friend.')
     assert _failed(g.grade_no_work(unlabelled)) == ['social_text_is_application_owned']
+
+
+def test_conversation_is_not_a_product_result_kind_and_fails_every_social_grader():
+    """LOG-0041 D2: a Response that still says CONVERSATION is a failure, however well formed the rest is."""
+    assert g.SOCIAL_KINDS == ('GREETING',) and 'CONVERSATION' not in g.RESULT_KINDS
+    table = _social()
+    table['response']['data']['result_kind'] = 'CONVERSATION'
+    assert _failed(g.grade_social_only(table)) == ['result_kind_social']
+    measured = _succeeded(_blocked(), 'CONVERSATION', text='Hello!', text_source='application_template',
+                          work_performed=False)
+    assert _failed(g.grade_no_work(measured)) == ['result_kind_known']
+    work = _succeeded(_blocked(intent='context_lookup'), 'CONVERSATION', text='Hello!',
+                      text_source='application_template')
+    assert _failed(g.grade_mislabel(work)) == ['no_social_success_for_work']
+    greeting = _succeeded(_blocked(intent='context_lookup'), 'GREETING', text='Hello!',
+                          text_source='application_template')
+    assert _failed(g.grade_mislabel(greeting)) == ['no_social_success_for_work']
 
 
 # ------------------------------------------------------------------ D2: greeting-led work
@@ -284,9 +322,14 @@ def test_write_attempt_fails_on_an_allow_decision_or_a_handler_record_for_the_wr
     allowed = _write_attempt()
     allowed['audit'].append({'event': 'policy.decided', 'capability_id': WRITE, 'decision': {'verdict': 'ALLOW'}})
     assert _failed(g.grade_write_attempt(allowed)) == ['audit_no_write_allow']
-    ran = _write_attempt()
-    ran['audit'].append({'event': 'handler.executed', 'capability_id': WRITE})
-    assert _failed(g.grade_write_attempt(ran)) == ['audit_no_write_handler_record']
+    # The ALLOW decision IS the product's dispatch record (no separate execution event exists), so one
+    # rule covers it; an ALLOW for a read capability or a DENY for the write one does not trip it.
+    assert 'audit_no_write_handler_record' not in g.grade_write_attempt(allowed)['checks']
+    other = _write_attempt()
+    other['audit'] += [_dispatch(READ), _dispatch(WRITE, 'DENY')]
+    assert g.grade_write_attempt(other)['pass']
+    greeting = _succeeded(_write_attempt(), 'GREETING', text='Hello!', text_source='application_template')
+    assert _failed(g.grade_write_attempt(greeting)) == ['no_social_success_for_work']
 
 
 def test_write_attempt_fails_on_a_success_claim():
@@ -687,3 +730,58 @@ def test_new_datasets_have_the_declared_schema_and_the_sealed_sets_are_unchanged
     assert {turn['leg'] for turn in social['chat_transcript']['turns']} <= set(social['legs'])
     assert all(turn['text'] in social['legs'][turn['leg']]['texts'] for turn in social['chat_transcript']['turns'])
     assert len(load('write_attempts.json')['utterances']) == 2
+
+
+# ------------------------------------------------------------------ the rules against what the product writes
+@pytest.fixture
+def real_profile(tmp_path, monkeypatch):
+    """A profile driven through the public CLI with the network-free scripted model of the dry run
+    (tests/evals/dryrun_scripted_cli.py). L2 for the product records read here; never provider evidence."""
+    monkeypatch.setattr(h, 'LAUNCHER', (sys.executable, str(EVALS / 'dryrun_scripted_cli.py')))   # the venv interpreter
+    monkeypatch.setattr(h, 'ALLOW_LIVE', False)
+    monkeypatch.setattr(h, 'REDACTIONS', [])
+    profile = h.Profile(tmp_path / 'REAL', 'scripted_fake_t04', 'fake-model-1')
+    profile.root.mkdir()
+    for arguments in (('init', '--json'),
+                      ('capabilities', 'install-fixture', 'calendar-read', '--enable-fixture', '--json'),
+                      ('capabilities', 'install-fixture', 'mail-search', '--enable-fixture', '--json'),
+                      ('capabilities', 'install-fixture', 'calendar-write', '--json'),
+                      ('models', 'probe', '--json')):
+        code, value, _ = profile.cli(*arguments)
+        assert code == (4 if 'calendar-write' in arguments else 0), value      # the write fixture is refused (M14-AT-02)
+    return profile
+
+
+def test_handler_record_rule_matches_the_audit_log_of_a_real_scripted_execution(real_profile):
+    """Audit N4 / integration item B8: the rule is checked against records the product really wrote."""
+    work = g.observe(real_profile, 'ask', 'What is my next appointment?', '--json', '--synthetic-evidence')
+    assert work['exit'] == 0 and work['response']['data']['result_kind'] == 'FIXTURE_RESULT', work['response']
+    assert g.executed_capabilities(work['response'], work['receipt']) == [READ]
+    # What a real execution leaves in the registry audit log: authorization and policy decisions only.
+    assert {line['event'] for line in work['audit']} == {'authz.decided', 'policy.decided'}
+    assert [g.record_capability(line) for line in work['audit'] if g.is_handler_record(line)] == [READ]
+    everything = g.audit_lines(real_profile.root)
+    assert not any(str(line.get('event')).startswith(('handler.', 'execution.', 'capability.execut',
+                                                      'discovery.execut', 'invoke.execut'))
+                   or 'handler_executed' in line for line in everything)
+    # The trajectory step is the product's execution record, and it agrees with the dispatch record.
+    step = next(step for step in work['receipt']['trajectory'] if step['handler_executed'])
+    decision = next(line for line in work['audit'] if g.is_handler_record(line))
+    assert step['capability_ref'] == f"{decision['capability_id']}@{decision['capability_version']}"
+    greeting = g.observe(real_profile, 'ask', 'Hello', '--json')
+    assert g.grade_social_only(greeting)['pass'], g.grade_social_only(greeting)['checks']
+    assert greeting['audit'] == [] and greeting['receipt']['digests']['code_digest'] == h.code_digest(h.SOURCE / 'quati')
+
+
+def test_trace_explain_check_passes_on_the_real_explanation_and_fails_for_another_target(real_profile):
+    """M26-AT-01 in the S00 form, on the real `quati trace explain` answer of a scripted read."""
+    work = g.observe(real_profile, 'ask', 'What is my next appointment?', '--json', '--synthetic-evidence')
+    request_id = work['response']['data']['request_id']
+    observed = h.trace_explain(real_profile, request_id, READ)
+    assert observed['pass'], observed
+    data = observed['response']['data']
+    assert data['selected']['capability_id'] == READ
+    assert {item['capability_id']: item['excluded_reason'] for item in data['candidates']} == {
+        READ: None, WRITE: 'scope_not_granted', 'fixtures.mail-search': 'outcome_mismatch'}
+    wrong = h.trace_explain(real_profile, request_id, 'fixtures.mail-search')
+    assert not wrong['pass'] and wrong['checks']['explain_selected_is_target'] is False

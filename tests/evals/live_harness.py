@@ -23,6 +23,7 @@ import json
 import math
 import os
 import random
+import re
 import shutil
 import subprocess
 import sys
@@ -259,6 +260,45 @@ def apply_validity(graded: dict, validity: str, reasons: list) -> dict:
     return graded
 
 
+EXCLUDED_REASONS = ('lower_rank', 'scope_not_granted', 'policy_denied', 'capability_unavailable', 'outcome_mismatch')
+_DIGEST = re.compile(r'[0-9a-f]{64}')
+
+
+def explanation_checks(data, target: str) -> dict:
+    """The S00 `CapabilityExplanation` shape (docs/prds/M26.md, "S00 form of show and explain") for a
+    request whose executed capability must be ``target``: `selected` is the target and is bound to its
+    ALLOW policy decision; `candidates` is sorted by id, holds the target as the one candidate that is not
+    excluded, and gives every alternative an `authorization` and an `excluded_reason` of the M26 table (a
+    write fixture is DENY: scope_not_granted or policy_denied); no model-written rationale is displayed."""
+    data = data if isinstance(data, dict) else {}
+    selected = data.get('selected') if isinstance(data.get('selected'), dict) else {}
+    listed = data.get('candidates') if isinstance(data.get('candidates'), list) else []
+    candidates = [item for item in listed if isinstance(item, dict)]
+    ids = [item.get('capability_id') for item in candidates]
+    chosen = [item for item in candidates if item.get('capability_id') == target]
+    others = [item for item in candidates if item.get('capability_id') != target]
+    writes = [item for item in others if str(item.get('capability_id')).removeprefix(PREFIX) in WRITE_FIXTURES]
+    executed = data.get('executed_capabilities') if isinstance(data.get('executed_capabilities'), list) else []
+    binding = selected.get('binding_hash')
+    return {
+        'explain_selected_is_target': selected.get('capability_id') == target and bool(selected.get('version')),
+        'explain_selected_bound_to_allow_decision': isinstance(binding, str) and bool(_DIGEST.fullmatch(binding))
+        and isinstance(data.get('policy_decision_id'), str) and bool(data.get('policy_decision_id')),
+        'explain_executed_is_target': [str(ref).split('@')[0] for ref in executed] == [target],
+        'explain_target_candidate_not_excluded': len(chosen) == 1 and chosen[0].get('authorization') == 'ALLOW'
+        and chosen[0].get('excluded_reason') is None,
+        'explain_alternatives_carry_reasons': len(candidates) == len(listed) and all(
+            item.get('authorization') in ('ALLOW', 'DENY') and item.get('excluded_reason') in EXCLUDED_REASONS
+            for item in others),
+        'explain_write_alternatives_denied': all(
+            item.get('authorization') == 'DENY' and item.get('excluded_reason') in ('scope_not_granted', 'policy_denied')
+            for item in writes),
+        'explain_candidates_sorted_and_unique': bool(ids) and all(isinstance(name, str) for name in ids)
+        and ids == sorted(set(ids)),
+        'explain_no_model_text': data.get('model_rationale') is None,
+    }
+
+
 def trace_explain(profile: Profile, request_id, target: str) -> dict:
     """M26-AT-01 observation (decision D6): `quati trace explain REQUEST_ID` after a completed request.
     A typed UNSUPPORTED or INVALID_INPUT answer is a FAILED check, never a skipped one."""
@@ -269,7 +309,7 @@ def trace_explain(profile: Profile, request_id, target: str) -> dict:
     checks = {'request_id_present': True,
               'trace_explain_available': code == 0 and value.get('status') == 'SUCCEEDED'
               and error not in ('UNSUPPORTED', 'INVALID_INPUT'),
-              'trace_explain_names_selected_capability': target in json.dumps(value.get('data'), default=str)}
+              **explanation_checks(value.get('data'), target)}
     return {'pass': all(checks.values()), 'checks': checks, 'exit': code, 'response': value,
             'status': value.get('status'), 'error_code': error}
 

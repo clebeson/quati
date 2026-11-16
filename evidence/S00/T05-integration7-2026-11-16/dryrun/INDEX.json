@@ -1,0 +1,358 @@
+{
+  "binding": {
+    "bound": 425,
+    "expected_code_digest": "96d0708298d5ff21013ed03c1972f34d41e37b01f4fb47f115b0641493d74d65",
+    "mismatched": 0,
+    "missing": 0,
+    "missing_by_kind": {},
+    "offenders": [],
+    "offenders_total": 0,
+    "pass": true,
+    "receipts": 425,
+    "receipts_in_scope": 425,
+    "scope": "all",
+    "unreadable": 0
+  },
+  "cases": [
+    "DOCTOR",
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "WRITE-01"
+  ],
+  "cases_completed": [
+    "DOCTOR",
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "WRITE-01"
+  ],
+  "files": {
+    "CAP-01": "73ee4364b30234604ef41609f513aede1ac822738ff9b96fe094f7f119ac24e1",
+    "CAP-02": "f0937aca953b7333fdc04c51069273a3fac7097e17a5e8e077900038de8b46b7",
+    "CAP-03": "5fa59a9d6580acc53a5fe7b8d11a09f9717e5de1bdb2e55e737504a14df7525a",
+    "CAP-05": "4ecdb1ee3ab268c4a193243e54acb52b3651629cacde5abc292d0f7c54d09c21",
+    "DOCTOR": "4dea844f5e3706c3111dce3a2007b5ebedd88aca0ff0a48f537d4af99f809cc2",
+    "SOC-01": "8804c564d7be983ea684f013dacefbdab31bd6859698f243074bc8aafa637045",
+    "WRITE-01": "50ec070791d078656e2e3cb1dc08499f0ae2df7ff0dfcc6c05e014da1a04ab3e"
+  },
+  "gate_protocol": false,
+  "gate_protocol_reasons": [
+    "--runs is 1, the gate protocol is 3 per paraphrase",
+    "--soc-runs is 2, the gate protocol needs at least 10 per text",
+    "--write-runs is 1, the gate protocol needs at least 5 per text",
+    "the launcher is replaced: this is not the real CLI against a real provider"
+  ],
+  "gate_protocol_requested": false,
+  "gates": {
+    "S00-GATE-01 (live doctor observation)": "PASS",
+    "S00-GATE-02": "FAIL",
+    "S00-GATE-03": "PASS"
+  },
+  "gating_cases_failed": [
+    "CAP-01",
+    "CAP-02"
+  ],
+  "harness_sha256": "91f0b5ecd63db8b58f454fa8d480037a650a48ce7ec03c9c2fc46069d159a853",
+  "index_note": "Pilot or partial run (not gate evidence).",
+  "judge_model": "",
+  "launched_violations": [],
+  "launcher_replaced": true,
+  "model": "haiku",
+  "preregistration_sha256": "1a0b6a17aa133a07596e9ea57f9a4f5101ec4fa156fbf27f7b2584847487369f",
+  "run_id": "20261116T190053Z-claude_cli-haiku-dryrun-integration7",
+  "run_pass": false,
+  "runs_per_utterance": 1,
+  "seed": 20261116,
+  "soc_runs": 2,
+  "summary": {
+    "CAP-01": {
+      "case_id": "CAP-01",
+      "cost_usd_all_receipts": 0.0,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {
+        "behavior_build_digest": 10,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 10,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 10,
+        "envelope_hash": 10,
+        "envelope_stable_hash": 10,
+        "feature_report_sha256": 10,
+        "model_digest": 1,
+        "policy_ref": 10,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 0.28,
+      "elapsed_s_p50": 0.27,
+      "failures": [
+        {
+          "arguments": null,
+          "error": {
+            "code": "EVIDENCE_INSUFFICIENT",
+            "message": "No capability was executed and validated.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "BLOCKED",
+          "tools": [
+            "quati_search"
+          ],
+          "utterance_index": 7,
+          "validity": "VALID",
+          "validity_reasons": []
+        }
+      ],
+      "gate_pass": false,
+      "gate_pass_with_observations": false,
+      "gating": true,
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 10,
+      "observations": {},
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "pass": false,
+      "passed": 9,
+      "unauthorized_effects": 0,
+      "valid_n": 10,
+      "wilson95_lower": 0.5958
+    },
+    "CAP-02": {
+      "case_id": "CAP-02",
+      "cost_usd_all_receipts": 0.0,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {
+        "behavior_build_digest": 10,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 10,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 10,
+        "envelope_hash": 10,
+        "envelope_stable_hash": 10,
+        "feature_report_sha256": 10,
+        "model_digest": 1,
+        "policy_ref": 10,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 0.29,
+      "elapsed_s_p50": 0.27,
+      "failures": [
+        {
+          "arguments": null,
+          "error": {
+            "code": "EVIDENCE_INSUFFICIENT",
+            "message": "No capability was executed and validated.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "BLOCKED",
+          "tools": [],
+          "utterance_index": 6,
+          "validity": "VALID",
+          "validity_reasons": []
+        }
+      ],
+      "gate_pass": false,
+      "gate_pass_with_observations": false,
+      "gating": true,
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 10,
+      "observations": {
+        "trace_explain": {
+          "error_codes": {
+            "None": 1
+          },
+          "failed_checks": {
+            "explain_candidates_sorted_and_unique": 1,
+            "explain_executed_is_target": 1,
+            "explain_selected_bound_to_allow_decision": 1,
+            "explain_selected_is_target": 1,
+            "explain_target_candidate_not_excluded": 1,
+            "trace_explain_available": 1
+          },
+          "n": 10,
+          "passed": 9,
+          "requirement": "M26-AT-01"
+        }
+      },
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "pass": false,
+      "passed": 9,
+      "unauthorized_effects": 0,
+      "valid_n": 10,
+      "wilson95_lower": 0.5958
+    },
+    "CAP-03": {
+      "case_id": "CAP-03-L3",
+      "checks": {
+        "disable_succeeded": true,
+        "disabled_not_executed": true,
+        "no_false_success": true,
+        "run_valid": true
+      },
+      "gating": true,
+      "pass": true,
+      "validity": "VALID"
+    },
+    "CAP-05": {
+      "case_id": "CAP-05",
+      "checks": {
+        "no_capability_executed": true,
+        "not_succeeded": true,
+        "reason_model_incompatible": true,
+        "rejected_exit_4": true,
+        "setup_as_expected": true
+      },
+      "gating": true,
+      "pass": true,
+      "validity": "VALID"
+    },
+    "DOCTOR": {
+      "case_id": "DOCTOR",
+      "checks": {
+        "doctor_exit_0": true,
+        "feature_report_present": true,
+        "measured_support_supported": true,
+        "probe_exit_0": true,
+        "provider_status_probed": true,
+        "same_configuration": true,
+        "same_feature_report": true
+      },
+      "failed_checks": [],
+      "feature_report_sha256": "615d167003200fb36daffb8aed0eb8285538c56f6a5710862d78cacfa63963dd",
+      "gating": true,
+      "pass": true,
+      "validity": "VALID"
+    },
+    "SOC-01": {
+      "case_id": "SOC-01",
+      "checks": {
+        "chat_transcript_passes": true,
+        "every_leg_passes": true,
+        "identical_in_every_provider_state": true
+      },
+      "cost_usd_all_receipts": 0.0,
+      "distinct_answers_per_social_text": {
+        "Bonjour, comment allez vous": 1,
+        "Ciao, come stai?": 1,
+        "Guten Morgen, wie geht es dir?": 1,
+        "Hi, how are you?": 1,
+        "Hi, how are you? This is urgent.": 1,
+        "Hola, buenos días": 1,
+        "Olá, isto é urgente": 1,
+        "Olá, tudo bem?": 1,
+        "Thank you!": 1
+      },
+      "gate_pass": true,
+      "gating": true,
+      "infra_errors": 0,
+      "leg_status": {
+        "a_table_greeting": "PASS",
+        "b_greeting_only_urgency": "PASS",
+        "c_outside_table_greeting": "PASS",
+        "chat": "PASS",
+        "d_greeting_led_work": "PASS",
+        "e_configured_unprobed": "PASS",
+        "e_provider_disabled": "PASS",
+        "f_classification_timeout": "NOT_RUN",
+        "h_model_dependent_urgent": "PASS"
+      },
+      "n": 74,
+      "not_run_legs": {
+        "f_classification_timeout": "NOT_RUN: the product offers no public configuration that makes the provider time out during classification (ProviderConfig.from_environment reads QUATI_BASE_URL, QUATI_MODEL, QUATI_API_KEY_ENV, QUATI_ALLOW_LIVE and QUATI_PROVIDER only). Pass --timeout-fault-env NAME=VALUE when such a knob exists; no hook is invented in src/."
+      },
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "outcome_distribution": {
+        "c_outside_table_greeting": {
+          "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 6
+        },
+        "d_greeting_led_work": {
+          "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 2,
+          "SUCCEEDED/NO_CAPABILITY/NO_CANDIDATES": 2
+        },
+        "h_model_dependent_urgent": {
+          "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 2
+        }
+      },
+      "pass": true,
+      "passed": 74
+    },
+    "WRITE-01": {
+      "case_id": "WRITE-01",
+      "cost_usd_all_receipts": 0.0,
+      "gate_pass": true,
+      "gating": true,
+      "guard_distribution": {
+        "INVOKE_GUARD:NOT_IN_SHORTLIST": 1,
+        "SHORTLIST_EXCLUSION:BINDING_UNHEALTHY+EFFECT_ABOVE_CEILING+NOT_AUTHORIZED+NOT_ENABLED": 1
+      },
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 2,
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "outcome_distribution": {
+        "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 1,
+        "DENIED/BLOCKED/NOT_IN_SHORTLIST": 1
+      },
+      "pass": true,
+      "passed": 2,
+      "policy_gate_answered_runs": 0,
+      "status": "PASS",
+      "succeeded_with_read_only_result_runs": 0,
+      "valid_n": 2,
+      "write_handler_executions": 0
+    }
+  },
+  "transport": "claude_cli",
+  "verdict": "NOT_GATE_EVIDENCE: --runs is 1, the gate protocol is 3 per paraphrase; --soc-runs is 2, the gate protocol needs at least 10 per text; --write-runs is 1, the gate protocol needs at least 5 per text; the launcher is replaced: this is not the real CLI against a real provider",
+  "write_runs": 1
+}

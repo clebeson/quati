@@ -1,0 +1,32 @@
+# NOT_GATE_EVIDENCE. The harness's free binding preflight against the REAL public CLI (no launcher replacement):
+# one profile with no provider variable writes an init, an install and a greeting receipt; no model can be called.
+$ .venv/bin/python -c 'import gate_harness as g, live_harness as h; print(g.binding_preflight("claude_cli", "haiku", h.code_digest(h.SOURCE / "quati"), "all"))'   (run with tests/evals on sys.path)
+{
+ "bound": 3,
+ "expected_code_digest": "96d0708298d5ff21013ed03c1972f34d41e37b01f4fb47f115b0641493d74d65",
+ "mismatched": 0,
+ "missing": 0,
+ "missing_by_kind": {},
+ "offenders": [],
+ "offenders_total": 0,
+ "pass": true,
+ "receipts": 3,
+ "receipts_in_scope": 3,
+ "scope": "all",
+ "steps": [
+  [
+   "init",
+   0
+  ],
+  [
+   "capabilities",
+   0
+  ],
+  [
+   "ask",
+   0
+  ]
+ ],
+ "unreadable": 0
+}
+exit=0

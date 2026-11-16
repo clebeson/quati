@@ -17,7 +17,9 @@ from platformdirs import user_config_path
 from quati.application.identity import AccessDenied, LocalToken, RequestContext, canonical_bytes, verify_token
 
 
-TENANT_ROLES = ('OWNER', 'ADMIN', 'MEMBER', 'GUEST')      # contracts/identity.schema.json Membership roles
+TENANT_ROLES = ('OWNER', 'ADMIN', 'MEMBER', 'GUEST')      # contracts/identity.schema.json LocalInstallationRecord
+# The identifiers every command reads from the signed record (RFC-013 section 4); each is a non-empty string.
+IDENTIFIER_FIELDS = ('tenant_id', 'principal_id', 'personal_space_id', 'organization_space_id')
 
 
 def _ulid():
@@ -123,6 +125,10 @@ class LocalIdentity:
             public = base64.b64decode(signed['public_key'], validate=True)
             Ed25519PublicKey.from_public_bytes(public).verify(signature, canonical_bytes(signed))
             if signed['owner_uid'] != os.getuid() or key.public_key().public_bytes_raw() != public:
+                raise AccessDenied()
+            # A correctly signed record is still a rejected credential when an identifier it must carry is
+            # absent, empty or not a string (LOG-0041 N10): typed here, never a KeyError in a command.
+            if not all(isinstance(signed.get(name), str) and signed[name] for name in IDENTIFIER_FIELDS):
                 raise AccessDenied()
             return signed, key
         except (OSError, ValueError, KeyError, TypeError, InvalidSignature, RecursionError) as exc:

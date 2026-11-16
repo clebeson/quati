@@ -6,6 +6,7 @@ import os
 import uuid
 
 from quati.adapters.private_fs import state_directory
+from quati.application.code_identity import current_code_digest
 
 
 class ReceiptNotWritten(OSError):
@@ -43,9 +44,21 @@ def receipts_directory():
     return state_directory('receipts')
 
 
+def bound_to_code(value):
+    """``value`` with ``digests.code_digest`` set to the digest of the running package (audit P2-E).
+
+    Every receipt passes through here, whatever its kind (request, capability command, feature report,
+    audit event), so a record can always be bound to the code that wrote it. The value comes from the
+    one function the model-path receipt uses and is never taken from the caller."""
+    digests = value.get('digests')
+    return {**value, 'digests': {**(digests if isinstance(digests, dict) else {}),
+                                 'code_digest': current_code_digest()}}
+
+
 def write_receipt(value):
     directory = receipts_directory()
-    record = redact({**value, 'timestamp':datetime.now(timezone.utc).isoformat(), 'evidence_version':'s00/1'})
+    record = redact({**bound_to_code(value), 'timestamp':datetime.now(timezone.utc).isoformat(),
+                     'evidence_version':'s00/1'})
     blob = json.dumps(record, indent=2, sort_keys=True).encode() + b'\n'
     path = directory / (uuid.uuid4().hex + '.json')
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

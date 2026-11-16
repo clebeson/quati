@@ -3,7 +3,7 @@
 ``execute_tool_call`` runs one model ToolCall against a DiscoveryTurn for the turn's
 authenticated RequestContext and returns (tool result JSON text for the model, trajectory
 record). Tool results are framed as untrusted data; nothing in them can change policy,
-permissions or lifecycle. Not wired into ``quati ask`` (S00-T04).
+permissions or lifecycle.
 """
 
 from __future__ import annotations

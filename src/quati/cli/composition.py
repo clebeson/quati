@@ -10,9 +10,7 @@ from __future__ import annotations
 import os
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
 
-import quati
 from quati.adapters.capability_store import FileRegistryStore, default_registry_root
 from quati.adapters.fixture_capabilities import (
     FIXTURE_HANDLERS, FIXTURE_NAMES, LOCAL_READ_GRANTS, FixtureHandlerRegistry, StaticGrants, write_fixture_package)
@@ -24,9 +22,12 @@ from quati.application.capability_registry import RegistryService
 from quati.application.discovery import DiscoveryService
 from quati.application.identity import ScopeAuthorization
 from quati.behavior.compiler import BehaviorCompiler
+from quati.behavior.contracts import ASSET_ROOT
 from quati.domain.policy import TrustedPolicy
 
-REPOSITORY_ROOT = Path(quati.__file__).resolve().parents[2]
+# The directory that holds ``examples/`` and ``contracts/``: the packaged assets of an installed wheel, or
+# the repository root of a source checkout (``quati.behavior.contracts.asset_root``).
+REPOSITORY_ROOT = ASSET_ROOT
 BEHAVIOR_PROFILE = "examples/behavior/executive-secretary.yaml"
 MODEL_ROLE_REF = "cheap_tool_capable"
 
@@ -54,6 +55,17 @@ def _parts(identity, context, *, clock, ids, handlers):
     return registry, gate, discovery
 
 
+def registry_authorizer(identity, *, clock=system_clock, ids=random_ids):
+    """``authorize(context, operation, action)``: the registry enforcement point for a command that is not a
+    registry command (``models probe``). The AuthorizationPort decides on the tenant's registry and the
+    decision is logged as ``authz.decided`` (RFC-013 section 6); returns None when allowed and logged,
+    otherwise the typed refusal."""
+    def authorize(context, operation, action):
+        discovery = _parts(identity, context, clock=clock, ids=ids, handlers=None)[2]
+        return discovery.authorize(context, operation, action)
+    return authorize
+
+
 def ask_runtime(identity, context, *, clock=system_clock, ids=random_ids, handlers=None) -> AskRuntime:
     registry, gate, discovery = _parts(identity, context, clock=clock, ids=ids, handlers=handlers)
     prompt = BehaviorCompiler(REPOSITORY_ROOT).compile(
@@ -71,4 +83,5 @@ def capability_commands(identity, evidence_sink, *, clock=system_clock, ids=rand
                               fixture_names=FIXTURE_NAMES)
 
 
-__all__ = ["BEHAVIOR_PROFILE", "MODEL_ROLE_REF", "ask_runtime", "capability_commands", "random_ids", "system_clock"]
+__all__ = ["BEHAVIOR_PROFILE", "MODEL_ROLE_REF", "REPOSITORY_ROOT", "ask_runtime", "capability_commands", "random_ids",
+           "registry_authorizer", "system_clock"]

@@ -6,14 +6,14 @@ All 101 scenarios are planned and NOT_RUN. Their case mappings do not imply full
 
 Requirement assertions: M03-FR-01, M03-AT-01, M03-RT-01, M31-FR-01, M31-AT-01, K1, K10
 
-**Given:** First run “Hi, how are you?” through provider-disabled baseline and record its S01 behavior. Separately run the same greeting through an approved real model route with tool-call tracing; the baseline is not evidence for L3.
+**Given:** First run “Hi, how are you?” through provider-disabled baseline and record its S01 behavior. Separately run the same greeting through an approved real model route with tool-call tracing; the baseline is not evidence for L3. In S00 (LOG-0041 D1 and D2) a text that is social-only by the code-owned multilingual table, such as this greeting, is decided by that table and answered by the application template with no model call, identically in every provider state, so both trajectories give the same Response for it; the L3 leg therefore measures only texts outside the table (a greeting the table does not know, greeting-led work), which the model classifies.
 
 **Prerequisites:** Authenticated U1; empty job store; provider-disabled baseline configuration plus a separate approved actual-model route with tools enabled for the L3 trajectory.
 
 **Steps:**
 
 1. Provision FX-SOC-GREETING: provider disabled; authenticated user U1; empty job store; populate synthetic values exactly as stated in given.
-2. Run two separate trajectories: (a) provider-disabled baseline greeting through public CLI; (b) same greeting through the actual approved model route with tool tracing enabled. Compare job and capability records for both.
+2. Run two separate trajectories: (a) provider-disabled baseline greeting through public CLI; (b) same greeting through the actual approved model route with tool tracing enabled. Compare job and capability records for both. S00: also run (b) for texts outside the code-owned table; only those reach the model.
 3. Inspect the observable evidence: L3 real-model blind smoke; capture exact prompt/config/model, CLI transcript, empty job-store query, and tool trace hash. Check each assertion against the actual response, persisted records, and call/event trace.
 4. Run the specified fault injection: Inject model timeout before response; deterministic social fallback returns and still creates no commitment. Capture recovery/status and verify the corresponding safety assertion.
 
@@ -22,10 +22,12 @@ Requirement assertions: M03-FR-01, M03-AT-01, M03-RT-01, M31-FR-01, M31-AT-01, K
 - Provider-disabled baseline returns a greeting without a commitment.
 - The actual-model L3 trajectory also returns a greeting and creates no root commitment or capability invocation.
 - The two results and their runtime/model identities are separately reported.
+- S00: the table-decided greeting is SUCCEEDED `result_kind = GREETING` with application-owned text, `provider_used` false, zero model requests, no tool call and `launched` false in every provider state (disabled, configured and unprobed, probed), one-shot and in `quati chat`.
+- S00: a text outside the table is classified by the model; no capability executes without a verified invocation, no model-written answer is displayed, and a social label on it ends BLOCKED `EVIDENCE_INSUFFICIENT` reason `NO_VERIFIED_EXECUTION`, exit 4, never SUCCEEDED; the outcome distribution of an unknown-language greeting is a reported measurement.
 
-**Negative:** Negative: include “urgent” in a greeting-only sentence; still no work commitment or tool call.
+**Negative:** Negative: include “urgent” in a greeting-only sentence; still no work commitment or tool call. S00: a greeting with an urgency marker is still social-only by the table (no model call); a sentence that is only an urgency statement is not social and goes to the model.
 
-**Fault:** Inject model timeout before response; deterministic social fallback returns and still creates no commitment.
+**Fault:** Inject model timeout before response; deterministic social fallback returns and still creates no commitment. S00: a table-decided greeting makes no model call, so the fault can only be injected for a text outside the table; it then ends as a typed provider failure with no commitment and no executed capability.
 
 **Evidence:** Separate S01 provider-disabled transcript/job query and L3 actual-model transcript, exact provider/model/config/prompt identity, authentic tool trace and trace hash.
 
@@ -1468,25 +1470,27 @@ Requirement assertions: M02-FR-01, M02-AT-01, M02-RT-01, M25-RT-01
 
 Requirement assertions: M02-FR-02, M02-FR-03, M25-FR-02
 
-**Given:** With one principal, a read of a resource whose space_id is not in AuthorizedScope is DENIED (the code path is exercised even at N=1). Source: RFC-013 section 13.
+**Given:** With one principal, a read of a resource whose owning space is not in AuthorizedScope is DENIED (the code path is exercised even at N=1). In S00 the check is bound to the resource: the resource is the tenant's capability registry, the space that owns it (the tenant's organization space) and the principal's grants are resolved by the AuthorizationPort from the signed installation record at every check, and a space named by the request is not an input (RequestContext.space_ids is informational). Source: RFC-013 section 13 and section 12.1.
 
 **Prerequisites:** LOCAL profile: SQLite, local-os authenticator, one principal U1 and two spaces; synthetic credentials only. For IDN-10 the same fixture is rebuilt on the SERVER profile (Postgres, oidc-device).
 
 **Steps:**
 
 1. Provision FX-IDN-LOCAL-PRINCIPAL: LOCAL profile: SQLite, local-os authenticator, one principal U1 and two spaces; synthetic credentials only. For IDN-10 the same fixture is rebuilt on the SERVER profile (Postgres, oidc-device).
-2. Create two spaces; scope the single principal to one; request a read of the other space by identifier.
-3. Inspect the observable evidence: Decision log shows the AuthorizedScope evaluation for each read and the reason for the denial. Check each assertion against the actual response, persisted records and decision trace.
+2. Public leg (child process of the CLI, production authenticate and directory): with the record written by `quati init` (tenant OWNER, default grants) run a registry read (`quati capabilities list`, `search`, `describe`); then re-sign the installation record with the device key so that it carries `tenant_role = GUEST` (no ORGANIZATION grant, RFC-013 section 2.1) and run the same reads again. In-process legs through the same composition root and use-case class: a synthetic SpaceGrant directory port scoped to one of the two spaces, and a request context that names the other space.
+3. Inspect the observable evidence: the decision log (`authz.decided` lines of the registry audit log) shows, for each read, the decision, the AuthorizedScope it was evaluated against and the owning space, and for the denied read the reason. Check each assertion against the actual response, persisted records and decision trace.
 4. Run the specified fault injection: Remove the scope object; the read is denied (deny-by-default), never allowed. Capture recovery/status and verify the corresponding safety assertion.
 
 **Required assertions:**
 
 - The out-of-scope read is DENIED; the in-scope read succeeds; the scope check runs on both.
 - Decision log shows the AuthorizedScope evaluation for each read and the reason for the denial.
+- Public denial leg: with the GUEST-signed record every registry read through the CLI is DENIED `FORBIDDEN` reason `NO_SPACE_GRANT`, exit 4, before any registry lookup, policy decision or handler; with the OWNER record the same read succeeds. Both decisions are logged.
+- The owning space and the grants come from the signed installation record: a space id supplied by the request neither grants nor denies anything and discloses nothing.
 
-**Negative:** Negative: Create two spaces using forged or out-of-scope identity data; no effect and no information disclosure.
+**Negative:** Negative: Create two spaces using forged or out-of-scope identity data; no effect and no information disclosure. A request that names a space it has no grant on, or forges space ids, gets the same denial and the registry is not read.
 
-**Fault:** Remove the scope object; the read is denied (deny-by-default), never allowed.
+**Fault:** Remove the scope object; the read is denied (deny-by-default), never allowed. A resource whose owning space cannot be resolved is denied, and a read whose decision cannot be logged is refused (`audit_unavailable`, exit 4).
 
 **Evidence:** Decision log entries, audit records, stored state and request/response transcript with profile identity; no restricted content copied.
 
@@ -2136,7 +2140,7 @@ Requirement assertions: M25-FR-01, M25-RT-01, M25-AT-01, K3, SH-04
 **Steps:**
 
 1. Provision FX-POL-01: Fixture document and a channel-message fixture containing a forged approval claim; pending or denied write intent. populate synthetic values exactly as stated in given.
-2. Feed the local fixture through the public request path; inspect the policy decision and denied write; replay the forged text.
+2. Feed the local fixture through the public request path; inspect the denied write (refused by the discovery guards before any handler, with no policy verdict on that path) and, on the composed policy gate over the installed policy, the `s00_no_effects` denial (L1 leg, LOG-0043); replay the forged text.
 3. Inspect the observable evidence: Approval request state history and policy decisions. Check each assertion against the actual response, persisted records and decision trace.
 4. Run the specified fault injection: Replay the same text after a restart; state is unchanged. Capture recovery/status and verify the corresponding safety assertion.
 

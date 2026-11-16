@@ -664,6 +664,63 @@
         }
       },
       "additionalProperties": false
+    },
+    "LocalInstallationRecord": {
+      "description": "The signed LOCAL installation record that `quati init` writes to <config dir>/identity.json (RFC-013 section 4 and section 12.1). `signature` is the Ed25519 signature, by the device key whose public half is `public_key`, over the quati-json/1 canonical form of the record without `signature`. The identity adapter accepts the record only when the signature verifies, `owner_uid` is the calling OS user, the device key matches `public_key` and every identifier is a non-empty string; otherwise the credential is rejected (UNAUTHENTICATED). The AuthorizationPort resolves the readable scope and the space that owns the tenant registry from this record at every check, never from a request. A field not listed here is ignored.",
+      "type": "object",
+      "required": [
+        "schema_version",
+        "owner_uid",
+        "tenant_id",
+        "principal_id",
+        "personal_space_id",
+        "organization_space_id",
+        "public_key",
+        "signature"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "quati-local-identity/1"
+        },
+        "owner_uid": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "POSIX uid of the installing OS user; must equal the uid of every caller."
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "principal_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "personal_space_id": {
+          "$ref": "#/$defs/Ulid",
+          "description": "The principal's PERSONAL space; granted to every tenant role."
+        },
+        "organization_space_id": {
+          "$ref": "#/$defs/Ulid",
+          "description": "The tenant's ORGANIZATION space, which owns the capability registry; granted to OWNER, ADMIN and MEMBER, not to GUEST."
+        },
+        "public_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{43}=$",
+          "description": "Base64 of the 32-byte raw Ed25519 public key of the device key."
+        },
+        "signature": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{86}==$",
+          "description": "Base64 of the 64-byte Ed25519 signature over the canonical record."
+        },
+        "tenant_role": {
+          "enum": [
+            "OWNER",
+            "ADMIN",
+            "MEMBER",
+            "GUEST"
+          ],
+          "description": "Optional tenant role of the LOCAL principal. `quati init` creates the tenant OWNER and writes no role: an absent value means OWNER. Any other value than these four is no membership (no grant)."
+        }
+      }
     }
   }
 }

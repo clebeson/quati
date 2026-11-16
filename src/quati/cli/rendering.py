@@ -7,16 +7,12 @@ from quati.application.cli_service import response
 from quati.application.identity import AccessDenied
 from quati.domain.canonical import canonical_bytes
 from quati.domain.capability_registry import Refusal
+from quati.domain.diagnostics import LOCAL_STORE_REASONS, settled_exit  # noqa: F401 - the shared exit rule
 
 
 # M01 exit table rows 4 and 5: UNAVAILABLE caused by the local stores (the audit log, the data
 # directory) is "not caused by a provider" and exits 4; only a model or tool provider failure exits 5.
-LOCAL_STORE_REASONS = ('audit_unavailable', 'audit_store_unavailable', 'state_dir_unsafe')
-
-
-def _local_store_failure(value):
-    data = value.get('data')
-    return isinstance(data, dict) and data.get('reason') in LOCAL_STORE_REASONS
+# The rule itself (``LOCAL_STORE_REASONS``, ``settled_exit``) is shared with the use cases.
 
 
 def exit_code(value):
@@ -31,13 +27,8 @@ def exit_code(value):
     if code == 'NOT_CONFIGURED':
         return 3
     if code in ('TEMPORARILY_UNAVAILABLE', 'DEADLINE_EXCEEDED', 'OUTPUT_INVALID'):
-        return 4 if _local_store_failure(value) else 5
+        return settled_exit(5, value)
     return 4
-
-
-def settled_exit(code, value):
-    """The process exit code of a use-case result: a local store failure reported as 5 exits 4 (M01 row 4)."""
-    return 4 if code == 5 and _local_store_failure(value) else code
 
 
 def _component(exc):

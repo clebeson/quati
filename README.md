@@ -12,7 +12,7 @@
   <img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-1f4e79?logo=python&logoColor=white">
   <img alt="Interface: CLI only" src="https://img.shields.io/badge/interface-CLI%20only-0b2a4a">
   <img alt="Slice S00 in progress" src="https://img.shields.io/badge/slice-S00%20in%20progress-f5b800">
-  <img alt="Tests: 1566 passed" src="https://img.shields.io/badge/tests-1566%20passed-2ea44f">
+  <img alt="Tests: 1622 passed" src="https://img.shields.io/badge/tests-1622%20passed-2ea44f">
   <img alt="Coverage 99%" src="https://img.shields.io/badge/coverage-99%25%20(domain%20%2B%20behavior%20100%25)-2ea44f">
   <img alt="Local first" src="https://img.shields.io/badge/deployment-local--first-6cc24a">
 </p>
@@ -111,6 +111,7 @@ pip install -e '.[test]'          # add '.[live]' for the Anthropic / OpenAI SDK
 
 quati init                        # create a private LOCAL identity (no provider call)
 quati doctor                      # configuration vs. measured provider support
+quati config validate             # identity, policy, provider and behavior package checks
 quati ask "hi!"                   # deterministic greeting, no model call
 ```
 
@@ -122,7 +123,13 @@ quati models probe                # measure tools / structured output / timeout 
 quati capabilities --help         # install the synthetic S00 fixture capabilities
 quati ask "When is my next appointment?"
 quati chat                        # line-based conversational session
+quati trace show REQUEST_ID       # the recorded receipt and decisions of one request
+quati trace explain REQUEST_ID    # which capability was selected and why the others were not
+quati behavior validate examples/behavior/executive-secretary.yaml   # compile a behavior package
+quati behavior render examples/behavior/executive-secretary.yaml     # its prompt preview and build receipt
 ```
+
+Conversation rule in S00: Quati answers greetings and other social-only text with application-owned text and displays no model-written answers; anything else must end in a verified capability result, an honest "no capability" reply or a typed refusal.
 
 All output is machine-readable `quati-json/1`: `status`, `data`, `error`, `evidence_refs`,
 `next_action` and `uncertainties`.
@@ -131,7 +138,7 @@ All output is machine-readable `quati-json/1`: `status`, `data`, `error`, `evide
 
 | Transport | How it authenticates | Live status |
 |---|---|---|
-| `claude_cli` | the vendor's own `claude` executable, started with your sign-in; Quati holds no key | ✅ **qualified** (S00-GATE-02, `claude-haiku-5-5`) |
+| `claude_cli` | the vendor's own `claude` executable, started with your sign-in; Quati holds no key | ⏳ qualified on an earlier code digest (`claude-haiku-5-5`, 30/30 and 30/30); requalification pending |
 | `codex_cli` | the vendor's own `codex` executable, with your sign-in | ✅ transport verified live; `gpt-6-luna` scored 29/30, below the gate |
 | `anthropic` | Anthropic SDK, using a secret reference (`QUATI_API_KEY_ENV`) | ⏳ not verified externally |
 | `openai` / `openai_compatible` | OpenAI SDK with an approved HTTPS base URL (e.g. OpenRouter) | ⏳ not verified externally |
@@ -197,7 +204,11 @@ flowchart LR
 S00-GATE-02 requires a **real model** to choose the right capability from a natural-language
 request, without any hint, in **30 of 30** runs on each test case.
 
-| Case | What is tested | `claude_cli` · claude-haiku-5-5 |
+> **The current code is not live-qualified.** The last accepted live run (30/30 on CAP-01 and 30/30 on CAP-02
+> with `claude-haiku-5-5`) bound an earlier code digest. The source has changed since then, so that result
+> does not transfer: requalification of the current code is pending. The table shows that earlier run.
+
+| Case | What is tested | `claude_cli` · claude-haiku-5-5 (earlier code digest) |
 |---|---|---|
 | CAP-01 | choose the right capability among confusable ones | **30/30** (Wilson 95% LB 0.886) |
 | CAP-02 | find the next appointment; write-capable decoys stay unused | **30/30** |
@@ -214,12 +225,15 @@ The deterministic oracle checks each run for:
 - zero unauthorized effects
 
 The model, prompt, schema, catalog, configuration, statechart and code digests are the same across
-all runs.
+all runs. Every receipt Quati writes carries the code digest, and the harness refuses to start a run
+whose receipts would not carry the pre-registered one.
 
 Rerun the qualification (this spends real money on your sign-in):
 
 ```bash
-.venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --runs 3
+.venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --estimate-only   # free: planned calls
+.venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku \
+    --cases DOCTOR CAP-01 CAP-02 CAP-03 CAP-05 SOC-01 WRITE-01 --workers 4 --label gate7 --confirm-spend
 ```
 
 Evidence is written under `evidence/S00/T05-*`. It holds a pre-registration file, written before the
@@ -230,9 +244,10 @@ first call, and one JSON file per case.
 | | |
 |---|---|
 | **Current slice** | S00 — local CLI, provider layer, capability discovery |
-| **Implemented** | `init`, `doctor`, `ask`, `chat`, `models probe`, capability registry (synthetic fixtures), 6 provider transports |
-| **Arrives in S02** | `status`, `tell`, `approve`, `deny`, `approvals` (they return `UNSUPPORTED` today) |
-| **Tests** | 1566 passed · 99% coverage overall · 100% line and branch coverage in `domain/` and `behavior/` |
+| **Implemented** | `init`, `doctor`, `config validate`, `ask`, `chat`, `models probe`, `behavior validate` / `render`, `trace show` / `explain`, capability registry (synthetic fixtures), 6 provider transports |
+| **Arrives in S02** | `status`, `tell`, `approve`, `deny`, `approvals`, `trace export` / `replay` (they return `UNSUPPORTED` today) |
+| **Live qualification** | pending for the current code; the last accepted run bound an earlier code digest |
+| **Tests** | 1622 passed · 99% coverage overall · 100% line and branch coverage in `domain/` and `behavior/` |
 | **Specification** | 31 module PRDs · 15 RFCs · 16 ADRs · 35 work packages across slices S00–S07 |
 | **Canonical state** | `docs/implementation/implementation_state.json` (revision-checked writes only) |
 

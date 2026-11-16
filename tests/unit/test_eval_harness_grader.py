@@ -8,6 +8,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'evals'))
 import live_harness as h  # noqa: E402
 
@@ -200,13 +202,74 @@ def test_trace_explain_unsupported_is_a_failed_check_not_a_skip():
     assert h.trace_explain(_Profile(0, {}), None, TARGET)['checks'] == {'request_id_present': False}
 
 
-def test_trace_explain_must_name_the_selected_capability():
-    explained = {'status': 'SUCCEEDED', 'error': None, 'data': {'selected_capability': TARGET, 'candidates': []}}
-    assert h.trace_explain(_Profile(0, explained), 'request-1', TARGET)['pass'] is True
-    other = {'status': 'SUCCEEDED', 'error': None, 'data': {'selected_capability': 'fixtures.mail-search'}}
-    observed = h.trace_explain(_Profile(0, other), 'request-1', TARGET)
-    assert observed['checks'] == {'request_id_present': True, 'trace_explain_available': True,
-                                  'trace_explain_names_selected_capability': False}
+def _candidate(capability_id, authorization='ALLOW', excluded_reason=None, reasons=()):
+    return {'capability_id': capability_id, 'version': '1.0.0', 'authorization': authorization,
+            'excluded_reason': excluded_reason, 'filter_reasons': list(reasons),
+            'rank_features': {'rank': 1} if excluded_reason is None else None}
+
+
+def _explained(target=TARGET):
+    """`data` of `quati trace explain` in the S00 form (docs/prds/M26.md, "S00 form of show and explain")."""
+    return {'status': 'SUCCEEDED', 'error': None, 'data': {
+        'selected': {'capability_id': target, 'version': '1.0.0', 'binding_hash': 'b' * 64},
+        'candidates': sorted([_candidate(target),
+                              _candidate('fixtures.calendar-write', 'DENY', 'scope_not_granted', ['NOT_AUTHORIZED']),
+                              _candidate('fixtures.zz-decoy', 'ALLOW', 'outcome_mismatch')],
+                             key=lambda item: item['capability_id']),
+        'executed_capabilities': [f'{target}@1.0.0'], 'policy_decision_id': 'decision-1', 'model_rationale': None}}
+
+
+def test_trace_explain_passes_only_on_the_recorded_explanation_shape():
+    observed = h.trace_explain(_Profile(0, _explained()), 'request-1', TARGET)
+    assert observed['pass'] is True and set(observed['checks']) == {
+        'request_id_present', 'trace_explain_available', 'explain_selected_is_target',
+        'explain_selected_bound_to_allow_decision', 'explain_executed_is_target',
+        'explain_target_candidate_not_excluded', 'explain_alternatives_carry_reasons',
+        'explain_write_alternatives_denied', 'explain_candidates_sorted_and_unique', 'explain_no_model_text'}
+    # The earlier check ("the target id appears somewhere in data") accepted this answer: the id is only an
+    # excluded alternative and another capability was selected.
+    other = _explained('fixtures.mail-search')
+    other['data']['candidates'].append(_candidate(TARGET, 'ALLOW', 'lower_rank'))
+    other['data']['candidates'].sort(key=lambda item: item['capability_id'])
+    failed = h.trace_explain(_Profile(0, other), 'request-1', TARGET)
+    assert sorted(name for name, ok in failed['checks'].items() if not ok) == [
+        'explain_alternatives_carry_reasons',     # the capability selected instead carries no excluded reason
+        'explain_executed_is_target', 'explain_selected_is_target', 'explain_target_candidate_not_excluded']
+    guessed = {'status': 'SUCCEEDED', 'error': None, 'data': {'selected_capability': TARGET, 'candidates': []}}
+    assert h.trace_explain(_Profile(0, guessed), 'request-1', TARGET)['pass'] is False
+
+
+EXPLAIN_MUTATIONS = {
+    'explain_selected_is_target': lambda d: d['selected'].update(capability_id='fixtures.calendar-write'),
+    'explain_selected_bound_to_allow_decision': lambda d: d.update(policy_decision_id=None),
+    'explain_executed_is_target': lambda d: d['executed_capabilities'].append('fixtures.zz-decoy@1.0.0'),
+    'explain_target_candidate_not_excluded': lambda d: next(
+        item for item in d['candidates'] if item['capability_id'] == TARGET).update(excluded_reason='lower_rank'),
+    'explain_alternatives_carry_reasons': lambda d: d['candidates'][-1].update(excluded_reason=None),
+    'explain_write_alternatives_denied': lambda d: next(
+        item for item in d['candidates'] if item['capability_id'] == 'fixtures.calendar-write').update(
+            authorization='ALLOW', excluded_reason='lower_rank'),
+    'explain_candidates_sorted_and_unique': lambda d: d['candidates'].reverse(),
+    'explain_no_model_text': lambda d: d.update(model_rationale='I chose the calendar.'),
+}
+
+
+@pytest.mark.parametrize('rule', sorted(EXPLAIN_MUTATIONS))
+def test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation(rule):
+    explained = _explained()
+    EXPLAIN_MUTATIONS[rule](explained['data'])
+    observed = h.trace_explain(_Profile(0, explained), 'request-1', TARGET)
+    assert sorted(name for name, ok in observed['checks'].items() if not ok) == [rule]
+
+
+def test_trace_explain_binding_hash_must_be_a_digest_and_partial_is_not_available():
+    unbound = _explained()
+    unbound['data']['selected']['binding_hash'] = None
+    assert h.trace_explain(_Profile(0, unbound), 'request-1', TARGET)['checks'][
+        'explain_selected_bound_to_allow_decision'] is False
+    partial = _explained()
+    partial['status'] = 'PARTIAL'
+    assert h.trace_explain(_Profile(0, partial), 'request-1', TARGET)['checks']['trace_explain_available'] is False
 
 
 def test_failed_trace_observation_fails_the_case_without_changing_the_selection_grade():

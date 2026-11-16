@@ -6,7 +6,8 @@ OWNER or ADMIN tenant role) and its decision is logged as ``authz.decided``; a d
 reads and changes nothing and writes no receipt. Every change writes one evidence receipt holding
 the registry audit events it produced (activation included). Search and describe run through the
 same DiscoveryPort guards as the model. Exit codes follow M14/M01: 0 ok, 2 invalid input,
-3 missing configuration, 4 denied/unavailable/blocked/conflict, 5 provider failure, 1 internal.
+3 missing configuration, 4 denied/unavailable/blocked/conflict (a failure of the local audit log or data
+directory included), 5 provider failure, 1 internal.
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from quati.domain.capability_registry import Refusal
+from quati.domain.diagnostics import settled_exit
 
 NEXT_ACTIONS = {
     "BLOCKED": "Correct the package or its activation; nothing was enabled.",
@@ -35,7 +37,7 @@ def _exit(value: dict) -> int:
     if code == "NOT_CONFIGURED":
         return 3
     if code in ("TEMPORARILY_UNAVAILABLE", "DEADLINE_EXCEEDED", "OUTPUT_INVALID"):
-        return 5
+        return settled_exit(5, value)       # 4 when the reason is a local store (M01 exit table row 4)
     return 4
 
 

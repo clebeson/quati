@@ -35,6 +35,7 @@ import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 import quati
+from quati.application.code_identity import current_code_digest
 from quati.application.identity import canonical_bytes
 from quati.domain.canonical import digest
 
@@ -233,7 +234,10 @@ def assert_social(value: dict, reply: str) -> None:
                              "uncertainties": [], "next_action": None, "error": None}
     stored = receipt(value)
     assert (stored["provider_used"], stored["status"], stored["cost_usd"]) == (False, "SUCCEEDED", None)
-    assert "trajectory" not in stored and "feature_gate" not in stored and "digests" not in stored
+    # Integration step A (LOG-0042 open item): every receipt carries the code digest, and a social receipt
+    # carries no other digest (it was `"digests" not in stored` while only model-path receipts were bound).
+    assert "trajectory" not in stored and "feature_gate" not in stored
+    assert stored["digests"] == {"code_digest": current_code_digest()} and stored["result_kind"] == "GREETING"
 
 
 def assert_no_model_and_no_registry_use(workspace: Profile, script: list | None, audit_before: int) -> None:

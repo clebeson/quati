@@ -1,0 +1,1455 @@
+# S00 integration step after fix round 7 (LOG-0042 open items): RED run, before any change under src/ or contracts/.
+# HEAD 8eed83f; src/ and contracts/ byte-identical to HEAD (git status below); new and changed tests only.
+# Local paths are replaced by <REPO> and <TMP>; no provider call; QUATI_ALLOW_LIVE is set only by the scripted-fake child runners.
+$ git status --short src contracts tests
+ M tests/integration/cli/test_s00_fix7_public_surface.py
+ M tests/integration/test_identity.py
+ M tests/unit/test_eval_harness_grader.py
+ M tests/unit/test_eval_harness_soc01.py
+?? tests/integration/cli/test_s00_integration7_public.py
+?? tests/unit/test_s00_integration7.py
+
+$ .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_s00_integration7.py tests/integration/cli/test_s00_integration7_public.py tests/unit/test_eval_harness_soc01.py tests/unit/test_eval_harness_grader.py tests/integration/test_identity.py tests/integration/cli/test_s00_fix7_public_surface.py -k 'integration7 or eval_harness or decision_log_unavailable or zero_umask'
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFFF.................F..F.F..... [ 51%]
+.....F..............................FF.................FFFFFFFFFF..FF    [100%]
+=================================== FAILURES ===================================
+_______ test_a_the_evidence_sink_stamps_the_code_digest_on_every_record ________
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_a_the_evidence_sink_stamp0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7da8bbb0df30>
+
+    def test_a_the_evidence_sink_stamps_the_code_digest_on_every_record(tmp_path, monkeypatch) -> None:
+        """Audit P2-E: a receipt of any kind names the code that wrote it; the caller cannot choose the value."""
+        monkeypatch.setenv('QUATI_DATA_DIR', str(tmp_path / 'data'))
+        assert current_code_digest() == _independent_code_digest()
+        for kind in ('audit_event', 'capability_command', 'feature_report'):
+            written = evidence.receipt_sink({'kind': kind, 'status': 'SUCCEEDED'})
+            raw = Path(written['path']).read_bytes()
+            assert hashlib.sha256(raw).hexdigest() == written['sha256']
+>           assert json.loads(raw)['digests'] == {'code_digest': current_code_digest()}, kind
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'digests'
+
+tests/unit/test_s00_integration7.py:84: KeyError
+__ test_a_every_receipt_of_an_in_process_session_carries_the_same_code_digest __
+
+cli = <test_s00_fix6_cli_surface.Cli object at 0x7da8ba52a270>
+
+    def test_a_every_receipt_of_an_in_process_session_carries_the_same_code_digest(cli: Cli) -> None:
+        """init, install, probe, greeting, up-front refusal, model-path ask and disable: one digest on all."""
+        cli.ready(*read_script())
+        assert cli.one('ask', 'Hello', '--json')[0] == 0
+        code, value, _ = cli.one('ask', WORK_TEXT, '--json')
+        assert (code, value['data']['result_kind']) == (0, 'FIXTURE_RESULT'), value
+        assert cli.one('capabilities', 'disable', 'fixtures.calendar-read@1.0.0', '--json')[0] == 0
+        cli.monkeypatch.setattr(cli_main, '_config', cli_main.ProviderConfig.from_environment)
+        code, value, _ = cli.one('ask', WORK_TEXT, '--json')       # no provider: refused before any model call
+        assert (code, value['data']['result_kind']) == (3, 'BLOCKED'), value
+        receipts = [json.loads(path.read_bytes()) for path in sorted((cli.data / 'receipts').glob('*.json'))]
+        kinds = sorted(str(receipt.get('kind')) for receipt in receipts)
+        assert kinds == ['None', 'None', 'ask_receipt', 'audit_event', 'capability_command', 'capability_command',
+                         'feature_report']
+>       assert {receipt['digests']['code_digest'] for receipt in receipts} == {_independent_code_digest()}
+                ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'digests'
+
+tests/unit/test_s00_integration7.py:106: KeyError
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[empty-tenant_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a0')
+field = 'tenant_id', value = ''
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[empty-principal_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a1')
+field = 'principal_id', value = ''
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[empty-personal_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a2')
+field = 'personal_space_id', value = ''
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[empty-organization_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a3')
+field = 'organization_space_id', value = ''
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[absent-tenant_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a4')
+field = 'tenant_id', value = Ellipsis
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+            with pytest.raises(AccessDenied):
+>               call()
+
+tests/unit/test_s00_integration7.py:123: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/quati/adapters/local_identity.py:179: in authenticate
+    token, public = self._mint_token(record, key)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'organization_space_id': '01M7JTF40ACRPNBSB6GRWZ0CJM', 'owner_uid': 1000, 'personal_space_id': '01M7JTF40A1KWSFVCP7MNJ6FBG', 'principal_id': '01M7JTF40ABVNNE3675W4NN6CZ', ...}
+key = <cryptography.hazmat.bindings._rust.openssl.ed25519.Ed25519PrivateKey object at 0x7da8bb9e1350>
+
+    @staticmethod
+    def _mint_token(record, key):
+        now = int(time.time())
+>       claims = {'iss': 'quati-local', 'sub': record['principal_id'], 'tid': record['tenant_id'],
+                                                                              ^^^^^^^^^^^^^^^^^^^
+                  'pkind': 'HUMAN', 'aud': 'quati-local', 'scope': 'quati:converse quati:work.read',
+                  'exp': now + 600, 'iat': now, 'nbf': now, 'jti': uuid.uuid4().hex,
+                  'sid': uuid.uuid4().hex, 'amr': ['local_os', 'device_key'], 'auth_time': now,
+                  'client_id': 'quati-cli'}
+E       KeyError: 'tenant_id'
+
+src/quati/adapters/local_identity.py:134: KeyError
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[absent-principal_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a5')
+field = 'principal_id', value = Ellipsis
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+            with pytest.raises(AccessDenied):
+>               call()
+
+tests/unit/test_s00_integration7.py:123: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/quati/adapters/local_identity.py:179: in authenticate
+    token, public = self._mint_token(record, key)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+record = {'organization_space_id': '01M7JTF40HK02MCPCB9JM9CA37', 'owner_uid': 1000, 'personal_space_id': '01M7JTF40HMWEQZNVYC9YTBF3S', 'public_key': '/EvW6Sqi7nwHg3jIRXWRs8TR+vpoSxKmhMUpzdp0Tig=', ...}
+key = <cryptography.hazmat.bindings._rust.openssl.ed25519.Ed25519PrivateKey object at 0x7da8ba52e1b0>
+
+    @staticmethod
+    def _mint_token(record, key):
+        now = int(time.time())
+>       claims = {'iss': 'quati-local', 'sub': record['principal_id'], 'tid': record['tenant_id'],
+                                               ^^^^^^^^^^^^^^^^^^^^^^
+                  'pkind': 'HUMAN', 'aud': 'quati-local', 'scope': 'quati:converse quati:work.read',
+                  'exp': now + 600, 'iat': now, 'nbf': now, 'jti': uuid.uuid4().hex,
+                  'sid': uuid.uuid4().hex, 'amr': ['local_os', 'device_key'], 'auth_time': now,
+                  'client_id': 'quati-cli'}
+E       KeyError: 'principal_id'
+
+src/quati/adapters/local_identity.py:134: KeyError
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[absent-personal_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a6')
+field = 'personal_space_id', value = Ellipsis
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+            with pytest.raises(AccessDenied):
+>               call()
+
+tests/unit/test_s00_integration7.py:123: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <quati.adapters.local_identity.LocalIdentity object at 0x7da8b9e27460>
+
+    def authenticate(self):
+        record, key = self._load()
+        token, public = self._mint_token(record, key)
+        claims = verify_token(token, public)
+        return RequestContext(actor_id=claims['sub'], tenant_id=claims['tid'],
+>                             space_ids=(record['personal_space_id'], record['organization_space_id']),
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                              request_id='request-' + uuid.uuid4().hex, trace_id=uuid.uuid4().hex,
+                              session_id=claims['sid'], token_jti=claims['jti'],
+                              authenticated_origin_ref='local-os:device-key',
+                              deadline_at=(datetime.now(timezone.utc) + timedelta(seconds=30)).isoformat())
+E       KeyError: 'personal_space_id'
+
+src/quati/adapters/local_identity.py:182: KeyError
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[absent-organization_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a7')
+field = 'organization_space_id', value = Ellipsis
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+            with pytest.raises(AccessDenied):
+>               call()
+
+tests/unit/test_s00_integration7.py:123: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <quati.adapters.local_identity.LocalIdentity object at 0x7da8b9e27ce0>
+
+    def authenticate(self):
+        record, key = self._load()
+        token, public = self._mint_token(record, key)
+        claims = verify_token(token, public)
+        return RequestContext(actor_id=claims['sub'], tenant_id=claims['tid'],
+>                             space_ids=(record['personal_space_id'], record['organization_space_id']),
+                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                              request_id='request-' + uuid.uuid4().hex, trace_id=uuid.uuid4().hex,
+                              session_id=claims['sid'], token_jti=claims['jti'],
+                              authenticated_origin_ref='local-os:device-key',
+                              deadline_at=(datetime.now(timezone.utc) + timedelta(seconds=30)).isoformat())
+E       KeyError: 'organization_space_id'
+
+src/quati/adapters/local_identity.py:182: KeyError
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[int-tenant_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a8')
+field = 'tenant_id', value = 7
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[int-principal_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a9')
+field = 'principal_id', value = 7
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[int-personal_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a10')
+field = 'personal_space_id', value = 7
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[int-organization_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a11')
+field = 'organization_space_id', value = 7
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[null-tenant_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a12')
+field = 'tenant_id', value = None
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[null-principal_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a13')
+field = 'principal_id', value = None
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[null-personal_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a14')
+field = 'personal_space_id', value = None
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[null-organization_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a15')
+field = 'organization_space_id', value = None
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[list-tenant_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a16')
+field = 'tenant_id', value = ['x']
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[list-principal_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a17')
+field = 'principal_id', value = ['x']
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[list-personal_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a18')
+field = 'personal_space_id', value = ['x']
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[list-organization_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a19')
+field = 'organization_space_id', value = ['x']
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[object-tenant_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a20')
+field = 'tenant_id', value = {'id': 'x'}
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[object-principal_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a21')
+field = 'principal_id', value = {'id': 'x'}
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[object-personal_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a22')
+field = 'personal_space_id', value = {'id': 'x'}
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[object-organization_space_id] _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_signed_record_with_a23')
+field = 'organization_space_id', value = {'id': 'x'}
+
+    @pytest.mark.parametrize('field', IDENTITY_FIELDS)
+    @pytest.mark.parametrize('value', ['', ..., 7, None, ['x'], {'id': 'x'}], ids=['empty', 'absent', 'int', 'null', 'list',
+                                                                               'object'])
+    def test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential(tmp_path, field, value) -> None:
+        """LOG-0041 N10 at the adapter: typed AccessDenied from every entry, never a KeyError mid-command."""
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        context = identity.authenticate()
+        _resign(identity.directory, **{field: value})
+        for call in (identity.authenticate, identity.issue_token, identity.initialize,
+                     lambda: identity.tenant_role(context), lambda: identity.space_grants(context),
+                     lambda: identity.registry_space(context.tenant_id)):
+>           with pytest.raises(AccessDenied):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_integration7.py:122: Failed
+_ test_b2_a_complete_signed_record_is_still_accepted_and_the_cli_uses_the_adapter_directly _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_b2_a_complete_signed_reco0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7da8b9d217f0>
+
+    def test_b2_a_complete_signed_record_is_still_accepted_and_the_cli_uses_the_adapter_directly(tmp_path, monkeypatch) -> None:
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        _resign(identity.directory, tenant_role='MEMBER')              # an optional field does not reject the record
+        context = identity.authenticate()
+        assert identity.tenant_role(context) == 'MEMBER' and identity.diagnostics()['initialized'] is True
+        monkeypatch.setenv('QUATI_CONFIG_DIR', str(tmp_path / 'config'))
+>       assert type(cli_main._service().identity) is LocalIdentity
+E       AssertionError: assert <class 'quati.cli.main._Identity'> is LocalIdentity
+E        +  where <class 'quati.cli.main._Identity'> = type(<quati.cli.main._Identity object at 0x7da8bb9e48d0>)
+E        +    where <quati.cli.main._Identity object at 0x7da8bb9e48d0> = <quati.application.cli_service.CLIService object at 0x7da8b9d215b0>.identity
+E        +      where <quati.application.cli_service.CLIService object at 0x7da8b9d215b0> = <function _service at 0x7da8ba62dc60>()
+E        +        where <function _service at 0x7da8ba62dc60> = cli_main._service
+
+tests/unit/test_s00_integration7.py:137: AssertionError
+_ test_b3_registry_authorizer_decides_and_logs_through_the_public_composition_function _
+
+cli = <test_s00_fix6_cli_surface.Cli object at 0x7da8b9c4b110>
+
+    def test_b3_registry_authorizer_decides_and_logs_through_the_public_composition_function(cli: Cli) -> None:
+        """RFC-013 section 6: one enforcement point; injected clock and ids; allowed and denied are both logged."""
+        assert cli.one('init', '--json')[0] == 0
+        identity = LocalIdentity()
+        context = identity.authenticate()
+        moment = datetime(2026, 11, 16, 12, 0, tzinfo=timezone.utc)
+>       authorize = composition.registry_authorizer(identity, clock=lambda: moment, ids=lambda prefix: f'{prefix}-fixed')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'quati.cli.composition' has no attribute 'registry_authorizer'
+
+tests/unit/test_s00_integration7.py:148: AttributeError
+_ test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case[audit_unavailable] _
+
+reason = 'audit_unavailable'
+
+    @pytest.mark.parametrize('reason', LOCAL_REASONS)
+    def test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case(reason) -> None:
+        """M01 exit table row 4: UNAVAILABLE caused by the audit log or the data directory is not a provider failure."""
+        value = _unavailable(reason)
+>       assert diagnostics.local_store_failure(value) is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'quati.domain.diagnostics' has no attribute 'local_store_failure'
+
+tests/unit/test_s00_integration7.py:173: AttributeError
+_ test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case[audit_store_unavailable] _
+
+reason = 'audit_store_unavailable'
+
+    @pytest.mark.parametrize('reason', LOCAL_REASONS)
+    def test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case(reason) -> None:
+        """M01 exit table row 4: UNAVAILABLE caused by the audit log or the data directory is not a provider failure."""
+        value = _unavailable(reason)
+>       assert diagnostics.local_store_failure(value) is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'quati.domain.diagnostics' has no attribute 'local_store_failure'
+
+tests/unit/test_s00_integration7.py:173: AttributeError
+_ test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case[state_dir_unsafe] _
+
+reason = 'state_dir_unsafe'
+
+    @pytest.mark.parametrize('reason', LOCAL_REASONS)
+    def test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case(reason) -> None:
+        """M01 exit table row 4: UNAVAILABLE caused by the audit log or the data directory is not a provider failure."""
+        value = _unavailable(reason)
+>       assert diagnostics.local_store_failure(value) is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'quati.domain.diagnostics' has no attribute 'local_store_failure'
+
+tests/unit/test_s00_integration7.py:173: AttributeError
+___ test_b4_a_provider_failure_stays_exit_5_and_the_boundary_has_one_mapping ___
+
+    def test_b4_a_provider_failure_stays_exit_5_and_the_boundary_has_one_mapping() -> None:
+        for value in (_unavailable('BINDING_UNAVAILABLE'), _unavailable(None)):
+>           assert diagnostics.local_store_failure(value) is False
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'quati.domain.diagnostics' has no attribute 'local_store_failure'
+
+tests/unit/test_s00_integration7.py:181: AttributeError
+___ test_b4_the_ask_use_case_itself_returns_exit_4_for_an_unusable_audit_log ___
+
+cli = <test_s00_fix6_cli_surface.Cli object at 0x7da8b9e0d450>
+
+    def test_b4_the_ask_use_case_itself_returns_exit_4_for_an_unusable_audit_log(cli: Cli) -> None:
+        """The use case and the presentation boundary agree: no code is corrected after the fact."""
+        cli.ready(*read_script())
+        _audit_fault(cli, 'symlink')
+        code, value = cli_main._service().ask(WORK_TEXT)
+>       assert (code, value['status'], value['error']['code'], value['data']['reason']) == (
+            4, 'UNAVAILABLE', 'TEMPORARILY_UNAVAILABLE', 'audit_unavailable')
+E       AssertionError: assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+E         
+E         At index 0 diff: 5 != 4
+E         Use -v to get more diff
+
+tests/unit/test_s00_integration7.py:194: AssertionError
+_ test_d_asset_root_is_the_packaged_copy_when_present_and_the_checkout_otherwise _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_d_asset_root_is_the_packa0')
+
+    def test_d_asset_root_is_the_packaged_copy_when_present_and_the_checkout_otherwise(tmp_path) -> None:
+        package = tmp_path / 'site-packages' / 'quati'
+        package.mkdir(parents=True)
+>       assert contracts.asset_root(package) == tmp_path            # source layout: <root>/src/quati -> <root>
+               ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'quati.behavior.contracts' has no attribute 'asset_root'
+
+tests/unit/test_s00_integration7.py:203: AttributeError
+____ test_d_a_missing_contract_schema_is_a_typed_diagnostic_without_a_path _____
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_d_a_missing_contract_sche0')
+
+    def test_d_a_missing_contract_schema_is_a_typed_diagnostic_without_a_path(tmp_path) -> None:
+        """A broken installation is reported, not raised: NOT_FOUND / CONTRACT_NOT_FOUND naming the schema file only."""
+        catalog = contracts.ContractCatalog(tmp_path / 'absent')
+        with pytest.raises(ContractViolation) as caught:
+>           catalog.schema('behavior-package.schema.json')
+
+tests/unit/test_s00_integration7.py:214: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/quati/behavior/contracts.py:70: in schema
+    return self._validator(schema_name).schema
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/quati/behavior/contracts.py:74: in _validator
+    schema = json.loads((self.contracts_dir / schema_name).read_text(encoding="utf-8"))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/pathlib/_local.py:548: in read_text
+    return PathBase.read_text(self, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/pathlib/_abc.py:632: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('<TMP>/pytest-907/test_d_a_missing_contract_sche0/absent/behavior-package.schema.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '<TMP>/pytest-907/test_d_a_missing_contract_sche0/absent/behavior-package.schema.json'
+
+/usr/lib/python3.13/pathlib/_local.py:539: FileNotFoundError
+_ test_c3_the_record_written_by_init_is_valid_against_the_installation_record_contract _
+
+self = Resource(contents={'$ref': '#/$defs/LocalInstallationRecord', '$defs': {'Ulid': {'type': 'string', 'pattern': '^[0-9A-...ype': 'string', 'minLength': 1}}, 'additionalProperties': False}}}, _specification=<Specification name='draft2020-12'>)
+pointer = '/$defs/LocalInstallationRecord'
+resolver = Resolver(_base_uri='', _registry=<Registry (21 resources, 1 uncrawled)>)
+
+    def pointer(self, pointer: str, resolver: Resolver[D]) -> Resolved[D]:
+        """
+        Resolve the given JSON pointer.
+    
+        Raises:
+    
+            `exceptions.PointerToNowhere`
+    
+                if the pointer points to a location not present in the document
+    
+        """
+        if not pointer:
+            return Resolved(contents=self.contents, resolver=resolver)
+    
+        contents = self.contents
+        segments: list[int | str] = []
+        for segment in unquote(pointer[1:]).split("/"):
+            if isinstance(contents, Sequence):
+                segment = int(segment)
+            else:
+                segment = segment.replace("~1", "/").replace("~0", "~")
+            try:
+>               contents = contents[segment]  # type: ignore[reportUnknownArgumentType]
+                           ^^^^^^^^^^^^^^^^^
+E               KeyError: 'LocalInstallationRecord'
+
+.venv/lib/python3.13/site-packages/referencing/_core.py:276: KeyError
+
+The above exception was the direct cause of the following exception:
+
+self = Draft202012Validator(schema={'$defs': {'AccessTokenClaims': {'additionalProperties': False, 'properties': {'act': {'$r..._id', 'action', 'resource_ref'], 'type': 'object'}, ...}, '$ref': '#/$defs/Loca...llationRecord'}, format_checker=None)
+ref = '#/$defs/LocalInstallationRecord'
+instance = {'organization_space_id': '01M7JTF492Q95RPZPN3QKZ6VKX', 'owner_uid': 1000, 'personal_space_id': '01M7JTF4926AJX4MFYGE8B42GQ', 'principal_id': '01M7JTF492AZASTVW3PRS8H00X', ...}
+
+    def _validate_reference(self, ref, instance):
+        if self._ref_resolver is None:
+            try:
+>               resolved = self._resolver.lookup(ref)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.venv/lib/python3.13/site-packages/jsonschema/validators.py:462: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/referencing/_core.py:690: in lookup
+    return retrieved.value.pointer(pointer=fragment, resolver=resolver)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Resource(contents={'$ref': '#/$defs/LocalInstallationRecord', '$defs': {'Ulid': {'type': 'string', 'pattern': '^[0-9A-...ype': 'string', 'minLength': 1}}, 'additionalProperties': False}}}, _specification=<Specification name='draft2020-12'>)
+pointer = '/$defs/LocalInstallationRecord'
+resolver = Resolver(_base_uri='', _registry=<Registry (21 resources, 1 uncrawled)>)
+
+    def pointer(self, pointer: str, resolver: Resolver[D]) -> Resolved[D]:
+        """
+        Resolve the given JSON pointer.
+    
+        Raises:
+    
+            `exceptions.PointerToNowhere`
+    
+                if the pointer points to a location not present in the document
+    
+        """
+        if not pointer:
+            return Resolved(contents=self.contents, resolver=resolver)
+    
+        contents = self.contents
+        segments: list[int | str] = []
+        for segment in unquote(pointer[1:]).split("/"):
+            if isinstance(contents, Sequence):
+                segment = int(segment)
+            else:
+                segment = segment.replace("~1", "/").replace("~0", "~")
+            try:
+                contents = contents[segment]  # type: ignore[reportUnknownArgumentType]
+            except LookupError as lookup_error:
+                error = exceptions.PointerToNowhere(ref=pointer, resource=self)
+>               raise error from lookup_error
+E               referencing.exceptions.PointerToNowhere: '/$defs/LocalInstallationRecord' does not exist within {'$ref': '#/$defs/LocalInstallationRecord', '$defs': {'Ulid': {'type': 'string', 'pattern': '^[0-9A-HJKMNP-TV-Z]{26}$'}, 'Tenant': {'type': 'object', 'required': ['tenant_id', 'display_name', 'profile', 'created_at', 'policy_ref'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'display_name': {'type': 'string', 'minLength': 1}, 'profile': {'enum': ['LOCAL', 'SERVER']}, 'created_at': {'type': 'string', 'format': 'date-time'}, 'policy_ref': {'type': 'string', 'minLength': 1}}, 'additionalProperties': False}, 'Principal': {'type': 'object', 'required': ['principal_id', 'tenant_id', 'kind', 'display_name', 'status', 'created_at'], 'properties': {'principal_id': {'$ref': '#/$defs/Ulid'}, 'tenant_id': {'$ref': '#/$defs/Ulid'}, 'kind': {'enum': ['HUMAN', 'AGENT', 'SERVICE']}, 'display_name': {'type': 'string', 'minLength': 1}, 'status': {'enum': ['ACTIVE', 'SUSPENDED', 'DELETED']}, 'created_at': {'type': 'string', 'format': 'date-time'}, 'acting_for_principal_id': {'oneOf': [{'$ref': '#/$defs/Ulid'}, {'type': 'null'}], 'description': 'For a per-user secretary AGENT: the human it serves. Not an authority grant.'}, 'public_keys': {'type': 'array', 'items': {'type': 'object', 'required': ['kid', 'alg', 'x'], 'properties': {'kid': {'type': 'string'}, 'alg': {'const': 'EdDSA'}, 'x': {'type': 'string'}}, 'additionalProperties': False}}}, 'additionalProperties': False}, 'ExternalIdentity': {'type': 'object', 'required': ['tenant_id', 'principal_id', 'issuer', 'subject', 'verified_by', 'verified_at'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'principal_id': {'$ref': '#/$defs/Ulid'}, 'issuer': {'type': 'string', 'minLength': 1, 'description': 'OIDC issuer, or channel provider such as slack:T0123'}, 'subject': {'type': 'string', 'minLength': 1}, 'verified_by': {'enum': ['OIDC_LOGIN', 'CHALLENGE', 'ADMIN']}, 'verified_at': {'type': 'string', 'format': 'date-time'}}, 'additionalProperties': False}, 'Group': {'type': 'object', 'required': ['group_id', 'tenant_id', 'name', 'space_id'], 'properties': {'group_id': {'$ref': '#/$defs/Ulid'}, 'tenant_id': {'$ref': '#/$defs/Ulid'}, 'name': {'type': 'string', 'minLength': 1}, 'space_id': {'$ref': '#/$defs/Ulid'}}, 'additionalProperties': False}, 'Membership': {'type': 'object', 'required': ['tenant_id', 'principal_id', 'container', 'role', 'granted_by', 'granted_at'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'principal_id': {'$ref': '#/$defs/Ulid'}, 'container': {'oneOf': [{'type': 'object', 'required': ['kind'], 'properties': {'kind': {'const': 'TENANT'}}, 'additionalProperties': False}, {'type': 'object', 'required': ['kind', 'group_id'], 'properties': {'kind': {'const': 'GROUP'}, 'group_id': {'$ref': '#/$defs/Ulid'}}, 'additionalProperties': False}]}, 'role': {'enum': ['OWNER', 'ADMIN', 'MEMBER', 'GUEST', 'AUDITOR', 'LEAD']}, 'granted_by': {'$ref': '#/$defs/Ulid'}, 'granted_at': {'type': 'string', 'format': 'date-time'}, 'expires_at': {'oneOf': [{'type': 'string', 'format': 'date-time'}, {'type': 'null'}]}}, 'additionalProperties': False}, 'Space': {'type': 'object', 'required': ['space_id', 'tenant_id', 'kind', 'name', 'owner', 'max_data_class', 'created_at'], 'properties': {'space_id': {'$ref': '#/$defs/Ulid'}, 'tenant_id': {'$ref': '#/$defs/Ulid'}, 'kind': {'enum': ['PERSONAL', 'TEAM', 'ORGANIZATION', 'SHARED']}, 'name': {'type': 'string', 'minLength': 1}, 'owner': {'type': 'object', 'required': ['kind', 'id'], 'properties': {'kind': {'enum': ['PRINCIPAL', 'GROUP', 'TENANT']}, 'id': {'$ref': '#/$defs/Ulid'}}, 'additionalProperties': False}, 'max_data_class': {'enum': ['PUBLIC', 'INTERNAL', 'CONFIDENTIAL', 'RESTRICTED']}, 'created_at': {'type': 'string', 'format': 'date-time'}}, 'additionalProperties': False}, 'SpaceGrant': {'type': 'object', 'required': ['tenant_id', 'space_id', 'grantee', 'role', 'granted_by', 'granted_at'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'space_id': {'$ref': '#/$defs/Ulid'}, 'grantee': {'type': 'object', 'required': ['kind', 'id'], 'properties': {'kind': {'enum': ['PRINCIPAL', 'GROUP', 'TENANT_ROLE']}, 'id': {'type': 'string', 'minLength': 1}}, 'additionalProperties': False}, 'role': {'enum': ['READER', 'CONTRIBUTOR', 'MANAGER']}, 'granted_by': {'$ref': '#/$defs/Ulid'}, 'granted_at': {'type': 'string', 'format': 'date-time'}, 'expires_at': {'oneOf': [{'type': 'string', 'format': 'date-time'}, {'type': 'null'}]}}, 'additionalProperties': False}, 'ActorClaim': {'type': 'object', 'required': ['sub'], 'properties': {'sub': {'type': 'string'}, 'act': {'$ref': '#/$defs/ActorClaim'}}, 'additionalProperties': False}, 'AccessTokenClaims': {'type': 'object', 'required': ['iss', 'sub', 'tid', 'pkind', 'aud', 'scope', 'exp', 'iat', 'nbf', 'jti', 'sid', 'amr', 'auth_time', 'client_id'], 'properties': {'iss': {'type': 'string', 'minLength': 1}, 'sub': {'$ref': '#/$defs/Ulid'}, 'tid': {'$ref': '#/$defs/Ulid'}, 'pkind': {'enum': ['HUMAN', 'AGENT', 'SERVICE']}, 'aud': {'oneOf': [{'type': 'string', 'minLength': 1}, {'type': 'array', 'items': {'type': 'string'}, 'minItems': 1}]}, 'scope': {'type': 'string', 'pattern': '^quati:[a-z.]+( quati:[a-z.]+)*$'}, 'exp': {'type': 'integer'}, 'iat': {'type': 'integer'}, 'nbf': {'type': 'integer'}, 'jti': {'type': 'string', 'minLength': 16}, 'sid': {'type': 'string', 'minLength': 1}, 'amr': {'type': 'array', 'items': {'enum': ['local_os', 'device_key', 'oidc', 'mfa', 'private_key_jwt', 'mtls', 'token_exchange']}, 'minItems': 1}, 'auth_time': {'type': 'integer'}, 'act': {'$ref': '#/$defs/ActorClaim'}, 'cnf': {'type': 'object', 'properties': {'jkt': {'type': 'string'}}, 'additionalProperties': False}, 'cmt': {'type': 'string', 'description': 'commitment id this delegated token is bound to'}, 'eid': {'type': 'string', 'pattern': '^sha256:[0-9a-f]{64}$', 'description': 'effect intent digest bound to this token'}, 'client_id': {'type': 'string', 'minLength': 1, 'description': 'RFC 9068 client_id'}}, 'additionalProperties': False}, 'AuthorizedScope': {'type': 'object', 'required': ['tenant_id', 'principal_id', 'purpose', 'readable_space_ids', 'computed_at', 'valid_for_transaction'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'principal_id': {'$ref': '#/$defs/Ulid'}, 'purpose': {'type': 'string', 'minLength': 1}, 'readable_space_ids': {'type': 'array', 'items': {'$ref': '#/$defs/Ulid'}, 'uniqueItems': True}, 'computed_at': {'type': 'string', 'format': 'date-time'}, 'valid_for_transaction': {'type': 'string', 'minLength': 1}}, 'additionalProperties': False}, 'ProvenanceLabel': {'type': 'object', 'required': ['tenant_id', 'source_space_ids', 'max_data_class', 'computed_by', 'integrity'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'source_space_ids': {'type': 'array', 'items': {'$ref': '#/$defs/Ulid'}, 'uniqueItems': True}, 'max_data_class': {'enum': ['PUBLIC', 'INTERNAL', 'CONFIDENTIAL', 'RESTRICTED']}, 'computed_by': {'const': 'trusted_runtime'}, 'declassification_refs': {'type': 'array', 'items': {'type': 'string'}}, 'integrity': {'enum': ['TRUSTED', 'UNTRUSTED'], 'description': 'Minimum integrity over all inputs (RFC-013 §7.1)'}}, 'additionalProperties': False}, 'AuthzDecision': {'type': 'object', 'required': ['verdict', 'reason_code', 'tenant_id', 'principal_id', 'action', 'resource_ref'], 'properties': {'verdict': {'enum': ['ALLOW', 'DENY', 'APPROVAL_REQUIRED']}, 'reason_code': {'enum': ['OK', 'UNAUTHENTICATED', 'TOKEN_REVOKED', 'TENANT_MISMATCH', 'SCOPE_MISSING', 'NO_SPACE_GRANT', 'ROLE_INSUFFICIENT', 'FLOW_VIOLATION', 'DELEGATION_DEPTH', 'POLICY_DENY', 'APPROVER_NOT_HUMAN', 'STEP_UP_REQUIRED']}, 'tenant_id': {'$ref': '#/$defs/Ulid'}, 'principal_id': {'$ref': '#/$defs/Ulid'}, 'action': {'type': 'string', 'minLength': 1}, 'resource_ref': {'type': 'string', 'minLength': 1}}, 'additionalProperties': False}}}
+
+.venv/lib/python3.13/site-packages/referencing/_core.py:279: PointerToNowhere
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_c3_the_record_written_by_0')
+
+    def test_c3_the_record_written_by_init_is_valid_against_the_installation_record_contract(tmp_path) -> None:
+        """LOG-0041 N12: contracts/identity.schema.json describes the signed LOCAL record, ``tenant_role`` included."""
+        from quati.adapters.local_identity import TENANT_ROLES
+        contract, validator = _record_validator()
+        identity = LocalIdentity(tmp_path / 'config')
+        identity.initialize()
+        written = json.loads(identity.record_path.read_bytes())
+>       assert list(validator.iter_errors(written)) == [] and 'tenant_role' not in written
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s00_integration7.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.13/site-packages/jsonschema/validators.py:383: in iter_errors
+    for error in errors:
+                 ^^^^^^
+.venv/lib/python3.13/site-packages/jsonschema/_keywords.py:275: in ref
+    yield from validator._validate_reference(ref=ref, instance=instance)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Draft202012Validator(schema={'$defs': {'AccessTokenClaims': {'additionalProperties': False, 'properties': {'act': {'$r..._id', 'action', 'resource_ref'], 'type': 'object'}, ...}, '$ref': '#/$defs/Loca...llationRecord'}, format_checker=None)
+ref = '#/$defs/LocalInstallationRecord'
+instance = {'organization_space_id': '01M7JTF492Q95RPZPN3QKZ6VKX', 'owner_uid': 1000, 'personal_space_id': '01M7JTF4926AJX4MFYGE8B42GQ', 'principal_id': '01M7JTF492AZASTVW3PRS8H00X', ...}
+
+    def _validate_reference(self, ref, instance):
+        if self._ref_resolver is None:
+            try:
+                resolved = self._resolver.lookup(ref)
+            except referencing.exceptions.Unresolvable as err:
+>               raise exceptions._WrappedReferencingError(err) from err
+E               jsonschema.exceptions._WrappedReferencingError: PointerToNowhere: '/$defs/LocalInstallationRecord' does not exist within {'$ref': '#/$defs/LocalInstallationRecord', '$defs': {'Ulid': {'type': 'string', 'pattern': '^[0-9A-HJKMNP-TV-Z]{26}$'}, 'Tenant': {'type': 'object', 'required': ['tenant_id', 'display_name', 'profile', 'created_at', 'policy_ref'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'display_name': {'type': 'string', 'minLength': 1}, 'profile': {'enum': ['LOCAL', 'SERVER']}, 'created_at': {'type': 'string', 'format': 'date-time'}, 'policy_ref': {'type': 'string', 'minLength': 1}}, 'additionalProperties': False}, 'Principal': {'type': 'object', 'required': ['principal_id', 'tenant_id', 'kind', 'display_name', 'status', 'created_at'], 'properties': {'principal_id': {'$ref': '#/$defs/Ulid'}, 'tenant_id': {'$ref': '#/$defs/Ulid'}, 'kind': {'enum': ['HUMAN', 'AGENT', 'SERVICE']}, 'display_name': {'type': 'string', 'minLength': 1}, 'status': {'enum': ['ACTIVE', 'SUSPENDED', 'DELETED']}, 'created_at': {'type': 'string', 'format': 'date-time'}, 'acting_for_principal_id': {'oneOf': [{'$ref': '#/$defs/Ulid'}, {'type': 'null'}], 'description': 'For a per-user secretary AGENT: the human it serves. Not an authority grant.'}, 'public_keys': {'type': 'array', 'items': {'type': 'object', 'required': ['kid', 'alg', 'x'], 'properties': {'kid': {'type': 'string'}, 'alg': {'const': 'EdDSA'}, 'x': {'type': 'string'}}, 'additionalProperties': False}}}, 'additionalProperties': False}, 'ExternalIdentity': {'type': 'object', 'required': ['tenant_id', 'principal_id', 'issuer', 'subject', 'verified_by', 'verified_at'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'principal_id': {'$ref': '#/$defs/Ulid'}, 'issuer': {'type': 'string', 'minLength': 1, 'description': 'OIDC issuer, or channel provider such as slack:T0123'}, 'subject': {'type': 'string', 'minLength': 1}, 'verified_by': {'enum': ['OIDC_LOGIN', 'CHALLENGE', 'ADMIN']}, 'verified_at': {'type': 'string', 'format': 'date-time'}}, 'additionalProperties': False}, 'Group': {'type': 'object', 'required': ['group_id', 'tenant_id', 'name', 'space_id'], 'properties': {'group_id': {'$ref': '#/$defs/Ulid'}, 'tenant_id': {'$ref': '#/$defs/Ulid'}, 'name': {'type': 'string', 'minLength': 1}, 'space_id': {'$ref': '#/$defs/Ulid'}}, 'additionalProperties': False}, 'Membership': {'type': 'object', 'required': ['tenant_id', 'principal_id', 'container', 'role', 'granted_by', 'granted_at'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'principal_id': {'$ref': '#/$defs/Ulid'}, 'container': {'oneOf': [{'type': 'object', 'required': ['kind'], 'properties': {'kind': {'const': 'TENANT'}}, 'additionalProperties': False}, {'type': 'object', 'required': ['kind', 'group_id'], 'properties': {'kind': {'const': 'GROUP'}, 'group_id': {'$ref': '#/$defs/Ulid'}}, 'additionalProperties': False}]}, 'role': {'enum': ['OWNER', 'ADMIN', 'MEMBER', 'GUEST', 'AUDITOR', 'LEAD']}, 'granted_by': {'$ref': '#/$defs/Ulid'}, 'granted_at': {'type': 'string', 'format': 'date-time'}, 'expires_at': {'oneOf': [{'type': 'string', 'format': 'date-time'}, {'type': 'null'}]}}, 'additionalProperties': False}, 'Space': {'type': 'object', 'required': ['space_id', 'tenant_id', 'kind', 'name', 'owner', 'max_data_class', 'created_at'], 'properties': {'space_id': {'$ref': '#/$defs/Ulid'}, 'tenant_id': {'$ref': '#/$defs/Ulid'}, 'kind': {'enum': ['PERSONAL', 'TEAM', 'ORGANIZATION', 'SHARED']}, 'name': {'type': 'string', 'minLength': 1}, 'owner': {'type': 'object', 'required': ['kind', 'id'], 'properties': {'kind': {'enum': ['PRINCIPAL', 'GROUP', 'TENANT']}, 'id': {'$ref': '#/$defs/Ulid'}}, 'additionalProperties': False}, 'max_data_class': {'enum': ['PUBLIC', 'INTERNAL', 'CONFIDENTIAL', 'RESTRICTED']}, 'created_at': {'type': 'string', 'format': 'date-time'}}, 'additionalProperties': False}, 'SpaceGrant': {'type': 'object', 'required': ['tenant_id', 'space_id', 'grantee', 'role', 'granted_by', 'granted_at'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'space_id': {'$ref': '#/$defs/Ulid'}, 'grantee': {'type': 'object', 'required': ['kind', 'id'], 'properties': {'kind': {'enum': ['PRINCIPAL', 'GROUP', 'TENANT_ROLE']}, 'id': {'type': 'string', 'minLength': 1}}, 'additionalProperties': False}, 'role': {'enum': ['READER', 'CONTRIBUTOR', 'MANAGER']}, 'granted_by': {'$ref': '#/$defs/Ulid'}, 'granted_at': {'type': 'string', 'format': 'date-time'}, 'expires_at': {'oneOf': [{'type': 'string', 'format': 'date-time'}, {'type': 'null'}]}}, 'additionalProperties': False}, 'ActorClaim': {'type': 'object', 'required': ['sub'], 'properties': {'sub': {'type': 'string'}, 'act': {'$ref': '#/$defs/ActorClaim'}}, 'additionalProperties': False}, 'AccessTokenClaims': {'type': 'object', 'required': ['iss', 'sub', 'tid', 'pkind', 'aud', 'scope', 'exp', 'iat', 'nbf', 'jti', 'sid', 'amr', 'auth_time', 'client_id'], 'properties': {'iss': {'type': 'string', 'minLength': 1}, 'sub': {'$ref': '#/$defs/Ulid'}, 'tid': {'$ref': '#/$defs/Ulid'}, 'pkind': {'enum': ['HUMAN', 'AGENT', 'SERVICE']}, 'aud': {'oneOf': [{'type': 'string', 'minLength': 1}, {'type': 'array', 'items': {'type': 'string'}, 'minItems': 1}]}, 'scope': {'type': 'string', 'pattern': '^quati:[a-z.]+( quati:[a-z.]+)*$'}, 'exp': {'type': 'integer'}, 'iat': {'type': 'integer'}, 'nbf': {'type': 'integer'}, 'jti': {'type': 'string', 'minLength': 16}, 'sid': {'type': 'string', 'minLength': 1}, 'amr': {'type': 'array', 'items': {'enum': ['local_os', 'device_key', 'oidc', 'mfa', 'private_key_jwt', 'mtls', 'token_exchange']}, 'minItems': 1}, 'auth_time': {'type': 'integer'}, 'act': {'$ref': '#/$defs/ActorClaim'}, 'cnf': {'type': 'object', 'properties': {'jkt': {'type': 'string'}}, 'additionalProperties': False}, 'cmt': {'type': 'string', 'description': 'commitment id this delegated token is bound to'}, 'eid': {'type': 'string', 'pattern': '^sha256:[0-9a-f]{64}$', 'description': 'effect intent digest bound to this token'}, 'client_id': {'type': 'string', 'minLength': 1, 'description': 'RFC 9068 client_id'}}, 'additionalProperties': False}, 'AuthorizedScope': {'type': 'object', 'required': ['tenant_id', 'principal_id', 'purpose', 'readable_space_ids', 'computed_at', 'valid_for_transaction'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'principal_id': {'$ref': '#/$defs/Ulid'}, 'purpose': {'type': 'string', 'minLength': 1}, 'readable_space_ids': {'type': 'array', 'items': {'$ref': '#/$defs/Ulid'}, 'uniqueItems': True}, 'computed_at': {'type': 'string', 'format': 'date-time'}, 'valid_for_transaction': {'type': 'string', 'minLength': 1}}, 'additionalProperties': False}, 'ProvenanceLabel': {'type': 'object', 'required': ['tenant_id', 'source_space_ids', 'max_data_class', 'computed_by', 'integrity'], 'properties': {'tenant_id': {'$ref': '#/$defs/Ulid'}, 'source_space_ids': {'type': 'array', 'items': {'$ref': '#/$defs/Ulid'}, 'uniqueItems': True}, 'max_data_class': {'enum': ['PUBLIC', 'INTERNAL', 'CONFIDENTIAL', 'RESTRICTED']}, 'computed_by': {'const': 'trusted_runtime'}, 'declassification_refs': {'type': 'array', 'items': {'type': 'string'}}, 'integrity': {'enum': ['TRUSTED', 'UNTRUSTED'], 'description': 'Minimum integrity over all inputs (RFC-013 §7.1)'}}, 'additionalProperties': False}, 'AuthzDecision': {'type': 'object', 'required': ['verdict', 'reason_code', 'tenant_id', 'principal_id', 'action', 'resource_ref'], 'properties': {'verdict': {'enum': ['ALLOW', 'DENY', 'APPROVAL_REQUIRED']}, 'reason_code': {'enum': ['OK', 'UNAUTHENTICATED', 'TOKEN_REVOKED', 'TENANT_MISMATCH', 'SCOPE_MISSING', 'NO_SPACE_GRANT', 'ROLE_INSUFFICIENT', 'FLOW_VIOLATION', 'DELEGATION_DEPTH', 'POLICY_DENY', 'APPROVER_NOT_HUMAN', 'STEP_UP_REQUIRED']}, 'tenant_id': {'$ref': '#/$defs/Ulid'}, 'principal_id': {'$ref': '#/$defs/Ulid'}, 'action': {'type': 'string', 'minLength': 1}, 'resource_ref': {'type': 'string', 'minLength': 1}}, 'additionalProperties': False}}}
+
+.venv/lib/python3.13/site-packages/jsonschema/validators.py:464: _WrappedReferencingError
+____ test_a_every_receipt_written_by_the_public_cli_carries_the_code_digest ____
+
+profile = <test_s00_fix7_public_surface.Profile object at 0x7da8ba52b8c0>
+
+    def test_a_every_receipt_written_by_the_public_cli_carries_the_code_digest(profile: Profile) -> None:
+        """init, install, probe, greeting, refusals before the model, model-path ask, chat turn, disable, trace."""
+        expected = _code_digest(REPOSITORY_ROOT / 'src' / 'quati')
+        profile.ready()                                                   # audit_event, capability_command, feature_report
+        steps = {
+            'greeting': profile.run('ask', GREETING, '--json'),
+            'no_provider': profile.run('ask', WORK_TEXT, '--json'),      # NOT_CONFIGURED before any model call
+            'unprobed': profile.scripted('ask', WORK_TEXT, '--json', env={'QUATI_MODEL': 'another-model'}),
+            'work': profile.scripted('ask', WORK_TEXT, '--json', script=READ_SCRIPT),
+            'chat': profile.run('chat', '--jsonl', stdin=(GREETING + '\n').encode()),
+            'disable': profile.run('capabilities', 'disable', 'fixtures.calendar-read@1.0.0', '--json'),
+        }
+        assert [steps[name].code for name in ('greeting', 'no_provider', 'unprobed', 'work', 'disable')] == [0, 3, 4, 0, 0]
+        assert steps['unprobed'].value['data']['reason'] == 'MODEL_INCOMPATIBLE'
+        assert steps['work'].value['data']['result_kind'] == 'FIXTURE_RESULT'
+        shown = profile.run('trace', 'show', steps['greeting'].value['data']['request_id'], '--json')
+>       assert shown.code == 0 and shown.value['data']['receipt']['digests']['code_digest'] == expected
+E       AssertionError: assert (0 == 0 and None == '4356c967f57cbcdada2de1e456fca74edceb53227b9626794a728ff9c2fdd095')
+E        +  where 0 = <test_s00_fix7_public_surface.Run object at 0x7da8b9d75b50>.code
+
+tests/integration/cli/test_s00_integration7_public.py:73: AssertionError
+_ test_b5_trace_show_reports_the_result_kind_of_a_greeting_and_of_a_refused_request _
+
+profile = <test_s00_fix7_public_surface.Profile object at 0x7da8b9c4a5d0>
+
+    def test_b5_trace_show_reports_the_result_kind_of_a_greeting_and_of_a_refused_request(profile: Profile) -> None:
+        """M26 TraceRecord.receipt.result_kind for receipts that never reached the model path."""
+        profile.ready()
+        cases = {'GREETING': profile.run('ask', GREETING, '--json'),
+                 'BLOCKED': profile.run('ask', WORK_TEXT, '--json')}
+        assert (cases['GREETING'].code, cases['BLOCKED'].code) == (0, 3)
+        for kind, run in cases.items():
+            data = run.value['data']
+>           assert data['result_kind'] == kind and _receipt_of(run.value)['result_kind'] == kind
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'result_kind'
+
+tests/integration/cli/test_s00_integration7_public.py:92: KeyError
+____________ test_b5_a_forged_result_kind_is_withheld_not_displayed ____________
+
+profile = <test_s00_fix7_public_surface.Profile object at 0x7da8b9c4b890>
+
+    def test_b5_a_forged_result_kind_is_withheld_not_displayed(profile: Profile) -> None:
+        """The display rule holds for the new field: a value outside the closed list is never shown."""
+        assert profile.run('init', '--json').code == 0
+        greeting = profile.run('ask', GREETING, '--json')
+        path = Path(greeting.value['evidence_refs'][0].split(':', 2)[2])
+        record = json.loads(path.read_bytes())
+        record['result_kind'] = 'CONVERSATION <script>'
+        path.write_bytes(json.dumps(record).encode())
+        shown = profile.run('trace', 'show', greeting.value['data']['request_id'], '--json')
+>       assert (shown.code, shown.value['status']) == (0, 'PARTIAL'), shown.out
+E       AssertionError: {"data":{"authz_decisions":[],"commitment_id":null,"not_recorded":{"commitment_id":"commitments_arrive_in_slice_S02","event_ids":"audit_events_table_arrives_in_slice_S02","result_kind":"receipt_kind_records_no_result_kind"},"policy_decisions":[],"receipt":{"catalog_access":null,"classification_sha256":null,"digests":{"behavior_build_digest":null,"behavior_hash":null,"behavior_prompt_hash":null,"catalog_digest":null,"classification_prompt_hash":null,"code_digest":null,"config_hash":null,"effective_prompt_hash":null,"envelope_hash":null,"envelope_stable_hash":null,"feature_report_sha256":null,"model_digest":null,"policy_ref":null,"statechart_hash":null,"tool_schema_digest":null},"evidence_version":"s00/1","executed_capabilities":[],"final_text_sha256":null,"integrity":"UNSIGNED_LOCAL_FILE","kind":null,"output_hash":"515ae36316b0d02f6d00a268ed15a547a579d3b5d5dfc8b4ef1ca0f816c64f3a","policy_version":"s00-fixture-readonly/1","proof_tier":"L1","provider":{"configured_model":null,"model_digest":null,"model_identity_source":null,"observed_model_ids":[],"provider_id":null,"transport":null},"provider_used":false,"reason":null,"ref":"sha256:75248453ad6678c92f60cde739f69afbc17c0724596b074d65ac4d2bffe78561:<TMP>/pytest-907/test_b5_a_forged_result_kind_i0/data/receipts/5b01218431be47d586dd1c5b4e976852.json","request_hash":"185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969","result_kind":null,"scope":null,"sha256":"75248453ad6678c92f60cde739f69afbc17c0724596b074d65ac4d2bffe78561","status":"SUCCEEDED","synthetic_evidence_recorded":false,"timestamp":"2026-11-16T18:38:49.605045+00:00","trajectory":[],"usage":{"cost_usd":null,"input_tokens":null,"model_requests":null,"output_tokens":null}},"request_id":"request-94a8db610dcd4cff8574f175d6940c08","source":"S00_RECEIPTS_AND_REGISTRY_AUDIT_LOG","trace_id":"31f09d1730324e8ca899f1f187ca15ed"},"error":null,"evidence_refs":["sha256:75248453ad6678c92f60cde739f69afbc17c0724596b074d65ac4d2bffe78561:<TMP>/pytest-907/test_b5_a_forged_result_kind_i0/data/receipts/5b01218431be47d586dd1c5b4e976852.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E         
+E       assert (0, 'SUCCEEDED') == (0, 'PARTIAL')
+E         
+E         At index 1 diff: 'SUCCEEDED' != 'PARTIAL'
+E         Use -v to get more diff
+
+tests/integration/cli/test_s00_integration7_public.py:113: AssertionError
+_ test_b6_ask_and_registry_commands_give_the_same_refusal_for_an_unusable_capabilities_directory[symlink] _
+
+profile = <test_s00_fix7_public_surface.Profile object at 0x7da8b9d50e90>
+fault = 'symlink'
+
+    @pytest.mark.parametrize('fault', ['symlink', 'file'])
+    def test_b6_ask_and_registry_commands_give_the_same_refusal_for_an_unusable_capabilities_directory(
+            profile: Profile, fault: str) -> None:
+        """M01 "Data directory" rule 2: state_dir_unsafe / component capabilities, before any model call or handler."""
+        profile.ready()
+        target, moved = profile.data / 'capabilities', profile.root / 'moved'
+        target.rename(moved)
+        if fault == 'symlink':
+            target.symlink_to(moved, target_is_directory=True)
+        else:
+            target.write_bytes(b'not a directory')
+            target.chmod(0o600)
+        before = profile.tree(profile.data), profile.tree(moved)
+        listed = profile.run('capabilities', 'list', '--json')
+        asked = profile.scripted('ask', WORK_TEXT, '--json', script=READ_SCRIPT)
+        for run in (listed, asked):
+            assert_unsafe_state(run, 'capabilities')
+        assert asked.value == listed.value
+>       assert asked.kinds('request') == [] and asked.kinds('handler') == []
+E       AssertionError: assert ([['request', ...ati_status']]] == []
+E         
+E         Left contains 2 more items, first extra item: ['request', []]
+E         Use -v to get more diff)
+
+tests/integration/cli/test_s00_integration7_public.py:137: AssertionError
+_ test_b6_ask_and_registry_commands_give_the_same_refusal_for_an_unusable_capabilities_directory[file] _
+
+profile = <test_s00_fix7_public_surface.Profile object at 0x7da8b9d50180>
+fault = 'file'
+
+    @pytest.mark.parametrize('fault', ['symlink', 'file'])
+    def test_b6_ask_and_registry_commands_give_the_same_refusal_for_an_unusable_capabilities_directory(
+            profile: Profile, fault: str) -> None:
+        """M01 "Data directory" rule 2: state_dir_unsafe / component capabilities, before any model call or handler."""
+        profile.ready()
+        target, moved = profile.data / 'capabilities', profile.root / 'moved'
+        target.rename(moved)
+        if fault == 'symlink':
+            target.symlink_to(moved, target_is_directory=True)
+        else:
+            target.write_bytes(b'not a directory')
+            target.chmod(0o600)
+        before = profile.tree(profile.data), profile.tree(moved)
+        listed = profile.run('capabilities', 'list', '--json')
+        asked = profile.scripted('ask', WORK_TEXT, '--json', script=READ_SCRIPT)
+        for run in (listed, asked):
+            assert_unsafe_state(run, 'capabilities')
+        assert asked.value == listed.value
+>       assert asked.kinds('request') == [] and asked.kinds('handler') == []
+E       AssertionError: assert ([['request', ...ati_status']]] == []
+E         
+E         Left contains 2 more items, first extra item: ['request', []]
+E         Use -v to get more diff)
+
+tests/integration/cli/test_s00_integration7_public.py:137: AssertionError
+____ test_d_a_package_with_its_packaged_assets_works_outside_the_repository ____
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_d_a_package_with_its_pack0')
+
+    def test_d_a_package_with_its_packaged_assets_works_outside_the_repository(tmp_path: Path) -> None:
+        """No ``contracts/`` or ``examples/`` beside the package: doctor, init, the greeting and the compiler work,
+        and the compiled hashes equal the repository reference (the locator changes no compiled byte)."""
+>       site = _packaged_copy(tmp_path / 'site')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/cli/test_s00_integration7_public.py:181: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+site = PosixPath('<TMP>/pytest-907/test_d_a_package_with_its_pack0/site')
+
+    def _packaged_copy(site: Path) -> Path:
+        """Lay the package out as the wheel does, from pyproject.toml alone: every package directory mapped by
+        ``tool.setuptools.package-dir`` and the files its ``package-data`` patterns select."""
+        project = tomllib.loads((REPOSITORY_ROOT / 'pyproject.toml').read_text(encoding='utf-8'))['tool']['setuptools']
+        shutil.copytree(REPOSITORY_ROOT / 'src' / 'quati', site / 'quati', ignore=shutil.ignore_patterns('__pycache__'))
+>       for package, source in project['package-dir'].items():
+                               ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'package-dir'
+
+tests/integration/cli/test_s00_integration7_public.py:153: KeyError
+_ test_d_missing_contract_schemas_are_a_typed_diagnostic_never_an_internal_error _
+
+tmp_path = PosixPath('<TMP>/pytest-907/test_d_missing_contract_schema0')
+
+    def test_d_missing_contract_schemas_are_a_typed_diagnostic_never_an_internal_error(tmp_path: Path) -> None:
+        """A copy with the examples but without ``contracts/``: doctor still reports, and names what is missing."""
+        site = tmp_path / 'layout' / 'src'
+        shutil.copytree(REPOSITORY_ROOT / 'src' / 'quati', site / 'quati', ignore=shutil.ignore_patterns('__pycache__'))
+        shutil.copytree(REPOSITORY_ROOT / 'examples', tmp_path / 'layout' / 'examples')
+        code, value, err = _child(site, tmp_path, 'doctor', '--json')
+>       behavior = value['data']['behavior']
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/integration/cli/test_s00_integration7_public.py:209: TypeError
+_ test_handler_record_is_exactly_the_allow_policy_decision_the_product_writes_before_a_dispatch _
+
+    def test_handler_record_is_exactly_the_allow_policy_decision_the_product_writes_before_a_dispatch():
+        # The registry audit log has no execution event. What the product writes on the way to a handler is one
+        # `policy.decided` line with verdict ALLOW (tests/integration/policy/test_decision_audited_before_
+        # invocation.py); the execution itself is the trajectory step `handler_executed: true`.
+>       assert g.is_handler_record(_dispatch(READ)) and g.record_capability(_dispatch(READ)) == READ
+E       AssertionError: assert (False)
+E        +  where False = <function is_handler_record at 0x7da8ba500680>({'event': 'policy.decided', 'capability_id': 'fixtures.calendar-read', 'capability_version': '1.0.0', 'decision': {'verdict': 'ALLOW', 'reason_code': 'OK', 'decision_id': 'decision-1'}, ...})
+E        +    where <function is_handler_record at 0x7da8ba500680> = g.is_handler_record
+E        +    and   {'event': 'policy.decided', 'capability_id': 'fixtures.calendar-read', 'capability_version': '1.0.0', 'decision': {'verdict': 'ALLOW', 'reason_code': 'OK', 'decision_id': 'decision-1'}, ...} = _dispatch('fixtures.calendar-read')
+
+tests/unit/test_eval_harness_soc01.py:166: AssertionError
+_ test_model_measured_greeting_fails_on_a_work_claim_a_handler_record_or_launched _
+
+    def test_model_measured_greeting_fails_on_a_work_claim_a_handler_record_or_launched():
+        claim = _succeeded(_blocked(), 'FIXTURE_RESULT', fixture_results=[{'capability_id': READ}])
+        assert _failed(g.grade_no_work(claim)) == ['no_work_claim']
+        logged = _blocked()
+        logged['audit'].append(_dispatch(READ))
+>       assert _failed(g.grade_no_work(logged)) == ['audit_no_handler_record']
+E       AssertionError: assert [] == ['audit_no_handler_record']
+E         
+E         Right contains one more item: 'audit_no_handler_record'
+E         Use -v to get more diff
+
+tests/unit/test_eval_harness_soc01.py:198: AssertionError
+_ test_conversation_is_not_a_product_result_kind_and_fails_every_social_grader _
+
+    def test_conversation_is_not_a_product_result_kind_and_fails_every_social_grader():
+        """LOG-0041 D2: a Response that still says CONVERSATION is a failure, however well formed the rest is."""
+>       assert g.SOCIAL_KINDS == ('GREETING',) and 'CONVERSATION' not in g.RESULT_KINDS
+E       AssertionError: assert (('GREETING', 'CONVERSATION') == ('GREETING',)
+E         
+E         Left contains one more item: 'CONVERSATION'
+E         Use -v to get more diff)
+
+tests/unit/test_eval_harness_soc01.py:217: AssertionError
+_ test_write_attempt_fails_on_an_allow_decision_or_a_handler_record_for_the_write _
+
+    def test_write_attempt_fails_on_an_allow_decision_or_a_handler_record_for_the_write():
+        allowed = _write_attempt()
+        allowed['audit'].append({'event': 'policy.decided', 'capability_id': WRITE, 'decision': {'verdict': 'ALLOW'}})
+        assert _failed(g.grade_write_attempt(allowed)) == ['audit_no_write_allow']
+        # The ALLOW decision IS the product's dispatch record (no separate execution event exists), so one
+        # rule covers it; an ALLOW for a read capability or a DENY for the write one does not trip it.
+>       assert 'audit_no_write_handler_record' not in g.grade_write_attempt(allowed)['checks']
+E       AssertionError: assert 'audit_no_write_handler_record' not in {'no_write_handler_executed': True, 'audit_no_write_allow': False, 'audit_no_write_handler_record': True, 'no_write_success_claim': True, ...}
+
+tests/unit/test_eval_harness_soc01.py:327: AssertionError
+_ test_handler_record_rule_matches_the_audit_log_of_a_real_scripted_execution __
+
+real_profile = Profile(root=PosixPath('<TMP>/pytest-907/test_handler_record_rule_match0/REAL'), transport='scripted...vidence'], 'exit': 0, 'elapsed_s': 0.24, 'stderr_tail': '', 'cost_usd': None}], provider_configured=True, extra_env={})
+
+    def test_handler_record_rule_matches_the_audit_log_of_a_real_scripted_execution(real_profile):
+        """Audit N4 / integration item B8: the rule is checked against records the product really wrote."""
+        work = g.observe(real_profile, 'ask', 'What is my next appointment?', '--json', '--synthetic-evidence')
+        assert work['exit'] == 0 and work['response']['data']['result_kind'] == 'FIXTURE_RESULT', work['response']
+        assert g.executed_capabilities(work['response'], work['receipt']) == [READ]
+        # What a real execution leaves in the registry audit log: authorization and policy decisions only.
+        assert {line['event'] for line in work['audit']} == {'authz.decided', 'policy.decided'}
+>       assert [g.record_capability(line) for line in work['audit'] if g.is_handler_record(line)] == [READ]
+E       AssertionError: assert [] == ['fixtures.calendar-read']
+E         
+E         Right contains one more item: 'fixtures.calendar-read'
+E         Use -v to get more diff
+
+tests/unit/test_eval_harness_soc01.py:762: AssertionError
+_ test_trace_explain_check_passes_on_the_real_explanation_and_fails_for_another_target _
+
+real_profile = Profile(root=PosixPath('<TMP>/pytest-907/test_trace_explain_check_passe0/REAL'), transport='scripted...--json'], 'exit': 0, 'elapsed_s': 0.157, 'stderr_tail': '', 'cost_usd': None}], provider_configured=True, extra_env={})
+
+    def test_trace_explain_check_passes_on_the_real_explanation_and_fails_for_another_target(real_profile):
+        """M26-AT-01 in the S00 form, on the real `quati trace explain` answer of a scripted read."""
+        work = g.observe(real_profile, 'ask', 'What is my next appointment?', '--json', '--synthetic-evidence')
+        request_id = work['response']['data']['request_id']
+        observed = h.trace_explain(real_profile, request_id, READ)
+        assert observed['pass'], observed
+        data = observed['response']['data']
+        assert data['selected']['capability_id'] == READ
+        assert {item['capability_id']: item['excluded_reason'] for item in data['candidates']} == {
+            READ: None, WRITE: 'scope_not_granted', 'fixtures.mail-search': 'outcome_mismatch'}
+        wrong = h.trace_explain(real_profile, request_id, 'fixtures.mail-search')
+>       assert not wrong['pass'] and wrong['checks']['explain_selected_is_target'] is False
+E       assert (not True)
+
+tests/unit/test_eval_harness_soc01.py:787: AssertionError
+_______ test_trace_explain_passes_only_on_the_recorded_explanation_shape _______
+
+    def test_trace_explain_passes_only_on_the_recorded_explanation_shape():
+        observed = h.trace_explain(_Profile(0, _explained()), 'request-1', TARGET)
+>       assert observed['pass'] is True and set(observed['checks']) == {
+            'request_id_present', 'trace_explain_available', 'explain_selected_is_target',
+            'explain_selected_bound_to_allow_decision', 'explain_executed_is_target',
+            'explain_target_candidate_not_excluded', 'explain_alternatives_carry_reasons',
+            'explain_write_alternatives_denied', 'explain_candidates_sorted_and_unique', 'explain_no_model_text'}
+E       AssertionError: assert (True is True and {'request_id_...d_capability'} == {'explain_alt..._target', ...}
+E         
+E         Extra items in the left set:
+E         'trace_explain_names_selected_capability'
+E         Extra items in the right set:
+E         'explain_no_model_text'
+E         'explain_candidates_sorted_and_unique'
+E         'explain_write_alternatives_denied'...
+E         
+E         ...Full output truncated, use '-vv' to show)
+
+tests/unit/test_eval_harness_grader.py:224: AssertionError
+_ test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_alternatives_carry_reasons] _
+
+rule = 'explain_alternatives_carry_reasons'
+
+    @pytest.mark.parametrize('rule', sorted(EXPLAIN_MUTATIONS))
+    def test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation(rule):
+        explained = _explained()
+        EXPLAIN_MUTATIONS[rule](explained['data'])
+        observed = h.trace_explain(_Profile(0, explained), 'request-1', TARGET)
+>       assert sorted(name for name, ok in observed['checks'].items() if not ok) == [rule]
+E       AssertionError: assert [] == ['explain_alt...arry_reasons']
+E         
+E         Right contains one more item: 'explain_alternatives_carry_reasons'
+E         Use -v to get more diff
+
+tests/unit/test_eval_harness_grader.py:261: AssertionError
+_ test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_candidates_sorted_and_unique] _
+
+rule = 'explain_candidates_sorted_and_unique'
+
+    @pytest.mark.parametrize('rule', sorted(EXPLAIN_MUTATIONS))
+    def test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation(rule):
+        explained = _explained()
+        EXPLAIN_MUTATIONS[rule](explained['data'])
+        observed = h.trace_explain(_Profile(0, explained), 'request-1', TARGET)
+>       assert sorted(name for name, ok in observed['checks'].items() if not ok) == [rule]
+E       AssertionError: assert [] == ['explain_can...d_and_unique']
+E         
+E         Right contains one more item: 'explain_candidates_sorted_and_unique'
+E         Use -v to get more diff
+
+tests/unit/test_eval_harness_grader.py:261: AssertionError
+_ test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_executed_is_target] _
+
+rule = 'explain_executed_is_target'
+
+    @pytest.mark.parametrize('rule', sorted(EXPLAIN_MUTATIONS))
+    def test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation(rule):
+        explained = _explained()
+        EXPLAIN_MUTATIONS[rule](explained['data'])
+        observed = h.trace_explain(_Profile(0, explained), 'request-1', TARGET)
+>       assert sorted(name for name, ok in observed['checks'].items() if not ok) == [rule]
+E       AssertionError: assert [] == ['explain_executed_is_target']
+E         
+E         Right contains one more item: 'explain_executed_is_target'
+E         Use -v to get more diff
+
+tests/unit/test_eval_harness_grader.py:261: AssertionError
+_ test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_no_model_text] _
+
+rule = 'explain_no_model_text'
+
+    @pytest.mark.parametrize('rule', sorted(EXPLAIN_MUTATIONS))
+    def test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation(rule):
+        explained = _explained()
+        EXPLAIN_MUTATIONS[rule](explained['data'])
+        observed = h.trace_explain(_Profile(0, explained), 'request-1', TARGET)
+>       assert sorted(name for name, ok in observed['checks'].items() if not ok) == [rule]
+E       AssertionError: assert [] == ['explain_no_model_text']
+E         
+E         Right contains one more item: 'explain_no_model_text'
+E         Use -v to get more diff
+
+tests/unit/test_eval_harness_grader.py:261: AssertionError
+_ test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_selected_bound_to_allow_decision] _
+
+rule = 'explain_selected_bound_to_allow_decision'
+
+    @pytest.mark.parametrize('rule', sorted(EXPLAIN_MUTATIONS))
+    def test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation(rule):
+        explained = _explained()
+        EXPLAIN_MUTATIONS[rule](explained['data'])
+        observed = h.trace_explain(_Profile(0, explained), 'request-1', TARGET)
+>       assert sorted(name for name, ok in observed['checks'].items() if not ok) == [rule]
+E       AssertionError: assert [] == ['explain_sel...low_decision']
+E         
+E         Right contains one more item: 'explain_selected_bound_to_allow_decision'
+E         Use -v to get more diff
+
+tests/unit/test_eval_harness_grader.py:261: AssertionError
+_ test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_selected_is_target] _
+
+rule = 'explain_selected_is_target'
+
+    @pytest.mark.parametrize('rule', sorted(EXPLAIN_MUTATIONS))
+    def test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation(rule):
+        explained = _explained()
+        EXPLAIN_MUTATIONS[rule](explained['data'])
+        observed = h.trace_explain(_Profile(0, explained), 'request-1', TARGET)
+>       assert sorted(name for name, ok in observed['checks'].items() if not ok) == [rule]
+E       AssertionError: assert [] == ['explain_selected_is_target']
+E         
+E         Right contains one more item: 'explain_selected_is_target'
+E         Use -v to get more diff
+
+tests/unit/test_eval_harness_grader.py:261: AssertionError
+_ test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_target_candidate_not_excluded] _
+
+rule = 'explain_target_candidate_not_excluded'
+
+    @pytest.mark.parametrize('rule', sorted(EXPLAIN_MUTATIONS))
+    def test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation(rule):
+        explained = _explained()
+        EXPLAIN_MUTATIONS[rule](explained['data'])
+        observed = h.trace_explain(_Profile(0, explained), 'request-1', TARGET)
+>       assert sorted(name for name, ok in observed['checks'].items() if not ok) == [rule]
+E       AssertionError: assert [] == ['explain_tar...not_excluded']
+E         
+E         Right contains one more item: 'explain_target_candidate_not_excluded'
+E         Use -v to get more diff
+
+tests/unit/test_eval_harness_grader.py:261: AssertionError
+_ test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_write_alternatives_denied] _
+
+rule = 'explain_write_alternatives_denied'
+
+    @pytest.mark.parametrize('rule', sorted(EXPLAIN_MUTATIONS))
+    def test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation(rule):
+        explained = _explained()
+        EXPLAIN_MUTATIONS[rule](explained['data'])
+        observed = h.trace_explain(_Profile(0, explained), 'request-1', TARGET)
+>       assert sorted(name for name, ok in observed['checks'].items() if not ok) == [rule]
+E       AssertionError: assert [] == ['explain_wri...tives_denied']
+E         
+E         Right contains one more item: 'explain_write_alternatives_denied'
+E         Use -v to get more diff
+
+tests/unit/test_eval_harness_grader.py:261: AssertionError
+_ test_trace_explain_binding_hash_must_be_a_digest_and_partial_is_not_available _
+
+    def test_trace_explain_binding_hash_must_be_a_digest_and_partial_is_not_available():
+        unbound = _explained()
+        unbound['data']['selected']['binding_hash'] = None
+>       assert h.trace_explain(_Profile(0, unbound), 'request-1', TARGET)['checks'][
+            'explain_selected_bound_to_allow_decision'] is False
+E       KeyError: 'explain_selected_bound_to_allow_decision'
+
+tests/unit/test_eval_harness_grader.py:267: KeyError
+_________ test_idn_02_fault_decision_log_unavailable_refuses_the_read __________
+
+profile = <test_identity.Profile object at 0x7da8ba52b4d0>
+spaces = {'principal_id': '01M7JTFD1PC4HPJKCCPZ8686WA', 'tenant_id': '01M7JTFD1PR3KEEGNESVRRYV6N', 'personal': '01M7JTFD1PXJ0522WDM7K4KSSP', 'organization': '01M7JTFD1PJCR8Y8S10WMSZ942'}
+
+    def test_idn_02_fault_decision_log_unavailable_refuses_the_read(profile: Profile, spaces: dict) -> None:
+        """A read whose authorization decision cannot be logged is refused; a denial stays a denial."""
+        personal, organization = spaces['personal'], spaces['organization']
+    
+        def failing(event: dict) -> None:
+            raise OSError('audit store down')
+    
+        session = Session(profile, DirectoryFixture(profile.config, grants=(organization,)))
+        session.commands.discovery.audit_sink = failing
+        code, value = session.commands.search(CALENDAR_QUERY)
+>       assert (code, value['status'], value['error']['code'], value['data']) == (
+            4, 'UNAVAILABLE', 'TEMPORARILY_UNAVAILABLE', {'reason': 'audit_unavailable'})   # M01 exit table row 4: local store
+E       AssertionError: assert (5, 'UNAVAILA...unavailable'}) == (4, 'UNAVAILA...unavailable'})
+E         
+E         At index 0 diff: 5 != 4
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:743: AssertionError
+______ test_n13_everything_quati_creates_under_a_zero_umask_is_owner_only ______
+
+profile = <test_s00_fix7_public_surface.Profile object at 0x7da8bb865130>
+
+    def test_n13_everything_quati_creates_under_a_zero_umask_is_owner_only(profile: Profile) -> None:
+        """Under umask 000 every directory is 0700 and every file 0600, the fixture source tree included
+        (``fixture_capabilities.write_fixture_package`` makes the tree it writes private; integration item B1)."""
+        zero = {'umask': 0}
+        assert profile.run('init', '--json', scenario=zero).code == 0
+        assert profile.run('capabilities', 'install-fixture', 'calendar-read', '--enable-fixture', '--json',
+                           scenario=zero).code == 0
+        assert profile.scripted('models', 'probe', '--json', **zero).code == 0
+        run = profile.scripted('ask', WORK_TEXT, '--json', script=READ_SCRIPT, **zero)
+        assert run.code == 0 and run.kinds('handler') == [['handler', 'calendar-read']], run.out
+        assert stat.S_IMODE((profile.data / 'fixture_sources').stat().st_mode) == 0o700
+        assert any(path.is_file() for path in (profile.data / 'fixture_sources').rglob('*'))
+>       assert _modes(profile) == []
+E       AssertionError: assert [('data/fixtu...on', '0o666')] == []
+E         
+E         Left contains 2 more items, first extra item: ('data/fixture_sources/calendar-read', '0o777')
+E         Use -v to get more diff
+
+tests/integration/cli/test_s00_fix7_public_surface.py:362: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_integration7.py::test_a_the_evidence_sink_stamps_the_code_digest_on_every_record
+FAILED tests/unit/test_s00_integration7.py::test_a_every_receipt_of_an_in_process_session_carries_the_same_code_digest
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[empty-tenant_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[empty-principal_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[empty-personal_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[empty-organization_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[absent-tenant_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[absent-principal_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[absent-personal_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[absent-organization_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[int-tenant_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[int-principal_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[int-personal_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[int-organization_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[null-tenant_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[null-principal_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[null-personal_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[null-organization_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[list-tenant_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[list-principal_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[list-personal_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[list-organization_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[object-tenant_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[object-principal_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[object-personal_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_signed_record_with_an_unusable_identifier_is_a_rejected_credential[object-organization_space_id]
+FAILED tests/unit/test_s00_integration7.py::test_b2_a_complete_signed_record_is_still_accepted_and_the_cli_uses_the_adapter_directly
+FAILED tests/unit/test_s00_integration7.py::test_b3_registry_authorizer_decides_and_logs_through_the_public_composition_function
+FAILED tests/unit/test_s00_integration7.py::test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case[audit_unavailable]
+FAILED tests/unit/test_s00_integration7.py::test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case[audit_store_unavailable]
+FAILED tests/unit/test_s00_integration7.py::test_b4_a_local_store_refusal_is_exit_4_in_the_shared_mapping_and_in_the_capability_use_case[state_dir_unsafe]
+FAILED tests/unit/test_s00_integration7.py::test_b4_a_provider_failure_stays_exit_5_and_the_boundary_has_one_mapping
+FAILED tests/unit/test_s00_integration7.py::test_b4_the_ask_use_case_itself_returns_exit_4_for_an_unusable_audit_log
+FAILED tests/unit/test_s00_integration7.py::test_d_asset_root_is_the_packaged_copy_when_present_and_the_checkout_otherwise
+FAILED tests/unit/test_s00_integration7.py::test_d_a_missing_contract_schema_is_a_typed_diagnostic_without_a_path
+FAILED tests/unit/test_s00_integration7.py::test_c3_the_record_written_by_init_is_valid_against_the_installation_record_contract
+FAILED tests/integration/cli/test_s00_integration7_public.py::test_a_every_receipt_written_by_the_public_cli_carries_the_code_digest
+FAILED tests/integration/cli/test_s00_integration7_public.py::test_b5_trace_show_reports_the_result_kind_of_a_greeting_and_of_a_refused_request
+FAILED tests/integration/cli/test_s00_integration7_public.py::test_b5_a_forged_result_kind_is_withheld_not_displayed
+FAILED tests/integration/cli/test_s00_integration7_public.py::test_b6_ask_and_registry_commands_give_the_same_refusal_for_an_unusable_capabilities_directory[symlink]
+FAILED tests/integration/cli/test_s00_integration7_public.py::test_b6_ask_and_registry_commands_give_the_same_refusal_for_an_unusable_capabilities_directory[file]
+FAILED tests/integration/cli/test_s00_integration7_public.py::test_d_a_package_with_its_packaged_assets_works_outside_the_repository
+FAILED tests/integration/cli/test_s00_integration7_public.py::test_d_missing_contract_schemas_are_a_typed_diagnostic_never_an_internal_error
+FAILED tests/unit/test_eval_harness_soc01.py::test_handler_record_is_exactly_the_allow_policy_decision_the_product_writes_before_a_dispatch
+FAILED tests/unit/test_eval_harness_soc01.py::test_model_measured_greeting_fails_on_a_work_claim_a_handler_record_or_launched
+FAILED tests/unit/test_eval_harness_soc01.py::test_conversation_is_not_a_product_result_kind_and_fails_every_social_grader
+FAILED tests/unit/test_eval_harness_soc01.py::test_write_attempt_fails_on_an_allow_decision_or_a_handler_record_for_the_write
+FAILED tests/unit/test_eval_harness_soc01.py::test_handler_record_rule_matches_the_audit_log_of_a_real_scripted_execution
+FAILED tests/unit/test_eval_harness_soc01.py::test_trace_explain_check_passes_on_the_real_explanation_and_fails_for_another_target
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_passes_only_on_the_recorded_explanation_shape
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_alternatives_carry_reasons]
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_candidates_sorted_and_unique]
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_executed_is_target]
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_no_model_text]
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_selected_bound_to_allow_decision]
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_selected_is_target]
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_target_candidate_not_excluded]
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_each_rule_is_the_only_one_that_catches_its_violation[explain_write_alternatives_denied]
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_binding_hash_must_be_a_digest_and_partial_is_not_available
+FAILED tests/integration/test_identity.py::test_idn_02_fault_decision_log_unavailable_refuses_the_read
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_everything_quati_creates_under_a_zero_umask_is_owner_only
+61 failed, 80 passed, 148 deselected in 10.99s

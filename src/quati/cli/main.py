@@ -11,7 +11,6 @@ from quati.adapters.local_identity import LocalIdentity
 from quati.adapters.trace_store import ReceiptReader
 from quati.application.behavior_commands import BehaviorCommands, active_package_status
 from quati.application.cli_service import CLIService, config_diagnostics, response
-from quati.application.identity import AccessDenied
 from quati.application.ports import ProviderConfig
 from quati.application.trace_commands import TraceCommands
 from quati.cli import composition, local_policy
@@ -56,20 +55,6 @@ def _config():
     return ProviderConfig.from_environment()
 
 
-class _Identity(LocalIdentity):
-    """The LOCAL identity, accepting only an installation record that carries every field S00 reads.
-
-    A signed record without one of them is a rejected credential (typed UNAUTHENTICATED; INVALID in
-    ``doctor``), never a ``KeyError`` in the middle of a command (LOG-0041 N10).
-    """
-
-    def _load(self):
-        record, key = super()._load()
-        if not runtime_facts.record_complete(record):
-            raise AccessDenied()
-        return record, key
-
-
 def _state(*names):
     """LOG-0041 N1: the data directory and the named directories under it are private, or UnsafeStatePath.
 
@@ -78,19 +63,10 @@ def _state(*names):
         receipts_directory() if name == 'receipts' else private_fs.state_directory(name)
 
 
-def _authorizer(identity):
-    """The registry enforcement point (AuthorizationPort decision + ``authz.decided``) for a non-registry command."""
-    def authorize(context, operation, action):
-        discovery = composition._parts(identity, context, clock=composition.system_clock, ids=composition.random_ids,
-                                       handlers=None)[2]
-        return discovery.authorize(context, operation, action)
-    return authorize
-
-
 def _service(config=None):
-    identity = _Identity()
+    identity = LocalIdentity()
     return CLIService(identity, config or _config(), receipt_sink,
-                      authorize=_authorizer(identity), state_guard=_state,
+                      authorize=composition.registry_authorizer(identity), state_guard=_state,
                       identity_inspector=lambda: runtime_facts.identity_state(identity.directory),
                       policy_loader=lambda tenant_id: local_policy.state(identity.directory, tenant_id),
                       policy_installer=lambda summary: local_policy.install(
@@ -105,7 +81,7 @@ def _service(config=None):
 def _commands(*written):
     """Capability commands for the authenticated operator; the directories the command uses are verified
     before it reads or changes anything, so no registry change is committed without its receipt directory."""
-    commands = composition.capability_commands(_Identity(), receipt_sink)
+    commands = composition.capability_commands(LocalIdentity(), receipt_sink)
     commands.registry.store.prepare()
     _state(*written)
     return commands
@@ -252,14 +228,14 @@ def config_validate(file: str = typer.Argument(None), json_output: bool = typer.
 def behavior_validate(package: str, root: str = typer.Option(None, '--root', help='Package root (default: .).'),
                       json_output: bool = typer.Option(False, '--json')):
     """Compile a behavior package and its statechart; print the deterministic receipt or the diagnostics."""
-    _emit(BehaviorCommands(_Identity()).validate(package, root or os.getcwd()))
+    _emit(BehaviorCommands(LocalIdentity()).validate(package, root or os.getcwd()))
 
 
 @behavior.command('render')
 def behavior_render(package: str, root: str = typer.Option(None, '--root', help='Package root (default: .).'),
                     json_output: bool = typer.Option(False, '--json')):
     """Compile a behavior package and print its English prompt preview with the build receipt."""
-    _emit(BehaviorCommands(_Identity()).render(package, root or os.getcwd()))
+    _emit(BehaviorCommands(LocalIdentity()).render(package, root or os.getcwd()))
 
 
 @models.command('probe')

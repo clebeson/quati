@@ -1,0 +1,186 @@
+{
+  "behavior_suite_is_post_hoc": true,
+  "binding_scope": "all",
+  "cases": [
+    "DOCTOR",
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "WRITE-01"
+  ],
+  "code_digest_src_quati": "96d0708298d5ff21013ed03c1972f34d41e37b01f4fb47f115b0641493d74d65",
+  "datasets": {
+    "behavior_suite.json": "e587165d55be89946b7e0a9e7289fc3b674e2ed8c9ff39599e2e11d1d44cef6f",
+    "cap01_heldout.json": "88005034c44ef23ffa67a8d9059b78066e1d689e80c9af82293d94dc06c7cb6e",
+    "cap01_paraphrases.json": "645736436635f1aa5de82eadd83a70f6dc83f032954a5df1d0fdbc6712acbab6",
+    "cap02_heldout.json": "3024e5dd25174424fec7116b58d81338c7aad5a0cd14c8c264bd13693270b784",
+    "cap02_paraphrases.json": "de5cace7c4062e4602e45785be94ef2940522a98cf7c3f833c35c98cf9898cd3",
+    "soc01_gate.json": "b2fe073d53763596c7b1434d25a78e7aad4f1c798712535a37af2f0b626c627b",
+    "write_attempts.json": "948e6e34e82b195a6c8994ec588cfcc1ca45d1ae740bdb18fb3822e642417a78"
+  },
+  "estimate": {
+    "assumptions": {
+      "ask_ceiling_calls": 8,
+      "note": "Estimate from the gate6 run (CAP-01: 30 runs, 151 ask calls, about US$0.095 with probes); the judge model and other models cost more per call.",
+      "probe_calls": 3,
+      "typical_ask_calls": {
+        "refusal": 4,
+        "social": 2,
+        "work": 5
+      },
+      "usd_per_call_haiku": 0.000396
+    },
+    "max_calls": 434,
+    "per_case": {
+      "CAP-01": {
+        "asks_with_model": 10,
+        "max_calls": 110,
+        "profiles_probed": 10,
+        "typical_calls": 80
+      },
+      "CAP-02": {
+        "asks_with_model": 10,
+        "max_calls": 110,
+        "profiles_probed": 10,
+        "typical_calls": 80
+      },
+      "CAP-03": {
+        "asks_with_model": 1,
+        "max_calls": 11,
+        "profiles_probed": 1,
+        "typical_calls": 7
+      },
+      "CAP-05": {
+        "asks_with_model": 0,
+        "max_calls": 0,
+        "profiles_probed": 0,
+        "typical_calls": 0
+      },
+      "DOCTOR": {
+        "asks_with_model": 0,
+        "max_calls": 3,
+        "profiles_probed": 1,
+        "typical_calls": 3
+      },
+      "SOC-01": {
+        "asks_with_model": 14,
+        "max_calls": 178,
+        "profiles_probed": 22,
+        "typical_calls": 102
+      },
+      "WRITE-01": {
+        "asks_with_model": 2,
+        "max_calls": 22,
+        "profiles_probed": 2,
+        "typical_calls": 14
+      }
+    },
+    "typical_calls": 286,
+    "usd_typical_at_haiku_rate": 0.113
+  },
+  "gate_cases": [
+    "DOCTOR",
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "WRITE-01"
+  ],
+  "gate_protocol_reasons": [
+    "--runs is 1, the gate protocol is 3 per paraphrase",
+    "--soc-runs is 2, the gate protocol needs at least 10 per text",
+    "--write-runs is 1, the gate protocol needs at least 5 per text",
+    "the launcher is replaced: this is not the real CLI against a real provider"
+  ],
+  "gate_protocol_requested": false,
+  "git": {
+    "changed_entries": 46,
+    "dirty": true,
+    "head": "8eed83f0501da8b0657f66698120555a945e5326",
+    "status_porcelain": [
+      " M README.md",
+      " M contracts/identity.schema.json",
+      " M contracts/runtime-boundaries.schema.json",
+      " M docs/architecture/BOUNDARY_CONTRACTS.md",
+      " M docs/architecture/PROJECT_STRUCTURE.md",
+      " M docs/architecture/TYPE_CATALOG.md",
+      " M docs/implementation/S00_RUNTIME_CONTRACT.md",
+      " M docs/prds/M01.md",
+      " M docs/prds/M02.md",
+      " M docs/prds/M14.md",
+      " M docs/prds/M26.md",
+      " M docs/redteam/modules/M25_REDTEAM.md",
+      " M docs/testing/ACCEPTANCE_CASES.json",
+      " M docs/testing/REQUIREMENT_TEST_PLANS.json",
+      " M docs/testing/TEST_CASES.md",
+      " M docs/traceability/FULL_REQUIREMENTS_MATRIX.csv",
+      " M docs/traceability/MATRIX_SOURCE_SNAPSHOT.json",
+      " M docs/traceability/REQUIREMENTS.csv",
+      " M pyproject.toml",
+      " M src/quati/adapters/evidence.py",
+      " M src/quati/adapters/fixture_capabilities.py",
+      " M src/quati/adapters/local_identity.py",
+      " M src/quati/adapters/runtime_facts.py",
+      " M src/quati/application/ask.py",
+      " M src/quati/application/capability_commands.py",
+      " M src/quati/application/cli_service.py",
+      " M src/quati/application/discovery_tools.py",
+      " M src/quati/application/trace_commands.py",
+      " M src/quati/behavior/contracts.py",
+      " M src/quati/cli/composition.py",
+      " M src/quati/cli/local_policy.py",
+      " M src/quati/cli/main.py",
+      " M src/quati/cli/rendering.py",
+      " M src/quati/domain/diagnostics.py",
+      " M tests/evals/gate_harness.py",
+      " M tests/evals/live_harness.py",
+      " M tests/integration/cli/test_s00_fix7_public_surface.py",
+      " M tests/integration/test_identity.py",
+      " M tests/packaging/test_fresh_install.py",
+      " M tests/unit/test_eval_harness_grader.py",
+      " M tests/unit/test_eval_harness_soc01.py",
+      " M tests/unit/test_s00_fix7_social_authz.py",
+      "?? PACKAGE_MANIFEST.json",
+      "?? evidence/S00/T05-integration7-2026-11-16/",
+      "?? tests/integration/cli/test_s00_integration7_public.py",
+      "?? tests/unit/test_s00_integration7.py"
+    ],
+    "status_sha256": "37c69ec5ad10dc2cec097f6297f9080f1150bffd7336fc5f02e7c50190fe2ecc"
+  },
+  "harness_files": {
+    "dryrun_scripted_cli.py": "5363671f043077683df126fb60f2e153fd33e19e7c0330ee124e8c4c49f002ed",
+    "gate_harness.py": "c7c73d57535c7549a55c72fbbd0180c2632fb542dd0f15e66018cfc5591f310e",
+    "live_harness.py": "91f0b5ecd63db8b58f454fa8d480037a650a48ce7ec03c9c2fc46069d159a853",
+    "run_live_eval.py": "bd5b17a6620a1c07e5dc3368c3472ccd739989be0c57864f998df7ba5cb3cd6c",
+    "test_discovery.py": "d02c95708ff50fd0ffc98da1d958bb2d79c06bbecaddb5a6f6f67afe216d91d7",
+    "test_social.py": "2936f164f91eeaefc9d5458a65f7a3cc6074fe6e2f12610d8efbd4a97af7bd25"
+  },
+  "harness_sha256": "91f0b5ecd63db8b58f454fa8d480037a650a48ce7ec03c9c2fc46069d159a853",
+  "heldout": false,
+  "heldout_runs": 3,
+  "heldout_sets_are_never_gating": true,
+  "judge_model": "",
+  "launcher_replaced": true,
+  "model": "haiku",
+  "platform": "linux",
+  "python_implementation": "cpython",
+  "python_version": "3.13.7",
+  "run_id": "20261116T190053Z-claude_cli-haiku-dryrun-integration7",
+  "runner_sha256": "bd5b17a6620a1c07e5dc3368c3472ccd739989be0c57864f998df7ba5cb3cd6c",
+  "runs": 1,
+  "seed": 20261116,
+  "soc_runs": 2,
+  "staged_write_install_args": "",
+  "timeout_fault_env": [],
+  "transport": "claude_cli",
+  "vendor_cli_version": {
+    "reason": "launcher replaced or --vendor-cli none",
+    "version": "NOT_RECORDED"
+  },
+  "workers": 4,
+  "write_runs": 1,
+  "written_before_first_call": true
+}

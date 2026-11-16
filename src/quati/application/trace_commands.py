@@ -196,8 +196,8 @@ class TraceCommands:
         shown, _catalog = _receipt_view(copy, item)
         record = item["record"]
         not_recorded = dict(NOT_RECORDED)
-        if not isinstance(record.get("outcome"), dict):
-            not_recorded["result_kind"] = RESULT_KIND_NOT_RECORDED
+        if not isinstance(record.get("outcome"), dict) and record.get("result_kind") is None:
+            not_recorded["result_kind"] = RESULT_KIND_NOT_RECORDED      # a receipt written before the field existed
         data = {"request_id": record["request_id"], "trace_id": record["trace_id"], "commitment_id": None,
                 "source": SOURCE, "receipt": shown, "authz_decisions": _authz_decisions(copy, events),
                 "policy_decisions": _policy_decisions(copy, events), "not_recorded": not_recorded}
@@ -300,7 +300,12 @@ def _receipt_view(copy: _Copy, item: dict) -> tuple[dict, list[dict] | None]:
         "evidence_version": copy.take(record, "evidence_version", _pattern(r"[a-z0-9]{1,16}/[0-9]{1,6}"),
                                       "evidence_version"),
         "status": copy.take(record, "status", _one_of(*STATUSES), "status"),
-        "result_kind": copy.take(outcome, "result_kind", _one_of(*RESULT_KINDS), "outcome.result_kind"),
+        # A model-path receipt is shown its ``outcome.result_kind`` and nothing else (a malformed value is
+        # withheld, never replaced); a receipt without an outcome (greeting, refusal before the model path)
+        # is shown the ``result_kind`` every request receipt records.
+        "result_kind": (copy.take(outcome, "result_kind", _one_of(*RESULT_KINDS), "outcome.result_kind")
+                        if isinstance(record.get("outcome"), dict)
+                        else copy.take(record, "result_kind", _one_of(*RESULT_KINDS), "result_kind")),
         "reason": copy.take(outcome, "reason", CODE, "outcome.reason"),
         "executed_capabilities": copy.items(outcome, "executed_capabilities", CAPABILITY_REF,
                                             "outcome.executed_capabilities"),
