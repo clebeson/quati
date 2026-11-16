@@ -1,0 +1,28 @@
+$ .venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --workers 4 --label gate8 --accept-not-run f_classification_timeout --allow-untracked PACKAGE_MANIFEST.json --estimate-only
+PLAN transport claude_cli, model haiku, seed 20261116, workers 4
+PLAN gating cases, in order: DOCTOR CAP-01 CAP-02 CAP-03 CAP-05 SOC-01 WRITE-01
+PLAN informational cases (reported, never gating): BEH
+PLAN held-out sets (CAP-01-HELDOUT, CAP-02-HELDOUT): NOT RUN (pass --heldout to run them). They are informational: they never change a gate verdict or the exit code.
+PLAN repetitions: 3 per CAP paraphrase, 10 per SOC-01 text, 5 per write-attempt text
+PLAN protocol: GATE PROTOCOL
+PLAN legs accepted as NOT_RUN: f_classification_timeout (SOC-01 leg f_classification_timeout will be NOT_RUN: no --timeout-fault-env was given)
+PLAN untracked files allowed in the tree: PACKAGE_MANIFEST.json
+ESTIMATE {"assumptions": {"ask_ceiling_calls": 8, "note": "Request counts per ask are the measured ones (gate6 live run and the scripted dry run agree: 5 for a selection or a NONE_FITS refusal, 4 for NO_CANDIDATES, 3 for a blocked answer). The rate is the gate6 haiku ask cost per model request (US$0.18237201 for 303 requests). A probe reports no cost: its calls are priced at the ask rate, which is an assumption. The judge model and other models cost more per call.", "probe_calls": 3, "probe_calls_ceiling": 4, "typical_ask_calls": {"answer_blocked": 3, "no_candidates": 4, "none_fits": 5, "selection": 5}, "usd_per_call_haiku": 0.000602}, "max_calls": 1791, "per_case": {"BEH": {"asks_with_model": 13, "judge_calls": 3, "max_calls": 159, "probe_calls": 39, "profiles_probed": 13, "typical_ask_calls": 65, "typical_calls": 107}, "CAP-01": {"asks_with_model": 30, "max_calls": 360, "probe_calls": 90, "profiles_probed": 30, "typical_ask_calls": 150, "typical_calls": 240}, "CAP-02": {"asks_with_model": 30, "max_calls": 360, "probe_calls": 90, "profiles_probed": 30, "typical_ask_calls": 150, "typical_calls": 240}, "CAP-03": {"asks_with_model": 1, "max_calls": 12, "probe_calls": 3, "profiles_probed": 1, "typical_ask_calls": 4, "typical_calls": 7}, "CAP-05": {"asks_with_model": 0, "max_calls": 0, "probe_calls": 0, "profiles_probed": 0, "typical_ask_calls": 0, "typical_calls": 0}, "DOCTOR": {"asks_with_model": 0, "max_calls": 4, "probe_calls": 3, "profiles_probed": 1, "typical_ask_calls": 0, "typical_calls": 3}, "SOC-01": {"asks_with_model": 62, "max_calls": 776, "probe_calls": 210, "profiles_probed": 70, "typical_ask_calls": 228, "typical_calls": 438}, "WRITE-01": {"asks_with_model": 10, "max_calls": 120, "probe_calls": 30, "profiles_probed": 10, "typical_ask_calls": 50, "typical_calls": 80}}, "typical_calls": 1115, "usd_ceiling_at_haiku_rate": 1.08, "usd_typical_at_haiku_rate": 0.67}
+ESTIMATE provider calls: typical 1115, ceiling 1791; cost at the haiku rate of the gate6 run: typical about US$0.67, ceiling about US$1.08 (probe calls priced at the ask rate; the judge model costs more per call)
+exit code: 0
+
+$ ... the same with --heldout (informational sets added)
+PLAN transport claude_cli, model haiku, seed 20261116, workers 4
+PLAN gating cases, in order: DOCTOR CAP-01 CAP-02 CAP-03 CAP-05 SOC-01 WRITE-01
+PLAN informational cases (reported, never gating): BEH CAP-01-HELDOUT CAP-02-HELDOUT
+PLAN held-out sets (CAP-01-HELDOUT, CAP-02-HELDOUT): RUN, 3 runs per paraphrase. They are informational: they never change a gate verdict or the exit code.
+PLAN repetitions: 3 per CAP paraphrase, 10 per SOC-01 text, 5 per write-attempt text
+PLAN protocol: GATE PROTOCOL
+PLAN legs accepted as NOT_RUN: f_classification_timeout (SOC-01 leg f_classification_timeout will be NOT_RUN: no --timeout-fault-env was given)
+PLAN untracked files allowed in the tree: PACKAGE_MANIFEST.json
+ESTIMATE provider calls: typical 1595, ceiling 2511; cost at the haiku rate of the gate6 run: typical about US$0.96, ceiling about US$1.51 (probe calls priced at the ask rate; the judge model costs more per call)
+exit code: 0
+
+$ ... the planned command without --confirm-spend (stops before anything runs)
+STOPPED: a run that can make a provider call needs --confirm-spend (nothing was run, no evidence was written). --estimate-only and --dry-run-scripted need no confirmation.
+exit code: 2

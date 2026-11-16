@@ -30,6 +30,9 @@ from quati.domain.policy import TrustedPolicy
 REPOSITORY_ROOT = ASSET_ROOT
 BEHAVIOR_PROFILE = "examples/behavior/executive-secretary.yaml"
 MODEL_ROLE_REF = "cheap_tool_capable"
+# The runtime profile of the trusted policy gate. This is the only place where it is chosen: in S00 every
+# effect above read is denied by the gate itself (`s00_no_effects`, K3; docs/implementation/SLICES/S00.md).
+RUNTIME_PROFILE = "S00"
 
 
 def system_clock() -> datetime:
@@ -40,15 +43,22 @@ def random_ids(prefix: str) -> str:
     return f"{prefix}-{uuid.uuid4().hex}"
 
 
+def policy_gate(identity, context, *, clock=system_clock, ids=random_ids) -> LocalPolicyGate:
+    """The trusted policy gate of every composed runtime: the installed policy of ``identity``'s
+    configuration directory, evaluated under ``RUNTIME_PROFILE``."""
+    # The identity adapter is the S00 directory: grants, tenant role and the registry's owning space
+    # are read live from the signed installation record at every check (RFC-013 sections 4 and 6),
+    # by the AuthorizationPort and by the policy gate alike.
+    return LocalPolicyGate.from_config_dir(identity.directory, tenant_id=context.tenant_id,
+                                           installation_uid=os.getuid(), clock=clock, ids=ids, directory=identity,
+                                           runtime_profile=RUNTIME_PROFILE)
+
+
 def _parts(identity, context, *, clock, ids, handlers):
     handlers = handlers or FixtureHandlerRegistry(FIXTURE_HANDLERS)
     store = FileRegistryStore(default_registry_root())
     registry = RegistryService(store, handlers, clock=clock, ids=ids)
-    # The identity adapter is the S00 directory: grants, tenant role and the registry's owning space
-    # are read live from the signed installation record at every check (RFC-013 sections 4 and 6),
-    # by the AuthorizationPort and by the policy gate alike.
-    gate = LocalPolicyGate.from_config_dir(identity.directory, tenant_id=context.tenant_id,
-                                           installation_uid=os.getuid(), clock=clock, ids=ids, directory=identity)
+    gate = policy_gate(identity, context, clock=clock, ids=ids)
     discovery = DiscoveryService(registry, Fts5CapabilityIndex(), handlers, policy_gate=gate,
                                  grants=StaticGrants(LOCAL_READ_GRANTS), clock=clock, ids=ids,
                                  authorization=ScopeAuthorization(identity, clock))
@@ -83,5 +93,5 @@ def capability_commands(identity, evidence_sink, *, clock=system_clock, ids=rand
                               fixture_names=FIXTURE_NAMES)
 
 
-__all__ = ["BEHAVIOR_PROFILE", "MODEL_ROLE_REF", "REPOSITORY_ROOT", "ask_runtime", "capability_commands", "random_ids",
-           "registry_authorizer", "system_clock"]
+__all__ = ["BEHAVIOR_PROFILE", "MODEL_ROLE_REF", "REPOSITORY_ROOT", "RUNTIME_PROFILE", "ask_runtime",
+           "capability_commands", "policy_gate", "random_ids", "registry_authorizer", "system_clock"]

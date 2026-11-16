@@ -8,6 +8,7 @@ from quati.application.identity import AccessDenied, RequestContext, canonical_b
 from quati.application.ports import ProviderConfig
 from quati.application.providers import (
     FEATURES, PROBE_STOP_CODES, ProviderError, create_provider, diagnostics_for)
+from quati.domain.capability_registry import Refusal
 from quati.domain.diagnostics import ContractViolation
 
 PROBE_NEXT_ACTIONS = {
@@ -55,6 +56,8 @@ class IdentityPort(Protocol):
 
 
 MAX_TEXT_BYTES = 65536  # M01 cli.max_text_bytes: ask/tell TEXT and one chat input line
+ADMISSION_NEXT_ACTION = ('No model was called and no work was accepted; resolve the reported reason '
+                         '(see `quati doctor`), then retry.')
 
 class CLIService:
     def __init__(self, identity: IdentityPort, config: ProviderConfig, evidence_sink: Callable[[dict], dict],
@@ -65,7 +68,11 @@ class CLIService:
         # behavior_check() -> the active behavior package status; runtime_facts() -> measured host facts.
         # authorize(context, operation, action) -> None or a denial with to_response(): the AuthorizationPort
         # enforcement point of the tenant registry; None (not wired) refuses every probe (fail closed).
-        # state_guard(*names) raises unless those data directories are private directories of this user.
+        # state_guard(*names) raises unless those data directories are private directories of this user:
+        # 'capabilities' is the registry store as verified before an authorization decision (directories
+        # and fixed files), 'capability_packages' its stored packages (verified after the decision),
+        # '<name>:read' verifies as a reader, and 'audit_log' raises the Refusal audit_unavailable for an
+        # unusable registry audit log.
         # identity_inspector() -> {present, cause, detail}: why an unaccepted credential is not accepted.
         self.authorize = authorize
         self.state_guard = state_guard
@@ -234,7 +241,9 @@ class CLIService:
         context = self.identity.authenticate()
         # LOG-0041 N7: nothing is spent on a provider before the result can be stored and the caller may
         # replace the report that gates `ask` (`manage` on the tenant registry, logged as authz.decided).
-        self._require_state('receipts', 'feature_reports')
+        # LOG-0044 X13: the registry store, whose audit log records the decision, is verified as well, so
+        # an unsafe ``capabilities`` has the reason every other command gives for it.
+        self._require_state('receipts', 'feature_reports', 'capabilities')
         denied = self._authorized(context, 'models_probe', 'manage')
         if denied is not None:
             return denied
@@ -344,6 +353,9 @@ class CLIService:
         if not config_diagnostics(self.config)['configured'] or self.feature_reports is None or self.ask_runtime is None:
             code, result = self._work_unavailable(data)
             return self._record(text, context, code, result)
+        # LOG-0044 X13: the FeatureReport store is verified (as a reader) before it is read, so an unsafe
+        # directory is state_dir_unsafe and never "no measured support, run a probe".
+        self._require_state('feature_reports:read')
         provider = self.provider_factory(self.config)
         gate = feature_gate(self.feature_reports, provider, self.clock())
         if gate['tools'] != 'SUPPORTED':
@@ -355,9 +367,17 @@ class CLIService:
                               ['MODEL_INCOMPATIBLE', f"TOOLS_{gate['tools']}",
                                *([gate['reason']] if gate['reason'] else [])])
             return self._record(text, context, 4, result, extra={'feature_gate': gate})
-        # M01 "Data directory" rule 2: the registry directory is verified before the registry, its audit log,
-        # a handler or the model is used, with the refusal every registry command gives (state_dir_unsafe).
+        # M01 "Data directory" rules 2 and 4 (LOG-0044 X6): the registry store, its audit log and the
+        # caller's grant are verified before the registry, a handler or the model is used, so each refusal
+        # costs zero model calls and does not depend on the model.
         self._require_state('capabilities')
+        refused = self._admission(context)
+        if refused is not None:
+            status, code, reason, message, next_action = refused
+            data.update(reason=reason)
+            result = response(status, data, code, message, next_action, [reason])
+            return self._record(text, context, 4, result, extra={'feature_gate': gate})
+        self._require_state('capability_packages')  # after the allowed decision, before any registry read
         try:
             runtime = self.ask_runtime(context)
         except ContractViolation as exc:
@@ -366,7 +386,24 @@ class CLIService:
             return self._record(text, context, 2, result, extra={'feature_gate': gate})
         code, result, receipt = run_ask(text, context, provider=provider, runtime=runtime, gate=gate, clock=self.clock,
                                         synthetic=synthetic_evidence, eval_permutation_seed=eval_permutation_seed)
-        return self._record(text, context, code, result, extra=receipt, proof_tier=None)
+        return self._record(text, context, code, result, extra=receipt)
+
+    def _admission(self, context):
+        """None when a work ask may use the registry; otherwise (status, code, reason, message, next_action).
+
+        The audit log must be usable (``audit_unavailable``) and the AuthorizationPort must allow, and log,
+        ``read`` on the tenant's registry (operation ``ask_admission``; M02 authorization order rows 4 and 7).
+        The tool calls of the turn stay the enforcement point: an unwired port only skips this early check."""
+        try:
+            self._require_state('audit_log')
+        except Refusal as exc:
+            return exc.status, exc.code, exc.reason, exc.message, ADMISSION_NEXT_ACTION
+        blocked = None if self.authorize is None else self.authorize(context, 'ask_admission', 'read')
+        if blocked is None:
+            return None
+        value = blocked.to_response()
+        return (value['status'], value['error']['code'], value['data']['reason'],
+                'The request was refused before any model call.', value['next_action'] or ADMISSION_NEXT_ACTION)
 
     @staticmethod
     def _behavior_invalid(data, rule_class, diagnostics):
@@ -394,17 +431,30 @@ class CLIService:
         return 4, response('UNAVAILABLE', data, 'UNSUPPORTED', 'Discovery execution is not qualified in this delivery.',
                            'Complete the remaining S00 tasks; no durable work was accepted.')
 
-    def _record(self, text, context, code, result, extra=None, proof_tier='L1'):
+    def _record(self, text, context, code, result, extra=None):
+        # ``proof_tier`` is null: proof tiers classify tests, and a product receipt proves none (LOG-0044 X8).
         record = {'request_id': context.request_id, 'trace_id': context.trace_id,
                   'principal_hash': hashlib.sha256(context.actor_id.encode()).hexdigest(),
                   'request_hash': hashlib.sha256(text.encode()).hexdigest(),
                   'output_hash': hashlib.sha256(canonical_bytes(result)).hexdigest(),
                   'status': result['status'], 'result_kind': result['data'].get('result_kind'),
-                  'policy_version': context.policy_version,
-                  'proof_tier': proof_tier, 'provider_used': False, 'cost_usd': None, **(extra or {})}
+                  'policy_version': self._policy_version(context),
+                  'proof_tier': None, 'provider_used': False, 'cost_usd': None, **(extra or {})}
         receipt = self.evidence_sink(record)
         result['evidence_refs'] = [f"sha256:{receipt['sha256']}:{receipt['path']}"]
         return code, result
+
+    def _policy_version(self, context):
+        """The policy version in force for the tenant, as the trusted loader reports it: the adopted
+        policy, or the kernel baseline when none is adopted - the value a policy decision of this request
+        carries. None when it cannot be determined (no loader, or the loader failed)."""
+        if self.policy_loader is None:
+            return None
+        try:
+            version = self.policy_loader(context.tenant_id).policy_version
+        except Exception:  # noqa: BLE001 - an unreadable policy is recorded as "not determined", never guessed
+            return None
+        return version if isinstance(version, str) else None
 
 
 def _config_checks(identity, policy, provider, behavior):

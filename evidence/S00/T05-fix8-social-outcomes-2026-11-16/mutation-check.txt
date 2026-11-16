@@ -1,0 +1,246 @@
+Mutation check for fix round 8 (LOG-0044: X3, X4, X5 / D7, SOC-01 timeout at L2).
+Every mutant is applied to a scratch COPY of src/ (the repository is never modified), one at a time;
+the selected fix round 8 tests run with pytest -x against the copy (children import the copy).
+KILLED = pytest exit 1 with a failing test (or exit 2 when the mutant cannot even be imported);
+SURVIVED = exit 0. For the table mutants the test that compares the rule constants with the contract
+(test_x4_rule_constants_are_exactly_the_contract) is deselected, so each kill is a behavior test.
+
+baseline (no mutant, scratch copy): pytest exit 0: 190 passed, 13 deselected in 39.73s
+mutant X4-1a: clause 1: demonstratives and copulas are free-standing markers again
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_1_no_demonstrative_pronoun_or_copula_stands_alone | 1 failed, 11 deselected in 0.08s
+mutant X4-1b: clause 1: the words of an urgency phrase match one by one (not as a whole phrase)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_1_no_demonstrative_pronoun_or_copula_stands_alone | 1 failed, 11 deselected in 0.08s
+mutant X4-1c: clause 1: the words of a table phrase match one by one (bag of words)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_1_no_demonstrative_pronoun_or_copula_stands_alone | 1 failed, 11 deselected in 0.08s
+mutant X4-1d: clause 1: urgency alone is social
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_1_no_demonstrative_pronoun_or_copula_stands_alone | 1 failed, 11 deselected in 0.08s
+mutant X4-1e: clause 1: an urgency phrase is removed ("es ist dringend")
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[en] | 1 failed, 2 passed, 11 deselected in 0.08s
+mutant X4-1f: clause 1: a new marker word is added ("please")
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_1_no_demonstrative_pronoun_or_copula_stands_alone | 1 failed, 11 deselected in 0.08s
+mutant X4-2a: clause 2: Italian `salve` is back in the table
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_2_no_entry_is_a_work_word_of_another_table_language | 1 failed, 1 passed, 11 deselected in 0.08s
+mutant X4-3a: clause 3: a character the rule does not name is dropped as a separator
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_audit_text_behaves_as_the_audit_requires | 1 failed, 30 passed, 11 deselected in 0.89s
+mutant X4-3b: clause 3: every Unicode punctuation character is accepted
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[dagger] | 1 failed, 39 passed, 11 deselected in 0.95s
+mutant X4-3c: clause 3: every symbol is accepted as an emoji (no allowlist)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_audit_text_behaves_as_the_audit_requires | 1 failed, 30 passed, 11 deselected in 1.04s
+mutant X4-3d: clause 3: no emoji is accepted ("hello" plus a heart is not social)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[en] | 1 failed, 2 passed, 11 deselected in 0.10s
+mutant X4-3e: clause 3: one emoji is removed from the allowlist (the heart)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_audit_text_behaves_as_the_audit_requires | 1 failed, 30 passed, 11 deselected in 0.97s
+mutant X4-3f: clause 3: U+200D after an emoji is accepted whatever follows
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[zero_width_joiner_to_an_unlisted_emoji] | 1 failed, 90 passed, 11 deselected in 0.93s
+mutant X4-3g: clause 3: several modifiers may follow one emoji
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[second_skin_tone] | 1 failed, 73 passed, 11 deselected in 0.92s
+mutant X4-3h: clause 3: U+FE0F and skin tones are not accepted after an emoji
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_audit_text_behaves_as_the_audit_requires | 1 failed, 30 passed, 11 deselected in 0.92s
+mutant X4-3i: clause 3: any number of free punctuation runs between two words (Morse)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_runs_are_short_and_at_most_one_is_free[hello , . hi-False] | 1 failed, 123 passed, 11 deselected in 0.93s
+mutant X4-3j: clause 3: a punctuation run of any length
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[morse_one_run] | 1 failed, 56 passed, 11 deselected in 0.82s
+mutant X4-3k: clause 3: an emoji does not end a punctuation run
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_runs_are_short_and_at_most_one_is_free[hello !\U0001f60a! hi-False] | 1 failed, 161 passed, 11 deselected in 1.02s
+mutant X4-3l: clause 3: every run is free (closing and opening punctuation of two sentences is refused)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_runs_are_short_and_at_most_one_is_free[\xa1Hola! \xbfQu\xe9 tal?-True] | 1 failed, 134 passed, 11 deselected in 0.93s
+mutant X4-3l2: clause 3: two free runs are allowed
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_runs_are_short_and_at_most_one_is_free[hello , . hi-False] | 1 failed, 123 passed, 11 deselected in 1.00s
+mutant X4-3l3: clause 3: a run at the start of the text counts as attached to a word before it
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_runs_are_short_and_at_most_one_is_free[! ? hello-False] | 1 failed, 126 passed, 11 deselected in 0.98s
+mutant X4-3l4: clause 3: a run at the end of the text counts as attached to a word after it
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_runs_are_short_and_at_most_one_is_free[hello ! ?-False] | 1 failed, 125 passed, 11 deselected in 0.98s
+mutant X4-3l5: clause 3: the gap after the last word is not checked
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_audit_text_behaves_as_the_audit_requires | 1 failed, 30 passed, 11 deselected in 0.85s
+mutant X4-3l6: clause 3: the run length bound is 4
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_runs_are_short_and_at_most_one_is_free[hello!!!!-False] | 1 failed, 111 passed, 11 deselected in 0.97s
+mutant X4-3m: clause 3: every Unicode space and control separator is whitespace
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[line_separator] | 1 failed, 50 passed, 11 deselected in 0.91s
+mutant X4-3n: clause 3: tab and line breaks are not whitespace
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_whitespace_is_space_tab_and_line_break_only | 1 failed, 162 passed, 11 deselected in 0.96s
+mutant X4-3o: clause 3: combining marks split words (they are separators, not word characters)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[enclosing_mark] | 1 failed, 42 passed, 11 deselected in 0.94s
+mutant X4-3p: clause 3: numbers are separators, not words
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_audit_text_behaves_as_the_audit_requires | 1 failed, 30 passed, 11 deselected in 1.19s
+mutant X4-3q: clause 3: one punctuation character is removed from the set (the Arabic question mark)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_runs_are_short_and_at_most_one_is_free[\u0645\u0631\u062d\u0628\u0627\u060c \u0634\u0643\u0631\u0627\u061f-True] | 1 failed, 151 passed, 11 deselected in 1.26s
+mutant X4-3r: clause 3: the text is matched without NFKC (compatibility letters are not folded)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_audit_text_behaves_as_the_audit_requires | 1 failed, 30 passed, 11 deselected in 1.28s
+mutant X4-4a: clause 4: no bound in words
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_4_length_bound_in_words_and_characters | 1 failed, 163 passed, 11 deselected in 1.44s
+mutant X4-4b: clause 4: no bound in characters
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_4_length_bound_in_words_and_characters | 1 failed, 163 passed, 11 deselected in 1.34s
+mutant X4-4c: clause 4: the character bound is measured before normalization
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_4_length_bound_in_words_and_characters | 1 failed, 163 passed, 11 deselected in 1.45s
+mutant X4-4d: clause 4: the word bound is 13
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_4_length_bound_in_words_and_characters | 1 failed, 163 passed, 11 deselected in 1.59s
+mutant X4-4e: clause 4: the character bound is 121
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k x4 and not sample and not constants
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_4_length_bound_in_words_and_characters | 1 failed, 163 passed, 11 deselected in 1.54s
+mutant X4-5a: public path: the social answer is never given (every text goes to the model path)
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k sample
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_social_sample_is_answered_identically_by_ask_and_chat_jsonl | 1 failed, 173 deselected in 2.16s
+mutant X4-5b: public path: demonstratives are markers again (the audit's texts are greetings in ask and chat)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k sample
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_request_bearing_sample_is_never_a_greeting_without_a_provider | 1 failed, 1 passed, 173 deselected in 9.95s
+mutant X4-5c: public path: unnamed characters are dropped (the audit's enclosed-letter texts are greetings)
+   file: src/quati/domain/social.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k sample
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_request_bearing_sample_is_never_a_greeting_without_a_provider | 1 failed, 1 passed, 173 deselected in 9.95s
+mutant D7-a: NO_CAPABILITY is SUCCEEDED again
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_greeting_outside_the_table] | 1 failed, 169 deselected in 1.71s
+mutant D7-b: NO_CAPABILITY is PARTIAL (still exit 0)
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_greeting_outside_the_table] | 1 failed, 169 deselected in 1.20s
+mutant D7-c: NO_CAPABILITY uses another status and code (BLOCKED / EVIDENCE_INSUFFICIENT)
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_greeting_outside_the_table] | 1 failed, 169 deselected in 1.23s
+mutant D7-d: NO_CAPABILITY is a provider failure (exit 5)
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_greeting_outside_the_table] | 1 failed, 169 deselected in 1.40s
+mutant D7-e: the result kind is no longer NO_CAPABILITY
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_greeting_outside_the_table] | 1 failed, 169 deselected in 1.35s
+mutant D7-f: work_performed is not reported
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_greeting_outside_the_table] | 1 failed, 169 deselected in 1.10s
+mutant D7-g: the next_action is the old token
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_greeting_outside_the_table] | 1 failed, 169 deselected in 1.04s
+mutant D7-h: an empty search is NO_VERIFIED_EXECUTION instead of NO_CAPABILITY
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_greeting_outside_the_table] | 1 failed, 169 deselected in 1.07s
+mutant D7-i: NONE_FITS wins over a validated execution (FIXTURE_RESULT is no longer a success)
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_fixture_result_is_succeeded_only_with_a_validated_execution | 1 failed, 5 passed, 169 deselected in 4.00s
+mutant D7-j: a model text with no execution is a success (NO_VERIFIED_EXECUTION becomes SUCCEEDED)
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_work_request_ends_succeeded_without_a_validated_execution | 1 failed, 6 passed, 169 deselected in 4.16s
+mutant D7-k: the uncertainties lose the reason
+   file: src/quati/application/ask.py
+   tests: tests/unit/test_s00_fix8_social_outcomes.py -k d7
+   -> KILLED; FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_greeting_outside_the_table] | 1 failed, 169 deselected in 1.00s
+mutant X3-a: the audit's mutant: the composition root composes the S02 runtime profile
+   file: src/quati/cli/composition.py
+   tests: tests/integration/test_approval_injection.py -k composed_gate
+   -> KILLED; FAILED tests/integration/test_approval_injection.py::test_pol_01_k3_is_denied_by_the_composed_gate_over_the_installed_policy | 1 failed, 13 deselected in 1.27s
+mutant X3-b: the composed gate ignores RUNTIME_PROFILE and passes S02
+   file: src/quati/cli/composition.py
+   tests: tests/integration/test_approval_injection.py -k composed_gate
+   -> KILLED; FAILED tests/integration/test_approval_injection.py::test_pol_01_k3_is_denied_by_the_composed_gate_over_the_installed_policy | 1 failed, 13 deselected in 1.29s
+mutant X3-c: ask_runtime builds its own gate (S02) instead of using policy_gate
+   file: src/quati/cli/composition.py
+   tests: tests/integration/test_approval_injection.py -k composed_gate
+   -> KILLED; FAILED tests/integration/test_approval_injection.py::test_pol_01_k3_is_denied_by_the_composed_gate_over_the_installed_policy | 1 failed, 13 deselected in 1.27s
+mutant X3-d: the public policy_gate function composes S02 while ask_runtime keeps S00
+   file: src/quati/cli/composition.py
+   tests: tests/integration/test_approval_injection.py -k composed_gate
+   -> KILLED; FAILED tests/integration/test_approval_injection.py::test_pol_01_k3_is_denied_by_the_composed_gate_over_the_installed_policy | 1 failed, 13 deselected in 1.35s
+mutant X3-e: the composed gate allows every effect (a gate that is not the trusted policy gate)
+   file: src/quati/cli/composition.py
+   tests: tests/integration/test_approval_injection.py -k composed_gate
+   -> KILLED; FAILED tests/integration/test_approval_injection.py::test_pol_01_k3_is_denied_by_the_composed_gate_over_the_installed_policy | 1 failed, 13 deselected in 1.34s
+mutant T-a: a model timeout on the classification falls back to a social success
+   file: src/quati/application/ask.py
+   tests: tests/integration/cli/test_s00_fix8_social_timeout.py
+   -> KILLED; FAILED tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_other_text_fails_typed_on_a_model_timeout[Hey there! Hope your day is going well.] | 1 failed, 4 passed in 1.99s
+mutant T-b: a provider timeout is reported as launched work
+   file: src/quati/application/ask.py
+   tests: tests/integration/cli/test_s00_fix8_social_timeout.py
+   -> KILLED; FAILED tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_other_text_fails_typed_on_a_model_timeout[Hey there! Hope your day is going well.] | 1 failed, 4 passed in 1.96s
+mutant T-c: after a timeout the classification is retried (the obedient model then executes)
+   file: src/quati/application/ask.py
+   tests: tests/integration/cli/test_s00_fix8_social_timeout.py
+   -> KILLED; FAILED tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_other_text_fails_typed_on_a_model_timeout[Hey there! Hope your day is going well.] | 1 failed, 4 passed in 1.98s
+mutant T-d: a timeout is a local refusal (exit 4, BLOCKED EVIDENCE_INSUFFICIENT) instead of the provider failure
+   file: src/quati/application/ask.py
+   tests: tests/integration/cli/test_s00_fix8_social_timeout.py
+   -> KILLED; FAILED tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_other_text_fails_typed_on_a_model_timeout[Hey there! Hope your day is going well.] | 1 failed, 4 passed in 2.02s
+mutant T-e: a table greeting is answered only after the model path (the timeout reaches it)
+   file: src/quati/application/ask.py
+   tests: tests/integration/cli/test_s00_fix8_social_timeout.py
+   -> KILLED; FAILED tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_a_table_greeting_is_unaffected_by_a_model_timeout[Hi, how are you?-Hello!] | 1 failed in 1.03s
+
+59 of 59 mutants killed.

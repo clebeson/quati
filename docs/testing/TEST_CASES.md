@@ -15,7 +15,7 @@ Requirement assertions: M03-FR-01, M03-AT-01, M03-RT-01, M31-FR-01, M31-AT-01, K
 1. Provision FX-SOC-GREETING: provider disabled; authenticated user U1; empty job store; populate synthetic values exactly as stated in given.
 2. Run two separate trajectories: (a) provider-disabled baseline greeting through public CLI; (b) same greeting through the actual approved model route with tool tracing enabled. Compare job and capability records for both. S00: also run (b) for texts outside the code-owned table; only those reach the model.
 3. Inspect the observable evidence: L3 real-model blind smoke; capture exact prompt/config/model, CLI transcript, empty job-store query, and tool trace hash. Check each assertion against the actual response, persisted records, and call/event trace.
-4. Run the specified fault injection: Inject model timeout before response; deterministic social fallback returns and still creates no commitment. Capture recovery/status and verify the corresponding safety assertion.
+4. Run the specified fault injection: inject a model timeout before the response (S00: for a table-decided greeting and for a text outside the table, as the fault case states). Capture recovery/status and verify the corresponding safety assertion.
 
 **Required assertions:**
 
@@ -23,11 +23,11 @@ Requirement assertions: M03-FR-01, M03-AT-01, M03-RT-01, M31-FR-01, M31-AT-01, K
 - The actual-model L3 trajectory also returns a greeting and creates no root commitment or capability invocation.
 - The two results and their runtime/model identities are separately reported.
 - S00: the table-decided greeting is SUCCEEDED `result_kind = GREETING` with application-owned text, `provider_used` false, zero model requests, no tool call and `launched` false in every provider state (disabled, configured and unprobed, probed), one-shot and in `quati chat`.
-- S00: a text outside the table is classified by the model; no capability executes without a verified invocation, no model-written answer is displayed, and a social label on it ends BLOCKED `EVIDENCE_INSUFFICIENT` reason `NO_VERIFIED_EXECUTION`, exit 4, never SUCCEEDED; the outcome distribution of an unknown-language greeting is a reported measurement.
+- S00: a text outside the table is classified by the model; no capability executes without a verified invocation, no write executes, no model-written answer is displayed and nothing is SUCCEEDED without a validated execution. A social label on it followed by no tool use ends BLOCKED `EVIDENCE_INSUFFICIENT` reason `NO_VERIFIED_EXECUTION`, exit 4; a model that declares that no capability fits, or finds none, ends `NO_CAPABILITY` as UNAVAILABLE `UNSUPPORTED`, exit 4 (LOG-0044 D7); the outcome distribution of an unknown-language greeting is a reported measurement.
 
 **Negative:** Negative: include “urgent” in a greeting-only sentence; still no work commitment or tool call. S00: a greeting with an urgency marker is still social-only by the table (no model call); a sentence that is only an urgency statement is not social and goes to the model.
 
-**Fault:** Inject model timeout before response; deterministic social fallback returns and still creates no commitment. S00: a table-decided greeting makes no model call, so the fault can only be injected for a text outside the table; it then ends as a typed provider failure with no commitment and no executed capability.
+**Fault:** Inject a model timeout before the response; no commitment is created. S00: there is no social fallback after a failed model call. A table-decided greeting makes no model call, so the timeout cannot change its answer (SUCCEEDED `GREETING`, exit 0, zero model requests); for a text outside the table (a social-looking text or a work request) the timeout ends the request as a typed provider failure (`DEADLINE_EXCEEDED`, exit 5) with no commitment, no executed capability, no success claim and `launched` false. The product has no public fault knob, so this step is proven at L2 with a scripted runner in child processes (tests/integration/cli/test_s00_fix8_social_timeout.py) and the live leg stays NOT_RUN.
 
 **Evidence:** Separate S01 provider-disabled transcript/job query and L3 actual-model transcript, exact provider/model/config/prompt identity, authentic tool trace and trace hash.
 

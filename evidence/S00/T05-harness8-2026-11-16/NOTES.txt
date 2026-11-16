@@ -1,0 +1,56 @@
+T05 harness round 8 (2026-11-16): evidence of the harness work only. No live provider call was made:
+QUATI_ALLOW_LIVE, QUATI_LIVE_EVAL and QUATI_LIVE_SMOKE were never set and tests/evals/run_live_eval.py was run
+only with --estimate-only and --dry-run-scripted.
+
+Scope: third audit findings X7 (H1-H5), X10 (README), X15 and X17 (H6-H10) with decision D7 of LOG-0044
+(docs/audit/S00_AUDIT3_2026-11-16.md). Owned paths: tests/evals/**, tests/unit/test_eval_harness_*.py, README.md.
+
+red.txt                      The new grader tests against the harness as committed at HEAD c232241 (scratch copy):
+                             124 failed, 81 passed.
+green.txt                    The same two test files against the changed harness: 205 passed.
+mutation_check.txt           163 single-point mutants of tests/evals/*.py: the 37 of the third audit (11 survived
+mutation_check_script.py     there) and 126 for the rules of this round. All killed, none claimed equivalent.
+estimate_only_stdout.txt     `--estimate-only` output of the planned gate command (plan, calls, cost; no call made),
+                             the same with --heldout, and the refusal without --confirm-spend.
+dryrun_stdout_NOT_GATE_EVIDENCE.txt, dryrun/
+                             `--dry-run-scripted` run of the planned case list with the gate repetitions: the public
+                             CLI with the scripted, network-free model of the unit tests. NOT_GATE_EVIDENCE. The
+                             scripted policy is a keyword stand-in, so pass or fail of a model-dependent case here
+                             says nothing about a model (CAP-01 and CAP-02 fail on one paraphrase each because the
+                             stand-in does not know its words; the behavior suite likewise).
+full_suite_summary.txt       The whole test suite at the end of the work, with the files of this work package and
+                             the rest reported apart.
+
+What the dry run does show (dryrun/INDEX.json sha256 d02e94add5b0f7cbe3dec73af59430ba4e840cbdc554b8ab7ed3c89fabab2eca,
+dryrun/PREREG.json sha256 ab16bdc852193ffba43e80c8d175085823cf92845c73ce9925bce7bf17b4fb81; made with the final harness
+files, whose hashes are in that PREREG):
+* 1398 of 1398 receipts of every profile carried the pre-registered code digest and the product's asset digest;
+* all 272 doctor Responses of the run reported the pre-registered behavior section;
+* the evaluator's own digest over the asset files equals the asset digest the product reports;
+* the SOC-01 texts of legs a and b are answered by the product's social table and no other text of the datasets is;
+* S00-GATE-03 is printed PASS_WITH_NOT_RUN_LEGS (leg f_classification_timeout), accepted with --accept-not-run;
+* provider calls observed against the estimate: 1044 observed (465 probe sub-checks in 155 FeatureReports, 579 model
+  requests in 144 asks) against 1112 typical and 1788 ceiling estimated. The probe count is exact (three sub-checks
+  per probed profile); the ask count depends on the model, and the stand-in ends some asks early.
+
+Datasets (sha256). The first five are byte-identical to HEAD and to the earlier pre-registrations:
+  645736436635f1aa5de82eadd83a70f6dc83f032954a5df1d0fdbc6712acbab6  cap01_paraphrases.json
+  de5cace7c4062e4602e45785be94ef2940522a98cf7c3f833c35c98cf9898cd3  cap02_paraphrases.json
+  e587165d55be89946b7e0a9e7289fc3b674e2ed8c9ff39599e2e11d1d44cef6f  behavior_suite.json
+  88005034c44ef23ffa67a8d9059b78066e1d689e80c9af82293d94dc06c7cb6e  cap01_heldout.json
+  3024e5dd25174424fec7116b58d81338c7aad5a0cd14c8c264bd13693270b784  cap02_heldout.json
+  a695667bec2da39df13e56e63c36fa69ebda4c433fa1b75ea212bcfbde09c6ae  soc01_gate.json      (changed: evaluator-only wording of
+  ea5c6c93aaebed5d07b845bdbc5ffafb87b2b30b221b68fe210102474b91f40e  write_attempts.json  the pass conditions; no text sent to
+                                                                                         the product changed)
+  before this round: soc01_gate.json b2fe073d53763596c7b1434d25a78e7aad4f1c798712535a37af2f0b626c627b,
+                     write_attempts.json 948e6e34e82b195a6c8994ec588cfcc1ca45d1ae740bdb18fb3822e642417a78
+
+Estimate correction (H10). The earlier estimate priced a call at US$0.095 / 240 (the CAP-01 ask cost of the gate6 run
+divided by ask calls plus probe calls) although that sum held the 151 ask requests only. The price is now the measured
+ask cost per model request of that run, (0.09479228 + 0.08757973) / (151 + 152) = US$0.000602, and the request counts per
+ask are the measured ones (5 selection or NONE_FITS, 4 NO_CANDIDATES, 3 blocked answer). A probe receipt reports no
+cost: probe calls are priced at the ask rate, which is an assumption and is printed as one.
+
+Not verified here: any real provider behavior, probe cost, rate limits at 4 workers; the product changes of the two other
+agents of the round (the graders were tested with fabricated records and, where a test says so, with the records the
+product of the working tree wrote under the scripted model).

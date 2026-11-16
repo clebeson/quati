@@ -460,10 +460,14 @@ def test_l3_none_fits_and_empty_shortlist_are_no_capability(tmp_path, monkeypatc
         harness = ready(tmp_path / str(index), monkeypatch, classified(), *items)
         code, value = harness.ask("Translate this poem into Latin")
         data = value["data"]
-        assert (code, value["status"], value["next_action"]) == (0, "SUCCEEDED", "report_no_capability")
+        # Fix round 8 (LOG-0044 decision D7): was (0, "SUCCEEDED", "report_no_capability") and
+        # `"FIXTURE_RESULT" not in data["text"]`. No capability is a typed non-success (exit 4) that keeps its
+        # result kind; it has no `text` (the sentence is the error message), so no fixture result can be in it.
+        assert (code, value["status"], value["error"]["code"]) == (4, "UNAVAILABLE", "UNSUPPORTED")
+        assert "No installed capability" in value["next_action"] and "report_no_capability" not in json.dumps(value)
         assert (data["result_kind"], data["result_status"], data["outcome"]) == (
             "NO_CAPABILITY", "NO_CAPABILITY", "NO_CAPABILITY")
-        assert "fixture_results" not in data and "FIXTURE_RESULT" not in data["text"]
+        assert "fixture_results" not in data and "text" not in data and "FIXTURE_RESULT" not in json.dumps(value)
         assert receipt_of(value)["outcome"]["result_kind"] == "NO_CAPABILITY"
 
 

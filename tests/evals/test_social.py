@@ -23,6 +23,8 @@ def test_soc_01():
     result = g.run_soc01_gate(Path(tempfile.mkdtemp(prefix='quati-eval-')), TRANSPORT, MODEL, 20261116,
                               workers=4, runs=SOC_RUNS)
     assert result['pass'], (result['checks'], result['leg_status'])
+    # The timeout leg has no public fault knob: it is NOT_RUN and this wrapper never reports it as run.
+    assert set(result['not_run_legs']) <= {g.FAULT_LEG}, result['not_run_legs']
 
 
 def test_behavior_suite():

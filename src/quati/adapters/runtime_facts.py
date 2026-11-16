@@ -81,7 +81,8 @@ def record_complete(record) -> bool:
 
 
 def _insecure_entry(path: Path, label: str, directory: bool = False) -> str | None:
-    """The M02 ``credential_insecure`` detail of one existing path (symlink, type, owner, mode), or None."""
+    """The M02 ``credential_insecure`` detail of one existing path (symlink, type, owner, extra hard link
+    of a file, mode), or None."""
     info = os.lstat(path)
     if stat.S_ISLNK(info.st_mode):
         return f"{label}_symlink"
@@ -89,6 +90,8 @@ def _insecure_entry(path: Path, label: str, directory: bool = False) -> str | No
         return f"{label}_not_directory" if directory else f"{label}_not_regular"
     if info.st_uid != os.getuid():
         return f"{label}_owner"
+    if not directory and info.st_nlink != 1:
+        return f"{label}_hard_link"
     return f"{label}_mode" if stat.S_IMODE(info.st_mode) & 0o077 else None
 
 

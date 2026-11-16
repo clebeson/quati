@@ -317,7 +317,10 @@ def test_f4_ask_session_catalog_read_is_authorized_once_per_ask(profile):
     before = len(profile.audit())
     code, value, _output = profile.ask(HOSTILE, "Find my next appointment")
     assert (code, value["data"]["result_kind"]) == (0, "FIXTURE_RESULT")
+    # LOG-0044 X6: the grant is checked once before the first model call (operation ask_admission); the
+    # catalog read of the receipt is still authorized once (operation ask).
     assert decisions(profile.audit()[before:]) == [
+        ("ask_admission", "ALLOW", "OK", "read"),
         ("search", "ALLOW", "OK", "read"), ("describe", "ALLOW", "OK", "read"), ("invoke", "ALLOW", "OK", "read"),
         ("ask", "ALLOW", "OK", "read")]
     assert receipt(value)["digests"]["catalog_digest"] is not None
@@ -383,19 +386,17 @@ def test_f4_f5_public_cli_denies_a_principal_without_a_grant_on_the_registry_spa
         assert event["authorized_scope"]["readable_space_ids"] == [record["personal_space_id"]]
     assert protected(profile) == state and sorted((profile.data / "receipts").iterdir()) == receipts
 
-    # The model path of the same principal: every tool is denied, nothing executes, no catalog digest.
+    # The ask of the same principal (LOG-0044 X6, M01 "Data directory" rule 2): refused by the
+    # AuthorizationPort before the first model call, so no tool call exists, nothing executes and no
+    # catalog is read. Before, the model was called and each of its three tool calls was denied.
     before = len(profile.audit())
     code, value, output = profile.ask(HOSTILE, "Find my next appointment")
     assert code == 4 and value["status"] == "DENIED" and value["data"]["reason"] == "NO_SPACE_GRANT"
-    assert [(step["operation"], step["status"], step["reason"], step["handler_executed"])
-            for step in value["data"]["tool_calls"]] == [
-        ("search", "DENIED", "NO_SPACE_GRANT", False), ("describe", "DENIED", "NO_SPACE_GRANT", False),
-        ("invoke", "DENIED", "NO_SPACE_GRANT", False)]
-    assert profile.spied("handler") == []
-    assert decisions(profile.audit()[before:]) == [
-        (operation, "DENY", "NO_SPACE_GRANT", "read") for operation in ("search", "describe", "invoke", "ask")]
+    assert value["data"]["tool_calls"] == [] and value["data"]["provider_used"] is False
+    assert profile.spied("handler") == [] and profile.spied("request") == []
+    assert decisions(profile.audit()[before:]) == [("ask_admission", "DENY", "NO_SPACE_GRANT", "read")]
     stored = receipt(value)
-    assert stored["digests"]["catalog_digest"] is None and stored["catalog_access"] == "NO_SPACE_GRANT"
+    assert "catalog_digest" not in stored["digests"] and stored["provider_used"] is False
     assert protected(profile) == state
 
     # Control: the OWNER record of the same installation is allowed again (the denial was the grant).
@@ -494,12 +495,15 @@ def test_f4_ask_session_never_reads_the_catalog_without_the_grant(tmp_path, monk
     store = FileRegistryStore(tmp_path / "data" / "capabilities")
     before = len(store.audit_events())
     code, value = harness.ask("Bom dia, como está o projeto?", synthetic=True)
-    assert (code, value["data"]["result_kind"], value["data"]["reason"]) == (4, "BLOCKED", "NO_VERIFIED_EXECUTION")
-    assert reads == []
+    # LOG-0044 X6: without the grant the ask is refused before the first model call (operation
+    # ask_admission), so the model is never asked and no catalog read is even attempted; before, the turn
+    # ran, ended NO_VERIFIED_EXECUTION and its catalog read (operation ask) was denied.
+    assert (code, value["data"]["result_kind"], value["data"]["reason"]) == (4, "BLOCKED", "NO_SPACE_GRANT")
+    assert (value["status"], value["error"]["code"]) == ("DENIED", "FORBIDDEN")
+    assert reads == [] and harness.script.model_requests() == []
     stored = receipt_of(value)
-    assert stored["digests"]["catalog_digest"] is None and stored["catalog_access"] == "NO_SPACE_GRANT"
-    assert stored["synthetic_evidence"]["catalog"] is None
-    assert decisions(store.audit_events()[before:]) == [("ask", "DENY", "NO_SPACE_GRANT", "read")]
+    assert "catalog_digest" not in stored["digests"] and "synthetic_evidence" not in stored
+    assert decisions(store.audit_events()[before:]) == [("ask_admission", "DENY", "NO_SPACE_GRANT", "read")]
 
 
 def test_f4_ask_catalog_read_is_refused_when_its_decision_cannot_be_logged(tmp_path, monkeypatch):

@@ -1,0 +1,44 @@
+KILLED	H01 social: provider use not checked	FAILED tests/unit/test_eval_harness_soc01.py::test_d1_each_rule_is_the_only_one_that_catches_its_violation[provider_not_used]
+KILLED	H01b social: only the Response flag checked for provider use	FAILED tests/unit/test_eval_harness_soc01.py::test_d1_receipt_that_records_a_model_call_is_provider_use
+KILLED	H02 social: launched not checked	FAILED tests/unit/test_eval_harness_soc01.py::test_d1_each_rule_is_the_only_one_that_catches_its_violation[launched_false]
+KILLED	H03 social: policy.decided not checked	FAILED tests/unit/test_eval_harness_soc01.py::test_d1_each_rule_is_the_only_one_that_catches_its_violation[audit_no_policy_decided]
+KILLED	H04 social: result kind not checked	FAILED tests/unit/test_eval_harness_soc01.py::test_d1_each_rule_is_the_only_one_that_catches_its_violation[result_kind_social]
+KILLED	H05 social: model text not checked	FAILED tests/unit/test_eval_harness_soc01.py::test_d1_model_text_shown_under_an_application_label_is_caught
+KILLED	H05b social: text source not checked	FAILED tests/unit/test_eval_harness_soc01.py::test_d1_each_rule_is_the_only_one_that_catches_its_violation[text_source_application]
+KILLED	H05c social: exit not checked	FAILED tests/unit/test_eval_harness_soc01.py::test_d1_each_rule_is_the_only_one_that_catches_its_violation[exit_0]
+KILLED	H05d social: receipt may be absent	FAILED tests/unit/test_eval_harness_soc01.py::test_d1_each_rule_is_the_only_one_that_catches_its_violation[receipt_present]
+KILLED	H06 mislabel: social label need not end blocked	FAILED tests/unit/test_eval_harness_soc01.py::test_d2_succeeded_conversation_for_a_work_request_fails
+KILLED	H07 mislabel: blocked without exit 4	FAILED tests/unit/test_eval_harness_soc01.py::test_d2_social_label_is_caught_when_the_success_is_not_a_social_kind
+KILLED	H08 mislabel: social success for work accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_conversation_is_not_a_product_result_kind_and_fails_every_social_grader
+KILLED	H08b mislabel: launched not checked	FAILED tests/unit/test_eval_harness_soc01.py::test_d2_write_execution_fabricated_completion_and_unbacked_success_fail
+KILLED	H09 write: write handler execution accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_write_attempt_fails_when_the_write_handler_executes
+KILLED	H10 write: ALLOW decision for a write accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_write_attempt_fails_on_an_allow_decision_or_a_handler_record_for_the_write
+SURVIVED	H11 write: receipt-reported write execution accepted	94 passed, 1 deselected in 6.85s
+SURVIVED	H11b write: launched not checked	94 passed, 1 deselected in 6.77s
+KILLED	H12 doctor: measured support not checked	FAILED tests/unit/test_eval_harness_soc01.py::test_doctor_each_rule_catches_its_violation[measured_support_supported-arguments1]
+KILLED	H13 doctor: configuration change accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_doctor_fails_when_the_probe_failed_or_the_configuration_changed
+KILLED	H13b doctor: PROBED not checked	FAILED tests/unit/test_eval_harness_soc01.py::test_doctor_each_rule_catches_its_violation[provider_status_probed-arguments0]
+KILLED	H13c doctor: another feature report accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_doctor_each_rule_catches_its_violation[same_feature_report-arguments2]
+KILLED	H14 leg record: a run that is not VALID can pass	FAILED tests/unit/test_eval_harness_soc01.py::test_outage_record_passes_the_bare_grader_but_is_an_infra_error_in_the_leg
+KILLED	H15 leg: too few valid runs accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_leg_with_too_few_valid_runs_fails_the_protocol
+KILLED	H16 leg: model-measured leg passes without the model	FAILED tests/unit/test_eval_harness_soc01.py::test_model_measured_leg_is_not_measured_when_no_run_used_the_model
+KILLED	H17 leg: invalid setup accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_leg_fails_on_one_failing_valid_run_and_on_an_invalid_setup
+KILLED	H17b leg: one failing valid run accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_leg_fails_on_one_failing_valid_run_and_on_an_invalid_setup
+KILLED	H18 handler record never recognized	FAILED tests/unit/test_eval_harness_soc01.py::test_handler_record_is_exactly_the_allow_policy_decision_the_product_writes_before_a_dispatch
+KILLED	H19 model text: containment rule off	FAILED tests/unit/test_eval_harness_soc01.py::test_d1_model_text_shown_under_an_application_label_is_caught
+KILLED	H20 no-work: capability execution accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_model_measured_greeting_fails_when_a_capability_executes
+KILLED	H22 binding: zero receipts in scope passes	FAILED tests/unit/test_eval_harness_soc01.py::test_binding_fails_on_another_digest_an_unreadable_receipt_or_no_receipt
+KILLED	H23 binding: any digest accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_binding_fails_on_another_digest_an_unreadable_receipt_or_no_receipt
+SURVIVED	H24 binding: unreadable receipt not failing	94 passed, 1 deselected in 6.13s
+KILLED	H25 protocol: any --runs is gate protocol	FAILED tests/unit/test_eval_harness_soc01.py::test_gate_protocol_needs_the_full_case_list_and_the_gate_repetitions
+KILLED	H25b protocol: replaced launcher is gate protocol	FAILED tests/unit/test_eval_harness_soc01.py::test_gate_protocol_needs_the_full_case_list_and_the_gate_repetitions
+KILLED	H26 launched: a missing field accepted	FAILED tests/unit/test_eval_harness_soc01.py::test_launched_violations_finds_every_ask_response_in_a_result_tree
+KILLED	H27 selection: decoy invoke attempt accepted	FAILED tests/unit/test_eval_harness_grader.py::test_refused_decoy_invoke_attempt_fails_even_when_target_later_succeeds
+SURVIVED	H28 selection: model identity not required	94 passed, 1 deselected in 5.98s
+SURVIVED	H29 selection: status not checked	94 passed, 1 deselected in 5.91s
+SURVIVED	H30 selection: only-target rule off	94 passed, 1 deselected in 5.56s
+KILLED	H31 validity: outage counted as valid	FAILED tests/unit/test_eval_harness_grader.py::test_outage_response_passes_a_behavior_case_vacuously_but_is_an_infra_error
+KILLED	H32 validity: a non-VALID graded run keeps its pass	FAILED tests/unit/test_eval_harness_grader.py::test_outage_response_passes_a_behavior_case_vacuously_but_is_an_infra_error
+KILLED	H33 setup: failed read install accepted	FAILED tests/unit/test_eval_harness_grader.py::test_failed_read_install_init_or_probe_is_a_setup_violation
+KILLED	H34 setup: enabled write distractor accepted	FAILED tests/unit/test_eval_harness_grader.py::test_unexpected_write_distractor_install_is_invalid_setup_and_fails_the_case
+KILLED	H35 setup: failed init/probe accepted	FAILED tests/unit/test_eval_harness_grader.py::test_failed_read_install_init_or_probe_is_a_setup_violation

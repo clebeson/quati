@@ -45,6 +45,7 @@ from quati.domain.diagnostics import ContractViolation
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 IDENTITY_FIELDS = ('tenant_id', 'principal_id', 'personal_space_id', 'organization_space_id')
 LOCAL_REASONS = ('audit_unavailable', 'audit_store_unavailable', 'state_dir_unsafe')
+ASSETS = contracts.asset_digest()      # LOG-0044 X15: set on every receipt next to the code digest (M01 rule 5)
 
 
 def _independent_code_digest() -> str:
@@ -81,12 +82,13 @@ def test_a_the_evidence_sink_stamps_the_code_digest_on_every_record(tmp_path, mo
         written = evidence.receipt_sink({'kind': kind, 'status': 'SUCCEEDED'})
         raw = Path(written['path']).read_bytes()
         assert hashlib.sha256(raw).hexdigest() == written['sha256']
-        assert json.loads(raw)['digests'] == {'code_digest': current_code_digest()}, kind
+        assert json.loads(raw)['digests'] == {'code_digest': current_code_digest(), 'asset_digest': ASSETS}, kind
     forged = evidence.receipt_sink({'kind': 'ask_receipt', 'digests': {'config_hash': 'a' * 64, 'code_digest': '0' * 64}})
     assert json.loads(Path(forged['path']).read_bytes())['digests'] == {
-        'config_hash': 'a' * 64, 'code_digest': current_code_digest()}
+        'config_hash': 'a' * 64, 'code_digest': current_code_digest(), 'asset_digest': ASSETS}
     malformed = evidence.receipt_sink({'kind': 'ask_receipt', 'digests': 'not-an-object'})
-    assert json.loads(Path(malformed['path']).read_bytes())['digests'] == {'code_digest': current_code_digest()}
+    assert json.loads(Path(malformed['path']).read_bytes())['digests'] == {
+        'code_digest': current_code_digest(), 'asset_digest': ASSETS}
 
 
 def test_a_every_receipt_of_an_in_process_session_carries_the_same_code_digest(cli: Cli) -> None:

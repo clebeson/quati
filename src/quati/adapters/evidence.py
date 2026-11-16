@@ -7,6 +7,7 @@ import uuid
 
 from quati.adapters.private_fs import state_directory
 from quati.application.code_identity import current_code_digest
+from quati.behavior.contracts import asset_digest
 
 
 class ReceiptNotWritten(OSError):
@@ -45,14 +46,15 @@ def receipts_directory():
 
 
 def bound_to_code(value):
-    """``value`` with ``digests.code_digest`` set to the digest of the running package (audit P2-E).
+    """``value`` with ``digests.code_digest`` and ``digests.asset_digest`` set to the digests of the
+    running package and of the asset files it loads (audit P2-E, LOG-0044 X15).
 
     Every receipt passes through here, whatever its kind (request, capability command, feature report,
-    audit event), so a record can always be bound to the code that wrote it. The value comes from the
-    one function the model-path receipt uses and is never taken from the caller."""
+    audit event), so a record can always be bound to the code and assets that wrote it. Each value comes
+    from the one function that computes it and is never taken from the caller."""
     digests = value.get('digests')
     return {**value, 'digests': {**(digests if isinstance(digests, dict) else {}),
-                                 'code_digest': current_code_digest()}}
+                                 'code_digest': current_code_digest(), 'asset_digest': asset_digest()}}
 
 
 def write_receipt(value):

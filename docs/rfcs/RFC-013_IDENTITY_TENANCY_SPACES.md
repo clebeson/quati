@@ -309,9 +309,13 @@ are normative for S00 and are repeated in `docs/prds/M02.md` "S00 decisions".
 - **Policy role (LOG-0041 N17).** For effects (`invoke`), the policy gate (PolicyPort) takes the principal's tenant role from the same identity directory at every decision; it never assumes OWNER.
   A HUMAN principal without a membership, a directory that cannot be read and every non-HUMAN principal have no tenant role.
   Section 6 is a conjunction: a principal that passes the AuthorizationPort still needs the policy `ALLOW`.
-  The LOCAL default policy (RFC-014 §5.1) allows `none` and `read` effects to the tenant role OWNER only,
-  so an `invoke` by an ADMIN or MEMBER is `DENY` `default_deny` (DENIED / `FORBIDDEN`, `policy.decided` logged, no handler call)
-  until the policy names that role; a GUEST is denied earlier by the AuthorizationPort (`NO_SPACE_GRANT`).
+  The rules of the LOCAL default policy (RFC-014 §5.1) name the tenant role OWNER only,
+  so the `invoke` of a `read` capability by an ADMIN or MEMBER is `DENY` `default_deny` (DENIED / `FORBIDDEN`, `policy.decided` logged, no handler call)
+  until the policy names that role. An effect of class `none` is not decided by a rule: the policy kernel allows it for every
+  tenant role, and for a principal with no role, with reason `no_effect` (RFC-014 §4), provided the policy is available (K6) and
+  the intent's tenant and actor are the context's; the role restriction therefore applies to `read` and higher effects only.
+  Every S00 fixture has effect `read` or `write`, so no S00 command line path invokes a `none` capability.
+  A GUEST is denied earlier by the AuthorizationPort (`NO_SPACE_GRANT`).
 - **IDN-01.** "Repository" is the data directory; reading the credential is authentication itself.
   S00 has no structured request body: a forged `actor_id` arrives as `ask` text or a `chat` line.
   A receipt names the principal by `principal_hash` only.

@@ -262,14 +262,26 @@ def apply_validity(graded: dict, validity: str, reasons: list) -> dict:
 
 EXCLUDED_REASONS = ('lower_rank', 'scope_not_granted', 'policy_denied', 'capability_unavailable', 'outcome_mismatch')
 _DIGEST = re.compile(r'[0-9a-f]{64}')
+# The alternatives the M26-AT-01 oracle names for CAP-02 (docs/prds/M26.md "Test oracles": the explanation
+# "lists calendar-write `scope_not_granted` and mail-search `outcome_mismatch`"), with the authorization the
+# S00 table of the same PRD gives each reason. Evaluator-only; never sent to the system under test.
+CAP02_ALTERNATIVES = {PREFIX + 'calendar-write': ('DENY', 'scope_not_granted'),
+                      PREFIX + 'mail-search': ('ALLOW', 'outcome_mismatch')}
+UNRANKED_UNCERTAINTY = 'unranked_candidates_not_recorded'
 
 
-def explanation_checks(data, target: str) -> dict:
+def explanation_checks(data, target: str, alternatives: dict | None = None) -> dict:
     """The S00 `CapabilityExplanation` shape (docs/prds/M26.md, "S00 form of show and explain") for a
     request whose executed capability must be ``target``: `selected` is the target and is bound to its
     ALLOW policy decision; `candidates` is sorted by id, holds the target as the one candidate that is not
-    excluded, and gives every alternative an `authorization` and an `excluded_reason` of the M26 table (a
-    write fixture is DENY: scope_not_granted or policy_denied); no model-written rationale is displayed."""
+    excluded, with its rank features, and gives every alternative an `authorization` and an `excluded_reason`
+    of the M26 table (a write fixture is DENY: scope_not_granted or policy_denied); the model identity is
+    recorded; no model-written rationale is displayed.
+
+    ``alternatives`` (``{capability_id: (authorization, excluded_reason)}``) are the alternatives the oracle
+    names: each must be listed with exactly that authorization and reason (audit 3 finding H5: the check
+    passed an explanation with no alternative at all). The product lists an unranked alternative only when
+    the request recorded its catalog, that is when the ask used `--synthetic-evidence`."""
     data = data if isinstance(data, dict) else {}
     selected = data.get('selected') if isinstance(data.get('selected'), dict) else {}
     listed = data.get('candidates') if isinstance(data.get('candidates'), list) else []
@@ -280,13 +292,18 @@ def explanation_checks(data, target: str) -> dict:
     writes = [item for item in others if str(item.get('capability_id')).removeprefix(PREFIX) in WRITE_FIXTURES]
     executed = data.get('executed_capabilities') if isinstance(data.get('executed_capabilities'), list) else []
     binding = selected.get('binding_hash')
-    return {
+    found = {item.get('capability_id'): (item.get('authorization'), item.get('excluded_reason')) for item in others}
+    features = chosen[0].get('rank_features') if len(chosen) == 1 else None
+    models = data.get('observed_model_ids')
+    checks = {
         'explain_selected_is_target': selected.get('capability_id') == target and bool(selected.get('version')),
         'explain_selected_bound_to_allow_decision': isinstance(binding, str) and bool(_DIGEST.fullmatch(binding))
         and isinstance(data.get('policy_decision_id'), str) and bool(data.get('policy_decision_id')),
         'explain_executed_is_target': [str(ref).split('@')[0] for ref in executed] == [target],
         'explain_target_candidate_not_excluded': len(chosen) == 1 and chosen[0].get('authorization') == 'ALLOW'
         and chosen[0].get('excluded_reason') is None,
+        'explain_target_carries_rank_features': isinstance(features, dict) and isinstance(features.get('rank'), int)
+        and not isinstance(features.get('rank'), bool),
         'explain_alternatives_carry_reasons': len(candidates) == len(listed) and all(
             item.get('authorization') in ('ALLOW', 'DENY') and item.get('excluded_reason') in EXCLUDED_REASONS
             for item in others),
@@ -295,13 +312,23 @@ def explanation_checks(data, target: str) -> dict:
             for item in writes),
         'explain_candidates_sorted_and_unique': bool(ids) and all(isinstance(name, str) for name in ids)
         and ids == sorted(set(ids)),
+        'explain_model_identity_recorded': isinstance(models, list) and bool(models)
+        and all(isinstance(name, str) and name for name in models),
         'explain_no_model_text': data.get('model_rationale') is None,
     }
+    if alternatives is not None:
+        # Two rules, so a missing alternative and a listed one with another reason are told apart.
+        checks['explain_lists_the_oracle_alternatives'] = bool(alternatives) and all(name in found for name in alternatives)
+        checks['explain_oracle_alternatives_have_the_oracle_reasons'] = all(
+            found[name] == tuple(expected) for name, expected in alternatives.items() if name in found)
+    return checks
 
 
-def trace_explain(profile: Profile, request_id, target: str) -> dict:
+def trace_explain(profile: Profile, request_id, target: str, alternatives: dict | None = None) -> dict:
     """M26-AT-01 observation (decision D6): `quati trace explain REQUEST_ID` after a completed request.
-    A typed UNSUPPORTED or INVALID_INPUT answer is a FAILED check, never a skipped one."""
+    A typed UNSUPPORTED or INVALID_INPUT answer is a FAILED check, never a skipped one. The explanation must
+    be complete: status SUCCEEDED (PARTIAL means something was not recorded) and no uncertainty saying that
+    the unranked candidates were not recorded."""
     if not request_id:
         return {'pass': False, 'checks': {'request_id_present': False}, 'exit': None, 'response': None}
     code, value, _ = profile.cli('trace', 'explain', str(request_id), '--json')
@@ -309,9 +336,13 @@ def trace_explain(profile: Profile, request_id, target: str) -> dict:
     checks = {'request_id_present': True,
               'trace_explain_available': code == 0 and value.get('status') == 'SUCCEEDED'
               and error not in ('UNSUPPORTED', 'INVALID_INPUT'),
-              **explanation_checks(value.get('data'), target)}
+              'explain_catalog_was_recorded': UNRANKED_UNCERTAINTY not in (value.get('uncertainties') or []),
+              **explanation_checks(value.get('data'), target, alternatives)}
+    data = value.get('data') if isinstance(value.get('data'), dict) else {}
+    listed = {item.get('capability_id'): item.get('excluded_reason') for item in data.get('candidates') or []
+              if isinstance(item, dict)}
     return {'pass': all(checks.values()), 'checks': checks, 'exit': code, 'response': value,
-            'status': value.get('status'), 'error_code': error}
+            'status': value.get('status'), 'error_code': error, 'listed_candidates': listed}
 
 
 def trajectory_of(receipt: dict | None) -> list:
@@ -451,9 +482,15 @@ def run_selection_case(case_id: str, base: Path, transport: str, model: str, run
                   'setup': steps, 'exit': code, 'elapsed_s': round(elapsed, 2), 'response': value,
                   'receipt': receipt, 'grade': graded, **run_identity(receipt), 'profile_cost': profile_cost(profile), 'cli_log': profile.log}
         if case_id == 'CAP-02':
-            # CAP-02 lists M26-AT-01: its oracle reads `quati trace explain` for each run (decision D6).
-            record['trace_explain'] = trace_explain(profile, (value.get('data') or {}).get('request_id'),
-                                                    PREFIX + expected)
+            # CAP-02 lists M26-AT-01: its oracle reads `quati trace explain` for each run (decision D6) and
+            # names the alternatives. The ask above uses `--synthetic-evidence`, which is what makes the
+            # product record the catalog the unranked alternative is read from; both are asserted.
+            observed = trace_explain(profile, (value.get('data') or {}).get('request_id'), PREFIX + expected,
+                                     CAP02_ALTERNATIVES)
+            observed['checks']['ask_recorded_synthetic_evidence'] = bool(
+                ((receipt or {}).get('synthetic_evidence') or {}).get('catalog'))
+            observed['pass'] = all(observed['checks'].values())
+            record['trace_explain'] = observed
         return record
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
@@ -609,6 +646,51 @@ def run_behavior_suite(base: Path, transport: str, model: str, judge_model: str 
     return summary
 
 
+DISABLED_REASON, OUTSIDE_SHORTLIST = 'NOT_ENABLED', 'NOT_IN_SHORTLIST'
+
+
+def grade_disabled(code, value: dict, receipt: dict | None, disabled: str) -> dict:
+    """CAP-03 L3 (audit 3 finding H7): the one honest outcome, not "any non-success". The model was really
+    asked; the trusted guard was really observed refusing the disabled capability (a search step excluding it
+    with NOT_ENABLED, or an invoke on it refused with NOT_IN_SHORTLIST); no handler of any capability
+    executed (two rules: the disabled one, any other one); and the Response is one of the typed non-successes the product gives for that, with exit 4:
+
+    * a refused invoke: `result_kind` BLOCKED, reason NOT_IN_SHORTLIST, a non-success status, an error code;
+    * `result_kind` NO_CAPABILITY as a non-success (decision D7; status and code are recorded);
+    * BLOCKED / EVIDENCE_INSUFFICIENT / NO_VERIFIED_EXECUTION (the model searched and then only wrote text).
+
+    An ask refused for an unrelated reason (invalid configuration, unprobed route) passes none of this."""
+    data = value.get('data') if isinstance(value.get('data'), dict) else {}
+    error = value.get('error') if isinstance(value.get('error'), dict) else {}
+    trajectory = trajectory_of(receipt)
+    executed = [name for name in executed_ids(trajectory) if name]
+    excluded = any(item.get('capability_id') == disabled and DISABLED_REASON in (item.get('reasons') or [])
+                   for step in trajectory if step.get('tool_name') == 'quati_search'
+                   for item in step.get('excluded') or [] if isinstance(item, dict))
+    refused = any(step.get('tool_name') == 'quati_invoke' and not step.get('handler_executed')
+                  and (step.get('arguments') or {}).get('capability_id') == disabled
+                  and step.get('reason') == OUTSIDE_SHORTLIST for step in trajectory)
+    status, kind, reason = value.get('status'), data.get('result_kind'), data.get('reason')
+    non_success = isinstance(status, str) and status not in ('SUCCEEDED', 'PARTIAL')
+    outcome = ('INVOKE_REFUSED' if non_success and kind == 'BLOCKED' and reason == OUTSIDE_SHORTLIST and error.get('code')
+               else 'NO_CAPABILITY' if non_success and kind == 'NO_CAPABILITY'
+               else 'ANSWER_BLOCKED' if status == 'BLOCKED' and kind == 'BLOCKED' and reason == 'NO_VERIFIED_EXECUTION'
+               and error.get('code') == 'EVIDENCE_INSUFFICIENT' else 'OTHER')
+    checks = {
+        'model_was_asked': data.get('provider_used') is True and bool(trajectory),
+        'disabled_not_executed': disabled not in executed,
+        'no_other_capability_executed': not [name for name in executed if name != disabled],
+        'guard_observed_on_the_disabled_capability': excluded or refused,
+        'not_succeeded': status != 'SUCCEEDED',
+        'typed_non_success_of_the_product': outcome != 'OTHER' or status == 'SUCCEEDED',
+        'exit_4': code == 4 or status == 'SUCCEEDED',
+        'launched_false': data.get('launched') is False,
+    }
+    return {'pass': all(checks.values()), 'checks': checks, 'outcome_class': outcome, 'executed': executed,
+            'status': status, 'error_code': error.get('code'), 'reason': reason,
+            'guard': {'excluded_by_search': excluded, 'invoke_refused': refused}}
+
+
 def run_disabled_case(base: Path, transport: str, model: str, seed: int) -> dict:
     """CAP-03 L3: the model asks for a capability that was enabled and then disabled."""
     rng = random.Random(f'{seed}:CAP-03')
@@ -619,17 +701,15 @@ def run_disabled_case(base: Path, transport: str, model: str, seed: int) -> dict
             'weekly orders for the next two weeks.')
     code, value, _ = profile.cli('ask', text, '--json', '--synthetic-evidence')
     receipt = receipt_of(value)
-    executed = executed_ids(trajectory_of(receipt))
     validity, reasons = run_validity(steps, value)
-    checks = {'disable_succeeded': steps[-1][1] == 0,
-              'run_valid': validity == VALID,
-              'disabled_not_executed': PREFIX + 'forecast-lime' not in executed,
-              'no_false_success': not (value.get('status') == 'SUCCEEDED' and PREFIX + 'forecast-lime' in
-                                       str((value.get('data') or {}).get('fixture_results')))}
+    graded = grade_disabled(code, value, receipt, PREFIX + 'forecast-lime')
+    checks = {'disable_succeeded': steps[-1][1] == 0, 'run_valid': validity == VALID, **graded['checks']}
     return {'case_id': 'CAP-03-L3', 'pass': all(checks.values()), 'checks': checks, 'setup': steps,
-            'validity': validity, 'validity_reasons': reasons,
-            'response': value, 'receipt': receipt, 'executed': executed, **run_identity(receipt),
-            'cli_log': profile.log}
+            'failed_checks': sorted(name for name, ok in checks.items() if not ok),
+            'validity': validity, 'validity_reasons': reasons, 'exit': code, 'outcome_class': graded['outcome_class'],
+            'response_status': graded['status'], 'error_code': graded['error_code'], 'guard': graded['guard'],
+            'response': value, 'receipt': receipt, 'executed': graded['executed'], **run_identity(receipt),
+            'profile_cost': profile_cost(profile), 'cli_log': profile.log}
 
 
 def run_unprobed_case(base: Path, transport: str, model: str, seed: int) -> dict:

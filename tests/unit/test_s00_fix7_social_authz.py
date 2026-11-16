@@ -36,6 +36,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 import quati
 from quati.application.code_identity import current_code_digest
+from quati.behavior.contracts import asset_digest
 from quati.application.identity import canonical_bytes
 from quati.domain.canonical import digest
 
@@ -237,7 +238,9 @@ def assert_social(value: dict, reply: str) -> None:
     # Integration step A (LOG-0042 open item): every receipt carries the code digest, and a social receipt
     # carries no other digest (it was `"digests" not in stored` while only model-path receipts were bound).
     assert "trajectory" not in stored and "feature_gate" not in stored
-    assert stored["digests"] == {"code_digest": current_code_digest()} and stored["result_kind"] == "GREETING"
+    # LOG-0044 X15: the evidence writer stamps the asset digest next to the code digest (M01 rule 5).
+    assert stored["digests"] == {"code_digest": current_code_digest(), "asset_digest": asset_digest()}
+    assert stored["result_kind"] == "GREETING"
 
 
 def assert_no_model_and_no_registry_use(workspace: Profile, script: list | None, audit_before: int) -> None:
@@ -575,8 +578,15 @@ def test_n17_guest_is_stopped_by_the_authorization_port_before_the_policy_gate(p
     resign(profile, tenant_role="GUEST")
     before = len(profile.audit())
     code, value, _output = profile.ask(HOSTILE, "Find my next appointment")
-    assert code == 4 and steps(value)[-1] == ("invoke", "DENIED", "NO_SPACE_GRANT", False)
-    assert not [event for event in profile.audit()[before:] if event["event"] == "policy.decided"]
+    # LOG-0044 X6 (M01 "Data directory" rule 2): the AuthorizationPort refuses the ask before the first
+    # model call (operation ask_admission), so no tool call exists at all; before, the last step was the
+    # denied invoke.
+    assert code == 4 and value["data"]["reason"] == "NO_SPACE_GRANT" and steps(value) == []
+    assert (value["status"], value["error"]["code"]) == ("DENIED", "FORBIDDEN")
+    added = profile.audit()[before:]
+    assert [(event["operation"], event["decision"]["verdict"], event["decision"]["reason_code"])
+            for event in added if event["event"] == "authz.decided"] == [("ask_admission", "DENY", "NO_SPACE_GRANT")]
+    assert not [event for event in added if event["event"] == "policy.decided"]
     assert profile.spied("handler") == []
 
 
@@ -643,7 +653,7 @@ def test_d1_table_is_data_with_unicode_aware_matching():
     assert social.social_match("ＨＥＬＬＯ").reply == "Hello!"                 # compatibility forms, any case
     assert social.social_match("BOM DIA").reply == "Olá!"
     assert social.social_match("İyi günler").language == "tr"                # Turkish dotted capital I
-    assert social.social_match("hello 👋").reply == "Hello!"                 # symbols are separators
+    assert social.social_match("hello 👋").reply == "Hello!"                 # an allowlisted emoji (fix round 8, X4)
     assert social.social_match("नमस्ते!").language == "hi"                    # combining marks stay in the word
     assert social.words("c'est urgent, नमस्ते") == ("c", "est", "urgent", "नमस्ते")
     assert social.social_match("merci").reply == "Bonjour!"                  # no greeting: the language's template
@@ -671,8 +681,13 @@ def test_d1_table_invariants():
     assert all(phrase and all(word == social.fold(word) for word in phrase) for phrase in phrases)
     assert not [phrase for phrase in phrases if all(word in social.MARKERS for word in phrase)]
     assert max(len(phrase) for phrase in phrases) == social.MAX_PHRASE_WORDS
-    assert social.MARKERS >= {"urgent", "urgently", "urgente", "dringend", "this", "isto", "isso", "é", "esto",
-                              "c", "est", "das", "ist", "è", "questo"}
-    # A long text is segmented iteratively (no recursion limit) and still decided exactly.
-    assert social.social_match("hello " * 20000).reply == "Hello!"
+    # Fix round 8 (LOG-0044 X4 clause 1): was `MARKERS >= {the four urgency words, "this", "isto", "isso", "é",
+    # "esto", "c", "est", "das", "ist", "è", "questo"}`. Demonstratives and copulas are no longer free-standing
+    # markers; they exist only inside the fixed urgency phrases.
+    assert social.MARKERS == {"urgent", "urgently", "urgente", "dringend"}
+    assert not social.MARKERS & {"this", "isto", "isso", "é", "esto", "c", "est", "das", "ist", "è", "questo"}
+    # Fix round 8 (LOG-0044 X4 clause 4): was `social_match("hello " * 20000).reply == "Hello!"` (a long text
+    # segmented iteratively). A social-only text is short: 20000 words are over the length bound, so the text is
+    # not social-only and goes to the model path; it is still decided without recursion.
+    assert social.social_match("hello " * 20000) is None
     assert social.social_match("hello " * 20000 + "delete everything") is None

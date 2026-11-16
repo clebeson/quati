@@ -3,8 +3,11 @@
 The same rule ``config/`` and ``receipts/`` follow: a state directory is a real directory (never a
 symlink) owned by the current user with mode 0700, and a state file is a regular, singly linked
 file owned by the current user with no group or other permission bit. A path that cannot be made
-or proven private raises ``UnsafeStatePath`` (an ``OSError``) so the caller fails closed; nothing is
-written elsewhere.
+or proven private raises ``UnsafeStatePath`` (an ``OSError`` whose ``filename`` is the path) so the
+caller fails closed; nothing is written elsewhere. A file is opened without following a symlink and
+without blocking, so a FIFO can never hang a command; a wider file mode is refused, never repaired.
+A writer removes the wider bits of a directory the user owns and never adds a permission: a
+directory that lacks an owner bit is refused (docs/prds/M01.md, Data directory rule 1).
 
 ``state_directory`` is the one entry every store uses before it reads, locks, writes or appends:
 it verifies the data directory (``QUATI_DATA_DIR``) and each Quati directory under it, in order,
@@ -54,10 +57,13 @@ def _verify(path: Path, tighten: bool) -> None:
         if info.st_uid != os.getuid():
             raise _refuse(path, "foreign owner")
         mode = stat.S_IMODE(info.st_mode)
-        if tighten and mode != DIRECTORY_MODE:
+        if not tighten:
+            if mode & 0o077:
+                raise _refuse(path, "group or other permission bits")
+        elif mode & DIRECTORY_MODE != DIRECTORY_MODE:
+            raise _refuse(path, "owner permission bits missing")
+        elif mode != DIRECTORY_MODE:
             os.fchmod(descriptor, DIRECTORY_MODE)
-        elif mode & 0o077:
-            raise _refuse(path, "group or other permission bits")
     finally:
         os.close(descriptor)
 
@@ -112,22 +118,52 @@ def private_tree(path: Path) -> Path:
         if entry.is_dir() and not entry.is_symlink():
             private_tree(entry)
         else:
-            try:
-                descriptor = os.open(entry, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
-            except OSError:
-                raise _refuse(entry, "symlink or unreadable file") from None
-            os.close(_checked(descriptor, entry, True))
+            os.close(_checked(_open(entry, os.O_RDONLY), entry, True))
     return path
+
+
+def verify_entry(entry: Path, *, files: frozenset[str] = frozenset()) -> None:
+    """Refuse ``entry`` unless it is a private regular file or a tree of private directories and files.
+
+    A directory is verified like every state directory (wider bits removed) and then entry by entry;
+    anything else, and any entry whose name is in ``files`` whatever its type, must be a private regular
+    file. Nothing is created; an entry removed meanwhile by another Quati process is skipped.
+    """
+    entry = Path(entry)
+    try:
+        if entry.name in files or not stat.S_ISDIR(os.lstat(entry).st_mode):
+            check_private_file(entry)
+            return
+        _verify(entry, True)
+        names = sorted(os.listdir(entry))
+    except FileNotFoundError:
+        return
+    for name in names:
+        verify_entry(entry / name, files=files)
+
+
+def _open(path: Path, flags: int) -> int:
+    """Open without following a symlink and without blocking; what cannot be opened is not private."""
+    try:
+        return os.open(path, flags | os.O_NOFOLLOW | os.O_NONBLOCK, FILE_MODE)
+    except FileNotFoundError:
+        raise
+    except OSError:
+        raise _refuse(Path(path), "symlink or file that cannot be opened") from None
+
+
+def _wider(info: os.stat_result, path: Path) -> bool:
+    """Refuse unless ``info`` is a singly linked regular file of this user; True when it has wider bits."""
+    if not stat.S_ISREG(info.st_mode):
+        raise _refuse(path, "not a regular file")
+    if info.st_uid != os.getuid() or info.st_nlink != 1:
+        raise _refuse(path, "foreign owner or extra hard link")
+    return bool(stat.S_IMODE(info.st_mode) & 0o077)
 
 
 def _checked(descriptor: int, path: Path, tighten: bool) -> int:
     try:
-        info = os.fstat(descriptor)
-        if not stat.S_ISREG(info.st_mode):
-            raise _refuse(path, "not a regular file")
-        if info.st_uid != os.getuid() or info.st_nlink != 1:
-            raise _refuse(path, "foreign owner or extra hard link")
-        if stat.S_IMODE(info.st_mode) & 0o077:
+        if _wider(os.fstat(descriptor), path):
             if not tighten:
                 raise _refuse(path, "group or other permission bits")
             os.fchmod(descriptor, FILE_MODE)
@@ -137,24 +173,43 @@ def _checked(descriptor: int, path: Path, tighten: bool) -> int:
     return descriptor
 
 
-def open_private(path: Path, flags: int, *, tighten: bool = False) -> int:
-    """Open (creating with mode 0600) without following a symlink; refuse any file that is not private.
+def check_private_path(path: Path) -> None:
+    """Refuse ``path`` by its metadata, without opening it, unless it is absent or a private regular file.
 
-    ``tighten`` is for content-free files (a lock file): wider permission bits left by an older
-    version are removed instead of refused. A file whose content must be trusted is never tightened.
+    The early check of a store file that a command has not been authorized to read yet: no open, so a
+    FIFO cannot block and nothing is read. The descriptor check of ``read_private`` / ``open_private``
+    stays the authority when the file is used.
     """
-    descriptor = os.open(path, flags | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, FILE_MODE)
-    return _checked(descriptor, Path(path), tighten)
+    try:
+        info = os.lstat(path)
+    except FileNotFoundError:
+        return
+    if _wider(info, Path(path)):
+        raise _refuse(Path(path), "group or other permission bits")
+
+
+def open_private(path: Path, flags: int) -> int:
+    """Open (creating with mode 0600) without following a symlink; refuse any file that is not private."""
+    return _checked(_open(path, flags | os.O_CREAT), Path(path), False)
 
 
 def read_private(path: Path) -> bytes | None:
     """The bytes of a private file read without following a symlink; ``None`` when it does not exist."""
     try:
-        descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        descriptor = _open(path, os.O_RDONLY)
     except FileNotFoundError:
         return None
     with os.fdopen(_checked(descriptor, Path(path), False), "rb") as handle:
         return handle.read()
+
+
+def check_private_file(path: Path) -> None:
+    """Refuse ``path`` unless it is absent or a private regular file; nothing is read or changed."""
+    try:
+        descriptor = _open(path, os.O_RDONLY)
+    except FileNotFoundError:
+        return
+    os.close(_checked(descriptor, Path(path), False))
 
 
 def write_private(path: Path, data: bytes) -> None:
@@ -164,5 +219,6 @@ def write_private(path: Path, data: bytes) -> None:
         handle.write(data)
 
 
-__all__ = ["DIRECTORY_MODE", "FILE_MODE", "UnsafeStatePath", "data_root", "open_private", "private_directory",
-           "private_tree", "read_private", "state_directory", "write_private"]
+__all__ = ["DIRECTORY_MODE", "FILE_MODE", "UnsafeStatePath", "check_private_file", "check_private_path",
+           "data_root", "open_private",
+           "private_directory", "private_tree", "read_private", "state_directory", "verify_entry", "write_private"]

@@ -1,0 +1,22 @@
+Full suite at the end of the harness work (2026-11-16), working tree with the in-progress changes of the two other
+agents of the round in src/ and in their test files. No provider was called.
+
+$ .venv/bin/python -m pytest -q -p no:cacheprovider
+53 failed, 2127 passed, 10 skipped in 942.79s (0:15:42)
+
+Files of this work package:
+  tests/unit/test_eval_harness_grader.py + tests/unit/test_eval_harness_soc01.py: 205 passed, 0 failed (green.txt)
+  tests/evals/: 7 skipped (opt-in live wrappers, QUATI_LIVE_EVAL unset), 0 failed
+
+Failures, all in a file this work package does not own (not changed, not fixed here):
+     53 FAILED tests/unit/test_s00_fix7_social_authz.py
+
+First assertion lines of those failures (most frequent):
+     53  E       AssertionError  assert ({'asset_diges...bcadf9afdf24'} == {'code_digest...bcadf9afdf24'}
+     53  E         {'asset_digest'  'cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2'}
+     53  E         Use -v to get more diff)
+     53  E         Omitting 1 identical items, use -vv to show
+     53  E         Left contains 1 more item 
+
+Skips (10): 7 live evals in tests/evals, 2 external smokes, 1 fresh-wheel leg (setuptools not importable), as at baseline.
+Baseline at HEAD c232241 (third audit): 1622 passed, 10 skipped.

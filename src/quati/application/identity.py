@@ -35,7 +35,7 @@ class RequestContext:
     token_jti: str
     authenticated_origin_ref: str
     deadline_at: str
-    policy_version: str = 's00-fixture-readonly/1'
+    policy_version: str | None = None
     schema_version: str = 'quati-context/2'
     channel: str = 'cli'
     principal_kind: str = 'HUMAN'

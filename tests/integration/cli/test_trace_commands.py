@@ -206,6 +206,7 @@ def test_show_returns_the_recorded_receipt_and_decisions_of_one_request(recorded
         assert "context" not in step and "arguments" not in step
         assert (step["arguments_digest"], step["result_sha256"]) == (source["arguments_digest"], source["result_sha256"])
     assert [(item["operation"], item["verdict"], item["reason_code"]) for item in data["authz_decisions"]] == [
+        ("ask_admission", "ALLOW", "OK"),      # LOG-0044 X6: the grant is checked before the first model call
         ("search", "ALLOW", "OK"), ("describe", "ALLOW", "OK"), ("describe", "ALLOW", "OK"),
         ("invoke", "ALLOW", "OK"), ("ask", "ALLOW", "OK")]
     recorded_policy = [event for event in recorded.profile.audit()
@@ -496,6 +497,96 @@ def test_two_receipts_claiming_one_request_are_refused(scratch: Recorded) -> Non
         code, value = profile.quati("trace", operation, request_id, "--json")
         assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
         assert value["data"] == {"reason": "receipt_ambiguous"} and value["evidence_refs"] == []
+
+
+# ----------------------------------------------------------------- X14: receipt and audit log must agree
+def rewrite_receipt(value: dict, change) -> None:
+    path = receipt_file(value)[1]
+    record = json.loads(path.read_text(encoding="utf-8"))
+    change(record)
+    path.write_text(json.dumps(record), encoding="utf-8")
+
+
+def assert_partial_with(profile: Profile, request_id: str, *expected: str) -> None:
+    for operation in ("show", "explain"):
+        code, value = profile.quati("trace", operation, request_id, "--json")
+        assert (code, value["status"], value["error"]) == (0, "PARTIAL", None), value
+        assert set(expected) <= set(value["uncertainties"]), (operation, value["uncertainties"])
+        assert value["next_action"]
+
+
+def test_an_unedited_record_agrees_with_the_audit_log(recorded: Recorded) -> None:
+    """Negative control of the X14 checks: the recorded asks show no consistency uncertainty."""
+    for item in (recorded.work, recorded.synthetic, recorded.greeting):
+        code, value = recorded.profile.quati("trace", "show", ids(item)[0], "--json")
+        assert code == 0 and not {"audit_receipt_mismatch", "receipt_inconsistent"} & set(value["uncertainties"])
+
+
+def test_a_forged_executed_capability_without_its_policy_decision_is_partial(scratch: Recorded) -> None:
+    """LOG-0044 X14: an executed capability with no ``policy.decided ALLOW`` line is never a clean SUCCEEDED."""
+    def forge(record: dict) -> None:
+        record["outcome"]["executed_capabilities"] = [f"{WRITE}@1.0.0"]
+        step = record["trajectory"][-1]
+        step["capability_ref"] = f"{WRITE}@1.0.0"
+    rewrite_receipt(scratch.work, forge)
+    assert_partial_with(scratch.profile, ids(scratch.work)[0], "audit_receipt_mismatch")
+
+
+def test_a_forged_executing_step_without_its_policy_decision_is_partial(scratch: Recorded) -> None:
+    """A step that claims an executed handler for a capability the audit log never allowed; the outcome
+    list is left alone, so only the step itself contradicts the log."""
+    def forge(record: dict) -> None:
+        record["trajectory"].append(dict(record["trajectory"][-1], capability_ref=f"{WRITE}@1.0.0",
+                                         step=len(record["trajectory"]) + 1))
+    rewrite_receipt(scratch.work, forge)
+    assert_partial_with(scratch.profile, ids(scratch.work)[0], "audit_receipt_mismatch")
+    code, value = scratch.profile.quati("trace", "show", ids(scratch.work)[0], "--json")
+    assert "receipt_inconsistent" not in value["uncertainties"]
+
+
+def test_an_executed_capability_that_the_trajectory_does_not_hold_is_partial(scratch: Recorded) -> None:
+    def forge(record: dict) -> None:
+        record["outcome"]["executed_capabilities"].append(f"{DECOY}@1.0.0")
+    rewrite_receipt(scratch.work, forge)
+    assert_partial_with(scratch.profile, ids(scratch.work)[0], "receipt_inconsistent", "audit_receipt_mismatch")
+
+
+def test_a_flipped_status_without_an_execution_is_partial(scratch: Recorded) -> None:
+    """A receipt that claims SUCCEEDED / FIXTURE_RESULT while no step executed a handler."""
+    def forge(record: dict) -> None:
+        record["outcome"]["executed_capabilities"] = []
+        for step in record["trajectory"]:
+            step["handler_executed"] = False
+    rewrite_receipt(scratch.work, forge)
+    assert_partial_with(scratch.profile, ids(scratch.work)[0], "receipt_inconsistent")
+
+    def blocked_as_success(record: dict) -> None:
+        record["outcome"]["result_kind"] = "BLOCKED"
+    rewrite_receipt(scratch.synthetic, blocked_as_success)
+    assert_partial_with(scratch.profile, ids(scratch.synthetic)[0], "receipt_inconsistent")
+
+
+def test_a_removed_policy_decision_line_is_partial(scratch: Recorded) -> None:
+    profile, request_id = scratch.profile, ids(scratch.work)[0]
+    log = profile.data / "capabilities" / "audit.jsonl"
+    lines = log.read_bytes().splitlines(keepends=True)
+    kept = [line for line in lines
+            if not (json.loads(line)["event"] == "policy.decided" and json.loads(line)["request_id"] == request_id)]
+    assert len(kept) == len(lines) - 1
+    log.write_bytes(b"".join(kept))
+    assert_partial_with(profile, request_id, "audit_receipt_mismatch")
+
+
+def test_a_forged_policy_decision_line_is_partial(scratch: Recorded) -> None:
+    """An ALLOW line for a capability that no trajectory step invoked (audit script d6.py)."""
+    profile, request_id = scratch.profile, ids(scratch.work)[0]
+    log = profile.data / "capabilities" / "audit.jsonl"
+    genuine = next(event for event in profile.audit()
+                   if event["event"] == "policy.decided" and event["request_id"] == request_id)
+    forged = {**genuine, "capability_id": WRITE}
+    with open(log, "ab") as handle:
+        handle.write(canonical_bytes(forged) + b"\n")
+    assert_partial_with(profile, request_id, "audit_receipt_mismatch")
 
 
 # ----------------------------------------------------------------- export and replay stay S02

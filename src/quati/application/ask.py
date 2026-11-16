@@ -12,7 +12,8 @@ Provider (schema-validated, at most two repairs, advisory only), then run a boun
 the four discovery tools with the authenticated RequestContext.
 
 The application owns the outcome and every displayed word. Success means a capability really
-executed and its output validated (labelled FIXTURE_RESULT), or an honest no-capability reply.
+executed and its output validated (labelled FIXTURE_RESULT); nothing else is a success of a work
+request (LOG-0044 D7).
 Model text is hashed and recorded (``final_text_sha256``) but is never displayed and never proves
 completion; no outcome depends on it, so an empty reply has no failure mode of its own. The
 classification is advisory: no label creates a social outcome or skips the work path. UNKNOWN
@@ -27,8 +28,10 @@ by the probe.
 * ``FIXTURE_RESULT`` - at least one capability executed and its output validated. SUCCEEDED,
   or PARTIAL with one ``STEP_NOT_EXECUTED:<step>:<reason>`` uncertainty per later invoke step
   that was refused, denied or failed.
-* ``NO_CAPABILITY`` - honest no-capability reply (M15): the model declared NONE_FITS or the
-  search shortlist was empty. SUCCEEDED, next_action ``report_no_capability``, no result claimed.
+* ``NO_CAPABILITY`` - honest no-capability outcome (M15; LOG-0044 D7): the model declared NONE_FITS
+  or the search shortlist was empty, and nothing executed. It is not a success: UNAVAILABLE /
+  UNSUPPORTED, exit 4, ``work_performed`` false, a ``next_action`` saying that no installed
+  capability can do the request, no result claimed.
 * ``BLOCKED`` - no validated result: provider failure or model-identity mismatch, ask
   deadline (reason ASK_DEADLINE), budget, refusal, unverified outcome (PARTIAL
   OUTCOME_UNVERIFIED), or the model stopped without invoking anything (BLOCKED
@@ -56,8 +59,7 @@ from typing import Any, Callable
 
 from quati.application.code_identity import current_code_digest
 from quati.application.context_envelope import ContextEnvelope, EnvelopeError, build_envelope
-from quati.application.discovery_tools import DISCOVERY_TOOLS, execute_tool_call, honest_no_capability, \
-    redacted_trajectory
+from quati.application.discovery_tools import DISCOVERY_TOOLS, execute_tool_call, redacted_trajectory
 from quati.application.providers import Message, ModelRequest, ProbeProfile, ProviderError, ToolSpec
 from quati.behavior.contracts import default_catalog
 from quati.domain.canonical import digest
@@ -100,6 +102,10 @@ PROVIDER_EXIT_5 = ("TEMPORARILY_UNAVAILABLE", "DEADLINE_EXCEEDED", "OUTPUT_INVAL
 MODEL_ANSWER_INTENTS = ("social", "simple_answer")
 MODEL_ANSWER_NEXT_ACTION = ("S00 displays no model-written answers and no action was taken. Ask for work that an "
                             "installed capability can do; the model text is not evidence of completion.")
+# LOG-0044 D7: no capability fits (NONE_FITS) or none was found (NO_CANDIDATES); never a success.
+NO_CAPABILITY_MESSAGE = "No installed capability can fulfil this request."
+NO_CAPABILITY_NEXT_ACTION = ("No installed capability can do this and no action was taken. Run `quati capabilities "
+                             "list` to see what is installed, or ask for work that an installed capability can do.")
 
 PROTOCOL_TEXT = (
     "Tool protocol (" + PROTOCOL_VERSION + "): Quati runs the tools quati_search, quati_describe, quati_invoke and "
@@ -578,11 +584,11 @@ class AskSession:
                                   ["NO_VERIFIED_EXECUTION"])
 
     def no_capability(self, reason: str) -> dict:
-        honest = honest_no_capability(reason)
-        honest["data"] = self.data("NO_CAPABILITY", result_status="NO_CAPABILITY", reason=reason,
-                                   outcome="NO_CAPABILITY", text="No installed capability can fulfil this request.")
-        honest["uncertainties"] = ["NO_CAPABILITY", reason]
-        return honest
+        """LOG-0044 D7: the honest no-capability outcome keeps its result kind and is not a success."""
+        data = self.data("NO_CAPABILITY", result_status="NO_CAPABILITY", reason=reason, outcome="NO_CAPABILITY",
+                         work_performed=False)
+        return _envelope_response("UNAVAILABLE", data, "UNSUPPORTED", NO_CAPABILITY_MESSAGE,
+                                  NO_CAPABILITY_NEXT_ACTION, ["NO_CAPABILITY", reason])
 
     # ------------------------------------------------------------- evidence
     def tool_summary(self) -> list[dict]:
@@ -705,6 +711,7 @@ def run_ask(text: str, context, *, provider, runtime: AskRuntime, gate: dict, cl
 
 __all__ = ["ASK_DEADLINE_CLI_S", "ASK_DEADLINE_S", "ASK_LIMITS", "ASK_MAX_OUTPUT_TOKENS", "ASK_MAX_PROVIDER_REQUESTS", "ASK_MAX_TOOL_CALLS",
            "ASK_SCOPE", "AskRuntime", "AskSession", "DIGEST_FIELDS", "FEATURE_REPORT_MAX_AGE_S", "MAX_LOOP_REPAIRS",
-           "MAX_STRUCTURED_REPAIRS", "MODEL_ANSWER_INTENTS", "MODEL_ANSWER_NEXT_ACTION", "PROTOCOL_VERSION",
+           "MAX_STRUCTURED_REPAIRS", "MODEL_ANSWER_INTENTS", "MODEL_ANSWER_NEXT_ACTION", "NO_CAPABILITY_MESSAGE",
+           "NO_CAPABILITY_NEXT_ACTION", "PROTOCOL_VERSION",
            "RESULT_KINDS", "SYNTHETIC_EVIDENCE_SCHEMA", "ask_deadline_seconds", "classification_schema", "exit_code",
            "feature_gate", "run_ask", "social_outcome"]

@@ -4,6 +4,7 @@ import base64
 import json
 import os
 from pathlib import Path
+import re
 import secrets
 import stat
 import time
@@ -20,6 +21,7 @@ from quati.application.identity import AccessDenied, LocalToken, RequestContext,
 TENANT_ROLES = ('OWNER', 'ADMIN', 'MEMBER', 'GUEST')      # contracts/identity.schema.json LocalInstallationRecord
 # The identifiers every command reads from the signed record (RFC-013 section 4); each is a non-empty string.
 IDENTIFIER_FIELDS = ('tenant_id', 'principal_id', 'personal_space_id', 'organization_space_id')
+ULID = re.compile(r'[0-9A-HJKMNP-TV-Z]{26}')              # contracts/identity.schema.json #/$defs/Ulid
 
 
 def _ulid():
@@ -36,6 +38,8 @@ def _no_symlinks(path):
 def _private_stat(info, directory=False):
     valid_kind = stat.S_ISDIR(info.st_mode) if directory else stat.S_ISREG(info.st_mode)
     if not valid_kind or info.st_uid != os.getuid() or info.st_mode & 0o077:
+        raise AccessDenied()
+    if not directory and info.st_nlink != 1:              # a second name for a credential file (LOG-0044 X11)
         raise AccessDenied()
 
 
@@ -127,8 +131,10 @@ class LocalIdentity:
             if signed['owner_uid'] != os.getuid() or key.public_key().public_bytes_raw() != public:
                 raise AccessDenied()
             # A correctly signed record is still a rejected credential when an identifier it must carry is
-            # absent, empty or not a string (LOG-0041 N10): typed here, never a KeyError in a command.
-            if not all(isinstance(signed.get(name), str) and signed[name] for name in IDENTIFIER_FIELDS):
+            # absent, not a string or not a ULID (LOG-0041 N10, LOG-0044 X11): typed here, never a KeyError
+            # in a command, and consistent with the token check every command applies.
+            if not all(isinstance(signed.get(name), str) and ULID.fullmatch(signed[name])
+                       for name in IDENTIFIER_FIELDS):
                 raise AccessDenied()
             return signed, key
         except (OSError, ValueError, KeyError, TypeError, InvalidSignature, RecursionError) as exc:

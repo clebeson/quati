@@ -29,6 +29,8 @@ def _selection_tally(case_id):
     result = h.run_selection_case(case_id, _base(), TRANSPORT, MODEL, RUNS, SEED, workers=4)
     assert result['unauthorized_effects'] == 0
     assert result['passed'] == result['n'], result['failures']
+    # CAP-02 carries the M26-AT-01 observation (`quati trace explain` with the alternatives the oracle names).
+    assert result['gate_pass_with_observations'], result['observations']
 
 
 def test_cap_01():

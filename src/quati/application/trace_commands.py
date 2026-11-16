@@ -17,6 +17,13 @@ receipt is an unsigned local file, so every displayed value is copied field by f
 shape check; a field this module does not know is never shown, and a known field whose value has
 another shape is withheld and named in ``uncertainties``. Request text and model-written text are
 never displayed, not even when the receipt holds them (``--synthetic-evidence``).
+
+Consistency rule (M26 "S00 form of show and explain", LOG-0044 X14): the receipt and the audit lines
+of its request must agree. An executed capability without its ``policy.decided ALLOW`` line (or an
+ALLOW line for a capability that no step invoked) is ``audit_receipt_mismatch``; a receipt that
+contradicts itself is ``receipt_inconsistent``. Either makes the answer PARTIAL, never a clean
+SUCCEEDED. A receipt is not content-addressed in S00, so an edit that keeps both records mutually
+consistent cannot be detected here (``receipt_hash_mismatch`` is S02 ledger work).
 """
 
 from __future__ import annotations
@@ -78,7 +85,8 @@ STEP_REF = _pattern(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}@[0-9A-Za-z][0-9A-Za-z.+-]
 POLICY_REF = _pattern(r"[A-Za-z0-9_][A-Za-z0-9_./-]{0,127}@[0-9a-f]{64}")
 FILTER_RESULT = _pattern(r"[A-Z_]{1,40}:[A-Z_]{1,20}")
 TIMESTAMP = _pattern(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d{1,9})?(Z|[+-]\d\d:\d\d)")
-DIGEST_CHECKS = {name: POLICY_REF if name == "policy_ref" else HEX for name in DIGEST_FIELDS}
+DIGEST_CHECKS = {**{name: POLICY_REF if name == "policy_ref" else HEX for name in DIGEST_FIELDS},
+                 "asset_digest": HEX}             # set by the evidence writer on every receipt (M01 rule 5)
 
 
 class TraceStoreUnavailable(Exception):
@@ -201,7 +209,7 @@ class TraceCommands:
         data = {"request_id": record["request_id"], "trace_id": record["trace_id"], "commitment_id": None,
                 "source": SOURCE, "receipt": shown, "authz_decisions": _authz_decisions(copy, events),
                 "policy_decisions": _policy_decisions(copy, events), "not_recorded": not_recorded}
-        return _answer(data, copy, [], item)
+        return _answer(data, copy, _consistency(shown, data["policy_decisions"]), item)
 
     # ------------------------------------------------------------------ explain
     def explain(self, identifier: str) -> tuple[int, dict]:
@@ -213,7 +221,7 @@ class TraceCommands:
         record = item["record"]
         policies = _policy_decisions(copy, events)
         steps = shown["trajectory"]
-        uncertainties = []
+        uncertainties = _consistency(shown, policies)
         selected_ref = next((step["capability_ref"] for step in steps
                              if step["operation"] == "invoke" and step["handler_executed"] is True
                              and step["status"] == "SUCCEEDED" and _is_ref(step["capability_ref"])), None)
@@ -250,6 +258,22 @@ def _is(pattern: re.Pattern, value: Any) -> bool:
 
 def _is_ref(value: Any) -> bool:
     return CAPABILITY_REF(value)
+
+
+def _consistency(shown: dict, policies: list[dict]) -> list[str]:
+    """The uncertainties of a receipt that contradicts itself or the audit lines of its request."""
+    invoked = [step for step in shown["trajectory"] if step["operation"] == "invoke"]
+    by_handler = {step["capability_ref"] for step in invoked if step["handler_executed"] is True}
+    executed = set(shown["executed_capabilities"])
+    allowed = {entry["capability_ref"] for entry in policies if entry["verdict"] == "ALLOW"}
+    notes = []
+    succeeded = shown["status"] == "SUCCEEDED"
+    if not executed <= by_handler or (succeeded and (
+            shown["result_kind"] == "BLOCKED" or (shown["result_kind"] == "FIXTURE_RESULT" and not executed))):
+        notes.append("receipt_inconsistent")
+    if not (executed | by_handler) <= allowed or not allowed <= {step["capability_ref"] for step in invoked}:
+        notes.append("audit_receipt_mismatch")
+    return notes
 
 
 def _answer(data: dict, copy: _Copy, uncertainties: list, item: dict) -> tuple[int, dict]:

@@ -1,0 +1,73 @@
+SURVIVED	S06 markers alone are social	246 passed, 39 deselected in 312.35s (0:05:12)
+KILLED	S09 a marker opens a run of any words	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]
+KILLED	S10 markers are never known	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]
+KILLED	A03 D2: social label without execution ends PARTIAL (exit 0)	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hey there! Hope your day is going well.-classify_social]
+KILLED	A03b D2: simple_answer is not a model-answer label	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hey there! Hope your day is going well.-classify_simple]
+KILLED	A04 D3: launched true when the tool loop ran (model path)	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_mixed_greeting_and_work_labelled_work_continues_to_the_tool_loop
+KILLED	A05 D3: launched true on the provider-free path	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]
+KILLED	A06 D1: greeting answered only when a provider is configured	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]
+KILLED	A06b D1: greeting answered only when the registry dir is safe	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_the_receipt_writer_alone_makes_a_permissive_data_directory_private
+KILLED	A07 ask: capabilities directory not checked before the runtime	FAILED tests/integration/cli/test_s00_integration7_public.py::test_b6_ask_and_registry_commands_give_the_same_refusal_for_an_unusable_capabilities_directory[symlink]
+KILLED	A08 ask: receipts directory not checked after authentication	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[greeting]
+KILLED	A11 evidence writer: no stamping	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]
+KILLED	A14 request receipt: no result_kind	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]
+KILLED	A15 behavior-invalid check after the social table	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_n6_invalid_behavior_package_wins_by_the_m01_precedence_in_every_provider_state
+KILLED	D01 describe: shortlist rule off in an ask turn	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is
+KILLED	D02 invoke: registry consulted for ids outside the shortlist (existence oracle)	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is
+KILLED	D05 describe: shortlist rule after the registry lookup (existence oracle)	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is
+KILLED	D06 invoke: no audit line for a selection error	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is
+KILLED	P01 _checked: no S_ISREG	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_audit_log_that_is_a_fifo_with_a_reader_receives_nothing[list]
+KILLED	P02 _checked: extra hard link accepted	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-hard_link]
+KILLED	P03 _checked: foreign owner accepted	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-foreign_owner]
+KILLED	P04 _checked: wide mode accepted	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_everything_quati_creates_under_a_zero_umask_is_owner_only
+KILLED	P05 read_private follows a symlink	FAILED tests/integration/cli/test_trace_commands.py::test_symlinked_receipt_file_fails_closed
+KILLED	P07 _verify: no owner check by name	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_foreign_path]
+KILLED	P08 _verify: no owner check on the descriptor	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-receipts_foreign_inode]
+KILLED	P09 _verify: directory symlink followed	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_symlink]
+SURVIVED	P10 _verify: reader accepts group/other bits	246 passed, 39 deselected in 259.27s (0:04:19)
+SURVIVED	P10b _verify: tighten only when group/other bits (0500 kept)	246 passed, 39 deselected in 258.23s (0:04:18)
+SURVIVED	P11 state_directory: symlinked ancestor accepted	246 passed, 39 deselected in 257.23s (0:04:17)
+KILLED	P12 state_directory: only the last component verified	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_symlink]
+KILLED	P13 state_directory: the data directory itself is not verified	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_symlink]
+KILLED	P14 private_tree: files not checked	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_everything_quati_creates_under_a_zero_umask_is_owner_only
+SURVIVED	P19 feature report save: directory not verified	246 passed, 39 deselected in 297.72s (0:04:57)
+SURVIVED	P20 feature report pointer read follows a symlink	246 passed, 39 deselected in 296.73s (0:04:56)
+KILLED	P21 fixture_sources not made private	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_everything_quati_creates_under_a_zero_umask_is_owner_only
+KILLED	P22 registry store: chain not verified	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[list]
+SURVIVED	P24 audit_events: plain read	246 passed, 39 deselected in 372.59s (0:06:12)
+KILLED	P24b append_audit: existing log not validated	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-corrupt_line]
+KILLED	P26 main: capability commands without the registry chain check	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[list]
+KILLED	P26b main: written directories not checked before a capability command	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_no_registry_change_is_committed_when_a_directory_it_needs_is_unusable[install-receipts]
+KILLED	P27 receipt writer: chain not verified	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[greeting]
+KILLED	P28 init: receipts not checked before the credential	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_init_refuses_an_unusable_data_directory_before_creating_an_identity
+KILLED	P29 probe: no storage check	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_symlink]
+KILLED	P29b probe: feature_reports not in the storage check	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-feature_reports_symlink]
+KILLED	P30 probe: not authorized	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_an_authorized_probe_logs_its_decision_before_the_provider_call[argv0]
+KILLED	P31 probe: authorization before the storage check	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_symlink]
+KILLED	P32 probe: storage check before authentication	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_probe_without_identity_is_denied_before_any_provider_call_or_write[argv0]
+SURVIVED	P32b probe: authentication before the configured check	246 passed, 39 deselected in 523.62s (0:08:43)
+KILLED	P33 probe: authorized as read	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_an_authorized_probe_logs_its_decision_before_the_provider_call[argv0]
+KILLED	P34 probe: a missing authorization port allows	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_principal_that_may_not_manage_the_registry_cannot_probe[argv0-MEMBER-ROLE_INSUFFICIENT]
+KILLED	T01 trace: not authorized	FAILED tests/integration/cli/test_trace_commands.py::test_trace_commands_are_read_only_and_log_one_authorization_each
+KILLED	T02 trace: another principal's receipt shown	FAILED tests/integration/cli/test_trace_commands.py::test_another_principals_record_is_the_same_not_found_as_an_unknown_id
+KILLED	T07 trace: duplicate receipts not ambiguous	FAILED tests/integration/cli/test_trace_commands.py::test_two_receipts_claiming_one_request_are_refused
+KILLED	T08 trace: a store refusal of the authorizer shown as FORBIDDEN	FAILED tests/integration/cli/test_trace_commands.py::test_corrupted_audit_log_fails_closed
+KILLED	T09 trace: scalar values copied without the shape check	FAILED tests/integration/cli/test_s00_integration7_public.py::test_b5_a_forged_result_kind_is_withheld_not_displayed
+KILLED	T12 trace store: receipt read follows a symlink	FAILED tests/integration/cli/test_trace_commands.py::test_symlinked_receipt_file_fails_closed
+KILLED	T13 trace store: an unsafe receipt is skipped silently	FAILED tests/integration/cli/test_trace_commands.py::test_symlinked_receipt_file_fails_closed
+KILLED	T17 trace store: every json receipt matches	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n16_a_configured_key_never_reaches_any_output_even_behind_the_redactor
+KILLED	X01 settled_exit: identity	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_symlink]
+KILLED	X02 local store reasons: no state_dir_unsafe	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_symlink]
+SURVIVED	X03 local store reasons: no audit_store_unavailable	246 passed, 39 deselected in 470.00s (0:07:49)
+KILLED	X04 local store reasons: no audit_unavailable	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-hard_link]
+SURVIVED	X06 ask use case: exit without the shared rule	246 passed, 39 deselected in 443.55s (0:07:23)
+KILLED	I01 identifier fields not validated	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[field_missing]
+SURVIVED	I02 empty identifier accepted	246 passed, 39 deselected in 423.52s (0:07:03)
+KILLED	I03 non-string identifier accepted	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[field_wrong_type]
+KILLED	I04 organization_space_id not required	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[field_missing]
+KILLED	I04b personal_space_id not required	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[field_wrong_type]
+KILLED	I07 a rejected identity is reported NOT_CONFIGURED	FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[record_mode]
+SURVIVED	I08 identity state shown inside a capability context	246 passed, 39 deselected in 313.87s (0:05:13)
+KILLED	C01 asset locator: packaged assets never used	FAILED tests/integration/cli/test_s00_integration7_public.py::test_d_a_package_with_its_packaged_assets_works_outside_the_repository
+KILLED	C02 asset locator: packaged assets always used	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]
+KILLED	C04 asset locator: falls back to the working directory	FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_n6_invalid_behavior_package_wins_by_the_m01_precedence_in_every_provider_state

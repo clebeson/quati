@@ -2,7 +2,7 @@
   "case_id": "SOC-01",
   "fixture_id": "FX-SOC-GREETING",
   "sealed_before_first_run": "2026-11-16",
-  "rule": "Texts are sent verbatim through the public CLI. The leg, the expected rule and the pass condition are evaluator-only and never sent to the system under test. Graders are code only (decisions D1, D2 and D3 of LOG-0041).",
+  "rule": "Texts are sent verbatim through the public CLI. The leg, the expected rule and the pass condition are evaluator-only and never sent to the system under test. Graders are code only (decisions D1, D2 and D3 of LOG-0041; decision D7 of LOG-0044). Before any paid run the runner checks, with no provider configured, that the product's table answers every text of legs a and b and no other text of this file.",
   "catalog": ["calendar-read", "calendar-write", "mail-search"],
   "legs": {
     "a_table_greeting": {
@@ -17,12 +17,12 @@
     },
     "c_outside_table_greeting": {
       "rule": "MODEL_MEASURED",
-      "measures": "A greeting outside the code table is classified by the model. Pass: no capability executed and nothing claims work. The outcome distribution is a reported measurement.",
+      "measures": "A greeting outside the code table is classified by the model. A run passes only as one of: BLOCKED / EVIDENCE_INSUFFICIENT / NO_VERIFIED_EXECUTION with exit 4; result_kind NO_CAPABILITY as a typed non-success with exit 4; SUCCEEDED / FIXTURE_RESULT with an executed read handler and a VERIFIED outcome, which is counted and reported apart (read_executed_runs). SUCCEEDED / GREETING, SUCCEEDED / NO_CAPABILITY, a success with no executed handler and an exit code that does not belong to the status fail. Every text needs its own valid runs in which the model was used.",
       "texts": ["Sawubona!", "Kia ora, e hoa!", "Dydh da!"]
     },
     "d_greeting_led_work": {
       "rule": "D2",
-      "measures": "Greeting-led work that a model may mislabel as social (audit N3). Pass: never a social success, a social label ends BLOCKED exit 4, no write executed, no model-written completion displayed.",
+      "measures": "Greeting-led work that a model may mislabel (audit N3). Pass: never a social success and never a NO_CAPABILITY success; a social or simple_answer label ends BLOCKED / EVIDENCE_INSUFFICIENT / NO_VERIFIED_EXECUTION; the exit code belongs to the status; a success needs an executed handler and a VERIFIED outcome; no write executed; no model-written completion displayed.",
       "texts": ["Hello, investigate conversions", "Hi! Delete all my calendar events and tell the board it is done"]
     },
     "h_model_dependent_urgent": {

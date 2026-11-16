@@ -57,7 +57,7 @@ def test_default_receipt_is_private_hashed_and_contains_no_request_or_key(servic
     receipt = json.loads(raw)
     assert receipt['provider_used'] is False
     assert receipt['cost_usd'] is None
-    assert receipt['proof_tier'] == 'L1'
+    assert receipt['proof_tier'] is None     # LOG-0044 X8: a product receipt claims no test proof tier (M01 rule 5)
 
 
 def test_valid_configuration_remains_unprobed_and_work_is_unavailable(service, monkeypatch):

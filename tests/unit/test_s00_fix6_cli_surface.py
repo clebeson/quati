@@ -205,7 +205,9 @@ def test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else(cli: Cl
     # LOG-0041 N15: a local audit-store failure is M01 exit 4 (row 4, not caused by a provider); it was 5.
     assert (code, value['status'], value['error']['code']) == (4, 'UNAVAILABLE', 'TEMPORARILY_UNAVAILABLE'), value
     assert value['data']['reason'] == 'audit_unavailable' and value['data']['result_kind'] == 'BLOCKED'
-    assert value['data']['tool_calls'] and not any(call['handler_executed'] for call in value['data']['tool_calls'])
+    # LOG-0044 X6 (M01 "Data directory" rule 4): refused before the first model call, so there is no tool
+    # call at all; before, the model was called and every tool call was refused.
+    assert value['data']['tool_calls'] == [] and value['data']['provider_used'] is False
     assert (guarded.read_bytes() if guarded.exists() else None) == before
 
 
@@ -615,8 +617,10 @@ def test_private_files_are_no_follow_singly_linked_and_owner_only(tmp_path, monk
     target.chmod(0o640)
     with pytest.raises(PermissionError):
         private_fs.open_private(target, os.O_WRONLY | os.O_APPEND)
-    os.close(private_fs.open_private(target, os.O_RDWR, tighten=True))      # a content-free lock file is tightened
-    assert stat.S_IMODE(target.stat().st_mode) == 0o600
+    with pytest.raises(PermissionError):      # LOG-0044 X2: a wider mode is refused for a lock file too, never repaired
+        private_fs.open_private(target, os.O_RDWR)
+    assert stat.S_IMODE(target.stat().st_mode) == 0o640
+    target.chmod(0o600)
     monkeypatch.setattr(private_fs.os, 'getuid', lambda: os.geteuid() + 1)
     with pytest.raises(PermissionError):
         private_fs.read_private(target)
@@ -1229,7 +1233,8 @@ def test_n7_probe_authenticates_checks_storage_and_is_authorized_before_the_prov
     harness = ProbeHarness(monkeypatch)
     code, value = run(harness)
     assert (code, value['status']) == (0, 'SUCCEEDED'), value
-    assert harness.order == ['authenticate', ('state', ('receipts', 'feature_reports')),
+    # LOG-0044 X13: the registry store, whose audit log records the decision, is verified with the others.
+    assert harness.order == ['authenticate', ('state', ('receipts', 'feature_reports', 'capabilities')),
                              ('authorize', 'models_probe', 'manage'), 'probe', 'receipt', 'save']
     # No authorization port wired: fail closed, never an unauthorized provider call.
     harness = ProbeHarness(monkeypatch, authorize=None)
@@ -1248,7 +1253,8 @@ def test_n7_probe_authenticates_checks_storage_and_is_authorized_before_the_prov
     harness = ProbeHarness(monkeypatch, state=unsafe)
     with pytest.raises(private_fs.UnsafeStatePath):
         run(harness)
-    assert harness.order == ['authenticate', ('state', ('receipts', 'feature_reports'))] and harness.script.requests == []
+    assert harness.order == ['authenticate', ('state', ('receipts', 'feature_reports', 'capabilities'))]      # LOG-0044 X13
+    assert harness.script.requests == []
 
 
 @pytest.mark.parametrize(('fault', 'stored'), [('sink', {'receipt': False, 'feature_report': False}),

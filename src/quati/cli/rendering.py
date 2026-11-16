@@ -1,6 +1,7 @@
 """Shared CLI rendering and failure mapping for one-shot commands and chat turns (M01 exit table)."""
 from pathlib import Path
 
+from quati.adapters.capability_store import StoreChangeIncomplete
 from quati.adapters.evidence import ReceiptNotWritten, redact
 from quati.adapters.private_fs import UnsafeStatePath, data_root
 from quati.application.cli_service import response
@@ -32,7 +33,8 @@ def exit_code(value):
 
 
 def _component(exc):
-    """The unsafe directory relative to the data directory (never an absolute path), or None outside it."""
+    """The unsafe directory or store file relative to the data directory (never an absolute path), or
+    None outside it."""
     try:
         relative = Path(exc.filename).relative_to(data_root())
     except (TypeError, ValueError):
@@ -56,12 +58,22 @@ def failure(exc):
                            'INTERNAL_ERROR', 'The evidence receipt of this operation could not be written.',
                            'The operation may already have taken effect: inspect the current state (for example '
                            '`quati capabilities list`) before retrying, and check the data directory.'), diagnostic
-    if isinstance(exc, UnsafeStatePath):  # verified before any read or change (LOG-0041 N1)
+    if isinstance(exc, StoreChangeIncomplete):  # after the registry commit: say what may have been committed
+        diagnostic = ('quati: a registry change was committed, but a later storage step failed; the operation '
+                      'may have taken effect.')
+        return 1, response('BLOCKED', {'reason': 'store_change_incomplete', 'operation_may_have_taken_effect': True},
+                           'INTERNAL_ERROR', 'A registry change was committed, but a later storage step failed.',
+                           'The change may already have taken effect: inspect the current state with '
+                           '`quati capabilities list`, check the data directory, then repeat the command '
+                           '(a repeated install repairs the stored package).'), diagnostic
+    if isinstance(exc, UnsafeStatePath):  # verified before any read or change (LOG-0041 N1, LOG-0044 X1/X2)
         value = response('UNAVAILABLE', {'reason': 'state_dir_unsafe', 'component': _component(exc)},
                          'TEMPORARILY_UNAVAILABLE',
-                         'A Quati data directory is not a private directory of this user; nothing was read or changed.',
-                         'Make the data directory and the Quati directories under it real directories owned by '
-                         'you (no symlink, mode 0700), then retry.')
+                         'A Quati data directory or store file is not a private path of this user; nothing was '
+                         'read or changed.',
+                         'Make the data directory, the Quati directories under it (mode 0700) and the file named '
+                         'in data.component (a regular file, mode 0600, one link) real paths owned by you, not '
+                         'symlinks, then retry.')
         return exit_code(value), value, None
     if isinstance(exc, Refusal):  # a typed registry or store refusal (for example ``audit_unavailable``)
         value = response(exc.status, {'reason': exc.reason}, exc.code, exc.message,

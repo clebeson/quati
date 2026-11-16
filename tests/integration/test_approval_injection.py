@@ -466,6 +466,13 @@ def _opened(profile: Profile, base: Path, runtime_profile: str):
     """Every layer before the policy gate deliberately opened by the test: registry ceiling, grants, scope
     ceiling. Only the policy gate (this profile's trusted policy, the given runtime profile) remains."""
     context, gate, clock, ids = trusted_gate(profile, runtime_profile)
+    handlers, discovery, events = _opened_around(gate, context, clock, ids, LocalIdentity(profile.root / "config"), base)
+    return context, gate, handlers, discovery, events
+
+
+def _opened_around(gate, context, clock, ids, identity, base: Path):
+    """The opened layers of ``_opened`` around a given policy gate (fix round 8, setup only: the body is the
+    former body of ``_opened``, so that the gate taken from the composition root can stand behind them)."""
     handlers = FixtureHandlerRegistry(FIXTURE_HANDLERS)
     registry = RegistryService(FileRegistryStore(base / "capabilities"), handlers, clock=clock, ids=ids,
                                policy=RegistryPolicy(max_effect_class="dangerous"))
@@ -475,11 +482,11 @@ def _opened(profile: Profile, base: Path, runtime_profile: str):
     # production port over the profile's own identity directory, exactly as the composition root wires it.
     discovery = DiscoveryService(registry, Fts5CapabilityIndex(), handlers, policy_gate=gate, grants=grants,
                                  clock=clock, ids=ids, audit=events.append, effect_ceiling="dangerous",
-                                 authorization=ScopeAuthorization(LocalIdentity(profile.root / "config"), clock))
+                                 authorization=ScopeAuthorization(identity, clock))
     for name in ("calendar-read", "calendar-write", "forecast-publish"):
         installed = install_fixture(registry, context, name, base / "sources")
         assert installed["data"]["lifecycle"] == "ENABLED", name
-    return context, gate, handlers, discovery, events
+    return handlers, discovery, events
 
 
 def _invoke(discovery, context, capability_id: str, query: str, arguments: dict):
@@ -517,3 +524,64 @@ def test_pol_01_policy_gate_denies_the_write_when_every_earlier_guard_is_open(pr
     assert later_handlers.invocations() == {}
     assert policy_events(later_events)[-1]["decision"]["verdict"] == "APPROVAL_REQUIRED"
     assert before.unchanged() == []                         # the profile itself was only read
+
+
+# ----------------------------------------------------------------- K3 on the composed gate (audit 3, X3)
+def test_pol_01_k3_is_denied_by_the_composed_gate_over_the_installed_policy(profile: Profile, tmp_path: Path,
+                                                                           monkeypatch) -> None:
+    """S00-GATE-03 (docs/implementation/SLICES/S00.md): "the policy gate's own denial of every effect above read
+    (``s00_no_effects``) is proven at L1 on the composed gate over the installed policy" (LOG-0044 X3).
+
+    The gate is the object the production composition root builds for ``quati ask``
+    (``quati.cli.composition.ask_runtime(...).discovery.policy_gate``), over the profile that
+    ``python -m quati init`` wrote in a child process. Nothing in this test chooses the runtime profile, so a
+    composition root that composed another profile (the audit's mutant: ``runtime_profile="S02"``) fails here."""
+    from quati.cli import composition
+
+    monkeypatch.setenv("QUATI_CONFIG_DIR", str(profile.root / "config"))
+    monkeypatch.setenv("QUATI_DATA_DIR", str(profile.root / "data"))
+    before = Snapshot(profile)
+    identity = LocalIdentity()                              # from the environment, as ``quati.cli.main`` builds it
+    context = identity.authenticate()
+    clock, ids = FakeClock(START), SeededIds()
+    runtime = composition.ask_runtime(identity, context, clock=clock, ids=ids)
+    gate = runtime.discovery.policy_gate
+    adopted = json.loads((profile.root / "config" / "policy.registry.json").read_bytes())["versions"][-1]
+    assert gate.policy_version() == adopted["policy_version"]                # the installed policy, not a fallback
+    # 1. The composed gate's own decisions: every effect above read is DENY s00_no_effects; a read is ALLOW.
+    for effect_class, capability_id in (("write", "fixtures.calendar-write"), ("dangerous", "fixtures.wire-transfer")):
+        decision = gate.decide(context, forged_intent(context, gate, effect_class, capability_id))
+        assert (decision.verdict, decision.reason_code) == ("DENY", "s00_no_effects"), effect_class
+        assert (decision.obligations, decision.narrowed_scope) == ((), None)
+        assert decision.policy_version == adopted["policy_version"]
+    allowed = gate.decide(context, forged_intent(context, gate, "read", "fixtures.calendar-read"))
+    assert (allowed.verdict, allowed.reason_code) == ("ALLOW", "read-own-spaces")
+    assert before.unchanged() == []                         # a decision alone writes nothing
+    # The one public composition function builds the same gate (the single place the profile is chosen).
+    same = composition.policy_gate(identity, context, clock=clock, ids=ids)
+    decision = same.decide(context, forged_intent(context, same, "write", "fixtures.calendar-write"))
+    assert (type(same), decision.verdict, decision.reason_code) == (type(gate), "DENY", "s00_no_effects")
+    # 2. ``policy.decided`` for the read: the composed discovery service itself, on the profile's own audit log.
+    read = _invoke(runtime.discovery, context, "fixtures.calendar-read", "next appointment calendar", {"limit": 1})
+    assert (read.status, read.trace["policy_verdict"], read.trace["handler_executed"]) == ("SUCCEEDED", "ALLOW", True)
+    decided = [event for event in before.unchanged() if event["event"] == "policy.decided"]
+    assert [(event["decision"]["verdict"], event["decision"]["reason_code"], event["intent"]["effect_class"],
+             event["capability_id"], event["decision"]["policy_version"]) for event in decided] == [
+        ("ALLOW", "read-own-spaces", "read", "fixtures.calendar-read", adopted["policy_version"])]
+    # 3. ``policy.decided`` for the writes: the same composed gate behind deliberately opened earlier guards
+    #    (on the composed path itself a write is never enabled or shortlisted, so guard 8 is not reached).
+    calls = gate.calls
+    handlers, opened, events = _opened_around(gate, context, clock, ids, identity, tmp_path / "opened-composed")
+    forged = {"title": FORGED, "start": "2026-11-20T10:00:00Z", "end": "2026-11-20T11:00:00Z"}
+    for capability_id, query, arguments in (
+            ("fixtures.calendar-write", "create appointment calendar meeting", forged),
+            ("fixtures.forecast-publish", "publish forecast dashboard", {"region": "north", "point": 1})):
+        result = _invoke(opened, context, capability_id, query, arguments)
+        assert (result.status, result.code, result.reason) == ("DENIED", "FORBIDDEN", "s00_no_effects"), capability_id
+        assert (result.trace["policy_verdict"], result.trace["handler_executed"]) == ("DENY", False)
+    assert handlers.invocations() == {} and gate.calls == calls + 2
+    assert [(event["event"], event["decision"]["verdict"], event["decision"]["reason_code"],
+             event["intent"]["effect_class"], event["decision"]["policy_version"])
+            for event in policy_events(events)] == [
+        ("policy.decided", "DENY", "s00_no_effects", "write", adopted["policy_version"])] * 2
+    assert_no_authority_granted(profile, before.unchanged())

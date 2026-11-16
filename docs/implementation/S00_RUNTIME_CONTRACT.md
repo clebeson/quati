@@ -15,7 +15,7 @@ Scope: synchronous fixture-only discovery. No job, worker, durable acceptance, e
 - A real tool probe must precede autonomous fixture invocation on each live run. `UNKNOWN` is not `SUPPORTED`. Doctor without an explicit probe reports configuration availability separately from measured support. Probe checks a nonce round-trip through an innocuous tool; other features stay `NOT_VERIFIED`.
 - Provider configuration uses `QUATI_BASE_URL`, `QUATI_MODEL`, `QUATI_API_KEY_ENV` naming an environment variable containing the token, and explicit `QUATI_ALLOW_LIVE=1`. Never infer authorization from unrelated session credentials. HTTPS only; reject URL credentials, query, fragment and redirects. No automatic fallback endpoint. Fixed request/tool/output/time limits bound each run. Configuring this is authorization for those bounded synthetic model calls, not any downstream external writes.
 - Evidence records structured operation IDs, hashes, timing, usage, sanitized result codes and provenance. Default evidence omits raw request, tool arguments and model text. Synthetic live evaluations may explicitly capture their synthetic arguments and outputs; secrets remain redacted. Unknown cost remains null, never zero.
-- Failed/blocked requests never claim completed work. Successful fixture output is labeled `FIXTURE_RESULT`, not completed professional research. Probe-only success is not routing competence.
+- Failed/blocked requests never claim completed work. A work request with no validated execution is never a success: "no installed capability fits" is `NO_CAPABILITY` with a typed non-success (rule 7 of "Displayed text and social outcomes"). Successful fixture output is labeled `FIXTURE_RESULT`, not completed professional research. Probe-only success is not routing competence.
 
 ## Verification contract
 
@@ -46,7 +46,7 @@ The model's final text is hashed and can be inspected in synthetic evaluations; 
 is not authoritative proof of completed work. Diagnostics and transport share the
 same HTTPS endpoint validation, including port and whitespace checks.
 
-### Displayed text and social outcomes (normative for S00; LOG-0039 F2 and F3, LOG-0041 D1 to D4)
+### Displayed text and social outcomes (normative for S00; LOG-0039 F2 and F3, LOG-0041 D1 to D4, LOG-0044 X4 and D7)
 
 These rules are code-owned. The model's classification is advisory: no label creates a social
 outcome, and no label skips the work path. They replace the round 6 rules (greeting-only bag of
@@ -57,22 +57,75 @@ words, `CONVERSATION`, the no-action notice and `NO_GREETING_TEMPLATE`), which n
    application message. Text written by the model is never displayed, in any result kind, and no
    outcome depends on it (an empty model reply has no failure mode of its own). It is recorded as
    `final_text_sha256` in the receipt (and in full only under `--synthetic-evidence`).
-2. **Social-only text (D1).** The social table is data in `src/quati/domain/social.py`: per
-   language, the phrases of three kinds (greetings, pleasantries such as "how are you", thanks) and
-   an optional reply template. It covers at least English (including "good day", "howdy", "hiya",
-   "greetings", "yo"), Portuguese, Spanish, French, German (including "moin"), Italian, Dutch,
-   Turkish, Russian, Japanese, Chinese, Korean, Hindi and Arabic. The markers are the urgency words
-   `urgent`, `urgently`, `urgente`, `dringend` and the demonstrative or copula that carries them
-   (`this`, `is`, `it`, `isto`, `isso`, `é`, `esto`, `c`, `est`, `das`, `ist`, `è`, `questo`); they
-   name no object and no action.
+2. **Social-only text (D1; LOG-0044 X4).** The social table is data in `src/quati/domain/social.py`.
+   A text that carries a request, a question or an instruction never matches it: every clause below
+   must hold, and a text that fails any of them is not social-only (rule 3 applies to it).
+   - *Table.* Per language, the phrases of three kinds (greetings, pleasantries such as "how are
+     you", thanks) and an optional reply template. The languages, in table order, are English
+     (`en`, including "good day", "howdy", "hiya", "greetings", "yo"), Portuguese (`pt`), Spanish
+     (`es`), French (`fr`), German (`de`, including "moin"), Italian (`it`), Dutch (`nl`), Turkish
+     (`tr`), Russian (`ru`), Japanese (`ja`), Chinese (`zh`), Korean (`ko`), Hindi (`hi`) and Arabic
+     (`ar`). The phrase lists of `SOCIAL_TABLE` in that file are the normative table: a phrase is
+     social only if it is listed there, and a phrase is added or removed only together with the
+     review that the clauses "No free-standing function words" and "Cross-language review" require.
+   - *Urgency.* The marker words are exactly `urgent`, `urgently`, `urgente` and `dringend`. The
+     urgency phrases are exactly "this is urgent", "it is urgent", "isto é urgente", "isso é
+     urgente", "é urgente", "c'est urgent", "das ist dringend", "es ist dringend", "è urgente" and
+     "questo è urgente". They name no object and no action.
+   - *No free-standing function words.* A demonstrative, a pronoun or a copula ("this", "it", "is",
+     "isto", "isso", "é", "esto", "es", "c", "est", "das", "ist", "è", "questo", "you", "do") is
+     never a marker and never a one-word table entry. Such a word occurs only inside a fixed, fully
+     listed phrase ("this is urgent", "how are you", "how do you do", "e você"), and a phrase matches
+     only as a whole. "How do you do this?", "hi, is it urgent?", "como está isto?" and "hello,
+     this" are therefore not social-only. The one-word greeting `yo` (required above) is also the
+     Spanish subject pronoun; it stays because it names only the speaker and no table phrase or
+     marker gives it a verb or an object.
+   - *Cross-language review.* No entry is an ordinary imperative or work word of another table
+     language. Every entry was reviewed against the fourteen languages; the review removed the
+     Italian greeting `salve`, which is the Portuguese imperative "save" ("Salve isto, é urgente" is
+     "Save this, it is urgent").
    - *Normalization.* Unicode NFKC, casefold, NFKC again; the casefold of the Turkish dotted capital
-     I is a plain `i`. A word is a maximal run of characters whose Unicode general category is a
-     letter (L), a mark (M) or a number (N); every other character separates words. Nothing is
-     stripped from the input; unaccented spellings are table entries.
+     I is a plain `i`. Every clause below is applied to the normalized text. Nothing is stripped
+     from the input; unaccented spellings are table entries.
+   - *Characters.* Every character of the normalized text is one of the following; any other
+     character makes the text not social-only, so none is silently dropped:
+     (a) a word character: Unicode general category letter (L), mark (M) or number (N);
+     (b) whitespace: general category Zs, U+0009, U+000A or U+000D;
+     (c) punctuation, exactly this set: the 32 ASCII punctuation characters
+     ``! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~`` and U+00A1 ¡, U+00BF ¿,
+     U+00AB «, U+00BB », U+2018 ‘, U+2019 ’, U+201A ‚, U+201C “, U+201D ”, U+201E „, U+2039 ‹,
+     U+203A ›, U+2010 ‐, U+2013 –, U+2014 —, U+2015 ―, U+00B7 ·, U+3001 、, U+3002 。, U+300C 「,
+     U+300D 」, U+300E 『, U+300F 』, U+30FB ・, U+060C ،, U+061B ؛, U+061F ؟ and U+0964 । (the
+     ellipsis U+2026 and the full-width forms of `! ? , : ; ( )` become listed characters under
+     NFKC);
+     (d) an emoji of the allowlist, exactly: U+1F44B 👋, U+1F642 🙂, U+1F600 😀, U+1F603 😃,
+     U+1F604 😄, U+1F601 😁, U+1F60A 😊, U+1F609 😉, U+263A ☺, U+1F64F 🙏 and U+2764 ❤. An
+     allowlisted emoji may be followed by U+FE0F or by one skin-tone modifier (U+1F3FB to
+     U+1F3FF), and U+200D may join two allowlisted emoji; anywhere else these three are "any other
+     character". An emoji is never a phrase: a text of emoji alone is not social-only.
+     Enclosed letters that NFKC does not decompose (negative squared and negative circled
+     letters), regional-indicator letters, Braille, arrows and other symbols, other pictographs,
+     format characters (zero-width, bidirectional and tag characters), control characters, line and
+     paragraph separators, private-use and unassigned code points all fall under "any other
+     character". Compatibility forms that NFKC turns into letters or digits (full-width,
+     mathematical, circled, squared, parenthesized, superscript) become ordinary words and are
+     matched as words, so they are never dropped either.
+   - *Words and punctuation.* A word is a maximal run of word characters. A punctuation run is a
+     maximal run of punctuation characters (whitespace or an emoji ends it) and has at most 3
+     characters. A run is *attached* when it directly follows a word or directly precedes a word,
+     and *free* otherwise. Before the first word, between two words and after the last word there
+     is at most one free run (and, by definition, at most one run attached to the word before and
+     one attached to the word after). "¡Hola! ¿Qué tal?" and "hi — urgent: hi" satisfy this; a
+     sequence of punctuation groups (Morse-like text such as `hello -.. . .-..`) does not.
+   - *Length.* The normalized text has at most 120 characters and at most 12 words.
    - *Rule.* A text is social-only when its words, in order, can be cut completely into table
-     phrases and single marker words, with at least one table phrase. Matching is on whole
-     phrases, never on a bag of words: any other word, and markers alone, make the text not
-     social-only.
+     phrases, urgency phrases and single marker words, with at least one table phrase. Matching is
+     on whole phrases, never on a bag of words: any other word, and urgency alone, make the text
+     not social-only.
+   - *Limit of the rule.* The rule guarantees that no word and no character outside the listed sets
+     is ignored. It cannot exclude a message encoded in the choice and order of listed phrases or in
+     the few short punctuation runs it allows between two words; such a text names no object and no
+     action to the application.
    - *Outcome.* A social-only text is answered by the application before the provider
      configuration, the feature report or the model is looked at: no model call, no tool, no
      registry read, no commitment. The Response is `SUCCEEDED`, exit 0, with no uncertainty:
@@ -105,7 +158,11 @@ words, `CONVERSATION`, the no-action notice and `NO_GREETING_TEMPLATE`), which n
    handled as for any work request.
 4. **Greetings outside the table.** A greeting in a language or form the table does not list is
    not recognized by code. It follows rule 3: its handling is model-dependent (tier L3, measured
-   live) and it cannot end `SUCCEEDED` without a validated execution.
+   live) and it cannot end `SUCCEEDED` without a validated execution. Code guarantees only that no
+   write executes, that nothing claims work that was not validated and that no model text is
+   displayed; which of the outcomes of rules 3 and 7 the model produces (including a read fixture
+   that it searched, described and invoked, which is then a validated `FIXTURE_RESULT`) is a
+   measured distribution, not a guarantee.
 5. **`launched` (D3).** `data.launched` is `false` in every S00 ask and chat response, including
    when the tool loop ran and a capability executed: S00 has no ledger, so no commitment and no
    work item exists (M01-FR-02).
@@ -114,6 +171,20 @@ words, `CONVERSATION`, the no-action notice and `NO_GREETING_TEMPLATE`), which n
    `NOT_IN_SHORTLIST`, whether the id is unknown, malformed, hidden, disabled or enabled. The
    registry is not consulted for it, so the reason cannot tell the model which ids exist
    (`docs/prds/M15.md`, invoke guard order).
+7. **No capability is not a success (D7, LOG-0044 X5).** A request that is not social-only ends
+   `SUCCEEDED` only as `FIXTURE_RESULT`, that is, after at least one handler executed and its
+   outcome was validated (`PARTIAL` keeps its two meanings: a validated result followed by a
+   refused step, or an executed handler whose outcome is unverified). When the model declares `NONE_FITS`, or its searches
+   return no candidate and it invokes nothing, the result kind stays `NO_CAPABILITY` and the
+   Response is a typed non-success: `UNAVAILABLE` / `UNSUPPORTED`, exit 4, `data.reason` =
+   `NONE_FITS` or `NO_CANDIDATES`, `result_status` = `outcome` = `NO_CAPABILITY`,
+   `work_performed = false`, `launched = false`, no `text`, `uncertainties` =
+   [`NO_CAPABILITY`, reason], `error.message` "No installed capability can fulfil this request."
+   and the `next_action` "No installed capability can do this and no action was taken. Run `quati
+   capabilities list` to see what is installed, or ask for work that an installed capability can
+   do." The status and code are those of an unusable capability in the M15 invoke guard table
+   (rows 4 and 5) and of PRD_COMMON ("a missing optional integration returns typed
+   `UNAVAILABLE` ...; it never returns a fabricated success"); no new status or code exists for it.
 
 ### Registry authorization (normative for S00; audit findings F4 and F5, LOG-0039)
 

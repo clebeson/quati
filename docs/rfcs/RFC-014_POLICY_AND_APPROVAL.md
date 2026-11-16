@@ -161,8 +161,10 @@ and a new evaluation is required (M25). This lifetime is separate from `approval
 - The tenant role of the decision context is read from the identity directory at every decision
   (RFC-013 section 12.1, "Policy role"); it is never assumed. The default single-user policy
   (`examples/policies/local-default.policy.json`) names the tenant role `OWNER` only, so a principal
-  with any other role, or with none, gets the default verdict `DENY` `default_deny` for every effect
-  other than `none`-class rules that name no role (LOG-0041 N17).
+  with any other role, or with none, gets the default verdict `DENY` `default_deny` for every `read`,
+  `write` and `dangerous` effect (LOG-0041 N17). An effect of class `none` never reaches the rules:
+  the kernel allows it with reason `no_effect` whatever the role (section 4), after K6 and the
+  intent trust check.
 - Edits go only through `quati policy edit` (opens `$EDITOR` on a temp copy) or
   `quati policy apply <file>`. Both validate, print a human diff against the active policy,
   require interactive confirmation (TTY, same guard as section 6.2), then atomically replace the

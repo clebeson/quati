@@ -229,8 +229,11 @@ def test_fix_round_partial_no_capability_and_continuation_through_the_cli(worksp
     assert [call["purpose"] for call in receipt(value)["timing"]["model_calls"]] == ["classify"] + ["loop"] * 7
     script(monkeypatch, classified(), search("translate poem latin"), invoke("NONE_FITS"), final("x"))
     code, value = run_main(capsys, "ask", "--json", "--", "Translate this poem into Latin")
-    assert (code, value["status"], value["data"]["result_kind"], value["next_action"]) == (
-        0, "SUCCEEDED", "NO_CAPABILITY", "report_no_capability")
+    # Fix round 8 (LOG-0044 decision D7): was (0, "SUCCEEDED", "NO_CAPABILITY", "report_no_capability").
+    # No capability is not a success: the result kind is kept, the Response is UNAVAILABLE / UNSUPPORTED, exit 4.
+    assert (code, value["status"], value["data"]["result_kind"], value["error"]["code"]) == (
+        4, "UNAVAILABLE", "NO_CAPABILITY", "UNSUPPORTED")
+    assert value["next_action"].startswith("No installed capability can do this and no action was taken.")
     script(monkeypatch, classified(), search(CALENDAR_QUERY), final("Checking..."),
            describe("fixtures.calendar-read"),                     # fix round 2 R4: describe before invoke
            invoke("fixtures.calendar-read", limit=1), final("ok"))

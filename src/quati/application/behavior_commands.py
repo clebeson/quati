@@ -15,6 +15,7 @@ from typing import Callable
 
 from quati.application.cli_service import response
 from quati.behavior.compiler import BehaviorCompiler, PromptArtifact
+from quati.behavior.contracts import asset_digest
 from quati.domain.diagnostics import ContractViolation
 
 HASHES = ("behavior_hash", "statechart_hash", "prompt_hash")
@@ -49,8 +50,9 @@ def package_ref(package: str, root: Path) -> str:
 
 
 def active_package_status(root: Path, profile_ref: str, model_role_ref: str | None = None) -> dict:
-    """Doctor's view of the active behavior package: VALID with its hashes, or INVALID with diagnostics."""
-    status = {"profile_ref": profile_ref, "status": "VALID", "diagnostics": []}
+    """Doctor's view of the active behavior package: VALID with its hashes, or INVALID with diagnostics;
+    either way with the digest of the asset files below ``root`` (LOG-0044 X15)."""
+    status = {"profile_ref": profile_ref, "status": "VALID", "diagnostics": [], "asset_digest": asset_digest(root)}
     try:
         artifact = BehaviorCompiler(root).compile(profile_ref, model_role_ref=model_role_ref)
     except ContractViolation as exc:

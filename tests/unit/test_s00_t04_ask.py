@@ -197,8 +197,11 @@ def test_none_fits_is_an_honest_no_capability_reply(tmp_path, monkeypatch):
                     invoke("NONE_FITS"), final("I translated it."))
     code, value = harness.ask("Translate this poem into Latin")
     valid_response(value)
-    assert code == 0 and value["status"] == "SUCCEEDED"
-    assert value["data"]["outcome"] == "NO_CAPABILITY" and value["next_action"] == "report_no_capability"
+    # Fix round 8 (LOG-0044 decision D7): was `code == 0 and status == "SUCCEEDED"` with next_action
+    # `report_no_capability`. No capability is not a success: typed UNAVAILABLE / UNSUPPORTED, exit 4.
+    assert code == 4 and value["status"] == "UNAVAILABLE" and value["error"]["code"] == "UNSUPPORTED"
+    assert value["data"]["outcome"] == "NO_CAPABILITY" and value["data"]["work_performed"] is False
+    assert value["next_action"].startswith("No installed capability can do this and no action was taken.")
     # Fix round L3 (spec alignment, M15 line 78): a distinct NO_CAPABILITY kind, not BLOCKED.
     assert value["data"]["result_kind"] == "NO_CAPABILITY" and "translated" not in json.dumps(value)
     assert harness.handlers.total_invocations() == 0
@@ -226,8 +229,9 @@ def test_no_tool_call_at_all_is_not_success(tmp_path, monkeypatch):
 def test_empty_search_without_invoke_is_honest_no_capability(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, classified(), search("zzqx unrelated vocabulary"), final("Done"))
     code, value = harness.ask("Do the zzqx thing")
-    assert (code, value["status"], value["data"]["outcome"]) == (0, "SUCCEEDED", "NO_CAPABILITY")
-    assert value["data"]["reason"] == "NO_CANDIDATES"
+    # Fix round 8 (LOG-0044 decision D7): was (0, "SUCCEEDED", "NO_CAPABILITY").
+    assert (code, value["status"], value["data"]["outcome"]) == (4, "UNAVAILABLE", "NO_CAPABILITY")
+    assert value["error"]["code"] == "UNSUPPORTED" and value["data"]["reason"] == "NO_CANDIDATES"
 
 
 # --------------------------------------------------------------- red team

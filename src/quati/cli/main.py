@@ -5,6 +5,7 @@ import sys
 import typer
 
 from quati.adapters import private_fs, runtime_facts
+from quati.adapters.capability_store import FileRegistryStore, default_registry_root
 from quati.adapters.evidence import receipt_sink, receipts_directory
 from quati.adapters.feature_reports import FileFeatureReportStore
 from quati.adapters.local_identity import LocalIdentity
@@ -58,9 +59,24 @@ def _config():
 def _state(*names):
     """LOG-0041 N1: the data directory and the named directories under it are private, or UnsafeStatePath.
 
-    Each directory is verified by the one function its writer uses, so a command and its store agree."""
+    Each directory is verified by the one function its writer uses, so a command and its store agree.
+    ``capabilities`` is the registry store as far as it is verified before an authorization decision
+    (directories and the fixed files, LOG-0044 X1/X2) and ``capability_packages`` its stored packages;
+    ``audit_log`` is the registry audit log (a Refusal ``audit_unavailable``; creates nothing);
+    ``<name>:read`` verifies as a reader, which creates and modifies nothing."""
     for name in names:
-        receipts_directory() if name == 'receipts' else private_fs.state_directory(name)
+        if name == 'receipts':
+            receipts_directory()
+        elif name == 'capabilities':
+            FileRegistryStore(default_registry_root()).prepare()
+        elif name == 'capability_packages':
+            FileRegistryStore(default_registry_root()).verify_packages()
+        elif name == 'audit_log':
+            FileRegistryStore(default_registry_root()).verify_audit()
+        elif name.endswith(':read'):
+            private_fs.state_directory(name.removesuffix(':read'), create=False, tighten=False)
+        else:
+            private_fs.state_directory(name)
 
 
 def _service(config=None):
@@ -132,14 +148,11 @@ def ask(text: str, json_output: bool = typer.Option(False, '--json'),
                                                      '(synthetic evaluations only).'),
         eval_permutation_seed: int = typer.Option(None, '--eval-candidate-permutation-seed', hidden=True)):
     """Greet deterministically or route work through a probed model and the discovery tools."""
-    if eval_permutation_seed is not None:
-        # Evaluator-only (EVAL-PERM): permutes the order of search candidates shown to the model.
-        if not synthetic_evidence:
-            _emit((2, response('DENIED', code='INVALID_INPUT',
-                               message='--eval-candidate-permutation-seed requires --synthetic-evidence.',
-                               next_action='Add --synthetic-evidence (synthetic evaluations only) or drop the seed.')))
-        _emit(_service().ask(text, synthetic_evidence=True, eval_permutation_seed=eval_permutation_seed))
     service = _service()
+    if eval_permutation_seed is not None:
+        # Evaluator-only (EVAL-PERM): permutes the order of search candidates shown to the model. The use
+        # case owns the rule that the seed needs --synthetic-evidence (one check, LOG-0044 X16).
+        _emit(service.ask(text, synthetic_evidence=synthetic_evidence, eval_permutation_seed=eval_permutation_seed))
     _emit(service.ask(text, synthetic_evidence=True) if synthetic_evidence else service.ask(text))
 
 

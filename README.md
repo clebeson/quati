@@ -12,8 +12,8 @@
   <img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-1f4e79?logo=python&logoColor=white">
   <img alt="Interface: CLI only" src="https://img.shields.io/badge/interface-CLI%20only-0b2a4a">
   <img alt="Slice S00 in progress" src="https://img.shields.io/badge/slice-S00%20in%20progress-f5b800">
-  <img alt="Tests: 1622 passed" src="https://img.shields.io/badge/tests-1622%20passed-2ea44f">
-  <img alt="Coverage 99%" src="https://img.shields.io/badge/coverage-99%25%20(domain%20%2B%20behavior%20100%25)-2ea44f">
+  <img alt="Tests: 2127 passed, 53 failing while fix round 8 is integrated" src="https://img.shields.io/badge/tests-2127%20passed%20%C2%B7%2053%20failing%20(round%208%20in%20progress)-f5b800">
+  <img alt="Coverage 99% at integration round 7" src="https://img.shields.io/badge/coverage-99%25%20at%20round%207%20(domain%20%2B%20behavior%20100%25)-2ea44f">
   <img alt="Local first" src="https://img.shields.io/badge/deployment-local--first-6cc24a">
 </p>
 
@@ -74,13 +74,15 @@ The model finds the capability itself. Each call passes authorization, enablemen
 
 **🧾 Evidence**
 
-Every answer carries a receipt. It records:
+Every answer carries a receipt. What it holds depends on the path:
 
-- the observed model identity
-- the prompt, tool-schema, catalog, configuration, statechart and code digests
-- the trajectory and cost
+- **Greeting** (answered by the application, no model call): the code and asset digests, the request and
+  output hashes, the request and trace ids, a hash of the principal, status and result kind.
+- **Model path**: all of the above, plus the observed model identity, the prompt, tool-schema, catalog,
+  configuration and statechart digests, the tool trajectory, and token usage and cost when the provider
+  reports them.
 
-Nothing claims success without a verified outcome.
+Receipts are unsigned local files. No work is reported as done without a verified outcome.
 
 </td>
 <td valign="top">
@@ -125,11 +127,20 @@ quati ask "When is my next appointment?"
 quati chat                        # line-based conversational session
 quati trace show REQUEST_ID       # the recorded receipt and decisions of one request
 quati trace explain REQUEST_ID    # which capability was selected and why the others were not
+```
+
+Compile a behavior package. The package path is resolved against `--root` (default: the current
+directory), so run these two from the repository root, or pass `--root /path/to/the/checkout`:
+
+```bash
 quati behavior validate examples/behavior/executive-secretary.yaml   # compile a behavior package
 quati behavior render examples/behavior/executive-secretary.yaml     # its prompt preview and build receipt
 ```
 
-Conversation rule in S00: Quati answers greetings and other social-only text with application-owned text and displays no model-written answers; anything else must end in a verified capability result, an honest "no capability" reply or a typed refusal.
+Conversation rule in S00: Quati answers text that is social-only by its built-in multilingual table
+(greetings, thanks, pleasantries) with application-owned text, and it displays no model-written
+answers. Anything else ends in a verified capability result or in a typed refusal with a non-zero exit
+code; "no installed capability fits" is such a refusal (exit 4), not a success.
 
 All output is machine-readable `quati-json/1`: `status`, `data`, `error`, `evidence_refs`,
 `next_action` and `uncertainties`.
@@ -139,7 +150,7 @@ All output is machine-readable `quati-json/1`: `status`, `data`, `error`, `evide
 | Transport | How it authenticates | Live status |
 |---|---|---|
 | `claude_cli` | the vendor's own `claude` executable, started with your sign-in; Quati holds no key | ⏳ qualified on an earlier code digest (`claude-haiku-5-5`, 30/30 and 30/30); requalification pending |
-| `codex_cli` | the vendor's own `codex` executable, with your sign-in | ✅ transport verified live; `gpt-6-luna` scored 29/30, below the gate |
+| `codex_cli` | the vendor's own `codex` executable, with your sign-in | transport exercised live on an earlier code digest; `gpt-6-luna` scored 29/30 on each case, below the gate |
 | `anthropic` | Anthropic SDK, using a secret reference (`QUATI_API_KEY_ENV`) | ⏳ not verified externally |
 | `openai` / `openai_compatible` | OpenAI SDK with an approved HTTPS base URL (e.g. OpenRouter) | ⏳ not verified externally |
 | `gemini_cli` | the vendor's own `gemini` executable | ⏳ not verified externally |
@@ -174,7 +185,7 @@ To add a new wire protocol, subclass `Provider` directly and implement `_complet
 ```mermaid
 flowchart LR
     U([You · quati ask / chat]) --> C[CLI<br/>quati-json/1]
-    C --> G{Greeting?}
+    C --> G{Social-only text<br/>by the code table?}
     G -- yes --> T[Deterministic template<br/>no model call]
     G -- no --> F{Probed model<br/>supports tools?}
     F -- no --> B[BLOCKED / UNAVAILABLE<br/>typed reason]
@@ -193,51 +204,68 @@ flowchart LR
 
 | Layer | Path | Responsibility |
 |---|---|---|
-| Domain | `src/quati/domain/` | typed core concepts and pure reducers; no SDK, DB or transport imports |
-| Application | `src/quati/application/` | use cases, ports, the `Provider` base and the discovery tools |
-| Adapters | `src/quati/adapters/` | providers, ledger, identity, evidence, fixture capabilities |
-| Behavior | `src/quati/behavior/` | compiled prompts, context envelopes and declarative statecharts |
-| CLI | `src/quati/cli/` | presentation only |
+| Domain | `src/quati/domain/` | typed core concepts and pure functions (social-text table, discovery filters, policy evaluation, statechart model); no SDK, DB or transport imports |
+| Application | `src/quati/application/` | use cases, ports, the `Provider` base, the discovery tools, the context envelope and the `trace` use cases |
+| Adapters | `src/quati/adapters/` | provider transports, local identity, capability store, policy gate, receipt (evidence) writer and reader, feature-report index, FTS ranking, fixture capabilities |
+| Behavior | `src/quati/behavior/` | the behavior-package and statechart compiler, contract and capability-manifest validation, the content-addressed behavior store and the trusted policy loader |
+| CLI | `src/quati/cli/` | commands, composition and rendering |
+
+There is no ledger yet: durable commitments and the ledger adapters (SQLite, PostgreSQL) arrive with
+slice S02. In S00 the persisted state is the request receipts and the capability registry audit log.
 
 ## Live qualification
 
 S00-GATE-02 requires a **real model** to choose the right capability from a natural-language
 request, without any hint, in **30 of 30** runs on each test case.
 
-> **The current code is not live-qualified.** The last accepted live run (30/30 on CAP-01 and 30/30 on CAP-02
-> with `claude-haiku-5-5`) bound an earlier code digest. The source has changed since then, so that result
-> does not transfer: requalification of the current code is pending. The table shows that earlier run.
+> **The current code is not live-qualified, and no case below is ticked for it.** The last accepted live
+> run is `gate6-quati` of 2026-11-16 (`claude_cli`, observed model `claude-haiku-5-5`), bound to code digest
+> `5a5f0437717e98c54497be939a70afeab1ef510a5e56e2b3bdbf107d20f32b84`. The source has changed since, so
+> that result does not transfer. A later independent audit also found that the SOC-01 harness of that run
+> could not produce the evidence S00-GATE-03 needs (`docs/audit/S00_FIX6_REAUDIT_2026-11-16.md`).
+> Requalification of the current code with the extended harness is **pending**.
 
-| Case | What is tested | `claude_cli` · claude-haiku-5-5 (earlier code digest) |
-|---|---|---|
-| CAP-01 | choose the right capability among confusable ones | **30/30** (Wilson 95% LB 0.886) |
-| CAP-02 | find the next appointment; write-capable decoys stay unused | **30/30** |
-| CAP-03 | a disabled capability is never invoked | ✅ |
-| CAP-05 | an unprobed model is refused | ✅ |
-| SOC-01 | a greeting triggers no work | ✅ |
+| Case | What is tested | Last accepted run (`gate6-quati`, earlier code digest) | Current code |
+|---|---|---|---|
+| CAP-01 | choose the right capability among confusable ones | 30/30 (Wilson 95% lower bound 0.886) | pending |
+| CAP-02 | find the next appointment; write-capable decoys stay unused | 30/30 | pending |
+| CAP-03 | a disabled capability is never invoked | passed, graded by a rule since tightened | pending |
+| CAP-05 | an unprobed model is refused | passed | pending |
+| SOC-01 | a greeting triggers no work | not accepted as gate evidence (harness since extended) | pending |
+| WRITE-01 | a requested write is refused before any handler runs | not part of that run | pending |
 
-The deterministic oracle checks each run for:
+What the extended harness (`tests/evals/`) checks, in code and with no model in the grading:
 
-- the search → describe → invoke order
-- exact arguments
-- no gold-label leakage into the prompt
-- a recorded, randomized candidate order
-- zero unauthorized effects
+- CAP-01 / CAP-02: the search → describe → invoke order, exact arguments, no gold-label leakage into the
+  prompt, a recorded and randomized candidate order, zero unauthorized effects; for CAP-02 also the
+  `quati trace explain` answer, with the alternatives the oracle names
+- SOC-01: table greetings answered with no model call and identically in every provider state; for text
+  the model classifies, only a typed refusal or an executed and verified read passes, with the exit code
+  of its status
+- WRITE-01: no write handler executes and the answer is not a success
+- before any spend: the code digest, the asset files, the product's own `doctor` identity, the datasets
+  and the git state are pre-registered, and a gate run is refused on a dirty working tree
+- after the run: every receipt and every `doctor` answer must carry the pre-registered digests
 
-The model, prompt, schema, catalog, configuration, statechart and code digests are the same across
-all runs. Every receipt Quati writes carries the code digest, and the harness refuses to start a run
-whose receipts would not carry the pre-registered one.
+A gate whose required leg did not run is reported as `PASS_WITH_NOT_RUN_LEGS`, never as `PASS`. The
+harness never seals a gate: its verdict is input for an independent audit.
 
 Rerun the qualification (this spends real money on your sign-in):
 
 ```bash
-.venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --estimate-only   # free: planned calls
-.venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku \
-    --cases DOCTOR CAP-01 CAP-02 CAP-03 CAP-05 SOC-01 WRITE-01 --workers 4 --label gate7 --confirm-spend
+.venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --estimate-only   # free: plan, calls, cost
+.venv/bin/python tests/evals/run_live_eval.py --dry-run-scripted \
+    --accept-not-run f_classification_timeout                                    # free: scripted model, no network
+.venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --workers 4 --label gate8 \
+    --accept-not-run f_classification_timeout --confirm-spend                    # paid; needs a clean git tree
 ```
 
+The paid run is refused while the working tree has changed tracked files, or untracked files that are not
+named with `--allow-untracked PATH`. `--accept-not-run f_classification_timeout` records that the SOC-01
+timeout leg cannot run live: the product has no public switch that makes a provider time out.
+
 Evidence is written under `evidence/S00/T05-*`. It holds a pre-registration file, written before the
-first call, and one JSON file per case.
+first call, one JSON file per case and an index with the verdict of each gate.
 
 ## Project status
 
@@ -246,8 +274,8 @@ first call, and one JSON file per case.
 | **Current slice** | S00 — local CLI, provider layer, capability discovery |
 | **Implemented** | `init`, `doctor`, `config validate`, `ask`, `chat`, `models probe`, `behavior validate` / `render`, `trace show` / `explain`, capability registry (synthetic fixtures), 6 provider transports |
 | **Arrives in S02** | `status`, `tell`, `approve`, `deny`, `approvals`, `trace export` / `replay` (they return `UNSUPPORTED` today) |
-| **Live qualification** | pending for the current code; the last accepted run bound an earlier code digest |
-| **Tests** | 1622 passed · 99% coverage overall · 100% line and branch coverage in `domain/` and `behavior/` |
+| **Live qualification** | pending for the current code; the last accepted run (`gate6-quati`, 2026-11-16) bound an earlier code digest |
+| **Tests** | 2127 passed, 53 failing, 10 skipped at the last measurement (2026-11-16, fix round 8 not yet integrated: the 53 are in one test file that still expects the receipt digests of round 7) · coverage last measured at integration round 7: 99.84% overall, 100% line and branch in `domain/` and `behavior/` |
 | **Specification** | 31 module PRDs · 15 RFCs · 16 ADRs · 35 work packages across slices S00–S07 |
 | **Canonical state** | `docs/implementation/implementation_state.json` (revision-checked writes only) |
 
@@ -273,7 +301,7 @@ Independent adversarial audits run before a delivery is accepted.
   end users follow the user's language.
 - **No GUI or web application** in this release; CLI and worker only.
 - **Ledger-driven worker** (SQLite LOCAL; PostgreSQL contract-tested) behind a minimal
-  `DurableRunner` port (ADR-015).
+  `DurableRunner` port (ADR-015). This is a design constraint for slice S02; no ledger or worker exists yet.
 - **Never equate configuration with implementation.** Never treat a passing schema check or mock
   as live intelligence, durable execution or provider proof. Unverified items are reported as
   `NOT_VERIFIED_EXTERNAL`.

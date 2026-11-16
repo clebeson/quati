@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 24,
+  "revision": 25,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S00",
@@ -172,7 +172,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-16T20:11:18.518476Z",
+  "last_updated_at": "2026-11-16T22:07:57.140016Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -183,7 +183,7 @@
   "execution_authorized": true,
   "active_work": {
     "work_package_id": "S00-T05",
-    "phase": "TDD_RED",
+    "phase": "IMPLEMENT",
     "owner": "root coordinator",
     "input_snapshot_ref": "evidence/S00/T01-2026-11-15/input_snapshot.json",
     "completed_steps": [
@@ -206,9 +206,10 @@
       "Re-audit of fix round 6 at 2ca778c: GATE-01 and GATE-04 deterministic ACCEPT, GATE-03 REJECT; 17 new findings (LOG-0041)",
       "Fix round 7 and live harness extension done test-first; 1566 passed, 10 skipped (LOG-0042)",
       "Integration step done (1622 passed, 10 skipped); owner amended the S00-GATE-03 sentence (LOG-0043)",
-      "Third independent audit at a5a3af3: NOT READY for the live run; 5 P1, 5 P2 findings (LOG-0044)"
+      "Third independent audit at a5a3af3: NOT READY for the live run; 5 P1, 5 P2 findings (LOG-0044)",
+      "Fix round 8 and harness round 8 done test-first; 2180 passed, 10 skipped (LOG-0046); audit 3 test part recorded (LOG-0045)"
     ],
-    "next_action": "Fix round 8 for LOG-0044 (X1-X10, D7, cheap P3) test-first on disjoint paths; fourth independent audit including the unfinished mutation and test-expectation review; then live requalification, acceptance audit of the live evidence, seals for all four S00 gates on one commit, SLICE_ACCEPTED",
+    "next_action": "Integration step for LOG-0045 and LOG-0046 open items; fourth independent audit; pilot and live requalification (gate8); acceptance audit of the live evidence; seals for all four S00 gates on one commit; SLICE_ACCEPTED",
     "owned_files": [
       "src/secma/cli",
       "src/secma/application",
@@ -256,7 +257,11 @@
       "evidence/S00/T05-fix7-store-cli-2026-11-16/green.txt",
       "evidence/S00/T05-harness7-2026-11-16/green.txt",
       "evidence/S00/T05-integration7-2026-11-16/green.txt",
-      "docs/audit/S00_AUDIT3_2026-11-16.md"
+      "docs/audit/S00_AUDIT3_2026-11-16.md",
+      "evidence/S00/T05-fix8-store-2026-11-16/green.txt",
+      "evidence/S00/T05-fix8-social-outcomes-2026-11-16/green.txt",
+      "evidence/S00/T05-harness8-2026-11-16/green.txt",
+      "docs/audit/S00_AUDIT3_PART3_TESTS_2026-11-16.md"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",

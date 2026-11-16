@@ -1,0 +1,1040 @@
+# RED run before any src/ change (fix round 8, store agent). git HEAD: c232241; src/ diff lines vs HEAD: 2
+# The src/ difference at that moment belongs to the agents working in parallel (application/ask.py, cli/composition.py, domain/social.py); none of this agent's owned src files had been touched.
+# command: .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_s00_fix8_store.py tests/integration/cli/test_s00_fix8_store_matrix.py tests/integration/cli/test_trace_commands.py
+FFFFFFFF.FF.F.FF.F..FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 25%]
+FFFFFFFFF.FF.FFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.....FFFFFFFFFFFFFFFFFF [ 50%]
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFFFFFF..FF....FF.....FF........ [ 75%]
+.......FFFFFFFFFFFFFFFFFFFFFFF.................................FFFFF..   [100%]
+=================================== FAILURES ===================================
+E   AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+<repo>/tests/unit/test_s00_fix8_store.py:118: AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+E   OSError: [Errno 40] Too many levels of symbolic links: '<scratch>/bt-red/test_read_private_refuses_ever1/file.json'
+<repo>/src/quati/adapters/private_fs.py:153: OSError: [Errno 40] Too many levels of symbolic links: '<scratch>/bt-red/test_read_private_refuses_ever1/file.json'
+E   OSError: [Errno 40] Too many levels of symbolic links: '<scratch>/bt-red/test_read_private_refuses_ever2/file.json'
+<repo>/src/quati/adapters/private_fs.py:153: OSError: [Errno 40] Too many levels of symbolic links: '<scratch>/bt-red/test_read_private_refuses_ever2/file.json'
+E   AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+<repo>/tests/unit/test_s00_fix8_store.py:118: AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+E   AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+<repo>/tests/unit/test_s00_fix8_store.py:118: AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+E   AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+<repo>/tests/unit/test_s00_fix8_store.py:118: AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+E   AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+<repo>/tests/unit/test_s00_fix8_store.py:118: AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+E   AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+<repo>/tests/unit/test_s00_fix8_store.py:118: AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+E   OSError: [Errno 40] Too many levels of symbolic links: '<scratch>/bt-red/test_open_private_refuses_ever1/file.lock'
+<repo>/src/quati/adapters/private_fs.py:146: OSError: [Errno 40] Too many levels of symbolic links: '<scratch>/bt-red/test_open_private_refuses_ever1/file.lock'
+E   OSError: [Errno 40] Too many levels of symbolic links: '<scratch>/bt-red/test_open_private_refuses_ever2/file.lock'
+<repo>/src/quati/adapters/private_fs.py:146: OSError: [Errno 40] Too many levels of symbolic links: '<scratch>/bt-red/test_open_private_refuses_ever2/file.lock'
+E   IsADirectoryError: [Errno 21] Is a directory: '<scratch>/bt-red/test_open_private_refuses_ever4/file.lock'
+<repo>/src/quati/adapters/private_fs.py:146: IsADirectoryError: [Errno 21] Is a directory: '<scratch>/bt-red/test_open_private_refuses_ever4/file.lock'
+E   AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+<repo>/tests/unit/test_s00_fix8_store.py:137: AttributeError: module 'quati.adapters.private_fs' has no attribute 'check_private_file'
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:150: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:150: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:185: Failed: DID NOT RAISE UnsafeStatePath
+E   AssertionError: the call blocked (hang)
+<repo>/tests/unit/test_s00_fix8_store.py:60: AssertionError: the call blocked (hang)
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:199: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:199: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:199: Failed: DID NOT RAISE UnsafeStatePath
+E   IsADirectoryError: [Errno 21] Is a directory: '<scratch>/bt-red/test_each_store_read_goes_thro4/state/capabilities/registry.json'
+/usr/lib/python3.13/pathlib/_local.py:539: IsADirectoryError: [Errno 21] Is a directory: '<scratch>/bt-red/test_each_store_read_goes_thro4/state/capabilities/registry.json'
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:199: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:231: Failed: DID NOT RAISE UnsafeStatePath
+E   AttributeError: 'FileRegistryStore' object has no attribute 'verify_audit'
+<repo>/tests/unit/test_s00_fix8_store.py:243: AttributeError: 'FileRegistryStore' object has no attribute 'verify_audit'
+E   AttributeError: 'FileRegistryStore' object has no attribute 'verify_audit'
+<repo>/tests/unit/test_s00_fix8_store.py:258: AttributeError: 'FileRegistryStore' object has no attribute 'verify_audit'
+E   NotADirectoryError: [Errno 20] Not a directory: '<scratch>/bt-red/test_staging_fails_before_the_0/state/capabilities/packages/fixtures.mail-search'
+<repo>/src/quati/adapters/private_fs.py:75: NotADirectoryError: [Errno 20] Not a directory: '<scratch>/bt-red/test_staging_fails_before_the_0/state/capabilities/packages/fixtures.mail-search'
+E   assert (b'{\n "appro...OMMITTED"}\n') == (b'{\n "appro...OMMITTED"}\n')
+      
+      At index 0 diff: b'{\n "approvals": [\n  {\n   "approval": {\n    "approval_id": "approval-00001",\n    "approver_id": "01JD00000000000000000000AA",\n    "approver_kind": "HUMAN",\n    "binding_ids": [\n     "fixtures.calendar-read.b1"\n    ],\n    "capability_id": "fixtures.calendar-read",\n    "capability_version": "1.0.0",\n    "effect_class": "read",\n    "expires_at": "2026-11-16T12:15:00Z",\n    "issued_at": "2026-11-16T12:00:00Z",\n    "kind": "FIXTURE_ENABLE",\n    "tenant_id": "01JD0000000000000000000000"\n   },\n   "consumed_at": "2026-11-16T12:00:00Z"\n  },\n...
+      
+      ...Full output truncated, use '-vv' to show
+<repo>/tests/unit/test_s00_fix8_store.py:284: assert (b'{\n "appro...OMMITTED"}\n') == (b'{\n "appro...OMMITTED"}\n')
+E   NotADirectoryError: [Errno 20] Not a directory: '<scratch>/bt-red/test_staging_fails_before_the_2/state/capabilities/staging/c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112'
+<repo>/src/quati/adapters/private_fs.py:75: NotADirectoryError: [Errno 20] Not a directory: '<scratch>/bt-red/test_staging_fails_before_the_2/state/capabilities/staging/c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112'
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:281: Failed: DID NOT RAISE UnsafeStatePath
+E   assert (b'{\n "appro...OMMITTED"}\n') == (b'{\n "appro...OMMITTED"}\n')
+      
+      At index 0 diff: b'{\n "approvals": [\n  {\n   "approval": {\n    "approval_id": "approval-00001",\n    "approver_id": "01JD00000000000000000000AA",\n    "approver_kind": "HUMAN",\n    "binding_ids": [\n     "fixtures.calendar-read.b1"\n    ],\n    "capability_id": "fixtures.calendar-read",\n    "capability_version": "1.0.0",\n    "effect_class": "read",\n    "expires_at": "2026-11-16T12:15:00Z",\n    "issued_at": "2026-11-16T12:00:00Z",\n    "kind": "FIXTURE_ENABLE",\n    "tenant_id": "01JD0000000000000000000000"\n   },\n   "consumed_at": "2026-11-16T12:00:00Z"\n  },\n...
+      
+      ...Full output truncated, use '-vv' to show
+<repo>/tests/unit/test_s00_fix8_store.py:284: assert (b'{\n "appro...OMMITTED"}\n') == (b'{\n "appro...OMMITTED"}\n')
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix8_store.py:281: Failed: DID NOT RAISE UnsafeStatePath
+E   AttributeError: module 'quati.adapters.capability_store' has no attribute 'StoreChangeIncomplete'
+<repo>/tests/unit/test_s00_fix8_store.py:301: AttributeError: module 'quati.adapters.capability_store' has no attribute 'StoreChangeIncomplete'
+E   AttributeError: module 'quati.adapters.capability_store' has no attribute 'StoreChangeIncomplete'
+<repo>/tests/unit/test_s00_fix8_store.py:322: AttributeError: module 'quati.adapters.capability_store' has no attribute 'StoreChangeIncomplete'
+E   AttributeError: module 'quati.adapters.capability_store' has no attribute 'StoreChangeIncomplete'
+<repo>/tests/unit/test_s00_fix8_store.py:336: AttributeError: module 'quati.adapters.capability_store' has no attribute 'StoreChangeIncomplete'
+E   AssertionError: assert ('director' in 'A Quati data directory is not a private directory of this user; nothing was read or changed.' and 'file' in 'A Quati data directory is not a private directory of this user; nothing was read or changed.')
+<repo>/tests/unit/test_s00_fix8_store.py:356: AssertionError: assert ('director' in 'A Quati data directory is not a private directory of this user; nothing was read or changed.' and 'file' in 'A Quati data directory is not a private directory of this user; nothing was read or changed.')
+E   AssertionError: assert [('state', ('...abilities',))] == [('state', ('...', 'read', 0)]
+      
+      At index 1 diff: ('state', ('capabilities',)) != ('state', ('feature_reports:read',))
+      Right contains 3 more items, first extra item: ('state', ('capabilities',))
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix8_store.py:382: AssertionError: assert [('state', ('...abilities',))] == [('state', ('...', 'read', 0)]
+E   TypeError: 'NoneType' object is not subscriptable
+<repo>/tests/unit/test_s00_fix8_store.py:405: TypeError: 'NoneType' object is not subscriptable
+E   TypeError: 'NoneType' object is not subscriptable
+<repo>/tests/unit/test_s00_fix8_store.py:427: TypeError: 'NoneType' object is not subscriptable
+E   AssertionError: assert 5 == 0
+     +  where 5 = len([ModelRequest(messages=(Message(role='user', content='Find my next appointment'),), system='Protected Quati invariants..., 'maxLength': 128}}})), require_tool=False, output_schema=None, stream=False, max_output_tokens=2048, timeout_s=30.0)])
+     +    where [ModelRequest(messages=(Message(role='user', content='Find my next appointment'),), system='Protected Quati invariants..., 'maxLength': 128}}})), require_tool=False, output_schema=None, stream=False, max_output_tokens=2048, timeout_s=30.0)] = model_requests()
+     +      where model_requests = <s00_t04_support.Script object at 0x7b8274c56190>.model_requests
+     +        where <s00_t04_support.Script object at 0x7b8274c56190> = <s00_t04_support.Harness object at 0x7b8274c57490>.script
+<repo>/tests/unit/test_s00_fix8_store.py:440: AssertionError: assert 5 == 0
+E   AssertionError: assert [('receipts',...models_probe'] == [('receipts',...models_probe']
+      
+      At index 0 diff: ('receipts', 'feature_reports') != ('receipts', 'feature_reports', 'capabilities')
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix8_store.py:457: AssertionError: assert [('receipts',...models_probe'] == [('receipts',...models_probe']
+E   AssertionError: assert not True
+     +  where True = exists()
+     +    where exists = (PosixPath('<scratch>/bt-red/test_the_composition_guard_map0') / 'data').exists
+<repo>/tests/unit/test_s00_fix8_store.py:463: AssertionError: assert not True
+E   AssertionError: assert ('s00-fixture-readonly/1' == 'aaaaaaaaaaaa...aaaaaaaaaaaaa'
+      
+      - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      + s00-fixture-readonly/1)
+<repo>/tests/unit/test_s00_fix8_store.py:515: AssertionError: assert ('s00-fixture-readonly/1' == 'aaaaaaaaaaaa...aaaaaaaaaaaaa'
+E   AssertionError: assert ('s00-fixture-readonly/1' is None)
+<repo>/tests/unit/test_s00_fix8_store.py:523: AssertionError: assert ('s00-fixture-readonly/1' is None)
+E   AssertionError: assert 's00-fixture-readonly/1' is None
+     +  where 's00-fixture-readonly/1' = RequestContext(actor_id='actor', tenant_id='tenant', space_ids=(), request_id='request-1', trace_id='trace-1', session...ion='s00-fixture-readonly/1', schema_version='quati-context/2', channel='cli', principal_kind='HUMAN', profile='LOCAL').policy_version
+     +    where RequestContext(actor_id='actor', tenant_id='tenant', space_ids=(), request_id='request-1', trace_id='trace-1', session...ion='s00-fixture-readonly/1', schema_version='quati-context/2', channel='cli', principal_kind='HUMAN', profile='LOCAL') = authenticate()
+     +      where authenticate = <test_s00_fix8_store.FixedIdentity object at 0x7b82763c3b10>.authenticate
+     +        where <test_s00_fix8_store.FixedIdentity object at 0x7b82763c3b10> = FixedIdentity()
+<repo>/tests/unit/test_s00_fix8_store.py:528: AssertionError: assert 's00-fixture-readonly/1' is None
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:552: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:565: assert True is False
+E   assert True is False
+<repo>/tests/unit/test_s00_fix8_store.py:565: assert True is False
+E   AssertionError: assert PosixPath('<scratch>/bt-red/test_an_assets_directory_besid0/checkout/src/quati/assets') == (PosixPath('<scratch>/bt-red/test_an_assets_directory_besid0') / 'checkout')
+     +  where PosixPath('<scratch>/bt-red/test_an_assets_directory_besid0/checkout/src/quati/assets') = <function asset_root at 0x7b8275c44c20>(PosixPath('<scratch>/bt-red/test_an_assets_directory_besid0/checkout/src/quati'))
+     +    where <function asset_root at 0x7b8275c44c20> = contracts.asset_root
+<repo>/tests/unit/test_s00_fix8_store.py:589: AssertionError: assert PosixPath('<scratch>/bt-red/test_an_assets_directory_besid0/checkout/src/quati/assets') == (PosixPath('<scratch>/bt-red/test_an_assets_directory_besid0') / 'checkout')
+E   AttributeError: module 'quati.behavior.contracts' has no attribute 'asset_digest'
+<repo>/tests/unit/test_s00_fix8_store.py:622: AttributeError: module 'quati.behavior.contracts' has no attribute 'asset_digest'
+E   AttributeError: module 'quati.behavior.contracts' has no attribute 'ASSET_FILES'
+<repo>/tests/unit/test_s00_fix8_store.py:643: AttributeError: module 'quati.behavior.contracts' has no attribute 'ASSET_FILES'
+E   AttributeError: module 'quati.behavior.contracts' has no attribute 'asset_digest'
+<repo>/tests/unit/test_s00_fix8_store.py:647: AttributeError: module 'quati.behavior.contracts' has no attribute 'asset_digest'
+E   AssertionError: assert (2 == 2 and {'data': None...e seed.', ...} == {'status': 'D...ies': [], ...}
+      
+      Omitting 5 identical items, use -vv to show
+      Differing items:
+      {'error': {'code': 'INVALID_INPUT', 'message': '--eval-candidate-permutation-seed requires --synthetic-evidence.', 'retryable': False}} != {'error': {'code': 'INVALID_INPUT', 'message': '--eval-candidate-permutation-seed is accepted only with --synthetic-evidence.', 'retryable': False}}
+      Use -v to get more diff)
+<repo>/tests/unit/test_s00_fix8_store.py:664: AssertionError: assert (2 == 2 and {'data': None...e seed.', ...} == {'status': 'D...ies': [], ...}
+E   subprocess.TimeoutExpired: Command '['<repo>/.venv/bin/python', '<repo>/tests/integration/cli/fixtures/fix7_public_runner.py', '<scratch>/bt-red/test_x2_every_store_file_is_pr0/harness/spy-5.jsonl', '<scratch>/bt-red/test_x2_every_store_file_is_pr0/harness/scenario-5.json', 'capabilities', 'list', '--json']' timed out after 30 seconds
+
+During handling of the above exception, another exception occurred:
+E   Failed: quati capabilities list --json did not finish within 30 s (hang)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:116: Failed: quati capabilities list --json did not finish within 30 s (hang)
+E   AssertionError: registry.json as symlink_outside: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 7 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0MXTM03BPG63DF1KT7G40","at":"2026-11-16T20:26:48Z","authorized_scope":{"computed_a...R64HYQJD1QYZKR3Q","request_id":"request-bc549a9263024794bfec4db50b49777b","tenant_id":"01M7K0MXTMG5VSKSPR0CTZ1X7Y"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0MXTM03BPG63DF1KT7G40","at":"2026-11-16T20:26:48Z","authorized_scope":{"computed_a...R64HYQJD1QYZKR3Q","request_id":"request-c19db9c6ec71453e909f89211e034946","tenant_id":"01M7K0MXTMG5VSKSPR0CTZ1X7Y"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.json as symlink_outside: list
+E   AssertionError: registry.json as hard_link: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0MZGZ0P8P5N0RQBT8DX5W","at":"2026-11-16T20:26:50Z","authorized_scope":{"computed_a...JQ8N5GY3CNMJ0RWC","request_id":"request-bb1b85abd5754f2199e8f860e596731f","tenant_id":"01M7K0MZGY0XNCQ0MYGNXESAAG"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0MZGZ0P8P5N0RQBT8DX5W","at":"2026-11-16T20:26:50Z","authorized_scope":{"computed_a...JQ8N5GY3CNMJ0RWC","request_id":"request-0907ea4d1d454083bfa0506789c72291","tenant_id":"01M7K0MZGY0XNCQ0MYGNXESAAG"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.json as hard_link: list
+E   AssertionError: registry.json as mode_644: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0N1GZFEVYW2CCW6E176CP","at":"2026-11-16T20:26:52Z","authorized_scope":{"computed_a...0QZ72R3G5TY7BQNT","request_id":"request-230e0ffe69d84e279cce8ce0fe101326","tenant_id":"01M7K0N1GZWN26PQNP640MAZKB"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0N1GZFEVYW2CCW6E176CP","at":"2026-11-16T20:26:52Z","authorized_scope":{"computed_a...0QZ72R3G5TY7BQNT","request_id":"request-0d81907ed2024e94a625c7af438cc338","tenant_id":"01M7K0N1GZWN26PQNP640MAZKB"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.json as mode_644: list
+E   AssertionError: registry.json as foreign_owner: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0N3CJ2KFHZSK3RYGXYFTG","at":"2026-11-16T20:26:54Z","authorized_scope":{"computed_a...S1T5HQ8RRAP24EW9","request_id":"request-05d6a23a07054a568f8ae7b0a34c4763","tenant_id":"01M7K0N3CJJ7RSY6PNTRQ3TQAM"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0N3CJ2KFHZSK3RYGXYFTG","at":"2026-11-16T20:26:54Z","authorized_scope":{"computed_a...S1T5HQ8RRAP24EW9","request_id":"request-abe8aea1bc8e4813bc114af6b2c72324","tenant_id":"01M7K0N3CJJ7RSY6PNTRQ3TQAM"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.json as foreign_owner: list
+E   AssertionError: registry.json as directory: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0N5C3HY7CMKHXAFF1ZJC2","at":"2026-11-16T20:26:56Z","authorized_scope":{"computed_a...XM901KNYGY4B9GR8","request_id":"request-9d72919dd7df42b78e07c183fc2eeba9","tenant_id":"01M7K0N5C37GXCPQQA87EKA07D"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0N5C3HY7CMKHXAFF1ZJC2","at":"2026-11-16T20:26:56Z","authorized_scope":{"computed_a...XM901KNYGY4B9GR8","request_id":"request-a81a1b60c3bc494990240b365085d851","tenant_id":"01M7K0N5C37GXCPQQA87EKA07D"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.json as directory: list
+E   AssertionError: capabilities.lock as fifo: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0N71J8TYRDJFM5VP3T8SH","at":"2026-11-16T20:26:57Z","authorized_scope":{"computed_a...EH4MHSH4QE7A8FKX","request_id":"request-9ab81f0a3a34448db17d19b117fd287a","tenant_id":"01M7K0N71JEGPEDEE1VWJ2PWDR"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0N71J8TYRDJFM5VP3T8SH","at":"2026-11-16T20:26:57Z","authorized_scope":{"computed_a...EH4MHSH4QE7A8FKX","request_id":"request-90e7e1f18bf941a29fcf48d378745faa","tenant_id":"01M7K0N71JEGPEDEE1VWJ2PWDR"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: capabilities.lock as fifo: list
+E   AssertionError: capabilities.lock as symlink_outside: list
+    assert {'audit.jsonl...0': None, ...} == {'audit.jsonl...0': None, ...}
+      
+      Omitting 7 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0N8PDR2HPBZQ2T00NS4VR","at":"2026-11-16T20:26:59Z","authorized_scope":{"computed_a...TY9VCM7AFRPN4GGH","request_id":"request-2c46ed9477d341aab8c49f81b55df02c","tenant_id":"01M7K0N8PDJAMKJDQM5XMWVZYA"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0N8PDR2HPBZQ2T00NS4VR","at":"2026-11-16T20:26:59Z","authorized_scope":{"computed_a...TY9VCM7AFRPN4GGH","request_id":"request-7749d84451bd4e3989f932b2db04440f","tenant_id":"01M7K0N8PDJAMKJDQM5XMWVZYA"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: capabilities.lock as symlink_outside: list
+E   AssertionError: capabilities.lock as hard_link: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0NAAN0WK9TAMP5N33YGSA","at":"2026-11-16T20:27:01Z","authorized_scope":{"computed_a...ET24NK27B2AG12A3","request_id":"request-f1266d70e3d7407aa5a3609e556ccf42","tenant_id":"01M7K0NAANR1QCNC3A16BHE6TE"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0NAAN0WK9TAMP5N33YGSA","at":"2026-11-16T20:27:01Z","authorized_scope":{"computed_a...ET24NK27B2AG12A3","request_id":"request-c9a98b915b8145e08484408cee64d767","tenant_id":"01M7K0NAANR1QCNC3A16BHE6TE"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: capabilities.lock as hard_link: list
+E   AssertionError: capabilities.lock as mode_644: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0NBW8PJHDJ7Y9K5JH7NEW","at":"2026-11-16T20:27:02Z","authorized_scope":{"computed_a...7B1XKQYWEW10J6WH","request_id":"request-fd0040163b134f77b5743a59a664604a","tenant_id":"01M7K0NBW8DAEXE96N38CDHVJF"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0NBW8PJHDJ7Y9K5JH7NEW","at":"2026-11-16T20:27:02Z","authorized_scope":{"computed_a...7B1XKQYWEW10J6WH","request_id":"request-8085b7b0fbb347a28637d501d4d0ea67","tenant_id":"01M7K0NBW8DAEXE96N38CDHVJF"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: capabilities.lock as mode_644: list
+E   AssertionError: capabilities.lock as foreign_owner: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0NDF7R737SD7HY47NAV8E","at":"2026-11-16T20:27:04Z","authorized_scope":{"computed_a...05RGJZ4XFDMCDMVB","request_id":"request-0200085651aa482a8406ee10ab64fcfc","tenant_id":"01M7K0NDF77EK0Q86KMWMMHM9E"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0NDF7R737SD7HY47NAV8E","at":"2026-11-16T20:27:04Z","authorized_scope":{"computed_a...05RGJZ4XFDMCDMVB","request_id":"request-d56e7cc9a658406f908f12d04273039f","tenant_id":"01M7K0NDF77EK0Q86KMWMMHM9E"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: capabilities.lock as foreign_owner: list
+E   AssertionError: capabilities.lock as directory: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0NF35A319GTRF1KEFGKJT","at":"2026-11-16T20:27:05Z","authorized_scope":{"computed_a...C8ZTJHMDDP03T6VX","request_id":"request-b8233a233a624a08a434e966e3e92a4c","tenant_id":"01M7K0NF35RM80NSJP6MHNBV38"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0NF35A319GTRF1KEFGKJT","at":"2026-11-16T20:27:05Z","authorized_scope":{"computed_a...C8ZTJHMDDP03T6VX","request_id":"request-ffb9978db30e4577b8c4de06ae51d259","tenant_id":"01M7K0NF35RM80NSJP6MHNBV38"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: capabilities.lock as directory: list
+E   AssertionError: registry.flock as fifo: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0NGJ4PPY2WHRV4CKEBSJZ","at":"2026-11-16T20:27:07Z","authorized_scope":{"computed_a...HRF8TTX1VZ436Y96","request_id":"request-5e3c2bc3749b4ee8b7beb582101a988a","tenant_id":"01M7K0NGJ4DGSBZ1G0W9E81A3R"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0NGJ4PPY2WHRV4CKEBSJZ","at":"2026-11-16T20:27:07Z","authorized_scope":{"computed_a...HRF8TTX1VZ436Y96","request_id":"request-c28c704af007475c8d4aedb4c71317f7","tenant_id":"01M7K0NGJ4DGSBZ1G0W9E81A3R"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.flock as fifo: list
+E   AssertionError: registry.flock as symlink_outside: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 7 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0NJ4W0YH2SAC9VR2JV83F","at":"2026-11-16T20:27:09Z","authorized_scope":{"computed_a...6BGVWTR8APXEWDJ5","request_id":"request-e21c80c3ced84655ad2ed22e119051f3","tenant_id":"01M7K0NJ4WJAXR5D6BCNSZKJGN"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0NJ4W0YH2SAC9VR2JV83F","at":"2026-11-16T20:27:09Z","authorized_scope":{"computed_a...6BGVWTR8APXEWDJ5","request_id":"request-edc41eb95c324aba863278627e9fdfa8","tenant_id":"01M7K0NJ4WJAXR5D6BCNSZKJGN"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.flock as symlink_outside: list
+E   AssertionError: registry.flock as hard_link: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0NKN76CJD7FQ7YQBDW89F","at":"2026-11-16T20:27:10Z","authorized_scope":{"computed_a...6P54RF78H370J72P","request_id":"request-d411e477a4284ca8a38f47579b1bb54d","tenant_id":"01M7K0NKN7Y4BX8YTJS5Y0JBGR"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0NKN76CJD7FQ7YQBDW89F","at":"2026-11-16T20:27:10Z","authorized_scope":{"computed_a...6P54RF78H370J72P","request_id":"request-078842683e8948e3adc540483ac8c6c0","tenant_id":"01M7K0NKN7Y4BX8YTJS5Y0JBGR"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.flock as hard_link: list
+E   AssertionError: registry.flock as mode_644: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0NN952KX160A9H8BB0H94","at":"2026-11-16T20:27:12Z","authorized_scope":{"computed_a...E38TBHVNFYKJFSHM","request_id":"request-0cf6eb922e5b49d291e5f32c5abee2c7","tenant_id":"01M7K0NN95VGQVQ5YK7RTM5EEY"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0NN952KX160A9H8BB0H94","at":"2026-11-16T20:27:12Z","authorized_scope":{"computed_a...E38TBHVNFYKJFSHM","request_id":"request-3dd0d51b31674b5281e5d812f45e1fb7","tenant_id":"01M7K0NN95VGQVQ5YK7RTM5EEY"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.flock as mode_644: list
+E   AssertionError: registry.flock as foreign_owner: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0NPXEHH32XXKYW414H1RR","at":"2026-11-16T20:27:14Z","authorized_scope":{"computed_a...FVPY280XTVS0WHPG","request_id":"request-5ecb88e0f6d544e69d14c860a61228b4","tenant_id":"01M7K0NPXEKMQ8D5389XF6WCCV"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0NPXEHH32XXKYW414H1RR","at":"2026-11-16T20:27:14Z","authorized_scope":{"computed_a...FVPY280XTVS0WHPG","request_id":"request-a9b8f33e66e741bfb6337234d3e0cdb3","tenant_id":"01M7K0NPXEKMQ8D5389XF6WCCV"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.flock as foreign_owner: list
+E   AssertionError: registry.flock as directory: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0NRE3MK4HAMGDEGW7TAJ0","at":"2026-11-16T20:27:15Z","authorized_scope":{"computed_a...HKSZQMYH4M7KZ9AN","request_id":"request-afb32e336508467f933874ec5e4c1797","tenant_id":"01M7K0NRE38VDV3SNB2TQKSS3Z"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0NRE3MK4HAMGDEGW7TAJ0","at":"2026-11-16T20:27:15Z","authorized_scope":{"computed_a...HKSZQMYH4M7KZ9AN","request_id":"request-28f0e4a8547d477fbc1ec23c5512daf4","tenant_id":"01M7K0NRE38VDV3SNB2TQKSS3Z"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: registry.flock as directory: list
+E   AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+    assert ([['request', ...ati_status']]] == []
+      
+      Left contains 5 more items, first extra item: ['request', []]
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:184: AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+E   AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+    assert ([['request', ...ati_status']]] == []
+      
+      Left contains 5 more items, first extra item: ['request', []]
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:184: AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+E   AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+    assert ([['request', ...ati_status']]] == []
+      
+      Left contains 5 more items, first extra item: ['request', []]
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:184: AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+E   AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+    assert ([['request', ...ati_status']]] == []
+      
+      Left contains 5 more items, first extra item: ['request', []]
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:184: AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+E   AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+    assert ([['request', ...ati_status']]] == []
+      
+      Left contains 5 more items, first extra item: ['request', []]
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:184: AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+E   AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+    assert ([['request', ...ati_status']]] == []
+      
+      Left contains 5 more items, first extra item: ['request', []]
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:184: AssertionError: [['request', []], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['request', ['quati... 'quati_status']], ['request', ['quati_search', 'quati_describe', 'quati_invoke', 'quati_status']], ['script_left', 0]]
+E   AssertionError: package_manifest as fifo: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0PBR7PBMNAP63QXNF863A","at":"2026-11-16T20:27:35Z","authorized_scope":{"computed_a...FAD7PS488PZFXTPY","request_id":"request-2fbd1666765e4ea982f6cd86bb19fd06","tenant_id":"01M7K0PBR7YAT1RHE0W2GJ67J3"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0PBR7PBMNAP63QXNF863A","at":"2026-11-16T20:27:35Z","authorized_scope":{"computed_a...FAD7PS488PZFXTPY","request_id":"request-050d1cd5fc2b468c87113cf739e3319e","tenant_id":"01M7K0PBR7YAT1RHE0W2GJ67J3"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: package_manifest as fifo: list
+E   AssertionError: package_manifest as symlink_outside: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 7 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0PDDHK5CJT8SJ9R5GB9XX","at":"2026-11-16T20:27:37Z","authorized_scope":{"computed_a...710GSV1HBY8XEBHJ","request_id":"request-1e230819ed7e4c6c8637aef5e0cc83e8","tenant_id":"01M7K0PDDHSE9ZQB1QJ6NCEH6B"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0PDDHK5CJT8SJ9R5GB9XX","at":"2026-11-16T20:27:37Z","authorized_scope":{"computed_a...710GSV1HBY8XEBHJ","request_id":"request-475b9139780c4013989e357e8cbfbf63","tenant_id":"01M7K0PDDHSE9ZQB1QJ6NCEH6B"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: package_manifest as symlink_outside: list
+E   AssertionError: package_manifest as hard_link: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0PF4PBFM9K1DJ8G2D9CR1","at":"2026-11-16T20:27:38Z","authorized_scope":{"computed_a...H4806TBXEZNT9EHG","request_id":"request-2c40b0a3bde44371ba53b0c0883968cc","tenant_id":"01M7K0PF4PXPARNWM19XNDP446"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0PF4PBFM9K1DJ8G2D9CR1","at":"2026-11-16T20:27:38Z","authorized_scope":{"computed_a...H4806TBXEZNT9EHG","request_id":"request-185a69ebb1f8450c8ace10f0237656f2","tenant_id":"01M7K0PF4PXPARNWM19XNDP446"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: package_manifest as hard_link: list
+E   AssertionError: package_manifest as mode_644: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0PGVTBTKTH9BFWY22T933","at":"2026-11-16T20:27:40Z","authorized_scope":{"computed_a...SDK7M5H7X58N3BQF","request_id":"request-68eda81f93e646b3838340ec561bcd0b","tenant_id":"01M7K0PGVTHXFZ9WG79NSGGQ95"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0PGVTBTKTH9BFWY22T933","at":"2026-11-16T20:27:40Z","authorized_scope":{"computed_a...SDK7M5H7X58N3BQF","request_id":"request-b0ce44d081144861a055f119b40e7b15","tenant_id":"01M7K0PGVTHXFZ9WG79NSGGQ95"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: package_manifest as mode_644: list
+E   AssertionError: package_manifest as foreign_owner: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0PJNBJFEW5K8D04BCB5HP","at":"2026-11-16T20:27:42Z","authorized_scope":{"computed_a...WFPK0GQ4W89CQ8B9","request_id":"request-b01c7f622591460782984c3614d6d53f","tenant_id":"01M7K0PJNBX6T1MMV9CB9EQB01"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0PJNBJFEW5K8D04BCB5HP","at":"2026-11-16T20:27:42Z","authorized_scope":{"computed_a...WFPK0GQ4W89CQ8B9","request_id":"request-6d33e33c84ad4c0c9979a024847dabd9","tenant_id":"01M7K0PJNBX6T1MMV9CB9EQB01"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: package_manifest as foreign_owner: list
+E   AssertionError: package_manifest as directory: list
+    assert {'audit.jsonl...d': None, ...} == {'audit.jsonl...d': None, ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'audit.jsonl': b'{"actor_id":"01M7K0PMAQHPHJ202220DCHPFK","at":"2026-11-16T20:27:44Z","authorized_scope":{"computed_a...6W2FRTMZSNWSGDDV","request_id":"request-497c8e382b5c46908903e2ff6b75c83d","tenant_id":"01M7K0PMAQ0K831HRWCFK529AX"}\n'} != {'audit.jsonl': b'{"actor_id":"01M7K0PMAQHPHJ202220DCHPFK","at":"2026-11-16T20:27:44Z","authorized_scope":{"computed_a...6W2FRTMZSNWSGDDV","request_id":"request-1f2def94cff44be9bd8de4babb23a786","tenant_id":"01M7K0PMAQ0K831HRWCFK529AX"}\n'}
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:252: AssertionError: package_manifest as directory: list
+E   AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/adea776c292f469280fc3cdbc591d42e.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/adea776c292f469280fc3cdbc591d42e.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/6a51ea42016d4a30ad9de91b2322ebae.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/6a51ea42016d4a30ad9de91b2322ebae.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":f...ted.","status":"BLOCKED","uncertainties":[]}
+      ', 'quati: internal error (NotADirectoryError); no work was accepted.
+      ')
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":f...ted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: ('{"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":f...cepted.","status":"BLOCKED","uncertainties":[]}
+      ', 'quati: internal error (PermissionError); no work was accepted.
+      ')
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":f...cepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/889ccc4f23564469b0cb99c147d4c506.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/889ccc4f23564469b0cb99c147d4c506.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/c08dc63055e448d48443555d69bd1215.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/c08dc63055e448d48443555d69bd1215.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/635d3a6ed5f74fd593a6e2eb6be99fc1.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/635d3a6ed5f74fd593a6e2eb6be99fc1.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/01b9e5def63b46b48a0f2890b4afaf04.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/01b9e5def63b46b48a0f2890b4afaf04.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/783a7198b5514473a67a0921d51f636c.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"EN...ta/receipts/783a7198b5514473a67a0921d51f636c.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","de...e:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","de...e:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","de...e:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","de...e:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","de...e:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","de...e:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","de...e:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","de...e:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","de...e:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","de...e:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low...ta/receipts/711c87f3fd654d0fb425e1bc3fc9f618.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low...ta/receipts/711c87f3fd654d0fb425e1bc3fc9f618.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low...ta/receipts/418b1a1dc7274830833145d57a0237e2.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low...ta/receipts/418b1a1dc7274830833145d57a0237e2.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low...ta/receipts/96661823fcad45a29c1ab83a9f5e4397.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low...ta/receipts/96661823fcad45a29c1ab83a9f5e4397.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: ('{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low... capability result was produced; no work was accepted.","status":"DENIED","uncertainties":["NOT_IN_SHORTLIST"]}
+      ', '')
+    assert (4, 'DENIED',...IN_SHORTLIST') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 1 diff: 'DENIED' != 'UNAVAILABLE'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low... capability result was produced; no work was accepted.","status":"DENIED","uncertainties":["NOT_IN_SHORTLIST"]}
+E   AssertionError: ('{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low...ta/receipts/666ffde1421145c69de584ca7bddc402.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ', '')
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low...ta/receipts/666ffde1421145c69de584ca7bddc402.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: assert ('BLOCKED' == 'BLOCKED'
+      
+        BLOCKED and True is False)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:367: AssertionError: assert ('BLOCKED' == 'BLOCKED'
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"UPSTREAM_ERROR","received":true,"request_id":"request-03bea9de22ab4281823bca06ebf8bf4f","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[],"trace_id":"f2eea40b45fd49e787a0e603dfb827e1","usage":{"cost_usd":null,"input_tokens":null,"model_requests":3,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The provider returned an unusable response.","retryable":true},"evidence_refs":["sha256:e60c1e3861acf1c7377693c01debae5f0c0387838e763aebc2e3177a73fedaed:<scratch>/bt-red/test_x6_a_torn_audit_log_refus1/data/receipts/e1a6996f4ac64a639eac24ae3de9abf6.json"],"next_action":"No capability result was produced; check the provider and retry.","status":"UNAVAILABLE","uncertainties":["UPSTREAM_ERROR"]}
+      
+    assert ('UNAVAILABLE...STREAM_ERROR') == ('UNAVAILABLE..._unavailable')
+      
+      At index 2 diff: 'UPSTREAM_ERROR' != 'audit_unavailable'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:365: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"UPSTREAM_ERROR","received":true,"request_id":"request-03bea9de22ab4281823bca06ebf8bf4f","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[],"trace_id":"f2eea40b45fd49e787a0e603dfb827e1","usage":{"cost_usd":null,"input_tokens":null,"model_requests":3,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The provider returned an unusable response.","retryable":true},"evidence_refs":["sha256:e60c1e3861acf1c7377693c01debae5f0c0387838e763aebc2e3177a73fedaed:<scratch>/bt-red/test_x6_a_torn_audit_log_refus1/data/receipts/e1a6996f4ac64a639eac24ae3de9abf6.json"],"next_action":"No capability result was produced; check the provider and retry.","status":"UNAVAILABLE","uncertainties":["UPSTREAM_ERROR"]}
+E   AssertionError: assert ('BLOCKED' == 'BLOCKED'
+      
+        BLOCKED and True is False)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:367: AssertionError: assert ('BLOCKED' == 'BLOCKED'
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"UPSTREAM_ERROR","received":true,"request_id":"request-27bce72196934cd2bfdc8feaf2d361c2","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[],"trace_id":"e20cff82d07f4bf3bf5f76dae3d5e162","usage":{"cost_usd":null,"input_tokens":null,"model_requests":3,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The provider returned an unusable response.","retryable":true},"evidence_refs":["sha256:d3cd183203f75014def3ba7583492b081c7988d9ede87bf4bab4592ae9372e66:<scratch>/bt-red/test_x6_a_torn_audit_log_refus3/data/receipts/7bb1f2942230449aa6a86725a5eb5c33.json"],"next_action":"No capability result was produced; check the provider and retry.","status":"UNAVAILABLE","uncertainties":["UPSTREAM_ERROR"]}
+      
+    assert ('UNAVAILABLE...STREAM_ERROR') == ('UNAVAILABLE..._unavailable')
+      
+      At index 2 diff: 'UPSTREAM_ERROR' != 'audit_unavailable'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:365: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"UPSTREAM_ERROR","received":true,"request_id":"request-27bce72196934cd2bfdc8feaf2d361c2","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[],"trace_id":"e20cff82d07f4bf3bf5f76dae3d5e162","usage":{"cost_usd":null,"input_tokens":null,"model_requests":3,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The provider returned an unusable response.","retryable":true},"evidence_refs":["sha256:d3cd183203f75014def3ba7583492b081c7988d9ede87bf4bab4592ae9372e66:<scratch>/bt-red/test_x6_a_torn_audit_log_refus3/data/receipts/7bb1f2942230449aa6a86725a5eb5c33.json"],"next_action":"No capability result was produced; check the provider and retry.","status":"UNAVAILABLE","uncertainties":["UPSTREAM_ERROR"]}
+E   AssertionError: assert ('BLOCKED' == 'BLOCKED'
+      
+        BLOCKED and True is False)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:389: AssertionError: assert ('BLOCKED' == 'BLOCKED'
+E   AssertionError: assert ('BLOCKED' == 'BLOCKED'
+      
+        BLOCKED and True is False)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:389: AssertionError: assert ('BLOCKED' == 'BLOCKED'
+E   AssertionError: assert ('BLOCKED' == 'BLOCKED'
+      
+        BLOCKED and True is False)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:389: AssertionError: assert ('BLOCKED' == 'BLOCKED'
+E   AssertionError: assert ('BLOCKED' == 'BLOCKED'
+      
+        BLOCKED and True is False)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:389: AssertionError: assert ('BLOCKED' == 'BLOCKED'
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"default_deny","received":true,"request_id":"request-acfc0904f1814b219f0966425c1cf018","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":null,"handler_executed":false,"operation":"describe","reason":null,"status":"SUCCEEDED","step":2,"tool_name":"quati_describe"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"default_deny","status":"DENIED","step":3,"tool_name":"quati_invoke"}],"trace_id":"934c8fc0cc6345b8871fe46b5f96e270","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"FORBIDDEN","message":"The requested capability was not executed.","retryable":false},"evidence_refs":["sha256:cde0fe10a26c08c2055599b57bcd8d8bc218b62ea50c66ed6ef138c6ef723250:<scratch>/bt-red/test_x6_a_member_with_a_grant_0/data/receipts/c5c2bef853d44771859e39c00617c4ec.json"],"next_action":"No capability result was produced; no work was accepted.","status":"DENIED","uncertainties":["default_deny"]}
+      
+    assert (4, 'BLOCKED') == (0, 'FIXTURE_RESULT')
+      
+      At index 0 diff: 4 != 0
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:405: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"default_deny","received":true,"request_id":"request-acfc0904f1814b219f0966425c1cf018","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":null,"handler_executed":false,"operation":"describe","reason":null,"status":"SUCCEEDED","step":2,"tool_name":"quati_describe"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"default_deny","status":"DENIED","step":3,"tool_name":"quati_invoke"}],"trace_id":"934c8fc0cc6345b8871fe46b5f96e270","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"FORBIDDEN","message":"The requested capability was not executed.","retryable":false},"evidence_refs":["sha256:cde0fe10a26c08c2055599b57bcd8d8bc218b62ea50c66ed6ef138c6ef723250:<scratch>/bt-red/test_x6_a_member_with_a_grant_0/data/receipts/c5c2bef853d44771859e39c00617c4ec.json"],"next_action":"No capability result was produced; no work was accepted.","status":"DENIED","uncertainties":["default_deny"]}
+E   AssertionError: ('{"data":{"commitment_id":null,"delivered":false,"feature_support":"UNPROBED","launched":false,"provider_used":false,...uration; no work was accepted.","status":"UNAVAILABLE","uncertainties":["MODEL_INCOMPATIBLE","TOOLS_UNPROBED"]}
+      ', '')
+    assert (4, 'UNAVAILA...INCOMPATIBLE') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 2 diff: 'UNSUPPORTED' != 'TEMPORARILY_UNAVAILABLE'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"commitment_id":null,"delivered":false,"feature_support":"UNPROBED","launched":false,"provider_used":false,...uration; no work was accepted.","status":"UNAVAILABLE","uncertainties":["MODEL_INCOMPATIBLE","TOOLS_UNPROBED"]}
+E   AssertionError: ('{"data":{"commitment_id":null,"delivered":false,"feature_support":"UNPROBED","launched":false,"provider_used":false,...uration; no work was accepted.","status":"UNAVAILABLE","uncertainties":["MODEL_INCOMPATIBLE","TOOLS_UNPROBED"]}
+      ', '')
+    assert (0, 'UNAVAILA...INCOMPATIBLE') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"commitment_id":null,"delivered":false,"feature_support":"UNPROBED","launched":false,"provider_used":false,...uration; no work was accepted.","status":"UNAVAILABLE","uncertainties":["MODEL_INCOMPATIBLE","TOOLS_UNPROBED"]}
+E   AssertionError: ('{"data":{"commitment_id":null,"delivered":false,"feature_support":"UNPROBED","launched":false,"provider_used":false,...uration; no work was accepted.","status":"UNAVAILABLE","uncertainties":["MODEL_INCOMPATIBLE","TOOLS_UNPROBED"]}
+      ', '')
+    assert (4, 'UNAVAILA...INCOMPATIBLE') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 2 diff: 'UNSUPPORTED' != 'TEMPORARILY_UNAVAILABLE'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"commitment_id":null,"delivered":false,"feature_support":"UNPROBED","launched":false,"provider_used":false,...uration; no work was accepted.","status":"UNAVAILABLE","uncertainties":["MODEL_INCOMPATIBLE","TOOLS_UNPROBED"]}
+E   AssertionError: ('{"data":{"commitment_id":null,"delivered":false,"feature_support":"UNPROBED","launched":false,"provider_used":false,...uration; no work was accepted.","status":"UNAVAILABLE","uncertainties":["MODEL_INCOMPATIBLE","TOOLS_UNPROBED"]}
+      ', '')
+    assert (0, 'UNAVAILA...INCOMPATIBLE') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"commitment_id":null,"delivered":false,"feature_support":"UNPROBED","launched":false,"provider_used":false,...uration; no work was accepted.","status":"UNAVAILABLE","uncertainties":["MODEL_INCOMPATIBLE","TOOLS_UNPROBED"]}
+E   AssertionError: ('{"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":null,"status":"UNAVAILABLE","uncertainties":[]}
+      ', '')
+    assert (4, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 3 diff: 'audit_unavailable' != 'state_dir_unsafe'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":null,"status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: ('{"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":null,"status":"UNAVAILABLE","uncertainties":[]}
+      ', '')
+    assert (4, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 3 diff: 'audit_unavailable' != 'state_dir_unsafe'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":null,"status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: ('{"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":null,"status":"UNAVAILABLE","uncertainties":[]}
+      ', '')
+    assert (4, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 3 diff: 'audit_unavailable' != 'state_dir_unsafe'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":null,"status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: ('{"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":null,"status":"UNAVAILABLE","uncertainties":[]}
+      ', '')
+    assert (4, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 3 diff: 'audit_unavailable' != 'state_dir_unsafe'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":null,"status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: ('{"data":{"commitment_id":null,"delivered":false,"feature_support":"UNPROBED","launched":false,"provider_used":false,...uration; no work was accepted.","status":"UNAVAILABLE","uncertainties":["MODEL_INCOMPATIBLE","TOOLS_UNPROBED"]}
+      ', '')
+    assert (4, 'UNAVAILA...INCOMPATIBLE') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 2 diff: 'UNSUPPORTED' != 'TEMPORARILY_UNAVAILABLE'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:177: AssertionError: ('{"data":{"commitment_id":null,"delivered":false,"feature_support":"UNPROBED","launched":false,"provider_used":false,...uration; no work was accepted.","status":"UNAVAILABLE","uncertainties":["MODEL_INCOMPATIBLE","TOOLS_UNPROBED"]}
+E   AssertionError: assert 's00-fixture-readonly/1' == 'ffc72191969b...f7e5d2b06cd16'
+      
+      - ffc72191969bb54bd25fcaa0540a15e523e25c5d2e3c25616e7f7e5d2b06cd16
+      + s00-fixture-readonly/1
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:475: AssertionError: assert 's00-fixture-readonly/1' == 'ffc72191969b...f7e5d2b06cd16'
+E   AssertionError: assert (0 == 0 and 's00-fixture-readonly/1' == 'd4d8687ea306...b74b86e9c5791'
+     +  where 0 = <test_s00_fix8_store_matrix.Run object at 0x7b82749942f0>.code
+      
+      - d4d8687ea30638650ea9e6879e170c891d15ddf785155a59d26b74b86e9c5791
+      + s00-fixture-readonly/1)
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:494: AssertionError: assert (0 == 0 and 's00-fixture-readonly/1' == 'd4d8687ea306...b74b86e9c5791'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:506: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:523: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:523: KeyError: 'reason'
+E   AttributeError: module 'quati.behavior.contracts' has no attribute 'asset_digest'
+<repo>/tests/integration/cli/test_s00_fix8_store_matrix.py:535: AttributeError: module 'quati.behavior.contracts' has no attribute 'asset_digest'
+E   AssertionError: assert [('search', '...ALLOW', 'OK')] == [('ask_admiss...ALLOW', 'OK')]
+      
+      At index 0 diff: ('search', 'ALLOW', 'OK') != ('ask_admission', 'ALLOW', 'OK')
+      Right contains one more item: ('ask', 'ALLOW', 'OK')
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_trace_commands.py:208: AssertionError: assert [('search', '...ALLOW', 'OK')] == [('ask_admiss...ALLOW', 'OK')]
+E   AssertionError: {'data': {'authz_decisions': [{'action': 'read', 'at': '2026-11-16T20:30:57Z', 'operation': 'search', 'owner_space_id'...est_a_forged_executed_capabil0/profile/data/receipts/9126e9f8d47b4a6ebc1d663f8781fad1.json'], 'next_action': None, ...}
+    assert (0, 'SUCCEEDED', None) == (0, 'PARTIAL', None)
+      
+      At index 1 diff: 'SUCCEEDED' != 'PARTIAL'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_trace_commands.py:513: AssertionError: {'data': {'authz_decisions': [{'action': 'read', 'at': '2026-11-16T20:30:57Z', 'operation': 'search', 'owner_space_id'...est_a_forged_executed_capabil0/profile/data/receipts/9126e9f8d47b4a6ebc1d663f8781fad1.json'], 'next_action': None, ...}
+E   AssertionError: {'data': {'authz_decisions': [{'action': 'read', 'at': '2026-11-16T20:31:00Z', 'operation': 'search', 'owner_space_id'...est_an_executed_capability_th0/profile/data/receipts/c40a82de23fc4cacacb4100598f5adb0.json'], 'next_action': None, ...}
+    assert (0, 'SUCCEEDED', None) == (0, 'PARTIAL', None)
+      
+      At index 1 diff: 'SUCCEEDED' != 'PARTIAL'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_trace_commands.py:513: AssertionError: {'data': {'authz_decisions': [{'action': 'read', 'at': '2026-11-16T20:31:00Z', 'operation': 'search', 'owner_space_id'...est_an_executed_capability_th0/profile/data/receipts/c40a82de23fc4cacacb4100598f5adb0.json'], 'next_action': None, ...}
+E   AssertionError: {'data': {'authz_decisions': [{'action': 'read', 'at': '2026-11-16T20:31:04Z', 'operation': 'search', 'owner_space_id'...est_a_flipped_status_without_0/profile/data/receipts/20390b750c7d412e9a6dedd77e7519d6.json'], 'next_action': None, ...}
+    assert (0, 'SUCCEEDED', None) == (0, 'PARTIAL', None)
+      
+      At index 1 diff: 'SUCCEEDED' != 'PARTIAL'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_trace_commands.py:513: AssertionError: {'data': {'authz_decisions': [{'action': 'read', 'at': '2026-11-16T20:31:04Z', 'operation': 'search', 'owner_space_id'...est_a_flipped_status_without_0/profile/data/receipts/20390b750c7d412e9a6dedd77e7519d6.json'], 'next_action': None, ...}
+E   AssertionError: {'data': {'authz_decisions': [{'action': 'read', 'at': '2026-11-16T20:31:07Z', 'operation': 'search', 'owner_space_id'...est_a_removed_policy_decision0/profile/data/receipts/907d4df86c0c4f31a5cf32fd10e20696.json'], 'next_action': None, ...}
+    assert (0, 'SUCCEEDED', None) == (0, 'PARTIAL', None)
+      
+      At index 1 diff: 'SUCCEEDED' != 'PARTIAL'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_trace_commands.py:513: AssertionError: {'data': {'authz_decisions': [{'action': 'read', 'at': '2026-11-16T20:31:07Z', 'operation': 'search', 'owner_space_id'...est_a_removed_policy_decision0/profile/data/receipts/907d4df86c0c4f31a5cf32fd10e20696.json'], 'next_action': None, ...}
+E   AssertionError: {'data': {'authz_decisions': [{'action': 'read', 'at': '2026-11-16T20:31:11Z', 'operation': 'search', 'owner_space_id'...est_a_forged_policy_decision_0/profile/data/receipts/e6b6f00434704865aad1d2208c9fe095.json'], 'next_action': None, ...}
+    assert (0, 'SUCCEEDED', None) == (0, 'PARTIAL', None)
+      
+      At index 1 diff: 'SUCCEEDED' != 'PARTIAL'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_trace_commands.py:513: AssertionError: {'data': {'authz_decisions': [{'action': 'read', 'at': '2026-11-16T20:31:11Z', 'operation': 'search', 'owner_space_id'...est_a_forged_policy_decision_0/profile/data/receipts/e6b6f00434704865aad1d2208c9fe095.json'], 'next_action': None, ...}
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_fix8_store.py::test_read_private_refuses_every_unsafe_file_with_the_typed_error_naming_the_path[fifo]
+FAILED tests/unit/test_s00_fix8_store.py::test_read_private_refuses_every_unsafe_file_with_the_typed_error_naming_the_path[symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_read_private_refuses_every_unsafe_file_with_the_typed_error_naming_the_path[dangling_symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_read_private_refuses_every_unsafe_file_with_the_typed_error_naming_the_path[hard_link]
+FAILED tests/unit/test_s00_fix8_store.py::test_read_private_refuses_every_unsafe_file_with_the_typed_error_naming_the_path[mode_644]
+FAILED tests/unit/test_s00_fix8_store.py::test_read_private_refuses_every_unsafe_file_with_the_typed_error_naming_the_path[mode_640]
+FAILED tests/unit/test_s00_fix8_store.py::test_read_private_refuses_every_unsafe_file_with_the_typed_error_naming_the_path[directory]
+FAILED tests/unit/test_s00_fix8_store.py::test_read_private_refuses_every_unsafe_file_with_the_typed_error_naming_the_path[foreign]
+FAILED tests/unit/test_s00_fix8_store.py::test_open_private_refuses_every_unsafe_file_and_creates_nothing_through_a_symlink[symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_open_private_refuses_every_unsafe_file_and_creates_nothing_through_a_symlink[dangling_symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_open_private_refuses_every_unsafe_file_and_creates_nothing_through_a_symlink[directory]
+FAILED tests/unit/test_s00_fix8_store.py::test_private_file_helpers_accept_a_private_file_and_an_absent_one
+FAILED tests/unit/test_s00_fix8_store.py::test_a_writer_refuses_a_directory_without_the_owner_bits_instead_of_widening_it[320]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_writer_refuses_a_directory_without_the_owner_bits_instead_of_widening_it[384]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.json-fifo]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.json-symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.json-dangling_symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.json-hard_link]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.json-mode_644]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.json-mode_640]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.json-directory]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.json-foreign]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[capabilities.lock-fifo]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[capabilities.lock-symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[capabilities.lock-dangling_symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[capabilities.lock-hard_link]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[capabilities.lock-mode_644]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[capabilities.lock-mode_640]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[capabilities.lock-directory]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[capabilities.lock-foreign]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.flock-fifo]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.flock-symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.flock-dangling_symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.flock-hard_link]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.flock-mode_644]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.flock-mode_640]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.flock-directory]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[registry.flock-foreign]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[packages/fixtures.calendar-read/1.0.0/capability.scs.json-fifo]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[packages/fixtures.calendar-read/1.0.0/capability.scs.json-symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[packages/fixtures.calendar-read/1.0.0/capability.scs.json-dangling_symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[packages/fixtures.calendar-read/1.0.0/capability.scs.json-hard_link]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[packages/fixtures.calendar-read/1.0.0/capability.scs.json-mode_644]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[packages/fixtures.calendar-read/1.0.0/capability.scs.json-mode_640]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[packages/fixtures.calendar-read/1.0.0/capability.scs.json-directory]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_store_file_before_anything_is_read[packages/fixtures.calendar-read/1.0.0/capability.scs.json-foreign]
+FAILED tests/unit/test_s00_fix8_store.py::test_each_store_read_goes_through_the_private_file_helper_on_its_own[fifo]
+FAILED tests/unit/test_s00_fix8_store.py::test_each_store_read_goes_through_the_private_file_helper_on_its_own[symlink]
+FAILED tests/unit/test_s00_fix8_store.py::test_each_store_read_goes_through_the_private_file_helper_on_its_own[hard_link]
+FAILED tests/unit/test_s00_fix8_store.py::test_each_store_read_goes_through_the_private_file_helper_on_its_own[mode_644]
+FAILED tests/unit/test_s00_fix8_store.py::test_each_store_read_goes_through_the_private_file_helper_on_its_own[directory]
+FAILED tests/unit/test_s00_fix8_store.py::test_each_store_read_goes_through_the_private_file_helper_on_its_own[foreign]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[symlink-packages]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[symlink-staging]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[symlink-packages/fixtures.calendar-read]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[symlink-packages/fixtures.calendar-read/1.0.0]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[mode_500-packages]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[mode_500-staging]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[mode_500-packages/fixtures.calendar-read]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[mode_500-packages/fixtures.calendar-read/1.0.0]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[foreign-packages]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[foreign-staging]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[foreign-packages/fixtures.calendar-read]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_refuses_every_unsafe_sub_directory[foreign-packages/fixtures.calendar-read/1.0.0]
+FAILED tests/unit/test_s00_fix8_store.py::test_prepare_accepts_a_healthy_store_and_leaves_the_audit_log_to_its_own_check
+FAILED tests/unit/test_s00_fix8_store.py::test_verify_audit_of_an_absent_store_creates_nothing
+FAILED tests/unit/test_s00_fix8_store.py::test_staging_fails_before_the_commit_when_the_publish_location_is_unusable[file-packages]
+FAILED tests/unit/test_s00_fix8_store.py::test_staging_fails_before_the_commit_when_the_publish_location_is_unusable[file-packages/fixtures.mail-search]
+FAILED tests/unit/test_s00_fix8_store.py::test_staging_fails_before_the_commit_when_the_publish_location_is_unusable[file-staging]
+FAILED tests/unit/test_s00_fix8_store.py::test_staging_fails_before_the_commit_when_the_publish_location_is_unusable[symlink-packages]
+FAILED tests/unit/test_s00_fix8_store.py::test_staging_fails_before_the_commit_when_the_publish_location_is_unusable[symlink-packages/fixtures.mail-search]
+FAILED tests/unit/test_s00_fix8_store.py::test_staging_fails_before_the_commit_when_the_publish_location_is_unusable[symlink-staging]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_publish_that_fails_after_the_commit_is_typed_and_says_what_was_committed
+FAILED tests/unit/test_s00_fix8_store.py::test_a_lock_entry_that_fails_after_the_commit_is_the_same_typed_late_failure
+FAILED tests/unit/test_s00_fix8_store.py::test_an_audit_append_that_fails_after_the_commit_is_not_reported_as_nothing_recorded
+FAILED tests/unit/test_s00_fix8_store.py::test_rendering_maps_an_unsafe_file_to_its_path_relative_to_the_data_directory
+FAILED tests/unit/test_s00_fix8_store.py::test_a_work_ask_verifies_storage_then_audit_then_grant_before_the_first_model_call
+FAILED tests/unit/test_s00_fix8_store.py::test_an_unusable_audit_log_refuses_the_ask_with_a_receipt_and_no_model_call
+FAILED tests/unit/test_s00_fix8_store.py::test_a_denied_admission_refuses_the_ask_with_the_port_reason_and_no_model_call
+FAILED tests/unit/test_s00_fix8_store.py::test_an_admission_that_cannot_be_logged_is_audit_unavailable_with_exit_4
+FAILED tests/unit/test_s00_fix8_store.py::test_a_probe_verifies_the_registry_store_before_it_authorizes_or_calls
+FAILED tests/unit/test_s00_fix8_store.py::test_the_composition_guard_maps_each_name_to_its_store_check
+FAILED tests/unit/test_s00_fix8_store.py::test_the_receipt_records_the_policy_version_in_force_from_the_trusted_loader
+FAILED tests/unit/test_s00_fix8_store.py::test_the_receipt_records_null_when_no_policy_reference_can_be_determined
+FAILED tests/unit/test_s00_fix8_store.py::test_the_request_context_no_longer_carries_a_policy_version_that_never_existed
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[../../../x-tenant_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[../../../x-principal_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[../../../x-personal_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[../../../x-organization_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[has a space-tenant_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[has a space-principal_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[has a space-personal_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[has a space-organization_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[value2-tenant_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[value2-principal_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[value2-personal_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[value2-organization_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01arz3ndektsv4rrffq69g5fav-tenant_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01arz3ndektsv4rrffq69g5fav-principal_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01arz3ndektsv4rrffq69g5fav-personal_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01arz3ndektsv4rrffq69g5fav-organization_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01ARZ3NDEKTSV4RRFFQ69G5FAVX-tenant_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01ARZ3NDEKTSV4RRFFQ69G5FAVX-principal_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01ARZ3NDEKTSV4RRFFQ69G5FAVX-personal_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01ARZ3NDEKTSV4RRFFQ69G5FAVX-organization_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01ARZ3NDEKTSV4RRFFQ69G5FAU-tenant_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01ARZ3NDEKTSV4RRFFQ69G5FAU-principal_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01ARZ3NDEKTSV4RRFFQ69G5FAU-personal_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_signed_record_with_a_non_ulid_identifier_is_not_a_usable_identity[01ARZ3NDEKTSV4RRFFQ69G5FAU-organization_space_id]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_credential_file_with_an_extra_hard_link_is_refused_like_any_private_file[identity.json-identity_file_hard_link]
+FAILED tests/unit/test_s00_fix8_store.py::test_a_credential_file_with_an_extra_hard_link_is_refused_like_any_private_file[device.key-device_key_hard_link]
+FAILED tests/unit/test_s00_fix8_store.py::test_an_assets_directory_beside_the_package_never_shadows_a_source_checkout
+FAILED tests/unit/test_s00_fix8_store.py::test_the_asset_digest_is_layout_independent_and_changes_with_any_asset_byte
+FAILED tests/unit/test_s00_fix8_store.py::test_the_asset_file_list_is_the_package_data_of_the_wheel
+FAILED tests/unit/test_s00_fix8_store.py::test_doctor_behavior_status_and_every_receipt_carry_the_asset_digest
+FAILED tests/unit/test_s00_fix8_store.py::test_the_eval_seed_rule_has_one_owner_and_the_cli_prints_the_use_case_response
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.json-fifo]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.json-symlink_outside]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.json-hard_link]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.json-mode_644]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.json-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.json-directory]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[capabilities.lock-fifo]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[capabilities.lock-symlink_outside]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[capabilities.lock-hard_link]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[capabilities.lock-mode_644]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[capabilities.lock-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[capabilities.lock-directory]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.flock-fifo]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.flock-symlink_outside]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.flock-hard_link]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.flock-mode_644]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.flock-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[registry.flock-directory]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[audit.jsonl-fifo]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[audit.jsonl-symlink_outside]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[audit.jsonl-hard_link]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[audit.jsonl-mode_644]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[audit.jsonl-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[audit.jsonl-directory]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[package_manifest-fifo]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[package_manifest-symlink_outside]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[package_manifest-hard_link]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[package_manifest-mode_644]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[package_manifest-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[package_manifest-directory]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_an_unusable_packages_directory_refuses_the_install_before_any_commit[symlink]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_an_unusable_packages_directory_refuses_the_install_before_any_commit[foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_an_unusable_packages_directory_refuses_the_install_before_any_commit[file]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_an_unusable_packages_directory_refuses_the_install_before_any_commit[mode_500]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[install-capabilities/staging-symlink]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[install-capabilities/staging-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[install-capabilities/packages/fixtures.calendar-read-symlink]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[install-capabilities/packages/fixtures.calendar-read/1.0.0-symlink]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[install-capabilities/packages/fixtures.calendar-read/1.0.0-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[list-capabilities/staging-symlink]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[list-capabilities/staging-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[list-capabilities/packages/fixtures.calendar-read-symlink]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[list-capabilities/packages/fixtures.calendar-read/1.0.0-symlink]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[list-capabilities/packages/fixtures.calendar-read/1.0.0-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[ask-capabilities/staging-symlink]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[ask-capabilities/staging-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[ask-capabilities/packages/fixtures.calendar-read-symlink]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[ask-capabilities/packages/fixtures.calendar-read/1.0.0-symlink]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x1_every_sub_directory_of_the_store_is_verified_before_use[ask-capabilities/packages/fixtures.calendar-read/1.0.0-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x6_a_torn_audit_log_refuses_the_ask_before_the_first_model_call[ask-model_would_invoke]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x6_a_torn_audit_log_refuses_the_ask_before_the_first_model_call[ask-model_would_not]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x6_a_torn_audit_log_refuses_the_ask_before_the_first_model_call[chat-model_would_invoke]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x6_a_torn_audit_log_refuses_the_ask_before_the_first_model_call[chat-model_would_not]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x6_a_principal_without_a_registry_grant_is_refused_before_the_first_model_call[ask-GUEST]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x6_a_principal_without_a_registry_grant_is_refused_before_the_first_model_call[ask-not-a-role]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x6_a_principal_without_a_registry_grant_is_refused_before_the_first_model_call[chat-GUEST]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x6_a_principal_without_a_registry_grant_is_refused_before_the_first_model_call[chat-not-a-role]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x6_a_member_with_a_grant_is_admitted_and_a_guest_is_still_greeted
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x13_an_unsafe_directory_has_one_reason_in_every_command[feature_reports-symlink-ask]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x13_an_unsafe_directory_has_one_reason_in_every_command[feature_reports-symlink-chat]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x13_an_unsafe_directory_has_one_reason_in_every_command[feature_reports-file-ask]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x13_an_unsafe_directory_has_one_reason_in_every_command[feature_reports-file-chat]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x13_an_unsafe_directory_has_one_reason_in_every_command[capabilities-symlink-probe]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x13_an_unsafe_directory_has_one_reason_in_every_command[capabilities-symlink-doctor_probe]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x13_an_unsafe_directory_has_one_reason_in_every_command[capabilities-file-probe]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x13_an_unsafe_directory_has_one_reason_in_every_command[capabilities-file-doctor_probe]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x13_a_permissive_feature_report_directory_is_not_reported_as_an_incompatible_model
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x8_receipts_record_the_policy_version_in_force_and_no_test_proof_tier
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x8_without_an_installed_policy_the_receipt_names_the_kernel_baseline
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[../../../x-tenant_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[../../../x-principal_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[../../../x-personal_space_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[../../../x-organization_space_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[has a space-tenant_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[has a space-principal_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[has a space-personal_space_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[has a space-organization_space_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[value2-tenant_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[value2-principal_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[value2-personal_space_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[value2-organization_space_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[01ARZ3NDEKTSV4RRFFQ69G5FAI-tenant_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[01ARZ3NDEKTSV4RRFFQ69G5FAI-principal_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[01ARZ3NDEKTSV4RRFFQ69G5FAI-personal_space_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_signed_record_with_a_non_ulid_identifier_is_invalid_everywhere[01ARZ3NDEKTSV4RRFFQ69G5FAI-organization_space_id]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_credential_file_with_an_extra_hard_link_is_rejected[identity.json-identity_file_hard_link]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x11_a_credential_file_with_an_extra_hard_link_is_rejected[device.key-device_key_hard_link]
+FAILED tests/integration/cli/test_s00_fix8_store_matrix.py::test_x15_doctor_and_every_receipt_carry_the_digest_of_the_loaded_assets
+FAILED tests/integration/cli/test_trace_commands.py::test_show_returns_the_recorded_receipt_and_decisions_of_one_request
+FAILED tests/integration/cli/test_trace_commands.py::test_a_forged_executed_capability_without_its_policy_decision_is_partial
+FAILED tests/integration/cli/test_trace_commands.py::test_an_executed_capability_that_the_trajectory_does_not_hold_is_partial
+FAILED tests/integration/cli/test_trace_commands.py::test_a_flipped_status_without_an_execution_is_partial
+FAILED tests/integration/cli/test_trace_commands.py::test_a_removed_policy_decision_line_is_partial
+FAILED tests/integration/cli/test_trace_commands.py::test_a_forged_policy_decision_line_is_partial
+210 failed, 76 passed in 320.58s (0:05:20)

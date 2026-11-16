@@ -1,0 +1,473 @@
+{
+  "case_id": "DOCTOR",
+  "checks": {
+    "doctor_exit_0": true,
+    "doctor_names_the_requested_route": true,
+    "feature_report_is_of_the_requested_transport": true,
+    "feature_report_present": true,
+    "measured_support_supported": true,
+    "probe_exit_0": true,
+    "probe_names_the_requested_route": true,
+    "provider_status_probed": true,
+    "same_feature_report": true
+  },
+  "cli_log": [
+    {
+      "argv": [
+        "init",
+        "--json"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.718,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "doctor",
+        "--probe",
+        "--json"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.811,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "doctor",
+        "--json"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.688,
+      "exit": 0,
+      "stderr_tail": ""
+    }
+  ],
+  "doctor": {
+    "audit": [],
+    "elapsed_s": 0.69,
+    "exit": 0,
+    "receipt": null,
+    "response": {
+      "data": {
+        "behavior": {
+          "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+          "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+          "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426",
+          "diagnostics": [],
+          "profile_ref": "examples/behavior/executive-secretary.yaml",
+          "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
+          "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+          "status": "VALID"
+        },
+        "config_dir": "<EVAL_PROFILES>/DOCTOR/config",
+        "config_valid": true,
+        "durable_worker": "NOT_IMPLEMENTED",
+        "external_integrations": "NOT_VERIFIED_EXTERNAL",
+        "identity": {
+          "authenticator": "local-os",
+          "initialized": true,
+          "qualification": "POSIX_LOCAL_ONLY",
+          "secret_store": "owner_only_file",
+          "status": "AVAILABLE"
+        },
+        "listening_sockets": 0,
+        "live_calls_allowed": true,
+        "os": "Linux",
+        "os_qualification": "QUALIFIED",
+        "policy": {
+          "reason": null,
+          "status": "AVAILABLE"
+        },
+        "profile": "LOCAL",
+        "provider": {
+          "adapter_installed": true,
+          "configured": true,
+          "endpoint_host": null,
+          "feature_report": {
+            "gate_reason": null,
+            "measured_at": "2026-11-16T21:15:01.508223+00:00",
+            "observed_model_id": "fake-model-1",
+            "ref": "sha256:ad2ba4dc6bd06980920e6fb0c431bae113bab07b03d11ea6c981bce897e4f11d:<EVAL_PROFILES>/DOCTOR/data/receipts/1321059fa00f4e80a380acd3dc3b8b89.json"
+          },
+          "features": {
+            "concurrency": "NOT_VERIFIED",
+            "streaming": "UNSUPPORTED",
+            "structured_output": "SUPPORTED",
+            "timeout": "SUPPORTED",
+            "tools": "SUPPORTED"
+          },
+          "measured_support": "SUPPORTED",
+          "missing": [],
+          "model": "fake-model-1",
+          "pricing": "UNKNOWN",
+          "reasons": [],
+          "region": "UNKNOWN",
+          "status": "PROBED",
+          "transport": "scripted_fake_t04"
+        },
+        "python_version": "3.13.7",
+        "scope": "S00_T01_LOCAL_CLI",
+        "sqlite_fts5": true,
+        "sqlite_journal_mode": "NOT_VERIFIED",
+        "sqlite_journal_reason": "ledger_not_delivered",
+        "sqlite_ok": true,
+        "sqlite_version": "3.46.1",
+        "warnings": [],
+        "worker": {
+          "reason": "worker_not_delivered",
+          "status": "NOT_APPLICABLE"
+        }
+      },
+      "error": null,
+      "evidence_refs": [],
+      "next_action": null,
+      "status": "SUCCEEDED",
+      "uncertainties": []
+    }
+  },
+  "doctor_identities": [
+    {
+      "behavior": {
+        "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+        "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+        "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426",
+        "profile_ref": "examples/behavior/executive-secretary.yaml",
+        "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
+        "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+        "status": "VALID"
+      },
+      "where": "probe"
+    },
+    {
+      "behavior": {
+        "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+        "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+        "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426",
+        "profile_ref": "examples/behavior/executive-secretary.yaml",
+        "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
+        "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+        "status": "VALID"
+      },
+      "where": "doctor"
+    }
+  ],
+  "failed_checks": [],
+  "feature_report": {
+    "aborted": null,
+    "attempts": {
+      "concurrency": 1,
+      "streaming": 1,
+      "structured_output": 1,
+      "timeout": 1,
+      "tools": 1
+    },
+    "config_hash": "22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128",
+    "details": {},
+    "digests": {
+      "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+      "code_digest": "305a7ed7af9d65633b3733172ab2f1f30a0ba6a91de6985885d87e66275ac75f"
+    },
+    "evidence_refs": [],
+    "evidence_version": "s00/1",
+    "features": {
+      "concurrency": "NOT_VERIFIED",
+      "streaming": "UNSUPPORTED",
+      "structured_output": "SUPPORTED",
+      "timeout": "SUPPORTED",
+      "tools": "SUPPORTED"
+    },
+    "kind": "feature_report",
+    "measured_at": "2026-11-16T21:15:01.508223+00:00",
+    "metadata_attestations": {
+      "pricing": "UNKNOWN",
+      "region": "UNKNOWN"
+    },
+    "model_identity_source": "observed",
+    "model_or_adapter_version": "fake-model-1",
+    "observations": {
+      "concurrency": "CONCURRENCY_NOT_EXERCISED",
+      "streaming": "STREAMING_UNSUPPORTED",
+      "structured_output": "PROBE_PASSED",
+      "timeout": "PROBE_PASSED",
+      "tools": "PROBE_PASSED"
+    },
+    "observed_model_id": "fake-model-1",
+    "probe_profile": {
+      "name": "ask",
+      "sha256": "572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"
+    },
+    "provider_id": "scripted_fake_t04",
+    "retried": {},
+    "timestamp": "2026-11-16T21:15:01.523472+00:00",
+    "transport": "scripted_fake_t04"
+  },
+  "feature_report_sha256": "ad2ba4dc6bd06980920e6fb0c431bae113bab07b03d11ea6c981bce897e4f11d",
+  "observed_route": {
+    "doctor": {
+      "model": "fake-model-1",
+      "transport": "scripted_fake_t04"
+    },
+    "feature_report_observed_model_id": "fake-model-1",
+    "feature_report_transport": "scripted_fake_t04",
+    "probe": {
+      "model": "fake-model-1",
+      "transport": "scripted_fake_t04"
+    }
+  },
+  "pass": true,
+  "probe": {
+    "audit": [
+      {
+        "actor_id": "01M7K3D6KZ5H93VSVMJTFG9K3G",
+        "at": "2026-11-16T21:15:01Z",
+        "authorized_scope": {
+          "computed_at": "2026-11-16T21:15:01Z",
+          "principal_id": "01M7K3D6KZ5H93VSVMJTFG9K3G",
+          "purpose": "manage",
+          "readable_space_ids": [
+            "01M7K3D6KZ1EAJ7Z5BCV6CGBKH",
+            "01M7K3D6KZ23MQWN65K0DWRZSA"
+          ],
+          "tenant_id": "01M7K3D6KZ1ZC05QR272BPZS0Z",
+          "valid_for_transaction": "request-86f454383b1142478617a151203c912a"
+        },
+        "decision": {
+          "action": "manage",
+          "principal_id": "01M7K3D6KZ5H93VSVMJTFG9K3G",
+          "reason_code": "OK",
+          "resource_ref": "registry:01M7K3D6KZ1ZC05QR272BPZS0Z",
+          "tenant_id": "01M7K3D6KZ1ZC05QR272BPZS0Z",
+          "verdict": "ALLOW"
+        },
+        "event": "authz.decided",
+        "operation": "models_probe",
+        "owner_space_id": "01M7K3D6KZ23MQWN65K0DWRZSA",
+        "request_id": "request-86f454383b1142478617a151203c912a",
+        "tenant_id": "01M7K3D6KZ1ZC05QR272BPZS0Z"
+      }
+    ],
+    "elapsed_s": 0.81,
+    "exit": 0,
+    "receipt": {
+      "aborted": null,
+      "attempts": {
+        "concurrency": 1,
+        "streaming": 1,
+        "structured_output": 1,
+        "timeout": 1,
+        "tools": 1
+      },
+      "config_hash": "22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128",
+      "details": {},
+      "digests": {
+        "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+        "code_digest": "305a7ed7af9d65633b3733172ab2f1f30a0ba6a91de6985885d87e66275ac75f"
+      },
+      "evidence_refs": [],
+      "evidence_version": "s00/1",
+      "features": {
+        "concurrency": "NOT_VERIFIED",
+        "streaming": "UNSUPPORTED",
+        "structured_output": "SUPPORTED",
+        "timeout": "SUPPORTED",
+        "tools": "SUPPORTED"
+      },
+      "kind": "feature_report",
+      "measured_at": "2026-11-16T21:15:01.508223+00:00",
+      "metadata_attestations": {
+        "pricing": "UNKNOWN",
+        "region": "UNKNOWN"
+      },
+      "model_identity_source": "observed",
+      "model_or_adapter_version": "fake-model-1",
+      "observations": {
+        "concurrency": "CONCURRENCY_NOT_EXERCISED",
+        "streaming": "STREAMING_UNSUPPORTED",
+        "structured_output": "PROBE_PASSED",
+        "timeout": "PROBE_PASSED",
+        "tools": "PROBE_PASSED"
+      },
+      "observed_model_id": "fake-model-1",
+      "probe_profile": {
+        "name": "ask",
+        "sha256": "572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"
+      },
+      "provider_id": "scripted_fake_t04",
+      "retried": {},
+      "timestamp": "2026-11-16T21:15:01.523472+00:00",
+      "transport": "scripted_fake_t04"
+    },
+    "response": {
+      "data": {
+        "behavior": {
+          "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+          "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+          "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426",
+          "diagnostics": [],
+          "profile_ref": "examples/behavior/executive-secretary.yaml",
+          "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
+          "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+          "status": "VALID"
+        },
+        "config_dir": "<EVAL_PROFILES>/DOCTOR/config",
+        "config_valid": true,
+        "durable_worker": "NOT_IMPLEMENTED",
+        "external_integrations": "NOT_VERIFIED_EXTERNAL",
+        "feature_report": {
+          "aborted": null,
+          "attempts": {
+            "concurrency": 1,
+            "streaming": 1,
+            "structured_output": 1,
+            "timeout": 1,
+            "tools": 1
+          },
+          "config_hash": "22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128",
+          "details": {},
+          "evidence_refs": [
+            "sha256:ad2ba4dc6bd06980920e6fb0c431bae113bab07b03d11ea6c981bce897e4f11d:<EVAL_PROFILES>/DOCTOR/data/receipts/1321059fa00f4e80a380acd3dc3b8b89.json"
+          ],
+          "features": {
+            "concurrency": "NOT_VERIFIED",
+            "streaming": "UNSUPPORTED",
+            "structured_output": "SUPPORTED",
+            "timeout": "SUPPORTED",
+            "tools": "SUPPORTED"
+          },
+          "measured_at": "2026-11-16T21:15:01.508223+00:00",
+          "metadata_attestations": {
+            "pricing": "UNKNOWN",
+            "region": "UNKNOWN"
+          },
+          "model_identity_source": "observed",
+          "model_or_adapter_version": "fake-model-1",
+          "observations": {
+            "concurrency": "CONCURRENCY_NOT_EXERCISED",
+            "streaming": "STREAMING_UNSUPPORTED",
+            "structured_output": "PROBE_PASSED",
+            "timeout": "PROBE_PASSED",
+            "tools": "PROBE_PASSED"
+          },
+          "observed_model_id": "fake-model-1",
+          "probe_profile": {
+            "name": "ask",
+            "sha256": "572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"
+          },
+          "provider_id": "scripted_fake_t04",
+          "retried": {},
+          "transport": "scripted_fake_t04"
+        },
+        "identity": {
+          "authenticator": "local-os",
+          "initialized": true,
+          "qualification": "POSIX_LOCAL_ONLY",
+          "secret_store": "owner_only_file",
+          "status": "AVAILABLE"
+        },
+        "listening_sockets": 0,
+        "live_calls_allowed": true,
+        "os": "Linux",
+        "os_qualification": "QUALIFIED",
+        "policy": {
+          "reason": null,
+          "status": "AVAILABLE"
+        },
+        "profile": "LOCAL",
+        "provider": {
+          "adapter_installed": true,
+          "configured": true,
+          "endpoint_host": null,
+          "features": {
+            "concurrency": "NOT_VERIFIED",
+            "streaming": "UNSUPPORTED",
+            "structured_output": "SUPPORTED",
+            "timeout": "SUPPORTED",
+            "tools": "SUPPORTED"
+          },
+          "measured_support": "SUPPORTED",
+          "missing": [],
+          "model": "fake-model-1",
+          "pricing": "UNKNOWN",
+          "reasons": [],
+          "region": "UNKNOWN",
+          "status": "PROBED",
+          "transport": "scripted_fake_t04"
+        },
+        "python_version": "3.13.7",
+        "scope": "S00_T01_LOCAL_CLI",
+        "sqlite_fts5": true,
+        "sqlite_journal_mode": "NOT_VERIFIED",
+        "sqlite_journal_reason": "ledger_not_delivered",
+        "sqlite_ok": true,
+        "sqlite_version": "3.46.1",
+        "verdicts": {
+          "concurrency": {
+            "attempts": 1,
+            "detail": null,
+            "reason": "CONCURRENCY_NOT_EXERCISED",
+            "verdict": "NOT_VERIFIED"
+          },
+          "streaming": {
+            "attempts": 1,
+            "detail": null,
+            "reason": "STREAMING_UNSUPPORTED",
+            "verdict": "UNSUPPORTED"
+          },
+          "structured_output": {
+            "attempts": 1,
+            "detail": null,
+            "reason": "PROBE_PASSED",
+            "verdict": "SUPPORTED"
+          },
+          "timeout": {
+            "attempts": 1,
+            "detail": null,
+            "reason": "PROBE_PASSED",
+            "verdict": "SUPPORTED"
+          },
+          "tools": {
+            "attempts": 1,
+            "detail": null,
+            "reason": "PROBE_PASSED",
+            "verdict": "SUPPORTED"
+          }
+        },
+        "warnings": [],
+        "worker": {
+          "reason": "worker_not_delivered",
+          "status": "NOT_APPLICABLE"
+        }
+      },
+      "error": null,
+      "evidence_refs": [
+        "sha256:ad2ba4dc6bd06980920e6fb0c431bae113bab07b03d11ea6c981bce897e4f11d:<EVAL_PROFILES>/DOCTOR/data/receipts/1321059fa00f4e80a380acd3dc3b8b89.json"
+      ],
+      "next_action": null,
+      "status": "SUCCEEDED",
+      "uncertainties": [
+        "streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)",
+        "concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"
+      ]
+    }
+  },
+  "profile_cost": {
+    "cost_usd_known": 0.0,
+    "receipts_cost_unknown": 2
+  },
+  "requested_route": {
+    "model": "fake-model-1",
+    "transport": "scripted_fake_t04"
+  },
+  "requirement": "S00-GATE-01 live observation",
+  "setup": [
+    [
+      "init",
+      0,
+      "SUCCEEDED"
+    ]
+  ],
+  "validity": "VALID",
+  "validity_reasons": []
+}

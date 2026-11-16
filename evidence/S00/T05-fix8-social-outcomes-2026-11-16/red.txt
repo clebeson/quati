@@ -1,0 +1,531 @@
+# RED run before any src/ change (fix round 8: X3, X4, X5/D7, SOC-01 timeout L2). git HEAD c232241; src/ diff vs HEAD for owned files: 0 changed
+# command: .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_s00_fix8_social_outcomes.py tests/integration/cli/test_s00_fix8_social_timeout.py tests/integration/test_approval_injection.py::test_pol_01_k3_is_denied_by_the_composed_gate_over_the_installed_policy --tb=line
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF..FF.F.....FF.FFF..FFFFFFFF..F.FFFF [ 41%]
+FFFFF....FFFF..FFF...FFF.......F..F.F...F...F.F.....FFFF.F.F...........F [ 83%]
+F.FFFFFFFFFF.F.F.....FF..F.F                                             [100%]
+=================================== FAILURES ===================================
+E   AssertionError: assert {'c', 'das', ...o', 'is', ...} == {'dringend', ...', 'urgently'}
+      
+      Extra items in the left set:
+      'das'
+      'c'
+      'questo'
+      'esto'
+      'est'...
+      
+      ...Full output truncated, use '-vv' to show
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:88: AssertionError: assert {'c', 'das', ...o', 'is', ...} == {'dringend', ...', 'urgently'}
+E   AssertionError: assert not ({'bedankt', 'bonjour', 'bonsoir', 'buenas', 'buonasera', 'buongiorno', ...} & {'am', 'aquilo', 'are', 'be', 'c', 'ce', ...})
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:102: AssertionError: assert not ({'bedankt', 'bonjour', 'bonsoir', 'buenas', 'buonasera', 'buongiorno', ...} & {'am', 'aquilo', 'are', 'be', 'c', 'ce', ...})
+E   AssertionError: assert not ({'bedankt', 'bonjour', 'bonsoir', 'buenas', 'buonasera', 'buongiorno', ...} & {'apaga', 'apague', 'borra', 'come', 'comment', 'como', ...})
+     +  where {'apaga', 'apague', 'borra', 'come', 'comment', 'como', ...} = set(['salve', 'salva', 'salvar', 'save', 'guarda', 'guardar', ...])
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:120: AssertionError: assert not ({'bedankt', 'bonjour', 'bonsoir', 'buenas', 'buonasera', 'buongiorno', ...} & {'apaga', 'apague', 'borra', 'come', 'comment', 'como', ...})
+E   AssertionError: hello, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: hello, es ist dringend
+E   AssertionError: olá, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: olá, es ist dringend
+E   AssertionError: hola, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: hola, es ist dringend
+E   AssertionError: bonjour, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: bonjour, es ist dringend
+E   AssertionError: hallo, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: hallo, es ist dringend
+E   AssertionError: ciao, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: ciao, es ist dringend
+E   AssertionError: hoi, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: hoi, es ist dringend
+E   AssertionError: merhaba, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: merhaba, es ist dringend
+E   AssertionError: привет, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: привет, es ist dringend
+E   AssertionError: こんにちは, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: こんにちは, es ist dringend
+E   AssertionError: 你好, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: 你好, es ist dringend
+E   AssertionError: 안녕하세요, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: 안녕하세요, es ist dringend
+E   AssertionError: नमस्ते, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: नमस्ते, es ist dringend
+E   AssertionError: مرحبا, es ist dringend
+    assert (None is not None)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:145: AssertionError: مرحبا, es ist dringend
+E   AssertionError: hello is it urgent
+    assert not True
+     +  where True = is_social('hello is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: hello is it urgent
+E   AssertionError: olá is it urgent
+    assert not True
+     +  where True = is_social('olá is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: olá is it urgent
+E   AssertionError: hola is it urgent
+    assert not True
+     +  where True = is_social('hola is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: hola is it urgent
+E   AssertionError: bonjour is it urgent
+    assert not True
+     +  where True = is_social('bonjour is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: bonjour is it urgent
+E   AssertionError: hallo is it urgent
+    assert not True
+     +  where True = is_social('hallo is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: hallo is it urgent
+E   AssertionError: ciao is it urgent
+    assert not True
+     +  where True = is_social('ciao is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: ciao is it urgent
+E   AssertionError: hoi is it urgent
+    assert not True
+     +  where True = is_social('hoi is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: hoi is it urgent
+E   AssertionError: merhaba is it urgent
+    assert not True
+     +  where True = is_social('merhaba is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: merhaba is it urgent
+E   AssertionError: привет is it urgent
+    assert not True
+     +  where True = is_social('привет is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: привет is it urgent
+E   AssertionError: こんにちは is it urgent
+    assert not True
+     +  where True = is_social('こんにちは is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: こんにちは is it urgent
+E   AssertionError: 你好 is it urgent
+    assert not True
+     +  where True = is_social('你好 is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: 你好 is it urgent
+E   AssertionError: 안녕하세요 is it urgent
+    assert not True
+     +  where True = is_social('안녕하세요 is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: 안녕하세요 is it urgent
+E   AssertionError: नमस्ते is it urgent
+    assert not True
+     +  where True = is_social('नमस्ते is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: नमस्ते is it urgent
+E   AssertionError: مرحبا is it urgent
+    assert not True
+     +  where True = is_social('مرحبا is it urgent')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:158: AssertionError: مرحبا is it urgent
+E   AssertionError: 'hello hello hello hello hello hello hello hello hello hello hello hello hello he'
+    assert True == ('W' == 'S'
+     +  where True = is_social('hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hel...llo hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello ')
+      
+      - S
+      + W)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:178: AssertionError: 'hello hello hello hello hello hello hello hello hello hello hello hello hello he'
+E   AssertionError: 'hello \u2192 hi'
+    assert not True
+     +  where True = is_social('hello → hi')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \u2192 hi'
+E   AssertionError: 'hello\x07'
+    assert not True
+     +  where True = is_social('hello\x07')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello\x07'
+E   AssertionError: 'hello \u2500'
+    assert not True
+     +  where True = is_social('hello ─')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \u2500'
+E   AssertionError: 'hello \u2819\u2811\u2807\u2811\u281e\u2811 \u2801\u2807\u2807'
+    assert not True
+     +  where True = is_social('hello ⠙⠑⠇⠑⠞⠑ ⠁⠇⠇')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \u2819\u2811\u2807\u2811\u281e\u2811 \u2801\u2807\u2807'
+E   AssertionError: '\ufeffhello'
+    assert not True
+     +  where True = is_social('\ufeffhello')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: '\ufeffhello'
+E   AssertionError: 'hello \u20ac'
+    assert not True
+     +  where True = is_social('hello €')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \u20ac'
+E   AssertionError: 'hello \u2020'
+    assert not True
+     +  where True = is_social('hello †')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \u2020'
+E   AssertionError: 'hello \u2702'
+    assert not True
+     +  where True = is_social('hello ✂')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \u2702'
+E   AssertionError: 'hello \u203d'
+    assert not True
+     +  where True = is_social('hello ‽')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \u203d'
+E   AssertionError: '\u2066hello\u2069'
+    assert not True
+     +  where True = is_social('\u2066hello\u2069')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: '\u2066hello\u2069'
+E   AssertionError: 'hello\u2028hi'
+    assert not True
+     +  where True = is_social('hello\u2028hi')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello\u2028hi'
+E   AssertionError: 'hello \ud800'
+    assert not True
+     +  where True = is_social('hello \ud800')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \ud800'
+E   AssertionError: 'hello \u2211'
+    assert not True
+     +  where True = is_social('hello ∑')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \u2211'
+E   AssertionError: 'hello \xb7\u2212\xb7 \u2212\u2212'
+    assert not True
+     +  where True = is_social('hello ·−· −−')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \xb7\u2212\xb7 \u2212\u2212'
+E   AssertionError: 'hello -...-.-..-'
+    assert not True
+     +  where True = is_social('hello -...-.-..-')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello -...-.-..-'
+E   AssertionError: 'hello -.. . .-.. . - . / .- .-.. .-..'
+    assert not True
+     +  where True = is_social('hello -.. . .-.. . - . / .- .-.. .-..')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello -.. . .-.. . - . / .- .-.. .-..'
+E   AssertionError: 'hello \U0001f153\U0001f154\U0001f15b\U0001f154\U0001f163\U0001f154'
+    assert not True
+     +  where True = is_social('hello 🅓🅔🅛🅔🅣🅔')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \U0001f153\U0001f154\U0001f15b\U0001f154\U0001f163\U0001f154'
+E   AssertionError: 'hello \U0001f173\U0001f174\U0001f17b\U0001f174\U0001f183\U0001f174 \U0001f170\U0001f17b\U0001f17b'
+    assert not True
+     +  where True = is_social('hello 🅳🅴🅻🅴🆃🅴 🅰🅻🅻')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \U0001f173\U0001f174\U0001f17b\U0001f174\U0001f183\U0001f174 \U0001f170\U0001f17b\U0001f17b'
+E   AssertionError: 'hello \uffff'
+    assert not True
+     +  where True = is_social('hello \uffff')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \uffff'
+E   AssertionError: 'hello\x00'
+    assert not True
+     +  where True = is_social('hello\x00')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello\x00'
+E   AssertionError: 'hello\u2029hi'
+    assert not True
+     +  where True = is_social('hello\u2029hi')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello\u2029hi'
+E   AssertionError: 'hello \U0001f4e7'
+    assert not True
+     +  where True = is_social('hello 📧')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \U0001f4e7'
+E   AssertionError: 'hello \ue000\ue001'
+    assert not True
+     +  where True = is_social('hello \ue000\ue001')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \ue000\ue001'
+E   AssertionError: 'hello \U000f0000'
+    assert not True
+     +  where True = is_social('hello \U000f0000')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \U000f0000'
+E   AssertionError: 'hello \u2022'
+    assert not True
+     +  where True = is_social('hello •')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \u2022'
+E   AssertionError: 'hello \U0001f1e9\U0001f1ea'
+    assert not True
+     +  where True = is_social('hello 🇩🇪')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \U0001f1e9\U0001f1ea'
+E   AssertionError: 'hi \U0001f1e9 \U0001f1ea \U0001f1f1 \U0001f1ea \U0001f1f9 \U0001f1ea'
+    assert not True
+     +  where True = is_social('hi 🇩 🇪 🇱 🇪 🇹 🇪')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hi \U0001f1e9 \U0001f1ea \U0001f1f1 \U0001f1ea \U0001f1f9 \U0001f1ea'
+E   AssertionError: '\u202ehello'
+    assert not True
+     +  where True = is_social('\u202ehello')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: '\u202ehello'
+E   AssertionError: 'hello \U0001f44b\U0001f3fd\U0001f3fd'
+    assert not True
+     +  where True = is_social('hello 👋🏽🏽')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \U0001f44b\U0001f3fd\U0001f3fd'
+E   AssertionError: 'hello \xa7'
+    assert not True
+     +  where True = is_social('hello §')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \xa7'
+E   AssertionError: 'hello \U0001f3fd'
+    assert not True
+     +  where True = is_social('hello 🏽')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \U0001f3fd'
+E   AssertionError: 'hello\U000e0064\U000e0065\U000e006c\U000e0065\U000e0074\U000e0065'
+    assert not True
+     +  where True = is_social('hello\U000e0064\U000e0065\U000e006c\U000e0065\U000e0074\U000e0065')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello\U000e0064\U000e0065\U000e006c\U000e0065\U000e0074\U000e0065'
+E   AssertionError: 'hello \U0001f60a\U000e0064\U000e0065\U000e006c'
+    assert not True
+     +  where True = is_social('hello 😊\U000e0064\U000e0065\U000e006c')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \U0001f60a\U000e0064\U000e0065\U000e006c'
+E   AssertionError: 'thanks \U0001f44d'
+    assert not True
+     +  where True = is_social('thanks 👍')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'thanks \U0001f44d'
+E   AssertionError: 'hello \u0378'
+    assert not True
+     +  where True = is_social('hello \u0378')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \u0378'
+E   AssertionError: 'hello\x0bhi'
+    assert not True
+     +  where True = is_social('hello\x0bhi')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello\x0bhi'
+E   AssertionError: 'hello\u2060'
+    assert not True
+     +  where True = is_social('hello\u2060')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello\u2060'
+E   AssertionError: 'hello \U0001f60a\u200d'
+    assert not True
+     +  where True = is_social('hello 😊\u200d')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello \U0001f60a\u200d'
+E   AssertionError: 'hello\u200b'
+    assert not True
+     +  where True = is_social('hello\u200b')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:262: AssertionError: 'hello\u200b'
+E   AssertionError: 0x0
+    assert not True
+     +  where True = is_social('hello \x00')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:277: AssertionError: 0x0
+E   AttributeError: 'NoneType' object has no attribute 'reply'
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:289: AttributeError: 'NoneType' object has no attribute 'reply'
+E   AttributeError: 'NoneType' object has no attribute 'reply'
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:289: AttributeError: 'NoneType' object has no attribute 'reply'
+E   AttributeError: 'NoneType' object has no attribute 'reply'
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:289: AttributeError: 'NoneType' object has no attribute 'reply'
+E   AttributeError: 'NoneType' object has no attribute 'reply'
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:289: AttributeError: 'NoneType' object has no attribute 'reply'
+E   AssertionError: assert True is False
+     +  where True = is_social('hello!!!!')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = is_social('hello....')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = is_social('hello‼‼')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = is_social('hello , . hi')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = is_social('hello . . .')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = is_social('hello ! ?')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = is_social('! ? hello')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = is_social('hello -.. .')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = is_social('hello :-) !')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = is_social('hello! 😊 !')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = is_social('hello !😊! hi')
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:310: AssertionError: assert True is False
+E   AssertionError: assert not True
+     +  where True = is_social('hello hello hello hello hello hello hello hello hello hello hello hello hello')
+     +    where 'hello hello hello hello hello hello hello hello hello hello hello hello hello' = <built-in method join of str object at 0xa60ad8>((['hello'] * (12 + 1)))
+     +      where <built-in method join of str object at 0xa60ad8> = ' '.join
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:320: AssertionError: assert not True
+E   AttributeError: 'NoneType' object has no attribute 'language'
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:335: AttributeError: 'NoneType' object has no attribute 'language'
+E   AssertionError: assert (0 == 0 and [[], ['quati_..._status'], []] == []
+      
+      Left contains 6 more items, first extra item: []
+      Use -v to get more diff)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:363: AssertionError: assert (0 == 0 and [[], ['quati_..._status'], []] == []
+E   assert (0 == 0 and 'GREETING' not in '{"data":{"a...nties":[]}\n'
+      
+      'GREETING' is contained here:
+        lt_kind":"GREETING","result_status":"RESPONDED","scope":"S00_T01_LOCAL_CLI","text":"Ciao!","text_source":"application_template","tool_calls":[],"trace_id":"98db551a486b422697827d67d93d7d2d","usage":{"cost_usd":null},"work_performed":false},"error":null,"evidence_refs":["sha256:d96b57c87c9cfcb737c952616d75d38e2ec83efc6a15ad9993966741606978a5:/tmp/pytest-of-<user>/pytest-1082/fix80/profile/data/receipts/ded15c915a6343eeadb6ad396b0cf210.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ?           ++++++++
+      ?                                    ...
+      
+      ...Full output truncated, use '-vv' to show)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:377: assert (0 == 0 and 'GREETING' not in '{"data":{"a...nties":[]}\n'
+E   assert (0 == 0 and 'Done. All e...ord AUD-991.' not in '{"data":{"a...nties":[]}\n'
+      
+      'Done. All events w...dit record AUD-991.' is contained here:
+        nties":[]} and 'GREETING' not in '{"data":{"a...nties":[]}\n'
+      
+      'GREETING' is contained here:
+        lt_kind":"GREETING","result_status":"RESPONDED","scope":"S00_T01_LOCAL_CLI","text":"Ciao!","text_source":"application_template","tool_calls":[],"trace_id":"196edda36d8548c5821c71a804bacffc","usage":{"cost_usd":null},"work_performed":false},"error":null,"evidence_refs":["sha256:3bdf9fc59be1f2e484068fc5e744852c584165233d4579244f335c18470ff61e:/tmp/pytest-of-<user>/pytest-1082/fix80/profile/data/receipts/921b1b5b485249c4bb1704da7f29600e.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ?           ++++++++
+      ?                                    ...
+      
+      ...Full output truncated, use '-vv' to show)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:390: assert (0 == 0 and 'Done. All e...ord AUD-991.' not in '{"data":{"a...nties":[]}\n'
+E   AssertionError: {"data":{"classification":{"complexity":"trivial","intent":"social","next_action":"respond","risk":"none","safe_work_allowed":false,"uncertainty":"low","work_needed":false},"classification_sha256":"cd7c632f3e9b8347babfda8ddaa4724bf941f1e230f887c7c449879cd3950449","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"outcome":"NO_CAPABILITY","provider_used":true,"reason":"NO_CANDIDATES","received":true,"request_id":"request-110efc9aafca4a3caa8bcb26c3e24ada","result_kind":"NO_CAPABILITY","result_status":"NO_CAPABILITY","scope":"S00_T04_ASK","text":"No installed capability can fulfil this request.","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"}],"trace_id":"359c8ce8204b4fb5801c035540d5a05f","usage":{"cost_usd":null,"input_tokens":null,"model_requests":3,"output_tokens":null}},"error":null,"evidence_refs":["sha256:dcd9e5fff258d3f0c78334cbd55e37f5add978b92895dde532a100bf0b2a5e90:/tmp/pytest-of-<user>/pytest-1082/fix80/profile/data/receipts/98554bf2bde641f8b768f754bfc32a84.json"],"next_action":"report_no_capability","status":"SUCCEEDED","uncertainties":["NO_CAPABILITY","NO_CANDIDATES"]}
+      
+    assert (0, 'SUCCEEDED') == (4, 'UNAVAILABLE')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:419: AssertionError: {"data":{"classification":{"complexity":"trivial","intent":"social","next_action":"respond","risk":"none","safe_work_allowed":false,"uncertainty":"low","work_needed":false},"classification_sha256":"cd7c632f3e9b8347babfda8ddaa4724bf941f1e230f887c7c449879cd3950449","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"outcome":"NO_CAPABILITY","provider_used":true,"reason":"NO_CANDIDATES","received":true,"request_id":"request-110efc9aafca4a3caa8bcb26c3e24ada","result_kind":"NO_CAPABILITY","result_status":"NO_CAPABILITY","scope":"S00_T04_ASK","text":"No installed capability can fulfil this request.","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"}],"trace_id":"359c8ce8204b4fb5801c035540d5a05f","usage":{"cost_usd":null,"input_tokens":null,"model_requests":3,"output_tokens":null}},"error":null,"evidence_refs":["sha256:dcd9e5fff258d3f0c78334cbd55e37f5add978b92895dde532a100bf0b2a5e90:/tmp/pytest-of-<user>/pytest-1082/fix80/profile/data/receipts/98554bf2bde641f8b768f754bfc32a84.json"],"next_action":"report_no_capability","status":"SUCCEEDED","uncertainties":["NO_CAPABILITY","NO_CANDIDATES"]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"outcome":"NO_CAPABILITY","provider_used":true,"reason":"NO_CANDIDATES","received":true,"request_id":"request-d11a1984d3e248e589c596a757a057b1","result_kind":"NO_CAPABILITY","result_status":"NO_CAPABILITY","scope":"S00_T04_ASK","text":"No installed capability can fulfil this request.","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"}],"trace_id":"247e93c315c84c3092bdaef5593d2154","usage":{"cost_usd":null,"input_tokens":null,"model_requests":3,"output_tokens":null}},"error":null,"evidence_refs":["sha256:f0e0c2e5d8c188873b91816a545e165fbf4e09b2c243c61bb7f899016dcb03b1:/tmp/pytest-of-<user>/pytest-1082/fix80/profile/data/receipts/774d1cb3a21a407eb01f99bca52a8bdd.json"],"next_action":"report_no_capability","status":"SUCCEEDED","uncertainties":["NO_CAPABILITY","NO_CANDIDATES"]}
+      
+    assert (0, 'SUCCEEDED') == (4, 'UNAVAILABLE')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:419: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"outcome":"NO_CAPABILITY","provider_used":true,"reason":"NO_CANDIDATES","received":true,"request_id":"request-d11a1984d3e248e589c596a757a057b1","result_kind":"NO_CAPABILITY","result_status":"NO_CAPABILITY","scope":"S00_T04_ASK","text":"No installed capability can fulfil this request.","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"}],"trace_id":"247e93c315c84c3092bdaef5593d2154","usage":{"cost_usd":null,"input_tokens":null,"model_requests":3,"output_tokens":null}},"error":null,"evidence_refs":["sha256:f0e0c2e5d8c188873b91816a545e165fbf4e09b2c243c61bb7f899016dcb03b1:/tmp/pytest-of-<user>/pytest-1082/fix80/profile/data/receipts/774d1cb3a21a407eb01f99bca52a8bdd.json"],"next_action":"report_no_capability","status":"SUCCEEDED","uncertainties":["NO_CAPABILITY","NO_CANDIDATES"]}
+E   AssertionError: {"data":{"classification":{"complexity":"trivial","intent":"social","next_action":"respond","risk":"none","safe_work_allowed":false,"uncertainty":"low","work_needed":false},"classification_sha256":"cd7c632f3e9b8347babfda8ddaa4724bf941f1e230f887c7c449879cd3950449","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"outcome":"NO_CAPABILITY","provider_used":true,"reason":"NONE_FITS","received":true,"request_id":"request-ac61fca81e4f424e953d7c772a85baf1","result_kind":"NO_CAPABILITY","result_status":"NO_CAPABILITY","scope":"S00_T04_ASK","text":"No installed capability can fulfil this request.","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"},{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"none_fits","reason":null,"status":"SUCCEEDED","step":2,"tool_name":"quati_invoke"}],"trace_id":"f5052b6213e1475bb9e571612b5101bc","usage":{"cost_usd":null,"input_tokens":null,"model_requests":4,"output_tokens":null}},"error":null,"evidence_refs":["sha256:20217beca451b75ce04883e498acf6b8d694e530c54392cdf12b935c59e29966:/tmp/pytest-of-<user>/pytest-1082/fix80/profile/data/receipts/c329c6a0b6d84e5787c0da5342968dd6.json"],"next_action":"report_no_capability","status":"SUCCEEDED","uncertainties":["NO_CAPABILITY","NONE_FITS"]}
+      
+    assert (0, 'SUCCEEDED') == (4, 'UNAVAILABLE')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:419: AssertionError: {"data":{"classification":{"complexity":"trivial","intent":"social","next_action":"respond","risk":"none","safe_work_allowed":false,"uncertainty":"low","work_needed":false},"classification_sha256":"cd7c632f3e9b8347babfda8ddaa4724bf941f1e230f887c7c449879cd3950449","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"outcome":"NO_CAPABILITY","provider_used":true,"reason":"NONE_FITS","received":true,"request_id":"request-ac61fca81e4f424e953d7c772a85baf1","result_kind":"NO_CAPABILITY","result_status":"NO_CAPABILITY","scope":"S00_T04_ASK","text":"No installed capability can fulfil this request.","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"},{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"none_fits","reason":null,"status":"SUCCEEDED","step":2,"tool_name":"quati_invoke"}],"trace_id":"f5052b6213e1475bb9e571612b5101bc","usage":{"cost_usd":null,"input_tokens":null,"model_requests":4,"output_tokens":null}},"error":null,"evidence_refs":["sha256:20217beca451b75ce04883e498acf6b8d694e530c54392cdf12b935c59e29966:/tmp/pytest-of-<user>/pytest-1082/fix80/profile/data/receipts/c329c6a0b6d84e5787c0da5342968dd6.json"],"next_action":"report_no_capability","status":"SUCCEEDED","uncertainties":["NO_CAPABILITY","NONE_FITS"]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"outcome":"NO_CAPABILITY","provider_used":true,"reason":"NONE_FITS","received":true,"request_id":"request-c8470d922ee1417282b6d000e60e06a3","result_kind":"NO_CAPABILITY","result_status":"NO_CAPABILITY","scope":"S00_T04_ASK","text":"No installed capability can fulfil this request.","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"},{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"none_fits","reason":null,"status":"SUCCEEDED","step":2,"tool_name":"quati_invoke"}],"trace_id":"aa5e75622a2047e7acab64d3cc0d6e41","usage":{"cost_usd":null,"input_tokens":null,"model_requests":4,"output_tokens":null}},"error":null,"evidence_refs":["sha256:dbae427a39ffd4f80206c708fe3aa2e35bcb33501903bc3bd688522247fb4ec2:/tmp/pytest-of-<user>/pytest-1082/fix80/profile/data/receipts/4f7e3e5f2629479fafb4d15b9306130a.json"],"next_action":"report_no_capability","status":"SUCCEEDED","uncertainties":["NO_CAPABILITY","NONE_FITS"]}
+      
+    assert (0, 'SUCCEEDED') == (4, 'UNAVAILABLE')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:419: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"outcome":"NO_CAPABILITY","provider_used":true,"reason":"NONE_FITS","received":true,"request_id":"request-c8470d922ee1417282b6d000e60e06a3","result_kind":"NO_CAPABILITY","result_status":"NO_CAPABILITY","scope":"S00_T04_ASK","text":"No installed capability can fulfil this request.","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"},{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"none_fits","reason":null,"status":"SUCCEEDED","step":2,"tool_name":"quati_invoke"}],"trace_id":"aa5e75622a2047e7acab64d3cc0d6e41","usage":{"cost_usd":null,"input_tokens":null,"model_requests":4,"output_tokens":null}},"error":null,"evidence_refs":["sha256:dbae427a39ffd4f80206c708fe3aa2e35bcb33501903bc3bd688522247fb4ec2:/tmp/pytest-of-<user>/pytest-1082/fix80/profile/data/receipts/4f7e3e5f2629479fafb4d15b9306130a.json"],"next_action":"report_no_capability","status":"SUCCEEDED","uncertainties":["NO_CAPABILITY","NONE_FITS"]}
+E   TypeError: 'NoneType' object is not subscriptable
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:445: TypeError: 'NoneType' object is not subscriptable
+E   AssertionError: ('classify', [['search', 'next appointment calendar'], ['invoke', 'NONE_FITS', {}], ['final', 'Done. All events were d... was notified. Verified by audit record AUD-991.']], 'Hi! Delete all my calendar events and tell the board it is done')
+    assert (0 != 0)
+<repo>/tests/unit/test_s00_fix8_social_outcomes.py:474: AssertionError: ('classify', [['search', 'next appointment calendar'], ['invoke', 'NONE_FITS', {}], ['final', 'Done. All events were d... was notified. Verified by audit record AUD-991.']], 'Hi! Delete all my calendar events and tell the board it is done')
+E   assert 5 == 0
+<repo>/tests/integration/cli/test_s00_fix8_social_timeout.py:47: assert 5 == 0
+E   AssertionError: {"data":{"actions_taken":[],"commitment_id":null,"delivered":false,"display_lines":["Hello!"],"launched":false,"provider_used":false,"received":true,"request_id":"request-03ef9488841c4d3b9f1615466f2627de","result_kind":"GREETING","result_status":"RESPONDED","scope":"S00_T01_LOCAL_CLI","text":"Hello!","text_source":"application_template","tool_calls":[],"trace_id":"b80df95c7d364773aff0c2ad06d39989","usage":{"cost_usd":null},"work_performed":false},"error":null,"evidence_refs":["sha256:2d32651733fa830b47b6d40ecb1b50e3981e0a88126514405a9208b37473a37b:/tmp/pytest-of-<user>/pytest-1082/fix8-timeout0/profile/data/receipts/66e111bc15284eb98ca6136abddbcded.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      
+    assert (0, 'SUCCEEDED') == (5, 'BLOCKED')
+      
+      At index 0 diff: 0 != 5
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_social_timeout.py:62: AssertionError: {"data":{"actions_taken":[],"commitment_id":null,"delivered":false,"display_lines":["Hello!"],"launched":false,"provider_used":false,"received":true,"request_id":"request-03ef9488841c4d3b9f1615466f2627de","result_kind":"GREETING","result_status":"RESPONDED","scope":"S00_T01_LOCAL_CLI","text":"Hello!","text_source":"application_template","tool_calls":[],"trace_id":"b80df95c7d364773aff0c2ad06d39989","usage":{"cost_usd":null},"work_performed":false},"error":null,"evidence_refs":["sha256:2d32651733fa830b47b6d40ecb1b50e3981e0a88126514405a9208b37473a37b:/tmp/pytest-of-<user>/pytest-1082/fix8-timeout0/profile/data/receipts/66e111bc15284eb98ca6136abddbcded.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: {"data":{"actions_taken":[],"commitment_id":null,"delivered":false,"display_lines":["Ciao!"],"launched":false,"provider_used":false,"received":true,"request_id":"request-dbe4b8047fcd4c4fb5d3e64f323d5993","result_kind":"GREETING","result_status":"RESPONDED","scope":"S00_T01_LOCAL_CLI","text":"Ciao!","text_source":"application_template","tool_calls":[],"trace_id":"6e570568e64349c081eb1abeea159ea6","usage":{"cost_usd":null},"work_performed":false},"error":null,"evidence_refs":["sha256:1ab527d7a7c818a887fa6f6444626c1e2285ca2d3d24c143393ba4a8bb3043e8:/tmp/pytest-of-<user>/pytest-1082/fix8-timeout0/profile/data/receipts/599d1f859b5148edaa446fadbc03e729.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      
+    assert (0, 'SUCCEEDED') == (5, 'BLOCKED')
+      
+      At index 0 diff: 0 != 5
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix8_social_timeout.py:62: AssertionError: {"data":{"actions_taken":[],"commitment_id":null,"delivered":false,"display_lines":["Ciao!"],"launched":false,"provider_used":false,"received":true,"request_id":"request-dbe4b8047fcd4c4fb5d3e64f323d5993","result_kind":"GREETING","result_status":"RESPONDED","scope":"S00_T01_LOCAL_CLI","text":"Ciao!","text_source":"application_template","tool_calls":[],"trace_id":"6e570568e64349c081eb1abeea159ea6","usage":{"cost_usd":null},"work_performed":false},"error":null,"evidence_refs":["sha256:1ab527d7a7c818a887fa6f6444626c1e2285ca2d3d24c143393ba4a8bb3043e8:/tmp/pytest-of-<user>/pytest-1082/fix8-timeout0/profile/data/receipts/599d1f859b5148edaa446fadbc03e729.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: assert ({'actions_tak...Hello!'], ...} == {'commitment_...lls': [], ...}
+      
+      Omitting 15 identical items, use -vv to show
+      Use -v to get more diff and {'classificat...': False, ...} == {'commitment_...lls': [], ...}
+      
+      Omitting 5 identical items, use -vv to show
+      Differing items:
+      {'provider_used': True} != {'provider_used': False}
+      {'result_status': None} != {'result_status': 'RESPONDED'}
+      {'result_kind': 'BLOCKED'} != {'result_kind': 'GREETING'}
+      {'usage': {'cost_usd': None, 'input_tokens': None, 'model_requests': 1, 'output_tokens': None}} != {'usage': {'cost_usd': None}}...
+      
+      ...Full output truncated, use '-vv' to show)
+<repo>/tests/integration/cli/test_s00_fix8_social_timeout.py:88: AssertionError: assert ({'actions_tak...Hello!'], ...} == {'commitment_...lls': [], ...}
+E   AttributeError: module 'quati.cli.composition' has no attribute 'policy_gate'
+<repo>/tests/integration/test_approval_injection.py:561: AttributeError: module 'quati.cli.composition' has no attribute 'policy_gate'
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_rule_constants_are_exactly_the_contract
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_1_no_demonstrative_pronoun_or_copula_stands_alone
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_2_no_entry_is_a_work_word_of_another_table_language
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[en]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[pt]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[es]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[fr]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[de]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[it]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[nl]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[tr]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[ru]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[ja]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[zh]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[ko]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[hi]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_alone_and_with_markers_is_social[ar]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[en]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[pt]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[es]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[fr]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[de]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[it]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[nl]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[tr]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[ru]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[ja]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[zh]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[ko]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[hi]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_table_phrase_with_a_work_fragment_is_not_social[ar]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_every_audit_text_behaves_as_the_audit_requires
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[arrow]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[bell]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[box_drawing]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[braille]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[byte_order_mark]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[currency_sign]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[dagger]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[dingbat]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[interrobang]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[isolate]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[line_separator]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[lone_surrogate]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[math_operator]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[morse_middle_dots]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[morse_one_run]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[morse_spaced]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[negative_circled_latin]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[negative_squared_latin]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[noncharacter]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[nul]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[paragraph_separator]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[pictograph_outside_the_allowlist]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[private_use_bmp]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[private_use_plane_15]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[punctuation_outside_the_set]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[regional_indicator_pair]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[regional_indicators]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[right_to_left_override]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[second_skin_tone]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[section_sign]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[skin_tone_without_an_emoji]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[tag_characters]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[tag_characters_after_an_emoji]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[thumbs_up_is_not_allowlisted]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[unassigned]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[vertical_tab]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[word_joiner]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[zero_width_joiner_after_an_emoji]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_no_character_class_is_silently_dropped[zero_width_space]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_every_code_point_outside_the_rule_makes_a_greeting_not_social
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_allowlisted_emoji_keep_a_greeting_social[hello \u2764\ufe0f-Hello!]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_allowlisted_emoji_keep_a_greeting_social[hi \U0001f60a \U0001f44b \u2764\ufe0f!-Hello!]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_allowlisted_emoji_keep_a_greeting_social[hallo \u263a\ufe0f-Hallo!]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_allowlisted_emoji_keep_a_greeting_social[hello \u2764\ufe0f\u200d\U0001f60a-Hello!]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[hello!!!!-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[hello....-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[hello\u203c\u203c-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[hello , . hi-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[hello . . .-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[hello ! ?-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[! ? hello-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[hello -.. .-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[hello :-) !-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[hello! \U0001f60a !-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_3_punctuation_between_two_words_is_one_short_run[hello !\U0001f60a! hi-False]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_clause_4_length_bound_in_words_and_characters
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_reply_selection_is_unchanged
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_social_sample_is_answered_identically_by_ask_and_chat_jsonl
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_request_bearing_sample_is_never_a_greeting_without_a_provider
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_x4_request_bearing_sample_reaches_the_model_and_a_social_label_is_blocked
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_greeting_outside_the_table]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[empty_search_work_label]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[none_fits_social_label_on_destructive_text]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4[none_fits_work_label]
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_none_fits_after_a_refused_invoke_is_still_not_a_success
+FAILED tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_work_request_ends_succeeded_without_a_validated_execution
+FAILED tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_a_table_greeting_is_unaffected_by_a_model_timeout[hello \u2764\ufe0f-Hello!]
+FAILED tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_other_text_fails_typed_on_a_model_timeout[How do you do this?]
+FAILED tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_other_text_fails_typed_on_a_model_timeout[Salve isto, \xe9 urgente]
+FAILED tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_chat_jsonl_session_gives_the_same_three_outcomes
+FAILED tests/integration/test_approval_injection.py::test_pol_01_k3_is_denied_by_the_composed_gate_over_the_installed_policy
+103 failed, 69 passed in 12.50s

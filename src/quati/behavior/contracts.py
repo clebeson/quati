@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from datetime import datetime
 import functools
+import hashlib
 import importlib.resources
 import json
 import math
@@ -32,24 +33,47 @@ DEFAULT_MAX_BYTES = 1024 * 1024
 MAX_DEPTH = 64
 MAX_YAML_EVENTS = 100_000
 PACKAGED_ASSETS = "assets"
+# The asset files as (directory, pattern): exactly the ``tool.setuptools.package-data`` of pyproject.toml,
+# so the same files are named in a wheel and in a source checkout.
+ASSET_FILES = (("contracts", "*.json"), ("examples/behavior", "*.yaml"), ("examples/behavior", "*.json"),
+               ("examples/statecharts", "*.yaml"), ("examples/policies", "*.json"))
 
 
 def asset_root(package: Path | None = None) -> Path:
     """The directory that holds ``contracts/`` and ``examples/`` for the package directory ``package``.
 
-    An installed wheel carries them as package data in ``quati/assets`` (pyproject.toml,
-    ``tool.setuptools.package-dir``); a source checkout has no such directory and uses the repository
-    root, two levels above the package. The files are the same bytes in both layouts and references
-    stay relative to this root (``examples/behavior/...``), so no compiled hash depends on the layout.
+    The repository layout wins (docs/architecture/PROJECT_STRUCTURE.md, asset locator rule): when the
+    package is ``<root>/src/quati`` and ``<root>`` holds ``pyproject.toml``, ``contracts/`` and
+    ``examples/``, this is a source checkout and ``<root>`` is used; an ``assets`` directory placed
+    beside the package is then ignored and cannot shadow the repository files. Otherwise an installed
+    wheel carries the files as package data in ``quati/assets`` (pyproject.toml,
+    ``tool.setuptools.package-dir``). The files are the same bytes in both layouts and references stay
+    relative to this root (``examples/behavior/...``), so no compiled hash depends on the layout.
     """
     if package is None:
         package = Path(str(importlib.resources.files("quati")))
+    resolved = Path(package).resolve()
+    checkout = resolved.parents[1]
+    if resolved.parent.name == "src" and (checkout / "pyproject.toml").is_file() and all(
+            (checkout / name).is_dir() for name in ("contracts", "examples")):
+        return checkout
     packaged = Path(package) / PACKAGED_ASSETS
-    return packaged if packaged.is_dir() else Path(package).resolve().parents[1]
+    return packaged if packaged.is_dir() else checkout
 
 
 ASSET_ROOT = asset_root()
 CONTRACTS_DIR = ASSET_ROOT / "contracts"
+
+
+def asset_digest(root: Path | None = None) -> str:
+    """SHA-256 over the sorted (root-relative POSIX path, file SHA-256) list of the asset files below
+    ``root`` (default: the asset root in use): contract schemas, behavior packages, statecharts and
+    policy templates. The one digest of the loaded assets (``quati doctor``, every receipt)."""
+    root = ASSET_ROOT if root is None else Path(root)
+    entries = sorted((path.relative_to(root).as_posix(), hashlib.sha256(path.read_bytes()).hexdigest())
+                     for directory, pattern in ASSET_FILES for path in (root / directory).glob(pattern)
+                     if path.is_file())
+    return hashlib.sha256(json.dumps(entries, separators=(",", ":")).encode("utf-8")).hexdigest()
 
 FORMATS = FormatChecker()
 _TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}[Tt]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:[Zz]|[+-]\d{2}:\d{2})")
