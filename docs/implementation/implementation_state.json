@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 16,
+  "revision": 17,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S00",
@@ -170,7 +170,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-16T14:37:05.050608Z",
+  "last_updated_at": "2026-11-16T14:39:19.795414Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -181,7 +181,7 @@
   "execution_authorized": true,
   "active_work": {
     "work_package_id": "S00-T05",
-    "phase": "CHECKPOINT",
+    "phase": "SDD",
     "owner": "root coordinator",
     "input_snapshot_ref": "evidence/S00/T01-2026-11-15/input_snapshot.json",
     "completed_steps": [
@@ -196,9 +196,10 @@
       "S00-T04 fix rounds 1-5 accepted after independent audits (LOG-0023..LOG-0033)",
       "S00-GATE-02 live evidence accepted by independent audit (LOG-0034)",
       "Project renamed Quati (LOG-0035); requalification run gate6-quati 30/30 and 30/30, behavior re-run 13/13 (LOG-0036)",
-      "Independent audit of gate6 verdict ACCEPT; journaled gate updates added to checkpoint_execution.py test-first; seals issued; S00-GATE-02 PASS (LOG-0037)"
+      "Independent audit of gate6 verdict ACCEPT; journaled gate updates added to checkpoint_execution.py test-first; seals issued; S00-GATE-02 PASS (LOG-0037)",
+      "Gap found while preparing gates 01/03/04: three declared S00-T05 locators do not exist (IDN-01, IDN-02, POL-01); only contribution tests exist"
     ],
-    "next_action": "Run S00-GATE-01, S00-GATE-03 and S00-GATE-04 with evidence, independent audit and seals on one commit; then close LOG-0013/0014/0021/0034/0037 debts and issue SLICE_ACCEPTED",
+    "next_action": "Write the missing full-proof tests IDN-01, IDN-02 (tests/integration/test_identity.py) and POL-01 (tests/integration/test_approval_injection.py) test-first, implement only what they require, then run one final requalification (any src/quati change expires the S00-GATE-02 seals), audit gates 01/03/04 independently with a red-team negative, and seal all four S00 gates on one commit before SLICE_ACCEPTED",
     "owned_files": [
       "src/secma/cli",
       "src/secma/application",
@@ -209,7 +210,9 @@
     "pending_findings": [
       "Independent review: malformed identity JSON and FIFO credentials must fail closed without traceback or hang; canonical JSON and token schema conformity require correction.",
       "LOG-0013 open specification questions need owner confirmation before the consuming work package starts",
-      "LOG-0014 owner decisions from the architecture re-audit are pending"
+      "LOG-0014 owner decisions from the architecture re-audit are pending",
+      "S00-T05: declared full-proof tests missing for IDN-01, IDN-02 and POL-01; slice cannot be accepted until they pass at their declared tier",
+      "All S00 gate seals must reference one commit; S00-GATE-02 seals on a655c20 must be superseded by new records on the final S00 commit after requalification"
     ],
     "evidence_refs": [
       "evidence/S00/T01-2026-11-15/authorization.json",
