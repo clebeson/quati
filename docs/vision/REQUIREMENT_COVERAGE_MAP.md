@@ -5,7 +5,7 @@
 | Fast greetings and simple factual answers without delegation | M03/M04/M17/M31 | Actual LLM or deterministic safe entry; no job created | S00/S01 |
 | Smart decision to start safe research while asking only valuable questions | M03/M05/M30 | Real multi-turn episode + commitment update | S01 |
 | Human expectation and attention management | M06/M10/M13 | Virtual clock + blind usefulness ratings | S02/S03 |
-| Durable multiple jobs, independent of chat window | M07/M06 | PostgreSQL+DBOS crash and concurrency suite | S02 |
+| Durable multiple jobs, independent of chat window | M07/M06 | SQLite LedgerPort + worker crash and concurrency suite (PostgreSQL backend contract-tested) | S02 |
 | Understand old work after days/weeks | M04/M11/M12 | Authorized prior commitment/artifact retrieval or honest ambiguity | S03 |
 | Detailed PRD/document creation with concise human summary | M10/M12/M22 | Versioned artifact, sources, summary, trace | S03/S05 |
 | Dynamic SCS capability discovery by weak and strong models | M14/M15/M17/M31 | Blind actual provider tool trace, negative & distractor cases | S00 |

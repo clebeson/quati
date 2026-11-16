@@ -1,0 +1,53 @@
+# S00-T02 audit-fix GREEN run (2026-11-16), Python 3.13.7, Linux 6.17.0-41-generic
+## targeted: audit fixes, locators, examples
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_unguarded_path_to_delivery_is_forbidden
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_effect_path_guard_must_be_earlier_and_on_every_path
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_shipped_statecharts_and_reference_compiler_agree_on_the_path_rule
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_capability_contract_content_is_bound_into_the_build_digest
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_policy_registry_file_has_the_policy_file_protections
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_yaml_nesting_depth_and_event_count_are_bounded
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_json_nesting_depth_is_bounded
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[./.]
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[./statechart.yaml]
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[a//statechart.yaml]
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[sub/./statechart.yaml]
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[statechart.yaml/]
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_oversized_integers_and_lone_surrogates_are_diagnostics
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_pointer_compare_and_swap_holds_a_sibling_file_lock
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_registry_compare_and_swap_holds_a_sibling_file_lock
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_integer_fields_reject_integer_valued_floats
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_in_memory_documents_get_the_parser_value_rules
+PASSED tests/unit/test_s00_t02_audit_fixes.py::test_unreadable_refs_are_rule_3_reports
+PASSED tests/unit/policy/test_evaluate_algorithm.py::test_decision_table_rows_and_rule_order_invariance
+PASSED tests/unit/policy/test_trusted_configuration.py::test_authority_only_from_kernel_policy_and_directory
+PASSED tests/integration/policy/test_policy_fail_closed.py::test_every_broken_policy_state_denies_all_effects
+PASSED tests/integration/policy/test_policy_fail_closed.py::test_registry_file_failures_deny_every_effect
+PASSED tests/unit/test_examples_valid.py::test_examples_exist
+PASSED tests/unit/test_examples_valid.py::test_example_statechart_is_semantically_valid[commitment.yaml]
+PASSED tests/unit/test_examples_valid.py::test_example_statechart_is_semantically_valid[interaction.yaml]
+25 passed in 1.82s
+## full suite (--continue-on-collection-errors)
+FAILED tests/test_spec_readiness.py::test_complete_planning_graph_has_no_dangling_ids_or_missing_plans
+ERROR tests/integration/policy/test_decision_audited_before_invocation.py
+ERROR tests/integration/test_registry_restart.py
+ERROR tests/unit/test_description_injection.py
+ERROR tests/unit/test_gateway_binding.py
+ERROR tests/unit/test_lifecycle_promotion.py
+ERROR tests/unit/test_manifest_schema.py
+ERROR tests/unit/test_mcp_hint_import.py
+ERROR tests/unit/test_package_digest.py
+ERROR tests/unit/test_s00_t03.py
+ERROR tests/unit/test_s00_t03_discovery.py
+ERROR tests/unit/test_s00_t03_registry.py
+ERROR tests/unit/test_selection_none_fits.py
+ERROR tests/unit/test_selection_validation.py
+ERROR tests/unit/test_version_conflict.py
+1 failed, 636 passed, 2 skipped, 14 errors in 22.94s
+# all ERRORs: S00-T03 in-progress modules (No module named secma.adapters.capability_store); FAILED: stale SECMA_CONSOLIDATED_SPEC_V8_EN.md after the coordinator's M30 rule-7 edit
+## hermetic unit
+566 passed, 12 errors in 14.87s
+## coverage (T02 files, branch)
+TOTAL                                   1455      0    512      0   100%
+## spec_tools
+L0 SPEC VALIDATION: PASS (contracts, examples, reference freshness, states, requirement references). NO APP RUNTIME PROOF.
+ValueError: Stale consolidated specification

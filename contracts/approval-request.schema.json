@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quati.local/contracts/approval-request.schema.json",
+  "title": "ApprovalRequest durable record (RFC-014)",
+  "description": "Created by trusted code when PolicyPort returns APPROVAL_REQUIRED. The binding block is fixed at creation and copied from the EffectIntent; it is never editable. Untrusted text cannot supply any field here.",
+  "type": "object",
+  "required": ["approval_request_id", "tenant_id", "state", "state_revision", "requested_at", "expires_at", "approver_rule", "binding", "content_digest"],
+  "properties": {
+    "approval_request_id": { "$ref": "#/$defs/Ulid" },
+    "tenant_id": { "$ref": "#/$defs/Ulid" },
+    "state": { "enum": ["PENDING", "APPROVED", "DENIED", "EXPIRED", "REVOKED"] },
+    "state_revision": { "type": "integer", "minimum": 1 },
+    "requested_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time", "description": "Deadline to decide while PENDING; after approval, the deadline to dispatch." },
+    "approver_rule": { "enum": ["SELF", "SPACE_MANAGER", "TENANT_ADMIN", "NAMED_PRINCIPALS"] },
+    "matched_rule_id": { "type": "string" },
+    "binding": {
+      "type": "object",
+      "required": ["effect_id", "actor_id", "tenant_id", "capability_id", "capability_version", "binding_id", "binding_version", "operation", "destination_ref", "input_digest", "policy_version", "idempotency_key", "effect_class", "data_class"],
+      "properties": {
+        "effect_id": { "type": "string", "minLength": 1 },
+        "actor_id": { "type": "string", "minLength": 1 },
+        "tenant_id": { "type": "string", "minLength": 1 },
+        "capability_id": { "type": "string", "minLength": 1 },
+        "capability_version": { "type": "string", "minLength": 1 },
+        "binding_id": { "type": "string", "minLength": 1 },
+        "binding_version": { "type": "string", "minLength": 1 },
+        "operation": { "type": "string", "minLength": 1 },
+        "destination_ref": { "type": "string", "minLength": 1, "description": "Normalized destination." },
+        "input_digest": { "$ref": "#/$defs/Sha256" },
+        "policy_version": { "$ref": "#/$defs/Sha256", "description": "Digest of the policy that produced APPROVAL_REQUIRED." },
+        "idempotency_key": { "type": "string", "minLength": 1 },
+        "effect_class": { "enum": ["none", "read", "write", "dangerous"] },
+        "data_class": { "enum": ["public_synthetic", "public", "internal", "confidential", "restricted"] }
+      },
+      "additionalProperties": false
+    },
+    "content_digest": { "$ref": "#/$defs/Sha256", "description": "Digest of the exact content shown to the approver." },
+    "content_preview": { "type": "string", "maxLength": 2000, "description": "Redacted, bounded rendering produced by trusted code for the approver." },
+    "source_space_ids": { "type": "array", "items": { "$ref": "#/$defs/Ulid" }, "description": "Provenance label (RFC-013 section 7)." },
+    "declassification_sources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Ulid" },
+      "description": "Source spaces whose MANAGER must approve (one approval per space). Present only for a declassification request."
+    },
+    "decision": {
+      "type": "object",
+      "required": ["decided_by", "decided_at", "token_jti", "amr", "auth_time"],
+      "properties": {
+        "decided_by": { "$ref": "#/$defs/Ulid" },
+        "decided_at": { "type": "string", "format": "date-time" },
+        "for_source_space_id": { "$ref": "#/$defs/Ulid" },
+        "token_jti": { "type": "string" },
+        "amr": { "type": "array", "items": { "type": "string" } },
+        "auth_time": { "type": "string", "format": "date-time" },
+        "reason": { "type": "string", "maxLength": 500 }
+      },
+      "additionalProperties": false
+    },
+    "revocation": {
+      "type": "object",
+      "required": ["revoked_by", "revoked_at"],
+      "properties": {
+        "revoked_by": { "$ref": "#/$defs/Ulid" },
+        "revoked_at": { "type": "string", "format": "date-time" },
+        "reason": { "type": "string", "maxLength": 500 }
+      },
+      "additionalProperties": false
+    },
+    "consumed_at": { "type": ["string", "null"], "format": "date-time", "description": "Set once by claim_dispatch when the approved effect is claimed; an approval with a non-null value cannot authorize another transition (GUARD_PREDICATES.md approval_ok)." },
+    "consumed_by_effect_id": { "type": ["string", "null"], "description": "effect_id of the EffectIntent that consumed this approval; null until consumed." },
+    "audit_event_refs": { "type": "array", "items": { "type": "string" } }
+  },
+  "allOf": [
+    { "if": { "properties": { "state": { "enum": ["APPROVED", "DENIED"] } } }, "then": { "required": ["decision"] } },
+    { "if": { "properties": { "state": { "const": "REVOKED" } } }, "then": { "required": ["revocation"] } }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Ulid": { "type": "string", "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$" },
+    "Sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

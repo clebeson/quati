@@ -1,0 +1,47 @@
+# S00-T04 fix round GREEN (2026-11-16). SCRIPTED FAKE provider and scripted CLI runner only; no live provider; NOT a real-provider proof.
+## tests/unit/test_s00_t04_fixes.py
+PASSED tests/unit/test_s00_t04_fixes.py::test_p1_1_model_social_label_on_work_text_takes_the_work_path
+PASSED tests/unit/test_s00_t04_fixes.py::test_p1_1_social_reply_is_localized_and_never_defaults_to_english
+PASSED tests/unit/test_s00_t04_fixes.py::test_p1_1_localized_template_through_the_ask
+PASSED tests/unit/test_s00_t04_fixes.py::test_p1_1_social_text_without_template_gets_a_tool_free_model_reply[Wie geht es dir?]
+PASSED tests/unit/test_s00_t04_fixes.py::test_p1_1_social_text_without_template_gets_a_tool_free_model_reply[How are you doing today?]
+PASSED tests/unit/test_s00_t04_fixes.py::test_p1_1_tool_free_social_reply_failures_are_typed
+PASSED tests/unit/test_s00_t04_fixes.py::test_p1_1_provider_failure_fallback_needs_a_template
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_1_model_written_reason_code_is_never_displayed
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_2_read_succeeds_then_write_refused_is_partial
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_2_refusal_before_the_success_does_not_downgrade
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_3_response_from_another_model_fails_closed
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_3_mismatch_inside_the_loop_stops_before_any_invoke
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_3_probe_without_an_observed_model_id_does_not_open_the_gate
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_3_probe_records_the_observed_model_id
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_3_cli_executable_identity_is_part_of_the_config_hash
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_3_codex_reports_the_model_id_from_its_json_events
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_4_cli_transports_get_the_cli_budget_and_config_can_only_lower_it
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_4_cli_budget_lets_a_slow_cli_flow_finish
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_4_the_ask_deadline_is_not_reported_as_a_provider_failure
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_4_provider_timeout_past_the_ask_deadline_is_the_ask_deadline
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_4_configured_deadline_lowers_the_ask_budget
+PASSED tests/unit/test_s00_t04_fixes.py::test_p3_configured_output_tokens_and_timeout_lower_the_ask_caps
+PASSED tests/unit/test_s00_t04_fixes.py::test_p3_model_visible_hashes_are_split_and_named_for_what_they_cover
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_5_unresolved_model_supplied_id_is_recorded_as_a_digest
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_6_model_calls_carry_injected_clock_timing
+PASSED tests/unit/test_s00_t04_fixes.py::test_l1_search_guidance_says_the_catalog_is_english
+PASSED tests/unit/test_s00_t04_fixes.py::test_l2_system_prompt_forbids_progress_messages
+PASSED tests/unit/test_s00_t04_fixes.py::test_l2_one_bounded_continuation_after_progress_text
+PASSED tests/unit/test_s00_t04_fixes.py::test_l2_continuation_happens_at_most_once_and_never_auto_invokes
+PASSED tests/unit/test_s00_t04_fixes.py::test_l2_no_continuation_without_a_shortlist_or_after_a_choice[items0]
+PASSED tests/unit/test_s00_t04_fixes.py::test_l2_no_continuation_without_a_shortlist_or_after_a_choice[items1]
+PASSED tests/unit/test_s00_t04_fixes.py::test_l2_no_continuation_without_a_shortlist_or_after_a_choice[items2]
+PASSED tests/unit/test_s00_t04_fixes.py::test_l2_no_continuation_without_a_shortlist_or_after_a_choice[items3]
+PASSED tests/unit/test_s00_t04_fixes.py::test_l2_continuation_counts_against_the_request_budget
+PASSED tests/unit/test_s00_t04_fixes.py::test_l3_none_fits_and_empty_shortlist_are_no_capability
+PASSED tests/unit/test_s00_t04_fixes.py::test_l3_model_stopped_without_invoking_is_distinguishable
+PASSED tests/unit/test_s00_t04_fixes.py::test_l3_result_kinds_are_documented
+37 passed in 2.01s
+## full suite
+833 passed, 9 skipped in 34.35s
+## hermetic unit lane (PATH=/usr/bin:/bin)
+745 passed in 20.33s
+## validators
+L0 SPEC VALIDATION: PASS (contracts, examples, reference freshness, states, requirement references). NO APP RUNTIME PROOF.
+{"fixture_recipes": 125, "requirement_plans": 243, "requirements": 243, "runtime_qualified": false, "semantic_coverage_requires_review": true, "shared_cases": 101, "status": "PASS", "tier": "L0", "work_packages": 35}

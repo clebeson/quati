@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "title": "Executive request classification",
+  "description": "The single request-classification vocabulary. Sole producer: M08 (ModelPort.classify output or trusted preflight, then the DECISION_RULES §3 policy pass). Consumers: M03, M04, M05, M06. M04 resolves references against it but never classifies intent; only M03 turns it into an InteractionDecision.",
   "type": "object",
   "required": [
     "intent",
@@ -42,7 +43,8 @@
         "low",
         "medium",
         "high"
-      ]
+      ],
+      "description": "Missing or out-of-vocabulary risk is replaced by the fail-closed classification (risk high, next_action escalate)."
     },
     "uncertainty": {
       "enum": [
@@ -62,7 +64,8 @@
         "ask",
         "escalate",
         "deny"
-      ]
+      ],
+      "description": "Recommendation after the M08 policy pass: the more restrictive of the model value and the route table (DECISION_RULES §3.2). Not a decision; M03 alone decides."
     },
     "reason_code": {
       "type": "string",

@@ -1,5 +1,8 @@
 # Final specification recheck
 
+> Historical audit snapshot. The current reconciliation and observed checks are in `SPECIFICATION_FINALIZATION_2026-11-15.md`; older counts and dispositions describe their original scope.
+
+
 ## Scope and disposition
 
 Read-only recheck of the corrections for F1–F4 in the prior independent review. This covers work-package/test-plan closure, the v2 commitment payload and transition table, canonical seal lookup, and memory lookup/resume references. Runtime code and implementation behavior were not reviewed.

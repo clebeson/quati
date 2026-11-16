@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "SECMA v2 durable commitment; S02 normative target, not an implemented migration",
+  "title": "Quati v2 durable commitment; S02 normative target, not an implemented migration",
   "type": "object",
   "required": [
     "id",
@@ -94,7 +94,7 @@
       ]
     },
     "schema_version": {
-      "const": "secma-commitment/2"
+      "const": "quati-commitment/2"
     },
     "outcome_verdict": {
       "enum": [
@@ -129,7 +129,8 @@
       "type": [
         "string",
         "null"
-      ]
+      ],
+      "pattern": "^(DEADLINE_ELAPSED|BUDGET_EXHAUSTED\\.(transitions|reinvestigations|requests|tool_calls|cost|delivery_attempts))$"
     },
     "blocked_from_state": {
       "anyOf": [
@@ -210,6 +211,22 @@
     },
     "control_policy_version": {
       "const": "2.0.0"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ],
+      "default": "P2",
+      "description": "Urgency/priority proposed by M08 classification and persisted by M07. P0 is highest."
+    },
+    "space_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Owning space (RFC-013). Not a guard input."
     }
   },
   "additionalProperties": false,

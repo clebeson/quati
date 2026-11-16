@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quati.local/contracts/inbox-message.schema.json",
+  "title": "InboxMessage (local delivery sink, ADR-016)",
+  "type": "object",
+  "required": [
+    "message_id",
+    "tenant_id",
+    "space_id",
+    "recipient_principal_id",
+    "commitment_id",
+    "delivery_key",
+    "kind",
+    "body",
+    "state",
+    "created_at",
+    "delivered_at"
+  ],
+  "properties": {
+    "message_id": {
+      "$ref": "identity.schema.json#/$defs/Ulid"
+    },
+    "tenant_id": {
+      "$ref": "identity.schema.json#/$defs/Ulid"
+    },
+    "space_id": {
+      "$ref": "identity.schema.json#/$defs/Ulid"
+    },
+    "recipient_principal_id": {
+      "$ref": "identity.schema.json#/$defs/Ulid"
+    },
+    "commitment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "delivery_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique per (tenant_id, commitment_id); matches the outbox delivery_key."
+    },
+    "kind": {
+      "enum": [
+        "UPDATE",
+        "REMINDER",
+        "QUESTION",
+        "COMPLETION",
+        "FAILURE",
+        "SYSTEM"
+      ]
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "state": {
+      "enum": [
+        "DELIVERED",
+        "ACKNOWLEDGED"
+      ],
+      "description": "DELIVERED when committed to the inbox; ACKNOWLEDGED when the user reads it. Desktop notifications never change state."
+    },
+    "timer_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "late_by_seconds": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "desktop_notification": {
+      "enum": [
+        "NOT_ATTEMPTED",
+        "SENT",
+        "FAILED"
+      ],
+      "default": "NOT_ATTEMPTED",
+      "description": "Best-effort; informational only."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "delivered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "acknowledged_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "ACKNOWLEDGED"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "required": [
+          "acknowledged_at"
+        ],
+        "properties": {
+          "acknowledged_at": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

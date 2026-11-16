@@ -1,0 +1,360 @@
+{
+  "case_id": "SOC-01",
+  "cli_log": [
+    {
+      "argv": [
+        "init",
+        "--json"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.16,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "models",
+        "probe",
+        "--json"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 11.47,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "capabilities",
+        "install-fixture",
+        "calendar-read",
+        "--json",
+        "--enable-fixture"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.194,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "capabilities",
+        "install-fixture",
+        "mail-search",
+        "--json",
+        "--enable-fixture"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.199,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "ask",
+        "Hi, how are you?",
+        "--json",
+        "--synthetic-evidence"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.17,
+      "exit": 4,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "ask",
+        "Hey there! Hope your day is going well.",
+        "--json",
+        "--synthetic-evidence"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.189,
+      "exit": 4,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "ask",
+        "Good morning! Urgent: just wanted to say hi.",
+        "--json",
+        "--synthetic-evidence"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.18,
+      "exit": 4,
+      "stderr_tail": ""
+    }
+  ],
+  "l3_runs": 0,
+  "pass": false,
+  "results": [
+    {
+      "checks": {
+        "exit_0": false,
+        "no_capability_executed": true,
+        "no_commitment": true,
+        "no_tool_calls": true
+      },
+      "pass": false,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+          "measured_at": "2026-11-16T08:16:52.096844+00:00",
+          "model_identity_source": "observed",
+          "observed_model_id": "claude-haiku-5-5",
+          "reason": null,
+          "report_ref": "sha256:cbdb1568c2ec009d8580e29d9b4a7ff05ed4e23360c41052845834db7164df7d:/tmp/secma-eval-_gkaxl_q/SOC-01/data/receipts/2ca9e76437024361b63070cca94491e6.json",
+          "structured_output": "SUPPORTED",
+          "supported": [
+            "structured_output",
+            "timeout"
+          ],
+          "tools": "UNSUPPORTED",
+          "transport": "claude_cli"
+        },
+        "output_hash": "03cdc0aa37b796275ef65c2bffcde4756c55bceab4a2e738f49a890cfa96e3dc",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "598d7a29eca3e809bd4f2e39440b298f19a920bdea263c61e7967f2a37cefdd5",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "b54e9cae52b7cb12d621e0f388fc72cd3a3bf70cc721e5934f52fa8d2b78d3ec",
+        "request_id": "request-17b425b9bac94316bcabc12cee51c5e6",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T08:16:52.664423+00:00",
+        "trace_id": "bc3274e23e7044f8b9c915fd8820f098"
+      },
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "UNSUPPORTED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-17b425b9bac94316bcabc12cee51c5e6",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "bc3274e23e7044f8b9c915fd8820f098",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:1712348a2bac893f859fd48adf1ae30533b2044a98bd886274a0e21ce2781586:/tmp/secma-eval-_gkaxl_q/SOC-01/data/receipts/84ebb72748ed4dd28c6f1d1eea6ef297.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_UNSUPPORTED"
+        ]
+      },
+      "text": "Hi, how are you?",
+      "tier_claim": "L1"
+    },
+    {
+      "checks": {
+        "exit_0": false,
+        "no_capability_executed": true,
+        "no_commitment": true,
+        "no_tool_calls": true
+      },
+      "pass": false,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+          "measured_at": "2026-11-16T08:16:52.096844+00:00",
+          "model_identity_source": "observed",
+          "observed_model_id": "claude-haiku-5-5",
+          "reason": null,
+          "report_ref": "sha256:cbdb1568c2ec009d8580e29d9b4a7ff05ed4e23360c41052845834db7164df7d:/tmp/secma-eval-_gkaxl_q/SOC-01/data/receipts/2ca9e76437024361b63070cca94491e6.json",
+          "structured_output": "SUPPORTED",
+          "supported": [
+            "structured_output",
+            "timeout"
+          ],
+          "tools": "UNSUPPORTED",
+          "transport": "claude_cli"
+        },
+        "output_hash": "bb6c06c1182565296e3dc2d969a3afab3a8464918046089b317b955e410e8a0d",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "598d7a29eca3e809bd4f2e39440b298f19a920bdea263c61e7967f2a37cefdd5",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "d49b93ccf2668e745e11b14bc8521395ef813774b99424fabf0ef12b3b93eb60",
+        "request_id": "request-e28822c82101405790dd6739bcdb1a9e",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T08:16:52.849947+00:00",
+        "trace_id": "831481d110174e88aa7c4ec99d2eba2f"
+      },
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "UNSUPPORTED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-e28822c82101405790dd6739bcdb1a9e",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "831481d110174e88aa7c4ec99d2eba2f",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:35befea13272d5fe4f98a2815930d439e21b93f3be5d495a5558c2ade3efcba8:/tmp/secma-eval-_gkaxl_q/SOC-01/data/receipts/791230e8f92049938cbed97a1fb838ea.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_UNSUPPORTED"
+        ]
+      },
+      "text": "Hey there! Hope your day is going well.",
+      "tier_claim": "L1"
+    },
+    {
+      "checks": {
+        "exit_0": false,
+        "no_capability_executed": true,
+        "no_commitment": true,
+        "no_tool_calls": true
+      },
+      "pass": false,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+          "measured_at": "2026-11-16T08:16:52.096844+00:00",
+          "model_identity_source": "observed",
+          "observed_model_id": "claude-haiku-5-5",
+          "reason": null,
+          "report_ref": "sha256:cbdb1568c2ec009d8580e29d9b4a7ff05ed4e23360c41052845834db7164df7d:/tmp/secma-eval-_gkaxl_q/SOC-01/data/receipts/2ca9e76437024361b63070cca94491e6.json",
+          "structured_output": "SUPPORTED",
+          "supported": [
+            "structured_output",
+            "timeout"
+          ],
+          "tools": "UNSUPPORTED",
+          "transport": "claude_cli"
+        },
+        "output_hash": "e63ef6b33a3d9356c561fdde7935b8b07b9be3a055032e83756cb63c1d43e411",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "598d7a29eca3e809bd4f2e39440b298f19a920bdea263c61e7967f2a37cefdd5",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "135faf0ad6ec41b964983da22505f960caade07b764c8a11c0e0557a6a296cc9",
+        "request_id": "request-67ef6dcc67dd49ecb9e7b73c62d010e4",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T08:16:53.031834+00:00",
+        "trace_id": "97c4fdeeb8454a7bbc0235f000428fac"
+      },
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "UNSUPPORTED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-67ef6dcc67dd49ecb9e7b73c62d010e4",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "97c4fdeeb8454a7bbc0235f000428fac",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:70dd91079a35780ed94c801c3b20c448a14cde1014aef54f90000f61bce1f0eb:/tmp/secma-eval-_gkaxl_q/SOC-01/data/receipts/8cb7e5bbedd949ea8c8a066320d949b4.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_UNSUPPORTED"
+        ]
+      },
+      "text": "Good morning! Urgent: just wanted to say hi.",
+      "tier_claim": "L1"
+    }
+  ],
+  "setup": [
+    [
+      "init",
+      0,
+      "SUCCEEDED"
+    ],
+    [
+      "probe",
+      0,
+      "PARTIAL",
+      {
+        "concurrency": {
+          "attempts": 1,
+          "reason": "CONCURRENCY_NOT_EXERCISED",
+          "verdict": "NOT_VERIFIED"
+        },
+        "streaming": {
+          "attempts": 1,
+          "reason": "STREAMING_UNSUPPORTED",
+          "verdict": "UNSUPPORTED"
+        },
+        "structured_output": {
+          "attempts": 1,
+          "reason": "PROBE_PASSED",
+          "verdict": "SUPPORTED"
+        },
+        "timeout": {
+          "attempts": 1,
+          "reason": "PROBE_PASSED",
+          "verdict": "SUPPORTED"
+        },
+        "tools": {
+          "attempts": 1,
+          "reason": "TOOL_CALL_INVALID",
+          "verdict": "UNSUPPORTED"
+        }
+      }
+    ],
+    [
+      "install:calendar-read",
+      0,
+      "ENABLED"
+    ],
+    [
+      "install:mail-search",
+      0,
+      "ENABLED"
+    ]
+  ]
+}

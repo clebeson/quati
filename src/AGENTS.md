@@ -1,3 +1,11 @@
-# AGENTS.md — Future SECMA Runtime Source
+# AGENTS.md — Quati Runtime Source
 
-This directory is intentionally unimplemented in the specification package. Codex Work creates the production Python source within the selected implementation slice. Keep `domain/` free of imports from Pydantic AI, DBOS, LLM vendor SDKs and transport adapters. Application ports express business requirements. All internal documentation and comments in English. Use protected authorization and durable ledger guards before external side effects. Never treat `spec_tools/` reference code as production security validation without writing and verifying equivalent domain-level checks.
+Runtime implementation is authorized incrementally by the user. Read canonical state
+and the selected work-package handoff before modifying source. Only accepted bounded
+deliveries have their stated proof; retained candidates remain unqualified.
+
+Keep domain/ free of imports from Pydantic AI, DBOS, vendor SDKs, transport adapters
+and filesystem/database backends. Application use cases receive ports. All authored
+internal documentation and comments are English; user-facing responses follow the
+selected/detected language. Authorization precedes effects. Never treat spec_tools/
+reference checks or a mock provider as runtime/provider qualification.

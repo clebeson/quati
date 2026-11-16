@@ -1,0 +1,119 @@
+{
+  "case_id": "CAP-05",
+  "checks": {
+    "no_capability_executed": true,
+    "not_succeeded": true,
+    "reason_model_incompatible": true,
+    "rejected_exit_4": true
+  },
+  "cli_log": [
+    {
+      "argv": [
+        "init",
+        "--json"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.171,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "capabilities",
+        "install-fixture",
+        "calendar-read",
+        "--json",
+        "--enable-fixture"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.194,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "ask",
+        "Find my next appointment.",
+        "--json",
+        "--synthetic-evidence"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.154,
+      "exit": 4,
+      "stderr_tail": ""
+    }
+  ],
+  "feature_support": "UNPROBED",
+  "pass": true,
+  "receipt": {
+    "cost_usd": null,
+    "evidence_version": "s00/1",
+    "feature_gate": {
+      "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+      "measured_at": null,
+      "model_identity_source": null,
+      "observed_model_id": null,
+      "reason": null,
+      "report_ref": null,
+      "structured_output": "UNPROBED",
+      "supported": [],
+      "tools": "UNPROBED",
+      "transport": "claude_cli"
+    },
+    "output_hash": "e7c866ebff7dc0678a3279a9f6b55a5a827ff5d30dbcae7f2a31748f16fe75df",
+    "policy_version": "s00-fixture-readonly/1",
+    "principal_hash": "682de93f3aa585751a7779c2b661f3c8138aa362e454894a359538599e65ee33",
+    "proof_tier": "L1",
+    "provider_used": false,
+    "request_hash": "fb684d1517313193ebaa9083147b50165f30d59b1a83e7c6ee3917d2df52e249",
+    "request_id": "request-c4ead0afdd4440f3bd54c21dbaecbc5d",
+    "status": "UNAVAILABLE",
+    "timestamp": "2026-11-16T08:33:24.932419+00:00",
+    "trace_id": "0f9fc6c35c904a04bb62b350b549ca69"
+  },
+  "response": {
+    "data": {
+      "commitment_id": null,
+      "delivered": false,
+      "feature_support": "UNPROBED",
+      "launched": false,
+      "provider_used": false,
+      "reason": "MODEL_INCOMPATIBLE",
+      "received": true,
+      "request_id": "request-c4ead0afdd4440f3bd54c21dbaecbc5d",
+      "result_kind": "BLOCKED",
+      "scope": "S00_T01_LOCAL_CLI",
+      "tool_calls": [],
+      "trace_id": "0f9fc6c35c904a04bb62b350b549ca69",
+      "usage": {
+        "cost_usd": null
+      }
+    },
+    "error": {
+      "code": "UNSUPPORTED",
+      "message": "The configured model has no current measured tool support for this configuration.",
+      "retryable": false
+    },
+    "evidence_refs": [
+      "sha256:9219fa458ed811555fd910b32d6a1aaa38bad0e4095b98f738908313e74c31a3:/tmp/secma-eval-2bdujwmp/CAP-05/data/receipts/71e8289c4ff24ad6a3af316d179d259e.json"
+    ],
+    "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+    "status": "UNAVAILABLE",
+    "uncertainties": [
+      "MODEL_INCOMPATIBLE",
+      "TOOLS_UNPROBED"
+    ]
+  },
+  "setup": [
+    [
+      "init",
+      0,
+      "SUCCEEDED"
+    ],
+    [
+      "install:calendar-read",
+      0,
+      "ENABLED"
+    ]
+  ]
+}

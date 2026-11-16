@@ -64,6 +64,38 @@ def validate_closure(tasks, plans, cases):
         require(t['memory_lookup']['index'] == 'memory/index.json', 'Missing mandatory memory lookup')
 
 
+GUARD_INPUT_ROOTS = {
+    'commitment', 'snapshot_committed', 'event', 'context', 'token_revoked', 'now',
+    'active_policy_version', 'policy_decision', 'approval', 'effects', 'attempts',
+    'delivery', 'assessment', 'candidate_producer_actor_id', 'evidence',
+    'classification', 'budget', 'usage', 'config'}
+RECORD_TABLES = {
+    'commitments', 'commitment_events', 'effect_intents', 'outbox', 'timer_intents',
+    'workflow_refs', 'work_items', 'approval_requests'}
+
+
+def validate_guard_registry(table, registry, boundaries):
+    """The guard/action registry (GUARD_PREDICATES.md) must name exactly the control table's guards and actions."""
+    require(registry.get('schema_version') == 'quati-guard-registry/1', 'Guard registry schema_version mismatch')
+    guards, actions = registry.get('guards', []), registry.get('actions', [])
+    guard_names = [g['name'] for g in guards]
+    action_names = [a['name'] for a in actions]
+    require(len(guard_names) == len(set(guard_names)), 'Duplicate guard in registry')
+    require(len(action_names) == len(set(action_names)), 'Duplicate action in registry')
+    require(set(guard_names) == {row['guard'] for row in table['transitions']}, 'Guard registry differs from control table guards')
+    require(set(action_names) == {row['action'] for row in table['transitions']}, 'Action registry differs from control table actions')
+    codes = set(boundaries['$defs']['Error']['properties']['code']['enum'])
+    for g in guards:
+        require(set(g) == {'name', 'inputs', 'denial_reason_code', 'description'}, f"Guard {g['name']} has unexpected keys")
+        require(g['inputs'] and all(i.split('.')[0] in GUARD_INPUT_ROOTS for i in g['inputs']), f"Guard {g['name']} has an unknown input root")
+        require(g['denial_reason_code'] in codes, f"Guard {g['name']} denial code is not an Error.code")
+        require(g['description'].strip(), f"Guard {g['name']} lacks a description")
+    for a in actions:
+        require(set(a) == {'name', 'description', 'records_written'}, f"Action {a['name']} has unexpected keys")
+        require({'commitments', 'commitment_events'} <= set(a['records_written']) <= RECORD_TABLES, f"Action {a['name']} writes an unknown record table")
+        require(a['description'].strip(), f"Action {a['name']} lacks a description")
+
+
 def validate_commitment(document):
     Draft202012Validator(read('contracts/commitment-v2.schema.json'),format_checker=FORMATS).validate(document)
     if document['state'] in {'READY_TO_DELIVER','SEND_PENDING','DELIVERED'}:
@@ -78,44 +110,70 @@ def validate_seal_provenance(seal, root=ROOT):
         require(target.is_file() and hashlib.sha256(target.read_bytes()).hexdigest()==digest, 'Stale or missing seal evidence/source/artifact')
     require(set(seal['evidence_refs']) == set(seal['evidence_sha256']), 'Evidence digest coverage mismatch')
     for mapping in ('artifact_sha256','evidence_sha256'):
-        for path,digest in seal[mapping].items(): verify(path,digest)
+        for path,digest in seal.get(mapping, {}).items(): verify(path,digest)
+    if 'commit_evidence' in seal:
+        commit = seal['commit_evidence']
+        require({commit['test_log_ref'], commit['transcript_ref']} <= set(seal['evidence_refs']),
+                'Test log or transcript is not bound to evidence')
+        return
     snapshot=seal['source_snapshot']
     verify(snapshot['manifest_path'],snapshot['manifest_sha256'])
     manifest=json.loads((root/snapshot['manifest_path']).read_text())
-    require(manifest.get('schema_version')=='secma-source-snapshot/1' and bool(manifest.get('files')), 'Invalid source snapshot')
+    require(manifest.get('schema_version')=='quati-source-snapshot/1' and bool(manifest.get('files')), 'Invalid source snapshot')
     require(set(seal['artifact_sha256']) <= set(manifest['files']), 'Source snapshot omits sealed artifacts')
     for path,digest in manifest['files'].items(): verify(path,digest)
+
+
+def _resolve_seal_reference(ref, indexed, allowed_scopes, commit):
+    import hashlib
+    require(indexed['path']==ref['path'] and indexed['record_sha256']==ref['record_sha256'] and indexed['kind']==ref['kind'], 'State and seal index disagree')
+    path = (ROOT/ref['path']).resolve()
+    require(path.is_relative_to(ROOT.resolve()), 'Seal path escapes package')
+    require(path.is_file(), 'Missing seal record')
+    require(hashlib.sha256(path.read_bytes()).hexdigest() == ref['record_sha256'], 'Seal record changed')
+    seal=json.loads(path.read_text())
+    Draft202012Validator(read('state/schemas/governance-seal.schema.json'),format_checker=FORMATS).validate(seal)
+    require(ref['scope_id'] in seal['scope_ids'] and ref['kind'] == seal['kind'], 'Seal scope/kind mismatch')
+    require(seal['seal_id'] == ref['seal_id'] and ref['scope_id'] in allowed_scopes, 'Seal identity/scope mismatch')
+    if 'commit_evidence' in seal:
+        require(seal['commit_evidence']['commit_sha'] == commit, 'Seal commit mismatch')
+    validate_seal_provenance(seal)
+    return seal
+
+
+def _validate_gate_seals(seals, slice_accepted):
+    require(bool(seals), 'PASS gate has no seal references')
+    require(all(seal['verdict'] == 'PASS' for seal in seals), 'Nonpassing seal used for PASS gate')
+    kinds = {seal['kind'] for seal in seals}
+    require({'TESTS_VERIFIED', 'EVIDENCE_VERIFIED'} <= kinds, 'PASS gate lacks mandatory slice seals')
+    if slice_accepted:
+        require('SLICE_ACCEPTED' in kinds, 'PASS slice lacks SLICE_ACCEPTED seal')
+    return {json.dumps(seal.get('commit_evidence', {}).get('commit_sha') or seal['source_snapshot'], sort_keys=True)
+            for seal in seals}
 
 
 def validate_seal_references(state):
     index = read(state['seal_registry_ref'])
     records = {r['seal_id']:r for r in index['records']}
     require(len(records) == len(index['records']), 'Duplicate seal identity')
-    import hashlib
     for sid, item in state['slices'].items():
+        slice_sources = set()
         require(set(item['gate_seal_refs']) == set(item['gates']), 'Missing per-gate seal lookup')
         for gate, status in item['gates'].items():
-            refs = item['gate_seal_refs'][gate]
-            if status == 'PASS': require(bool(refs), 'PASS gate has no seal references')
-            for ref in refs:
+            seals = []
+            for ref in item['gate_seal_refs'][gate]:
                 require(ref['seal_id'] in records, 'Seal not in canonical index')
-                indexed = records[ref['seal_id']]
-                require(indexed['path']==ref['path'] and indexed['record_sha256']==ref['record_sha256'] and indexed['kind']==ref['kind'],'State and seal index disagree')
-                path = ROOT/ref['path']
-                require(path.is_file(), 'Missing seal record')
-                require(hashlib.sha256(path.read_bytes()).hexdigest() == ref['record_sha256'], 'Seal record changed')
-                seal=json.loads(path.read_text())
-                Draft202012Validator(read('state/schemas/governance-seal.schema.json'),format_checker=FORMATS).validate(seal)
-                require(ref['scope_id'] in seal['scope_ids'] and ref['kind'] == seal['kind'], 'Seal scope/kind mismatch')
-                if status == 'PASS':require(seal['verdict'] == 'PASS','Nonpassing seal used for PASS gate')
-                validate_seal_provenance(seal)
+                seals.append(_resolve_seal_reference(ref, records[ref['seal_id']], {sid, gate}, item['commit']))
+            if status == 'PASS':
+                slice_sources.update(_validate_gate_seals(seals, item['status'] == 'PASS'))
+        require(len(slice_sources) <= 1, 'Slice seals reference different source identities')
 
 
 def main():
     requirements=list(csv.DictReader((ROOT/'docs/traceability/FULL_REQUIREMENTS_MATRIX.csv').open()))
     ids={r['id'] for r in requirements}; require(len(ids)==len(requirements),'Duplicate requirement IDs')
     counts=Counter(r['kind'] for r in requirements)
-    require(counts=={'FR':93,'AT':62,'RT':62,'INVARIANT':10,'DERIVED':13},'Requirement inventory changed without review')
+    require(counts=={'FR':94,'AT':63,'RT':63,'INVARIANT':10,'DERIVED':13},'Requirement inventory changed without review')
     cases=read('docs/testing/ACCEPTANCE_CASES.json')['cases']; case_ids={c['case_id'] for c in cases}
     ledger=list(csv.DictReader((ROOT/'docs/testing/TEST_LEDGER.csv').open()))
     require(len(case_ids)==len(cases) and case_ids=={r['case_id'] for r in ledger},'Case ledger mismatch')
@@ -148,6 +206,7 @@ def main():
     validate_closure(tasks, plans, cases)
     for p in list((ROOT/'contracts').glob('*.schema.json'))+list((ROOT/'state/schemas').glob('*.schema.json')):
         Draft202012Validator.check_schema(json.loads(p.read_text()))
+    Draft202012Validator(read('contracts/decision-policy.schema.json')).validate(read('examples/behavior/decision-policy.json'))
     boundary=Draft202012Validator(read('contracts/runtime-boundaries.schema.json'),format_checker=FORMATS)
     for example in ['runtime_context.valid.json','runtime_response.valid.json']:boundary.validate(read('examples/payloads/'+example))
     require(not boundary.is_valid(read('examples/payloads/runtime_context.invalid.json')),'Invalid boundary example was accepted')
@@ -158,7 +217,8 @@ def main():
     validate_commitment(read('examples/payloads/commitment_v2.valid.json'))
     require(not Draft202012Validator(read('contracts/commitment-v2.schema.json'),format_checker=FORMATS).is_valid(read('examples/payloads/commitment_v2.invalid.json')),'Invalid commitment was accepted')
     require(set(table['states'])==set(read('contracts/commitment-v2.schema.json')['properties']['state']['enum']),'V2 state vocabulary mismatch')
-    require(build()==(ROOT/'SECMA_CONSOLIDATED_SPEC_V8_EN.md').read_text(),'Stale consolidated specification')
+    validate_guard_registry(table, read('contracts/guard-registry.json'), read('contracts/runtime-boundaries.schema.json'))
+    require(build()==(ROOT/'QUATI_CONSOLIDATED_SPEC_V8_EN.md').read_text(),'Stale consolidated specification')
     record_validator=Draft202012Validator(read('state/schemas/engineering-record.schema.json'),format_checker=FORMATS)
     for p in (ROOT/'memory').glob('*/*.json'):
         record=json.loads(p.read_text());record_validator.validate(record)

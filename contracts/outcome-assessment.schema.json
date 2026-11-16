@@ -53,6 +53,16 @@
         "string",
         "null"
       ]
+    },
+    "assessor_actor_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Actor that produced this assessment. Guards G14 and G15 require it to be present and different from the candidate producer_actor_id (GUARD_PREDICATES.md section 3.2, independent)."
+    },
+    "assessed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the assessment was produced."
     }
   },
   "additionalProperties": false,

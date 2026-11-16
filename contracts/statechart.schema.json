@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
-  "title": "Declarative SECMA statechart",
+  "title": "Declarative Quati statechart",
   "type": "object",
   "required": [
     "id",

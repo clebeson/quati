@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quati.local/contracts/policy.schema.json",
+  "title": "Quati tenant policy document (RFC-014)",
+  "description": "Declarative, default-deny, per-tenant policy. Not a programming language: rules only match listed fields and carry a verdict. policy_version is the sha256 of the canonical (sorted-key, no-whitespace UTF-8 JSON) form of this document and is NOT stored inside it. Built-in kernel rules (RFC-014 section 3) are not representable here and cannot be disabled.",
+  "type": "object",
+  "required": ["policy_schema_version", "tenant_id", "revision", "default_verdict", "rules"],
+  "properties": {
+    "policy_schema_version": { "const": "1" },
+    "tenant_id": { "$ref": "#/$defs/Ulid" },
+    "revision": { "type": "integer", "minimum": 1, "description": "Monotonic edit counter; informational. Identity of the content is the digest." },
+    "description": { "type": "string", "maxLength": 500 },
+    "default_verdict": { "const": "DENY", "description": "Anything no rule allows is denied. Only DENY is valid." },
+    "rules": { "type": "array", "maxItems": 500, "items": { "$ref": "#/$defs/Rule" } }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "Ulid": { "type": "string", "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$" },
+    "Effect": { "enum": ["none", "read", "write", "dangerous"] },
+    "DataClass": { "enum": ["public_synthetic", "public", "internal", "confidential", "restricted"] },
+    "Glob": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9_.:/@*?\\-]+$",
+      "description": "Glob over a normalized value. Only * and ? are wildcards; no regular expressions."
+    },
+    "Match": {
+      "type": "object",
+      "description": "All present fields must match (AND). Absent field = any. List values match if any element matches (OR).",
+      "properties": {
+        "capability_id": { "$ref": "#/$defs/Glob" },
+        "effects": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/Effect" } },
+        "destination": { "$ref": "#/$defs/Glob", "description": "Matched against the normalized destination_ref, never the raw model-supplied text." },
+        "max_data_class": { "$ref": "#/$defs/DataClass", "description": "Rule applies only when the data class of the operation is at or below this ceiling." },
+        "principal_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/Ulid" } },
+        "group_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/Ulid" } },
+        "tenant_roles": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["OWNER", "ADMIN", "MEMBER", "GUEST"] } },
+        "space_kinds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["PERSONAL", "TEAM", "ORGANIZATION", "SHARED"] } },
+        "space_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/Ulid" } }
+      },
+      "additionalProperties": false
+    },
+    "Approver": {
+      "type": "object",
+      "required": ["rule"],
+      "properties": {
+        "rule": { "enum": ["SELF", "SPACE_MANAGER", "TENANT_ADMIN", "NAMED_PRINCIPALS"] },
+        "principal_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/Ulid" }, "description": "Required (and only allowed) for NAMED_PRINCIPALS. Must be HUMAN principals; checked at load." }
+      },
+      "if": { "properties": { "rule": { "const": "NAMED_PRINCIPALS" } } },
+      "then": { "required": ["principal_ids"] },
+      "else": { "not": { "required": ["principal_ids"] } },
+      "additionalProperties": false
+    },
+    "Rule": {
+      "type": "object",
+      "required": ["rule_id", "verdict", "match"],
+      "properties": {
+        "rule_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$" },
+        "description": { "type": "string", "maxLength": 300 },
+        "verdict": { "enum": ["ALLOW", "APPROVAL_REQUIRED", "DENY"] },
+        "match": { "$ref": "#/$defs/Match" },
+        "approver": { "$ref": "#/$defs/Approver" },
+        "approval_ttl_seconds": { "type": "integer", "minimum": 60, "maximum": 86400, "description": "Lifetime of an approval request and of an approval, from creation/decision. Default 900 when omitted." },
+        "expires_at": { "type": "string", "format": "date-time", "description": "After this instant the rule is ignored (an expired ALLOW or APPROVAL_REQUIRED falls back to default deny; an expired DENY stops denying)." }
+      },
+      "allOf": [
+        { "if": { "properties": { "verdict": { "const": "APPROVAL_REQUIRED" } } }, "then": { "required": ["approver"] } },
+        { "if": { "properties": { "verdict": { "enum": ["ALLOW", "DENY"] } } }, "then": { "not": { "anyOf": [ { "required": ["approver"] }, { "required": ["approval_ttl_seconds"] } ] } } }
+      ],
+      "additionalProperties": false
+    }
+  }
+}

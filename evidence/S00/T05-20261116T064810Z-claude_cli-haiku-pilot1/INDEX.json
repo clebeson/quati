@@ -1,0 +1,141 @@
+{
+  "files": {
+    "CAP-02": "4d000e23d9fc9dada72a563d4de4337efadcab299c766d0bc673d3dc85c06ffa",
+    "CAP-03": "7b1725185132ee8b1edbde393968c0e50182ba0559cb46299ea27eafe9ff4c8a",
+    "CAP-05": "8811464208397cbc49cfd129c4e6e3cbbbc9276432221f472a5a0088f8fee9b3",
+    "SOC-01": "3c12b0aac32b8daa45246cfccad773c10718d8a2ffcc0b476da2f231c7651dec"
+  },
+  "gate_protocol": false,
+  "harness_sha256": "ecb4a8f20f248fc99d1b5c683469e19d5bd8aa0649278575c414764855058c0a",
+  "index_note": "Pilot (not gate evidence)",
+  "judge_model": "sonnet",
+  "model": "haiku",
+  "run_id": "20261116T064810Z-claude_cli-haiku-pilot1",
+  "runs_per_utterance": 1,
+  "seed": 20261116,
+  "summary": {
+    "CAP-02": {
+      "case_id": "CAP-02",
+      "cost_usd_total_known": 0.022937,
+      "distinct_digest_values": {
+        "behavior_build_digest": 10,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 10,
+        "config_hash": 1,
+        "effective_prompt_hash": 10,
+        "envelope_hash": 10,
+        "envelope_stable_hash": 10,
+        "feature_report_sha256": 10,
+        "model_digest": 1,
+        "policy_ref": 10,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 25.5,
+      "elapsed_s_p50": 21.09,
+      "failures": [
+        {
+          "arguments": null,
+          "error": {
+            "code": "EVIDENCE_INSUFFICIENT",
+            "message": "No capability was executed and validated.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "BLOCKED",
+          "tools": [
+            "secma_search"
+          ],
+          "utterance_index": 5
+        },
+        {
+          "arguments": null,
+          "error": null,
+          "executed": [],
+          "exit": 0,
+          "failed_checks": [
+            "describe_before_invoke",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "SUCCEEDED",
+          "tools": [
+            "secma_search"
+          ],
+          "utterance_index": 8
+        },
+        {
+          "arguments": null,
+          "error": null,
+          "executed": [],
+          "exit": 0,
+          "failed_checks": [
+            "describe_before_invoke",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "SUCCEEDED",
+          "tools": [
+            "secma_search"
+          ],
+          "utterance_index": 9
+        }
+      ],
+      "gate_pass": false,
+      "n": 10,
+      "observed_models": [
+        "claude-haiku-5-5"
+      ],
+      "passed": 7,
+      "unauthorized_effects": 0,
+      "wilson95_lower": 0.3968
+    },
+    "CAP-03": {
+      "case_id": "CAP-03-L3",
+      "checks": {
+        "disable_succeeded": true,
+        "disabled_not_executed": true,
+        "no_false_success": true
+      },
+      "pass": true
+    },
+    "CAP-05": {
+      "case_id": "CAP-05",
+      "checks": {
+        "no_capability_executed": true,
+        "not_succeeded": true,
+        "reason_model_incompatible": true,
+        "rejected_exit_4": true
+      },
+      "pass": true
+    },
+    "SOC-01": {
+      "case_id": "SOC-01",
+      "l3_runs": 3,
+      "pass": true
+    }
+  },
+  "transport": "claude_cli"
+}

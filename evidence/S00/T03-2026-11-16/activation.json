@@ -1,0 +1,564 @@
+{
+ "audit_events": [
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.forecast-lime",
+   "capability_version": "1.0.0",
+   "event": "registry.installed",
+   "package_sha256": "41e7fa562e19f6c13832ee96d3d0883b1225a4b7c5ee79e50f55a3663bd87030",
+   "source": "fixture:forecast-lime"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval_id": null,
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.forecast-lime",
+   "capability_version": "1.0.0",
+   "event": "registry.transition",
+   "from": "DRAFT",
+   "revision": 1,
+   "to": "VALIDATED"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "at": "2026-11-16T12:00:00Z",
+   "binding_ref": "fixtures.forecast-lime@1.0.0#fixtures.forecast-lime.b1",
+   "event": "registry.bind",
+   "measured_assurance": "C2",
+   "self_test_evidence_sha256": "c0587ac7377ed3323417cb0fbac5a13f6532f3b6d868ae9787df3948d7f6dd45"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval_id": null,
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.forecast-lime",
+   "capability_version": "1.0.0",
+   "event": "registry.transition",
+   "from": "VALIDATED",
+   "revision": 2,
+   "to": "STAGED"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval": {
+    "approval_id": "approval-00001",
+    "approver_id": "01JD00000000000000000000AA",
+    "approver_kind": "HUMAN",
+    "binding_ids": [
+     "fixtures.forecast-lime.b1"
+    ],
+    "capability_id": "fixtures.forecast-lime",
+    "capability_version": "1.0.0",
+    "effect_class": "read",
+    "expires_at": "2026-11-16T12:15:00Z",
+    "issued_at": "2026-11-16T12:00:00Z",
+    "kind": "FIXTURE_ENABLE",
+    "tenant_id": "01JD0000000000000000000000"
+   },
+   "approval_evidence_sha256": "807dac4b23f5f2effca7ede98a8693d007e7d6e57f3b00a0a51ecac165fee56c",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.forecast-lime",
+   "capability_version": "1.0.0",
+   "event": "registry.activation",
+   "label": "LOCAL_FIXTURE_ONLY"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval_id": "approval-00001",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.forecast-lime",
+   "capability_version": "1.0.0",
+   "event": "registry.transition",
+   "from": "STAGED",
+   "revision": 3,
+   "to": "ENABLED"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.calendar-read",
+   "capability_version": "1.0.0",
+   "event": "registry.installed",
+   "package_sha256": "bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b",
+   "source": "fixture:calendar-read"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval_id": null,
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.calendar-read",
+   "capability_version": "1.0.0",
+   "event": "registry.transition",
+   "from": "DRAFT",
+   "revision": 1,
+   "to": "VALIDATED"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "at": "2026-11-16T12:00:00Z",
+   "binding_ref": "fixtures.calendar-read@1.0.0#fixtures.calendar-read.b1",
+   "event": "registry.bind",
+   "measured_assurance": "C2",
+   "self_test_evidence_sha256": "248be8e051b50a29402677d8f834dc79149140d67f5202a4d0da5a80f8556ee6"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval_id": null,
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.calendar-read",
+   "capability_version": "1.0.0",
+   "event": "registry.transition",
+   "from": "VALIDATED",
+   "revision": 2,
+   "to": "STAGED"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval": {
+    "approval_id": "approval-00002",
+    "approver_id": "01JD00000000000000000000AA",
+    "approver_kind": "HUMAN",
+    "binding_ids": [
+     "fixtures.calendar-read.b1"
+    ],
+    "capability_id": "fixtures.calendar-read",
+    "capability_version": "1.0.0",
+    "effect_class": "read",
+    "expires_at": "2026-11-16T12:15:00Z",
+    "issued_at": "2026-11-16T12:00:00Z",
+    "kind": "FIXTURE_ENABLE",
+    "tenant_id": "01JD0000000000000000000000"
+   },
+   "approval_evidence_sha256": "5aa0c7fd36b4a04079035e4d4bc5bc459735b7d43ef973b9ed01aed72c3c4c72",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.calendar-read",
+   "capability_version": "1.0.0",
+   "event": "registry.activation",
+   "label": "LOCAL_FIXTURE_ONLY"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval_id": "approval-00002",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.calendar-read",
+   "capability_version": "1.0.0",
+   "event": "registry.transition",
+   "from": "STAGED",
+   "revision": 3,
+   "to": "ENABLED"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.calendar-write",
+   "capability_version": "1.0.0",
+   "event": "registry.installed",
+   "package_sha256": "64b53b8122e6fbde45f75acedcf0cafeb42d92ba6c73b3054c29f0141985426d",
+   "source": "fixture:calendar-write"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.calendar-write",
+   "capability_version": "1.0.0",
+   "event": "registry.transition_refused",
+   "reason": "EFFECT_ABOVE_CEILING"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.mail-search",
+   "capability_version": "1.0.0",
+   "event": "registry.installed",
+   "package_sha256": "c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112",
+   "source": "fixture:mail-search"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval_id": null,
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.mail-search",
+   "capability_version": "1.0.0",
+   "event": "registry.transition",
+   "from": "DRAFT",
+   "revision": 1,
+   "to": "VALIDATED"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "at": "2026-11-16T12:00:00Z",
+   "binding_ref": "fixtures.mail-search@1.0.0#fixtures.mail-search.b1",
+   "event": "registry.bind",
+   "measured_assurance": "C2",
+   "self_test_evidence_sha256": "34ec0c293fc6617043ef17ca9c07d41a112a30fa722ffd26c0b7024c27483443"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval_id": null,
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.mail-search",
+   "capability_version": "1.0.0",
+   "event": "registry.transition",
+   "from": "VALIDATED",
+   "revision": 2,
+   "to": "STAGED"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval": {
+    "approval_id": "approval-00003",
+    "approver_id": "01JD00000000000000000000AA",
+    "approver_kind": "HUMAN",
+    "binding_ids": [
+     "fixtures.mail-search.b1"
+    ],
+    "capability_id": "fixtures.mail-search",
+    "capability_version": "1.0.0",
+    "effect_class": "read",
+    "expires_at": "2026-11-16T12:15:00Z",
+    "issued_at": "2026-11-16T12:00:00Z",
+    "kind": "FIXTURE_ENABLE",
+    "tenant_id": "01JD0000000000000000000000"
+   },
+   "approval_evidence_sha256": "f32abd27f88f575307ed0dde61a2b5fdd9d1913762592c0a284eef14a7df2cf6",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.mail-search",
+   "capability_version": "1.0.0",
+   "event": "registry.activation",
+   "label": "LOCAL_FIXTURE_ONLY"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "approval_id": "approval-00003",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.mail-search",
+   "capability_version": "1.0.0",
+   "event": "registry.transition",
+   "from": "STAGED",
+   "revision": 3,
+   "to": "ENABLED"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.calendar-write",
+   "event": "discovery.selection_error",
+   "reason": "NOT_IN_SHORTLIST",
+   "request_id": "request-0001"
+  },
+  {
+   "actor_id": "01JD00000000000000000000AA",
+   "at": "2026-11-16T12:00:00Z",
+   "capability_id": "fixtures.calendar-read",
+   "capability_version": "1.0.0",
+   "decision": {
+    "decided_at": "2026-11-16T12:00:00Z",
+    "decision_id": "decision-00005",
+    "intent_digest": "6f3f172d42f23f1116188e3ba4b54a6ee5c7935f9759c1b55b54c95ebe974c67",
+    "matched_rule_ids": [
+     "read-own-spaces"
+    ],
+    "narrowed_scope": {
+     "capability_id": "fixtures.calendar-read",
+     "destination_ref": "capability:fixtures.calendar-read@1.0.0",
+     "effect_id": "effect-00004",
+     "expires_at": "2026-11-16T12:01:00Z",
+     "operation": "invoke"
+    },
+    "obligations": [],
+    "policy_version": "146a918b8803db0a12d4e4fb5b8231cd15fc9ba9a163f2fbb5ccbb2a607576ae",
+    "reason_code": "read-own-spaces",
+    "valid_until": "2026-11-16T12:01:00Z",
+    "verdict": "ALLOW"
+   },
+   "effect_id": "effect-00004",
+   "event": "policy.decided",
+   "intent": {
+    "actor_id": "01JD00000000000000000000AA",
+    "binding_id": "fixtures.calendar-read.b1",
+    "binding_version": "0bb7ebe17d37d43f8b9185f27d4abc801d79c4fd8ccc82d70824e12bf3a6d1dd",
+    "capability_id": "fixtures.calendar-read",
+    "capability_version": "1.0.0",
+    "data_class": "public_synthetic",
+    "destination_ref": "capability:fixtures.calendar-read@1.0.0",
+    "effect_class": "read",
+    "effect_id": "effect-00004",
+    "idempotency_key": "dfdf01fbe4a7711ddb2ea348d1f0c9c3ff8ee6608735c61e3053931397652f4f",
+    "input_digest": "156fedef9af97685d0e6f43eebe55d8ae67fcbf34b2fea23c2b1af061b4bcdf0",
+    "operation": "invoke",
+    "policy_version": "146a918b8803db0a12d4e4fb5b8231cd15fc9ba9a163f2fbb5ccbb2a607576ae",
+    "tenant_id": "01JD0000000000000000000000"
+   },
+   "request_id": "request-0001",
+   "tenant_id": "01JD0000000000000000000000"
+  }
+ ],
+ "capabilities_lock": {
+  "entries": [
+   {
+    "id": "fixtures.calendar-read",
+    "installed_at": "2026-11-16T12:00:00Z",
+    "installed_by_approval": null,
+    "sha256": "bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b",
+    "source": "fixture:calendar-read",
+    "version": "1.0.0"
+   },
+   {
+    "id": "fixtures.calendar-write",
+    "installed_at": "2026-11-16T12:00:00Z",
+    "installed_by_approval": null,
+    "sha256": "64b53b8122e6fbde45f75acedcf0cafeb42d92ba6c73b3054c29f0141985426d",
+    "source": "fixture:calendar-write",
+    "version": "1.0.0"
+   },
+   {
+    "id": "fixtures.forecast-lime",
+    "installed_at": "2026-11-16T12:00:00Z",
+    "installed_by_approval": null,
+    "sha256": "41e7fa562e19f6c13832ee96d3d0883b1225a4b7c5ee79e50f55a3663bd87030",
+    "source": "fixture:forecast-lime",
+    "version": "1.0.0"
+   },
+   {
+    "id": "fixtures.mail-search",
+    "installed_at": "2026-11-16T12:00:00Z",
+    "installed_by_approval": null,
+    "sha256": "c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112",
+    "source": "fixture:mail-search",
+    "version": "1.0.0"
+   }
+  ],
+  "lock_version": 1
+ },
+ "handler_invocations": {
+  "calendar-read": 1
+ },
+ "installs": {
+  "calendar-read": {
+   "label": "LOCAL_FIXTURE_ONLY",
+   "lifecycle": "ENABLED",
+   "reason": null,
+   "status": "SUCCEEDED"
+  },
+  "calendar-write": {
+   "label": null,
+   "lifecycle": "DRAFT",
+   "reason": "EFFECT_ABOVE_CEILING",
+   "status": "DENIED"
+  },
+  "forecast-lime": {
+   "label": "LOCAL_FIXTURE_ONLY",
+   "lifecycle": "ENABLED",
+   "reason": null,
+   "status": "SUCCEEDED"
+  },
+  "mail-search": {
+   "label": "LOCAL_FIXTURE_ONLY",
+   "lifecycle": "ENABLED",
+   "reason": null,
+   "status": "SUCCEEDED"
+  }
+ },
+ "note": "L1 synthetic fixture activation; FIXTURE_RESULT only; not provider proof; clock 2026-11-16T12:00:00Z, seeded ids",
+ "records": [
+  {
+   "assurance": "C2",
+   "assurance_evidence": [
+    {
+     "catalog_digest": null,
+     "evidence_sha256": "248be8e051b50a29402677d8f834dc79149140d67f5202a4d0da5a80f8556ee6",
+     "level": "C2",
+     "model_digest": null,
+     "recorded_at": "2026-11-16T12:00:00Z"
+    }
+   ],
+   "capability_id": "fixtures.calendar-read",
+   "capability_version": "1.0.0",
+   "effect_class_reviewed": "read",
+   "enabled_by_approval": "approval-00002",
+   "import_kind": "fixture",
+   "lifecycle": "ENABLED",
+   "lint_report_ref": "sha256:91356873834d7ee5cb7f686fcf9b48e7f612d04bcf19e00b8d836019721f8793",
+   "package_sha256": "bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b",
+   "revision": 3,
+   "schema_version": "scs-registry/1.0",
+   "source": "fixture:calendar-read",
+   "tenant_id": "01JD0000000000000000000000",
+   "updated_at": "2026-11-16T12:00:00Z"
+  },
+  {
+   "assurance": "C0",
+   "assurance_evidence": [],
+   "capability_id": "fixtures.calendar-write",
+   "capability_version": "1.0.0",
+   "effect_class_reviewed": null,
+   "enabled_by_approval": null,
+   "import_kind": "fixture",
+   "lifecycle": "DRAFT",
+   "lint_report_ref": "sha256:91356873834d7ee5cb7f686fcf9b48e7f612d04bcf19e00b8d836019721f8793",
+   "package_sha256": "64b53b8122e6fbde45f75acedcf0cafeb42d92ba6c73b3054c29f0141985426d",
+   "revision": 0,
+   "schema_version": "scs-registry/1.0",
+   "source": "fixture:calendar-write",
+   "tenant_id": "01JD0000000000000000000000",
+   "updated_at": "2026-11-16T12:00:00Z"
+  },
+  {
+   "assurance": "C2",
+   "assurance_evidence": [
+    {
+     "catalog_digest": null,
+     "evidence_sha256": "c0587ac7377ed3323417cb0fbac5a13f6532f3b6d868ae9787df3948d7f6dd45",
+     "level": "C2",
+     "model_digest": null,
+     "recorded_at": "2026-11-16T12:00:00Z"
+    }
+   ],
+   "capability_id": "fixtures.forecast-lime",
+   "capability_version": "1.0.0",
+   "effect_class_reviewed": "read",
+   "enabled_by_approval": "approval-00001",
+   "import_kind": "fixture",
+   "lifecycle": "ENABLED",
+   "lint_report_ref": "sha256:91356873834d7ee5cb7f686fcf9b48e7f612d04bcf19e00b8d836019721f8793",
+   "package_sha256": "41e7fa562e19f6c13832ee96d3d0883b1225a4b7c5ee79e50f55a3663bd87030",
+   "revision": 3,
+   "schema_version": "scs-registry/1.0",
+   "source": "fixture:forecast-lime",
+   "tenant_id": "01JD0000000000000000000000",
+   "updated_at": "2026-11-16T12:00:00Z"
+  },
+  {
+   "assurance": "C2",
+   "assurance_evidence": [
+    {
+     "catalog_digest": null,
+     "evidence_sha256": "34ec0c293fc6617043ef17ca9c07d41a112a30fa722ffd26c0b7024c27483443",
+     "level": "C2",
+     "model_digest": null,
+     "recorded_at": "2026-11-16T12:00:00Z"
+    }
+   ],
+   "capability_id": "fixtures.mail-search",
+   "capability_version": "1.0.0",
+   "effect_class_reviewed": "read",
+   "enabled_by_approval": "approval-00003",
+   "import_kind": "fixture",
+   "lifecycle": "ENABLED",
+   "lint_report_ref": "sha256:91356873834d7ee5cb7f686fcf9b48e7f612d04bcf19e00b8d836019721f8793",
+   "package_sha256": "c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112",
+   "revision": 3,
+   "schema_version": "scs-registry/1.0",
+   "source": "fixture:mail-search",
+   "tenant_id": "01JD0000000000000000000000",
+   "updated_at": "2026-11-16T12:00:00Z"
+  }
+ ],
+ "trajectory": [
+  {
+   "arguments_digest": "a06dfad08686e3f6b6c297f24e8875d111dfd7344a9e9a074e36145d2475d6e6",
+   "binding_id": null,
+   "candidate_ids": [
+    "fixtures.calendar-read"
+   ],
+   "capability_ref": null,
+   "context": {
+    "actor_id": "01JD00000000000000000000AA",
+    "request_id": "request-0001",
+    "tenant_id": "01JD0000000000000000000000",
+    "trace_id": "trace-0001"
+   },
+   "excluded": [
+    {
+     "capability_id": "fixtures.calendar-write",
+     "capability_version": "1.0.0",
+     "reasons": [
+      "NOT_ENABLED",
+      "NOT_AUTHORIZED",
+      "EFFECT_ABOVE_CEILING",
+      "BINDING_UNHEALTHY"
+     ]
+    }
+   ],
+   "execution_id": null,
+   "handler_executed": false,
+   "operation": "search",
+   "policy_verdict": null,
+   "rank_reasons": [
+    {
+     "bm25": -1.964413,
+     "filter_results": [
+      "NOT_ENABLED:PASS",
+      "DIGEST_MISMATCH:PASS",
+      "NOT_AUTHORIZED:PASS",
+      "EFFECT_ABOVE_CEILING:PASS",
+      "DATA_CLASS_ABOVE_CEILING:PASS",
+      "BINDING_UNHEALTHY:PASS",
+      "MODEL_INCOMPATIBLE:PASS",
+      "COST_ABOVE_CAP:PASS"
+     ],
+     "rank": 1,
+     "shortlist_k": 5
+    }
+   ],
+   "reason": null,
+   "result_code": null,
+   "result_sha256": "3d159db227b57724044afbd422583f46926d9b72b9a939855642988ce981b690",
+   "selection_error": false,
+   "status": "SUCCEEDED",
+   "step": 1,
+   "tool_name": "secma_search"
+  },
+  {
+   "arguments_digest": "96f35e1107451fa790d66fce8f0f17a3cc90812587c5f21d2c005f464f17d836",
+   "binding_id": null,
+   "candidate_ids": [],
+   "capability_ref": "fixtures.calendar-write",
+   "context": {
+    "actor_id": "01JD00000000000000000000AA",
+    "request_id": "request-0001",
+    "tenant_id": "01JD0000000000000000000000",
+    "trace_id": "trace-0001"
+   },
+   "excluded": [],
+   "execution_id": null,
+   "handler_executed": false,
+   "operation": "invoke",
+   "policy_verdict": null,
+   "rank_reasons": [],
+   "reason": "NOT_IN_SHORTLIST",
+   "result_code": "FORBIDDEN",
+   "result_sha256": "c42449ffa46757bcdeb52fd0c3671ecf404243ae4077258c0b34820e31da99b3",
+   "selection_error": true,
+   "status": "DENIED",
+   "step": 2,
+   "tool_name": "secma_invoke"
+  },
+  {
+   "arguments_digest": "9fc11da1e281f2c9e0e7c0ce9c598d0c3a91f082d4f3c9ce3234165225cc0df1",
+   "binding_id": "fixtures.calendar-read.b1",
+   "candidate_ids": [],
+   "capability_ref": "fixtures.calendar-read@1.0.0",
+   "context": {
+    "actor_id": "01JD00000000000000000000AA",
+    "request_id": "request-0001",
+    "tenant_id": "01JD0000000000000000000000",
+    "trace_id": "trace-0001"
+   },
+   "excluded": [],
+   "execution_id": "execution-00006",
+   "handler_executed": true,
+   "operation": "invoke",
+   "policy_verdict": "ALLOW",
+   "rank_reasons": [],
+   "reason": null,
+   "result_code": null,
+   "result_sha256": "e070fd82dede9616ecb8466878a1c082cc115ce83866e5f823986f15d56ffc11",
+   "selection_error": false,
+   "status": "SUCCEEDED",
+   "step": 3,
+   "tool_name": "secma_invoke"
+  }
+ ]
+}

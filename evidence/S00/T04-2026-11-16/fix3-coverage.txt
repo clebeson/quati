@@ -1,0 +1,54 @@
+Name                                                Stmts   Miss Branch BrPart  Cover   Missing
+-----------------------------------------------------------------------------------------------
+src/secma/__init__.py                                   1      0      0      0   100%
+src/secma/__main__.py                                   2      0      0      0   100%
+src/secma/adapters/__init__.py                          0      0      0      0   100%
+src/secma/adapters/capability_store.py                123      0     12      0   100%
+src/secma/adapters/evidence.py                         34      1      8      1    95%   38
+src/secma/adapters/feature_reports.py                  39      0      6      0   100%
+src/secma/adapters/fixture_capabilities.py            136      0     14      0   100%
+src/secma/adapters/fts_index.py                        17      0      2      0   100%
+src/secma/adapters/local_identity.py                  109      5     16      3    94%   44, 87, 103-104, 123
+src/secma/adapters/policy_gate.py                      36      0      0      0   100%
+src/secma/adapters/providers/__init__.py                4      0      0      0   100%
+src/secma/adapters/providers/_sdk.py                   47      0     26      0   100%
+src/secma/adapters/providers/anthropic.py              57      0     16      0   100%
+src/secma/adapters/providers/cli.py                   238      0     56      0   100%
+src/secma/adapters/providers/openai_compatible.py     102      0     36      0   100%
+src/secma/application/__init__.py                       0      0      0      0   100%
+src/secma/application/ask.py                          435      0    116      0   100%
+src/secma/application/capability_commands.py           72      0     14      0   100%
+src/secma/application/capability_registry.py          347      0     74      0   100%
+src/secma/application/cli_service.py                  139      0     40      0   100%
+src/secma/application/code_identity.py                 14      0      0      0   100%
+src/secma/application/context_envelope.py              93      0     18      0   100%
+src/secma/application/discovery.py                    237      0     74      0   100%
+src/secma/application/discovery_tools.py               83      0     20      0   100%
+src/secma/application/identity.py                      66      1     22      1    98%   46
+src/secma/application/ports.py                         29      0      0      0   100%
+src/secma/application/providers.py                    438      0    138      0   100%
+src/secma/behavior/__init__.py                          0      0      0      0   100%
+src/secma/behavior/compiler.py                        189      0     56      0   100%
+src/secma/behavior/contracts.py                       174      0     64      0   100%
+src/secma/behavior/fsutil.py                           39      0      4      0   100%
+src/secma/behavior/manifest.py                        136      0     64      0   100%
+src/secma/behavior/store.py                           223      0     64      0   100%
+src/secma/behavior/trusted_config.py                   94      0     26      0   100%
+src/secma/cli/__init__.py                               0      0      0      0   100%
+src/secma/cli/chat.py                                  66      0     26      0   100%
+src/secma/cli/composition.py                           40      0      0      0   100%
+src/secma/cli/local_policy.py                          37      0      8      0   100%
+src/secma/cli/main.py                                  98      2     10      1    97%   173, 186
+src/secma/cli/rendering.py                             13      0      4      0   100%
+src/secma/domain/__init__.py                            0      0      0      0   100%
+src/secma/domain/canonical.py                          31      0     16      0   100%
+src/secma/domain/capability_import.py                  27      0      8      0   100%
+src/secma/domain/capability_lint.py                    29      0     16      0   100%
+src/secma/domain/capability_registry.py               155      0     50      0   100%
+src/secma/domain/decision_policy.py                    42      0     18      0   100%
+src/secma/domain/diagnostics.py                        49      0      2      0   100%
+src/secma/domain/discovery.py                         103      0     16      0   100%
+src/secma/domain/policy.py                            321      0    106      0   100%
+src/secma/domain/statechart.py                        157      0     92      0   100%
+-----------------------------------------------------------------------------------------------
+TOTAL                                                4921      9   1358      6    99%

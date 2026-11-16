@@ -1,0 +1,9 @@
+{
+  "recorded_at": "2026-11-15T21:35:42.318946+00:00",
+  "authority": "explicit user instruction in current conversation",
+  "scope": "Sequential implementation from S00 using SDD/TDD/EDD, fresh-context conformity and quality audits, bounded parallel smaller agents, continuous checkpoint and execution ledger",
+  "external_writes_authorized": false,
+  "production_release_deployment_authorized": false,
+  "live_model_calls": "Require approved SECMA provider configuration and explicit SECMA_ALLOW_LIVE=1, as defined by S00 runtime contract",
+  "source": "Current conversation; no raw transcript or credentials retained"
+}

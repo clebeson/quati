@@ -1,0 +1,669 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quati.local/contracts/identity.schema.json",
+  "title": "Quati identity, tenancy, spaces and access tokens (RFC-013)",
+  "description": "Definitions only; consumers reference $defs.",
+  "$defs": {
+    "Ulid": {
+      "type": "string",
+      "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "Tenant": {
+      "type": "object",
+      "required": [
+        "tenant_id",
+        "display_name",
+        "profile",
+        "created_at",
+        "policy_ref"
+      ],
+      "properties": {
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "profile": {
+          "enum": [
+            "LOCAL",
+            "SERVER"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "policy_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "Principal": {
+      "type": "object",
+      "required": [
+        "principal_id",
+        "tenant_id",
+        "kind",
+        "display_name",
+        "status",
+        "created_at"
+      ],
+      "properties": {
+        "principal_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "kind": {
+          "enum": [
+            "HUMAN",
+            "AGENT",
+            "SERVICE"
+          ]
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "ACTIVE",
+            "SUSPENDED",
+            "DELETED"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "acting_for_principal_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Ulid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "For a per-user secretary AGENT: the human it serves. Not an authority grant."
+        },
+        "public_keys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "kid",
+              "alg",
+              "x"
+            ],
+            "properties": {
+              "kid": {
+                "type": "string"
+              },
+              "alg": {
+                "const": "EdDSA"
+              },
+              "x": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ExternalIdentity": {
+      "type": "object",
+      "required": [
+        "tenant_id",
+        "principal_id",
+        "issuer",
+        "subject",
+        "verified_by",
+        "verified_at"
+      ],
+      "properties": {
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "principal_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "issuer": {
+          "type": "string",
+          "minLength": 1,
+          "description": "OIDC issuer, or channel provider such as slack:T0123"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verified_by": {
+          "enum": [
+            "OIDC_LOGIN",
+            "CHALLENGE",
+            "ADMIN"
+          ]
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Group": {
+      "type": "object",
+      "required": [
+        "group_id",
+        "tenant_id",
+        "name",
+        "space_id"
+      ],
+      "properties": {
+        "group_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "space_id": {
+          "$ref": "#/$defs/Ulid"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Membership": {
+      "type": "object",
+      "required": [
+        "tenant_id",
+        "principal_id",
+        "container",
+        "role",
+        "granted_by",
+        "granted_at"
+      ],
+      "properties": {
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "principal_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "container": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "TENANT"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "required": [
+                "kind",
+                "group_id"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "GROUP"
+                },
+                "group_id": {
+                  "$ref": "#/$defs/Ulid"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "role": {
+          "enum": [
+            "OWNER",
+            "ADMIN",
+            "MEMBER",
+            "GUEST",
+            "AUDITOR",
+            "LEAD"
+          ]
+        },
+        "granted_by": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "granted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Space": {
+      "type": "object",
+      "required": [
+        "space_id",
+        "tenant_id",
+        "kind",
+        "name",
+        "owner",
+        "max_data_class",
+        "created_at"
+      ],
+      "properties": {
+        "space_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "kind": {
+          "enum": [
+            "PERSONAL",
+            "TEAM",
+            "ORGANIZATION",
+            "SHARED"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "object",
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "PRINCIPAL",
+                "GROUP",
+                "TENANT"
+              ]
+            },
+            "id": {
+              "$ref": "#/$defs/Ulid"
+            }
+          },
+          "additionalProperties": false
+        },
+        "max_data_class": {
+          "enum": [
+            "PUBLIC",
+            "INTERNAL",
+            "CONFIDENTIAL",
+            "RESTRICTED"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SpaceGrant": {
+      "type": "object",
+      "required": [
+        "tenant_id",
+        "space_id",
+        "grantee",
+        "role",
+        "granted_by",
+        "granted_at"
+      ],
+      "properties": {
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "space_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "grantee": {
+          "type": "object",
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "PRINCIPAL",
+                "GROUP",
+                "TENANT_ROLE"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "role": {
+          "enum": [
+            "READER",
+            "CONTRIBUTOR",
+            "MANAGER"
+          ]
+        },
+        "granted_by": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "granted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ActorClaim": {
+      "type": "object",
+      "required": [
+        "sub"
+      ],
+      "properties": {
+        "sub": {
+          "type": "string"
+        },
+        "act": {
+          "$ref": "#/$defs/ActorClaim"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AccessTokenClaims": {
+      "type": "object",
+      "required": [
+        "iss",
+        "sub",
+        "tid",
+        "pkind",
+        "aud",
+        "scope",
+        "exp",
+        "iat",
+        "nbf",
+        "jti",
+        "sid",
+        "amr",
+        "auth_time",
+        "client_id"
+      ],
+      "properties": {
+        "iss": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sub": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "tid": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "pkind": {
+          "enum": [
+            "HUMAN",
+            "AGENT",
+            "SERVICE"
+          ]
+        },
+        "aud": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            }
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "pattern": "^quati:[a-z.]+( quati:[a-z.]+)*$"
+        },
+        "exp": {
+          "type": "integer"
+        },
+        "iat": {
+          "type": "integer"
+        },
+        "nbf": {
+          "type": "integer"
+        },
+        "jti": {
+          "type": "string",
+          "minLength": 16
+        },
+        "sid": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amr": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "local_os",
+              "device_key",
+              "oidc",
+              "mfa",
+              "private_key_jwt",
+              "mtls",
+              "token_exchange"
+            ]
+          },
+          "minItems": 1
+        },
+        "auth_time": {
+          "type": "integer"
+        },
+        "act": {
+          "$ref": "#/$defs/ActorClaim"
+        },
+        "cnf": {
+          "type": "object",
+          "properties": {
+            "jkt": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "cmt": {
+          "type": "string",
+          "description": "commitment id this delegated token is bound to"
+        },
+        "eid": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "effect intent digest bound to this token"
+        },
+        "client_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "RFC 9068 client_id"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AuthorizedScope": {
+      "type": "object",
+      "required": [
+        "tenant_id",
+        "principal_id",
+        "purpose",
+        "readable_space_ids",
+        "computed_at",
+        "valid_for_transaction"
+      ],
+      "properties": {
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "principal_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "readable_space_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ulid"
+          },
+          "uniqueItems": true
+        },
+        "computed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_for_transaction": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProvenanceLabel": {
+      "type": "object",
+      "required": [
+        "tenant_id",
+        "source_space_ids",
+        "max_data_class",
+        "computed_by",
+        "integrity"
+      ],
+      "properties": {
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "source_space_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ulid"
+          },
+          "uniqueItems": true
+        },
+        "max_data_class": {
+          "enum": [
+            "PUBLIC",
+            "INTERNAL",
+            "CONFIDENTIAL",
+            "RESTRICTED"
+          ]
+        },
+        "computed_by": {
+          "const": "trusted_runtime"
+        },
+        "declassification_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "integrity": {
+          "enum": [
+            "TRUSTED",
+            "UNTRUSTED"
+          ],
+          "description": "Minimum integrity over all inputs (RFC-013 \u00a77.1)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AuthzDecision": {
+      "type": "object",
+      "required": [
+        "verdict",
+        "reason_code",
+        "tenant_id",
+        "principal_id",
+        "action",
+        "resource_ref"
+      ],
+      "properties": {
+        "verdict": {
+          "enum": [
+            "ALLOW",
+            "DENY",
+            "APPROVAL_REQUIRED"
+          ]
+        },
+        "reason_code": {
+          "enum": [
+            "OK",
+            "UNAUTHENTICATED",
+            "TOKEN_REVOKED",
+            "TENANT_MISMATCH",
+            "SCOPE_MISSING",
+            "NO_SPACE_GRANT",
+            "ROLE_INSUFFICIENT",
+            "FLOW_VIOLATION",
+            "DELEGATION_DEPTH",
+            "POLICY_DENY",
+            "APPROVER_NOT_HUMAN",
+            "STEP_UP_REQUIRED"
+          ]
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "principal_id": {
+          "$ref": "#/$defs/Ulid"
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resource_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,133 @@
+# GREEN run 2026-11-16 S00-T01 secma chat (M01-FR-04, M01-AT-03, M01-RT-03)
+# python: Python 3.13.7; os: Linux 6.17.0-41-generic x86_64
+e3b217206f9c30558489b9e144a7a677b2ad43d9ef294e6672720a7f91396dac  src/secma/cli/chat.py
+fb92338db889d1059a0090209766cb967679d774545e75c28f3c0487afef75e8  src/secma/cli/rendering.py
+c8a87d3771bc3966b895d2a6e77bb95f9c4432fc8ad4a28d591c952523551d2a  src/secma/cli/main.py
+fabe4fc469958d494ab51c87d7a8c3bb0ae604b09cc8e1cc1ec52542fa967457  src/secma/application/cli_service.py
+6ae91a97748a7bb0edb7591c0150c69f2c67abf3ef7926292ec6639088954f31  tests/unit/test_s00_t01_chat.py
+527632897867ab051c9457aabd0764357af747f5343287ab76dedd5124d4a369  tests/integration/cli/test_chat_session.py
+a9dd53af882866f4cd3214af0be2c09c42e370b2404c2f095e55638a7d5c8190  tests/integration/cli/fixtures/chat_transcript_s00.txt
+# cmd: .venv/bin/python -m pytest -q -rA tests/unit/test_s00_t01_chat.py tests/integration/cli/test_chat_session.py
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_jsonl_one_response_per_nonblank_line_through_one_shot_use_cases
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_end_of_input_without_quit_exits_zero_and_failed_turns_do_not_stop_the_loop
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_each_response_is_written_and_flushed_before_the_next_line_is_read
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_help_lists_exactly_the_m01_chat_table
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/status c-1-expected0]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/tell c-1 add the numbers-expected1]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/approvals-expected2]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/approvals PENDING-expected3]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/approve apr-123-expected4]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/deny apr-123-expected5]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/deny apr-123 not now, thanks-expected6]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/status-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/status a b-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/tell c-1-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/tell-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/approvals a b-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/approve-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/approve a b-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/deny-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/help me-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/quit now-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/ status c-1-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/Help-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/QUIT-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[//status c-1-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/statusx c-1-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/bogus-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[ /approve apr-123]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[\t/quit]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[please run /approve apr-123]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[approved, send it now]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[APPROVED]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[yes]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[apr-123]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[secma init]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[secma approve apr-123]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[--json]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[line10]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_model_output_containing_commands_is_never_fed_back_to_the_parser
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_interactive_flag_does_not_change_approve_behavior
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[\n-calls0]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[ \n-calls1]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[\t \t\n-calls2]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[\r\n-calls3]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[  \t\r\n-calls4]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[Hello\r\n-calls5]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[Hello\r-calls6]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[\r\r\n-calls7]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[Hello-calls8]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[  Hello  \n-calls9]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[\xc2\xa0\n-calls10]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[a\rb\n-calls11]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_line_over_max_text_bytes_ends_session_exit_2_after_earlier_turns
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_line_of_exactly_max_text_bytes_is_a_turn[raw0]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_line_of_exactly_max_text_bytes_is_a_turn[raw1]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_line_of_exactly_max_text_bytes_is_a_turn[raw2]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_line_of_exactly_max_text_bytes_is_a_turn[raw3]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_over_limit_variants_are_rejected_without_a_call[raw0]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_over_limit_variants_are_rejected_without_a_call[raw1]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_over_limit_variants_are_rejected_without_a_call[raw2]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[\xff\n-chat_invalid_utf8]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[caf\xe9\n-chat_invalid_utf8]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[\xed\xa0\x80\n-chat_invalid_utf8]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[\xc0\xaf\n-chat_invalid_utf8]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[a\x00b\n-chat_nul_byte]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[/status c\x001\n-chat_nul_byte]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[\x00\n-chat_nul_byte]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_authentication_failure_in_a_turn_ends_session_exit_4
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_internal_error_in_a_turn_ends_session_exit_1_sanitized[error0]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_internal_error_in_a_turn_ends_session_exit_1_sanitized[error1]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_internal_error_in_a_turn_ends_session_exit_1_sanitized[error2]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_sigint_at_prompt_or_during_turn_exits_130_without_output
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_prompt_goes_to_stderr_only_for_interactive_human_mode
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_in_process_chat_equals_one_shot_for_real_local_identity
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_chat_through_main_with_tty_prompts_and_pre_init_ask_exits_4
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv0]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv1]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv2]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv3]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv4]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv5]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv6]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_chat_rejects_extra_arguments_as_invalid_input
+PASSED tests/integration/cli/test_chat_session.py::test_chat_transcript_equals_one_shot_sequence
+PASSED tests/integration/cli/test_chat_session.py::test_chat_transcript_over_limit_line_exits_2_with_earlier_turns_intact
+PASSED tests/integration/cli/test_chat_session.py::test_chat_restart_loses_nothing_and_writes_only_receipts
+PASSED tests/integration/cli/test_chat_session.py::test_chat_before_init_reports_unauthenticated_like_one_shot_and_exits_4
+PASSED tests/integration/cli/test_chat_session.py::test_chat_untrustworthy_line_exits_2_through_public_path[caf\xe9\nHello\n-chat_invalid_utf8]
+PASSED tests/integration/cli/test_chat_session.py::test_chat_untrustworthy_line_exits_2_through_public_path[a\x00b\nHello\n-chat_nul_byte]
+90 passed in 4.68s
+# exit: 0
+# cmd: coverage erase; coverage run --branch --source=src/secma -m pytest -q tests; coverage report --show-missing
+407 passed, 2 skipped in 19.32s
+# exit: 0
+Name                                                Stmts   Miss Branch BrPart  Cover   Missing
+-----------------------------------------------------------------------------------------------
+src/secma/__init__.py                                   1      0      0      0   100%
+src/secma/__main__.py                                   2      2      0      0     0%   1-2
+src/secma/adapters/__init__.py                          0      0      0      0   100%
+src/secma/adapters/evidence.py                         34      1      8      1    95%   38
+src/secma/adapters/local_identity.py                  109      6     16      4    92%   44, 87, 103-104, 117, 123
+src/secma/adapters/providers/__init__.py                4      0      0      0   100%
+src/secma/adapters/providers/_sdk.py                   47      0     26      0   100%
+src/secma/adapters/providers/anthropic.py              57      0     16      0   100%
+src/secma/adapters/providers/cli.py                   195      0     42      0   100%
+src/secma/adapters/providers/openai_compatible.py     102      0     36      0   100%
+src/secma/application/__init__.py                       0      0      0      0   100%
+src/secma/application/cli_service.py                   84      1     20      1    98%   102
+src/secma/application/identity.py                      66      1     22      1    98%   46
+src/secma/application/ports.py                         28      0      0      0   100%
+src/secma/application/providers.py                    414      0    132      0   100%
+src/secma/behavior/__init__.py                          0      0      0      0   100%
+src/secma/cli/__init__.py                               0      0      0      0   100%
+src/secma/cli/chat.py                                  66      0     26      0   100%
+src/secma/cli/main.py                                  66      2      6      1    96%   101, 114
+src/secma/cli/rendering.py                             13      0      4      0   100%
+src/secma/domain/__init__.py                            0      0      0      0   100%
+-----------------------------------------------------------------------------------------------
+TOTAL                                                1288     13    354      8    99%
+# cmd: PATH=/usr/bin:/bin .venv/bin/python -m pytest -q tests/unit
+341 passed in 9.78s
+# exit: 0

@@ -1,0 +1,578 @@
+{
+  "schema_version": "quati-guard-registry/1",
+  "normative_source": "docs/architecture/GUARD_PREDICATES.md",
+  "control_table": "contracts/commitment-control-v2.json",
+  "guards": [
+    {
+      "name": "acceptance_block_resolved_authorized",
+      "inputs": [
+        "policy_decision",
+        "active_policy_version",
+        "approval",
+        "now",
+        "commitment.id",
+        "commitment.blocked_from_state",
+        "commitment.block_reason",
+        "commitment.effect_intent_refs",
+        "commitment.effect_state",
+        "effects",
+        "classification",
+        "event.payload.resolves_block_reason",
+        "event.payload.new_deadline_at"
+      ],
+      "denial_reason_code": "INVALID_INPUT",
+      "description": "G26: P-AUTHZ holds, the block came from RECEIVED or CLASSIFIED, the resolution names the reason with a future deadline, no effect exists and a classification is recorded for the commitment."
+    },
+    {
+      "name": "all_effects_confirmed_absent_and_dispatch_stopped",
+      "inputs": [
+        "commitment.effect_intent_refs",
+        "effects",
+        "now"
+      ],
+      "denial_reason_code": "EFFECT_UNCERTAIN",
+      "description": "G01: every current effect is COMMITTED or CONFIRMED_ABSENT and dispatch is stopped; true when there are no effects."
+    },
+    {
+      "name": "all_effects_reconciled_and_dispatch_stopped",
+      "inputs": [
+        "commitment.effect_intent_refs",
+        "commitment.tenant_id",
+        "effects",
+        "attempts",
+        "now"
+      ],
+      "denial_reason_code": "EFFECT_UNCERTAIN",
+      "description": "G02: every current effect is resolved or stopped, at least one is CONFIRMED, and each CONFIRMED effect has an authenticated provider receipt."
+    },
+    {
+      "name": "any_effect_unknown",
+      "inputs": [
+        "commitment.effect_intent_refs",
+        "effects"
+      ],
+      "denial_reason_code": "INVALID_INPUT",
+      "description": "G03: some current effect is CLAIMED or UNCERTAIN."
+    },
+    {
+      "name": "authenticated_current_delivery_receipt",
+      "inputs": [
+        "event.payload.attempt_id",
+        "attempts",
+        "delivery",
+        "effects",
+        "commitment.goal_revision",
+        "commitment.effect_intent_refs",
+        "commitment.tenant_id",
+        "context.principal_kind"
+      ],
+      "denial_reason_code": "EVIDENCE_INSUFFICIENT",
+      "description": "G04: an ACKNOWLEDGED attempt for the current delivery and goal revision carries a provider receipt from the effect binding, reported by a SERVICE principal."
+    },
+    {
+      "name": "authenticated_request",
+      "inputs": [
+        "context.actor_id",
+        "context.channel",
+        "context.principal_kind",
+        "commitment.requester_id",
+        "commitment.channel"
+      ],
+      "denial_reason_code": "UNAUTHENTICATED",
+      "description": "G05: the authenticated actor is the requester on the commitment channel."
+    },
+    {
+      "name": "authorized_and_no_accepted_or_pending_effect",
+      "inputs": [
+        "policy_decision",
+        "active_policy_version",
+        "approval",
+        "now",
+        "effects",
+        "commitment.effect_intent_refs",
+        "commitment.effect_state"
+      ],
+      "denial_reason_code": "EFFECT_UNCERTAIN",
+      "description": "G06: P-AUTHZ holds and no effect intent exists."
+    },
+    {
+      "name": "authorized_and_under_budget",
+      "inputs": [
+        "policy_decision",
+        "active_policy_version",
+        "approval",
+        "now",
+        "commitment.transition_count",
+        "budget",
+        "usage"
+      ],
+      "denial_reason_code": "BUDGET_EXCEEDED",
+      "description": "G07: P-AUTHZ holds and transition, request, tool-call and cost budgets have capacity; unknown cost with a cap is exhausted."
+    },
+    {
+      "name": "authorized_current_cancel_request",
+      "inputs": [
+        "policy_decision",
+        "active_policy_version",
+        "approval",
+        "now",
+        "event.envelope.actor_id",
+        "context.actor_id"
+      ],
+      "denial_reason_code": "FORBIDDEN",
+      "description": "G08: P-AUTHZ holds for the cancel intent of the authenticated actor."
+    },
+    {
+      "name": "authorized_effect_intent_committed",
+      "inputs": [
+        "policy_decision",
+        "active_policy_version",
+        "approval",
+        "now",
+        "event.payload.effect_id",
+        "effects",
+        "delivery",
+        "commitment.goal_revision",
+        "commitment.assessed_goal_revision",
+        "commitment.outcome_verdict",
+        "commitment.tenant_id",
+        "evidence",
+        "config.behavior_policy.max_evidence_age_s"
+      ],
+      "denial_reason_code": "FORBIDDEN",
+      "description": "G09: P-AUTHZ over the EffectIntent; the effect is COMMITTED, not stopped, under the active policy, bound to the current delivery and goal revision, with current evidence (RFC-014 dispatch recheck)."
+    },
+    {
+      "name": "authorized_feedback_current_revision",
+      "inputs": [
+        "policy_decision",
+        "active_policy_version",
+        "approval",
+        "now",
+        "event.payload.goal_revision_seen",
+        "commitment.goal_revision"
+      ],
+      "denial_reason_code": "REVISION_CONFLICT",
+      "description": "G10: P-AUTHZ holds and the feedback or goal revision was given against the current goal revision."
+    },
+    {
+      "name": "budget_exhausted",
+      "inputs": [
+        "commitment.transition_count",
+        "commitment.reinvestigation_count",
+        "commitment.state",
+        "assessment",
+        "budget",
+        "usage",
+        "config.behavior_policy.reinvestigation_budget"
+      ],
+      "denial_reason_code": "INVALID_INPUT",
+      "description": "G11: at least one budget dimension is exhausted, checked in the order transitions, reinvestigations, requests, tool_calls, cost."
+    },
+    {
+      "name": "cancellation_not_yet_reconciled",
+      "inputs": [
+        "commitment.effect_intent_refs",
+        "effects",
+        "attempts",
+        "now"
+      ],
+      "denial_reason_code": "INVALID_INPUT",
+      "description": "G12: at least one effect exists and neither G01 nor G02 holds."
+    },
+    {
+      "name": "critical_input_missing",
+      "inputs": [
+        "event.payload.missing_fields",
+        "event.payload.candidate_scores",
+        "config.behavior_policy.blocking_fields",
+        "config.routing_policy.ambiguity_margin",
+        "config.routing_policy.min_candidate_score"
+      ],
+      "denial_reason_code": "INVALID_INPUT",
+      "description": "G13: a blocking field is missing or the top two candidate scores are ambiguous."
+    },
+    {
+      "name": "current_goal_evidenced_partial",
+      "inputs": [
+        "assessment",
+        "candidate_producer_actor_id",
+        "commitment.id",
+        "commitment.goal_revision",
+        "evidence",
+        "now",
+        "config.behavior_policy.max_evidence_age_s"
+      ],
+      "denial_reason_code": "EVIDENCE_INSUFFICIENT",
+      "description": "G14: an independent PARTIAL assessment of the current goal revision with evidence, at least one gap and current evidence."
+    },
+    {
+      "name": "current_goal_independent_accept",
+      "inputs": [
+        "assessment",
+        "candidate_producer_actor_id",
+        "commitment.id",
+        "commitment.goal_revision",
+        "evidence",
+        "now",
+        "config.behavior_policy.max_evidence_age_s"
+      ],
+      "denial_reason_code": "EVIDENCE_INSUFFICIENT",
+      "description": "G15: an independent ACCEPT assessment of the current goal revision with evidence, no gaps and current evidence."
+    },
+    {
+      "name": "deadline_elapsed",
+      "inputs": [
+        "commitment.deadline_at",
+        "now"
+      ],
+      "denial_reason_code": "INVALID_INPUT",
+      "description": "G16: now >= commitment.deadline_at."
+    },
+    {
+      "name": "delivery_block_resolved_current_evidence",
+      "inputs": [
+        "commitment.blocked_from_state",
+        "commitment.block_reason",
+        "event.payload.resolves_block_reason",
+        "event.payload.new_deadline_at",
+        "effects",
+        "commitment.assessment_ref",
+        "commitment.assessed_goal_revision",
+        "commitment.goal_revision",
+        "evidence",
+        "now",
+        "config.behavior_policy.max_evidence_age_s"
+      ],
+      "denial_reason_code": "EVIDENCE_INSUFFICIENT",
+      "description": "G17: the block came from READY_TO_DELIVER, the resolution names the block reason, no effect is in flight and the assessment and evidence are current."
+    },
+    {
+      "name": "dispatch_may_have_occurred",
+      "inputs": [
+        "commitment.effect_intent_refs",
+        "commitment.tenant_id",
+        "effects",
+        "attempts"
+      ],
+      "denial_reason_code": "INVALID_INPUT",
+      "description": "G18: some current effect is CLAIMED or UNCERTAIN and no acknowledged receipt exists for it."
+    },
+    {
+      "name": "execution_block_resolved_authorized_budget",
+      "inputs": [
+        "policy_decision",
+        "active_policy_version",
+        "approval",
+        "now",
+        "commitment.blocked_from_state",
+        "commitment.block_reason",
+        "commitment.effect_state",
+        "commitment.transition_count",
+        "commitment.reinvestigation_count",
+        "event.payload.resolves_block_reason",
+        "event.payload.new_deadline_at",
+        "budget",
+        "usage",
+        "config.behavior_policy.reinvestigation_budget"
+      ],
+      "denial_reason_code": "BUDGET_EXCEEDED",
+      "description": "G19: P-AUTHZ holds, the block came from an execution state, no effect is pending, the resolution names the reason and the exhausted dimension has capacity again."
+    },
+    {
+      "name": "ledger_acceptance_committed",
+      "inputs": [
+        "snapshot_committed",
+        "classification",
+        "commitment.id",
+        "commitment.responsible_actor_id",
+        "commitment.next_action",
+        "commitment.deadline_at"
+      ],
+      "denial_reason_code": "TEMPORARILY_UNAVAILABLE",
+      "description": "G20: the commitment snapshot is committed, linked from the classification, and has an owner, next action and deadline."
+    },
+    {
+      "name": "provider_proves_no_effect",
+      "inputs": [
+        "event.payload.attempt_id",
+        "attempts",
+        "delivery",
+        "effects",
+        "commitment.effect_intent_refs",
+        "commitment.tenant_id",
+        "config.behavior_policy.max_delivery_attempts"
+      ],
+      "denial_reason_code": "EFFECT_UNCERTAIN",
+      "description": "G25: a provider receipt proves no effect and the delivery attempt budget (behavior_policy.max_delivery_attempts) has no capacity left."
+    },
+    {
+      "name": "provider_proves_no_effect_and_retry_budget",
+      "inputs": [
+        "event.payload.attempt_id",
+        "attempts",
+        "delivery",
+        "effects",
+        "commitment.effect_intent_refs",
+        "commitment.tenant_id",
+        "commitment.assessed_goal_revision",
+        "commitment.goal_revision",
+        "config.behavior_policy.max_delivery_attempts"
+      ],
+      "denial_reason_code": "EFFECT_UNCERTAIN",
+      "description": "G21: a provider receipt proves no effect, no other effect is UNCERTAIN, the delivery attempt budget has capacity and the assessment is current."
+    },
+    {
+      "name": "under_reinvestigation_budget",
+      "inputs": [
+        "assessment",
+        "commitment.id",
+        "commitment.goal_revision",
+        "commitment.reinvestigation_count",
+        "budget.max_reinvestigations",
+        "config.behavior_policy.reinvestigation_budget"
+      ],
+      "denial_reason_code": "BUDGET_EXCEEDED",
+      "description": "G22: the current assessment asks for more evidence and reinvestigation_count + 1 <= effective reinvestigation budget."
+    },
+    {
+      "name": "under_transition_budget",
+      "inputs": [
+        "commitment.transition_count",
+        "budget.max_transitions"
+      ],
+      "denial_reason_code": "BUDGET_EXCEEDED",
+      "description": "G23: transition_count + 1 <= effective max_transitions."
+    },
+    {
+      "name": "unknown_effect_requires_reconciliation",
+      "inputs": [
+        "event.name",
+        "commitment.blocked_from_state",
+        "commitment.block_reason",
+        "commitment.effect_state",
+        "commitment.effect_intent_refs",
+        "effects",
+        "event.payload.resolves_block_reason",
+        "event.payload.new_deadline_at",
+        "now"
+      ],
+      "denial_reason_code": "EFFECT_UNCERTAIN",
+      "description": "G24: the block came from the state the event resumes (EFFECT_UNCERTAIN for resume_reconciliation, NEEDS_RECONCILIATION for resume_cancellation), an effect is still CLAIMED or UNCERTAIN and the resolution names the reason with a future deadline."
+    }
+  ],
+  "actions": [
+    {
+      "name": "claim_dispatch",
+      "description": "Mark the effect CLAIMED, make the outbox row claimable, consume the approval and schedule a DEADLINE_CHECK in the same transaction.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "effect_intents",
+        "outbox",
+        "approval_requests",
+        "timer_intents"
+      ]
+    },
+    {
+      "name": "merge_feedback",
+      "description": "Merge the answer or goal revision; a new goal increments goal_revision, invalidates the assessment and stops every COMMITTED effect prepared for the previous goal; cancel the FOLLOW_UP timer.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "effect_intents",
+        "timer_intents",
+        "work_items"
+      ]
+    },
+    {
+      "name": "prepare_delivery",
+      "description": "Record the ACCEPT assessment and evidence, and commit the DeliveryIntent and EffectIntent as COMMITTED (not yet claimable).",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "effect_intents",
+        "outbox"
+      ]
+    },
+    {
+      "name": "prepare_partial_delivery",
+      "description": "As prepare_delivery with verdict PARTIAL; the delivery discloses the assessment gaps.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "effect_intents",
+        "outbox"
+      ]
+    },
+    {
+      "name": "prepare_retry",
+      "description": "Return the attested no-effect intent to COMMITTED with the same effect_id and idempotency_key.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "effect_intents"
+      ]
+    },
+    {
+      "name": "record_blocker_with_owner",
+      "description": "Enter BLOCKED with block_reason DEADLINE_ELAPSED or BUDGET_EXHAUSTED.<dimension>, keep the owner and notify them; on confirmed_no_effect_exhausted, mark the attested effect CONFIRMED_ABSENT with dispatch stopped.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "effect_intents",
+        "outbox"
+      ]
+    },
+    {
+      "name": "record_blocking_question",
+      "description": "Send one blocking question and schedule a FOLLOW_UP timer at now + default_next_contact_s.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "outbox",
+        "timer_intents"
+      ]
+    },
+    {
+      "name": "record_cancel_request",
+      "description": "Stop dispatch of COMMITTED effects, request workflow cancellation and set a reconciliation deadline; also used when a goal revision arrives while a dispatch is in flight.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "effect_intents",
+        "workflow_refs",
+        "timer_intents"
+      ]
+    },
+    {
+      "name": "record_cancelled",
+      "description": "Close as CANCELLED with effect_state NONE or CONFIRMED_ABSENT and notify the requester.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "effect_intents",
+        "workflow_refs",
+        "outbox"
+      ]
+    },
+    {
+      "name": "record_candidate",
+      "description": "Record the candidate and its evidence and enqueue an independent assessment.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "work_items"
+      ]
+    },
+    {
+      "name": "record_classification",
+      "description": "Record the classification and set next_action to acknowledge.",
+      "records_written": [
+        "commitments",
+        "commitment_events"
+      ]
+    },
+    {
+      "name": "record_delivery",
+      "description": "Record the receipt, mark the effect CONFIRMED and cancel outstanding timers.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "effect_intents",
+        "timer_intents"
+      ]
+    },
+    {
+      "name": "record_effectful_cancellation",
+      "description": "Close as CANCELLED_WITH_EFFECTS and notify the requester with the effect receipts.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "workflow_refs",
+        "outbox"
+      ]
+    },
+    {
+      "name": "record_escalation_and_next_review",
+      "description": "Send a rate-limited escalation notice and set the next review deadline.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "outbox"
+      ]
+    },
+    {
+      "name": "record_progress",
+      "description": "Record progress and set next_update_at.",
+      "records_written": [
+        "commitments",
+        "commitment_events"
+      ]
+    },
+    {
+      "name": "record_receipt",
+      "description": "Record acceptance and send the receipt notice.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "outbox"
+      ]
+    },
+    {
+      "name": "request_more_evidence",
+      "description": "Increment reinvestigation_count, reset the verdict to UNKNOWN and enqueue more investigation.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "work_items"
+      ]
+    },
+    {
+      "name": "resume_acceptance",
+      "description": "Leave BLOCKED for CLASSIFIED with the new deadline so that acceptance is evaluated again; acceptance is never skipped.",
+      "records_written": [
+        "commitments",
+        "commitment_events"
+      ]
+    },
+    {
+      "name": "resume_delivery",
+      "description": "Leave BLOCKED for READY_TO_DELIVER with the new deadline.",
+      "records_written": [
+        "commitments",
+        "commitment_events"
+      ]
+    },
+    {
+      "name": "resume_execution",
+      "description": "Leave BLOCKED for IN_PROGRESS with the new deadline and enqueue execution.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "work_items"
+      ]
+    },
+    {
+      "name": "schedule_reconciliation",
+      "description": "Set effect_state UNCERTAIN, stop dispatch of COMMITTED effects and enqueue reconciliation; never resend or delete an effect.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "effect_intents",
+        "work_items",
+        "timer_intents"
+      ]
+    },
+    {
+      "name": "start_execution",
+      "description": "Start the durable workflow and enqueue execution work.",
+      "records_written": [
+        "commitments",
+        "commitment_events",
+        "workflow_refs",
+        "work_items"
+      ]
+    }
+  ]
+}

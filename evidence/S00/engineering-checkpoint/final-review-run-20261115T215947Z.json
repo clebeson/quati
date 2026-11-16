@@ -1,0 +1,44 @@
+{
+  "record_type": "engineering_checkpoint_final_review_run",
+  "scope": "temporary filesystem fixtures; canonical state was not written",
+  "timestamp_utc": "2026-11-15T21:59:47.173642Z",
+  "command": "python3 -m pytest tests/unit/test_execution_checkpoint.py tests/unit/test_execution_checkpoint_review.py -q",
+  "result": {
+    "exit_code": 0,
+    "summary": "24 passed"
+  },
+  "compatibility_check": {
+    "result": "PASS_READ_ONLY",
+    "canonical_revision": 10,
+    "ledger_revisions": [
+      9,
+      10
+    ],
+    "journal_revisions": [
+      9,
+      10
+    ]
+  },
+  "complexity_metrics": {
+    "prepare_event_ccx": 3,
+    "recover_ccx": 11,
+    "apply_active_work_patch_ccx": 8,
+    "measurement": "ripwire --metrics; quality delta unavailable because workspace has no git HEAD/baseline"
+  },
+  "red_runs": [
+    {
+      "summary": "7 failures reproduced requested resolution, authority/scope, IO diagnostic, fsync ordering, and revision contiguity gaps before fixes"
+    },
+    {
+      "summary": "2 failures reproduced malformed state shape and invalid revision handling before read_state validation"
+    }
+  ],
+  "python": "3.13.7",
+  "platform": "Linux-6.17.0-41-generic-x86_64-with-glibc2.42",
+  "source_sha256": {
+    "scripts/checkpoint_execution.py": "5e6be74358a935967a3212d0fd7ff7af628e3c642b4a225894c380368c76bbc7",
+    "tests/unit/test_execution_checkpoint.py": "9069f793125b26be4671f73adcce7ba736ef5e285e86c6f9a3849986f4cbd752",
+    "tests/unit/test_execution_checkpoint_review.py": "60b0c9def60e17988c695a03e613983ba078f6fd02d0e5c7a678a5811607cf82"
+  },
+  "proof_tier": "local deterministic filesystem CLI/recovery tests; no provider or external integration evidence"
+}

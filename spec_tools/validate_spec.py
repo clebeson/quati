@@ -17,6 +17,8 @@ def main():
         validate_schema(receipt, 'prompt-build-receipt.schema.json')
     for path in sorted((ROOT / 'examples/capabilities').glob('*.json')):
         validate_schema(json.loads(path.read_text()), 'scs-capability.schema.json')
+    for path in sorted((ROOT / 'examples/registry').glob('*.json')):
+        validate_schema(json.loads(path.read_text()), 'capability-registry-record.schema.json')
     for path in sorted((ROOT / 'examples/payloads').glob('classification_*.json')):
         validate_schema(json.loads(path.read_text()), 'request-classification.schema.json')
     expected, prompt = validate_behavior(load_yaml(ROOT / 'examples/behavior/executive-secretary.yaml'))
@@ -26,10 +28,16 @@ def main():
         raise ValueError('Reference receipt is stale')
     if (ROOT / 'examples/behavior/prompt_preview.reference.txt').read_text() != 'REFERENCE OUTPUT ONLY — NOT A PRODUCTION PROMPT\n\n' + prompt + '\n':
         raise ValueError('Reference prompt is stale')
+    # Legacy v1 compiler fixture check. commitment.schema.json and
+    # examples/statecharts/commitment.yaml (v1) back the L0 behavior compiler,
+    # examples/behavior/*.yaml, tests and src/quati/assets; they are never activated
+    # for accepted durable commitments. The normative lifecycle is v2
+    # (contracts/commitment-control-v2.json, docs/architecture/GUARD_PREDICATES.md),
+    # validated by validate_readiness.py.
     state_schema = json.loads((ROOT / 'contracts/commitment.schema.json').read_text())
     machine = load_yaml(ROOT / 'examples/statecharts/commitment.yaml')
     if set(state_schema['properties']['state']['enum']) != set(machine['states']):
-        raise ValueError('Commitment contract differs from reference states')
+        raise ValueError('Legacy v1 compiler fixture: commitment.schema.json differs from examples/statecharts/commitment.yaml states (v2 is normative; see GUARD_PREDICATES.md)')
     prds = sorted((ROOT / 'docs/prds').glob('M??.md'))
     threats = sorted((ROOT / 'docs/redteam/modules').glob('M??_REDTEAM.md'))
     if len(prds) != 31 or len(threats) != 31:

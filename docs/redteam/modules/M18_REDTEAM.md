@@ -4,9 +4,15 @@
 
 ## Attack cases
 
-- **M18-RT-01**: An agent does not inherit tenant-wide credentials. Inject via public CLI/provider boundary; assert authorization, state, evidence and user-facing honesty.
+- **M18-RT-01**: An agent inherits tenant-wide credentials.
+  - Attack input: a harness that reads `os.environ` for `QUATI_API_KEY`/`OPENROUTER_API_KEY`, requests scope `workspace.admin`, and replays its token against a different binding id.
+  - Enforcement point: HarnessPort.start environment builder (`harness_policy.env_allowlist`), scope intersection, and token audience/expiry verification at the gateway.
+  - Expected observable rejection: secrets absent from child environment; scope request `FORBIDDEN` `SCOPE_NOT_GRANTED`; replayed token `UNAUTHENTICATED` (audience mismatch); canary absent from logs.
 
-- **M18-RT-02**: Unsupported resume cannot be silently emulated as successful. Inject via public CLI/provider boundary; assert authorization, state, evidence and user-facing honesty.
+- **M18-RT-02**: Unsupported resume is silently emulated.
+  - Attack input: `resume(execution_ref)` against a harness descriptor with `does_not_support: [resume]` after a crash, and a descriptor that claims resume but fails the resume contract probe.
+  - Enforcement point: HarnessPort feature gate reading the probed FeatureReport before dispatch.
+  - Expected observable rejection: BLOCKED `UNSUPPORTED` `RESUME_UNSUPPORTED` in both cases; no new start recorded; execution remains UNCERTAIN.
 
 ## Fail-closed and recovery requirements
 

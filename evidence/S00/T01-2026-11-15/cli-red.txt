@@ -1,0 +1,769 @@
+/home/clebeson/dev/agentswarm/.venv/lib/python3.13/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+______ test_doctor_reports_provider_disabled_before_and_after_local_init _______
+
+run_cli = <function run_cli.<locals>.call at 0x7e84328171a0>
+
+    def test_doctor_reports_provider_disabled_before_and_after_local_init(run_cli):
+        """M01-FR-01/AT-01: doctor is safe before init and reports unverified features."""
+        before, diagnostic = run_cli("doctor", "--json")
+        assert before.returncode == 0
+>       assert_response(diagnostic)
+
+tests/unit/test_s00_t01.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_t01.py:70: in assert_response
+    jsonschema.validate(response, schema)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+instance = {'durable_worker': 'NOT_IMPLEMENTED', 'external_integrations': 'NOT_VERIFIED_EXTERNAL', 'provider': {'adapter_installe..._VERIFIED', 'structured_output': 'NOT_VERIFIED', 'tools': 'NOT_VERIFIED', ...}, ...}, 'scope': 'S00_FIXTURE_ONLY', ...}
+schema = {'$schema': 'https://json-schema.org/draft/2020-12/schema', '$ref': '#/$defs/Response', '$defs': {'RequestContext': {'...'status', 'data', 'evidence_refs', 'uncertainties', 'next_action', 'error'], 'additionalProperties': False, ...}, ...}}
+cls = <class 'jsonschema.validators.Draft202012Validator'>, args = ()
+kwargs = {}
+
+    def validate(instance, schema, cls=None, *args, **kwargs):  # noqa: D417
+        """
+        Validate an instance under the given schema.
+    
+            >>> validate([2, 3, 4], {"maxItems": 2})
+            Traceback (most recent call last):
+                ...
+            ValidationError: [2, 3, 4] is too long
+    
+        :func:`~jsonschema.validators.validate` will first verify that the
+        provided schema is itself valid, since not doing so can lead to less
+        obvious error messages and fail in less obvious or consistent ways.
+    
+        If you know you have a valid schema already, especially
+        if you intend to validate multiple instances with
+        the same schema, you likely would prefer using the
+        `jsonschema.protocols.Validator.validate` method directly on a
+        specific validator (e.g. ``Draft202012Validator.validate``).
+    
+    
+        Arguments:
+    
+            instance:
+    
+                The instance to validate
+    
+            schema:
+    
+                The schema to validate with
+    
+            cls (jsonschema.protocols.Validator):
+    
+                The class that will be used to validate the instance.
+    
+        If the ``cls`` argument is not provided, two things will happen
+        in accordance with the specification. First, if the schema has a
+        :kw:`$schema` keyword containing a known meta-schema [#]_ then the
+        proper validator will be used. The specification recommends that
+        all schemas contain :kw:`$schema` properties for this reason. If no
+        :kw:`$schema` property is found, the default validator class is the
+        latest released draft.
+    
+        Any other provided positional and keyword arguments will be passed
+        on when instantiating the ``cls``.
+    
+        Raises:
+    
+            `jsonschema.exceptions.ValidationError`:
+    
+                if the instance is invalid
+    
+            `jsonschema.exceptions.SchemaError`:
+    
+                if the schema itself is invalid
+    
+        .. rubric:: Footnotes
+        .. [#] known by a validator registered with
+            `jsonschema.validators.validates`
+    
+        """
+        if cls is None:
+            cls = validator_for(schema)
+    
+        cls.check_schema(schema)
+        validator = cls(schema, *args, **kwargs)
+        error = exceptions.best_match(validator.iter_errors(instance))
+        if error is not None:
+>           raise error
+E           jsonschema.exceptions.ValidationError: 'data' is a required property
+E           
+E           Failed validating 'required' in schema:
+E               {'type': 'object',
+E                'properties': {'status': {'enum': ['SUCCEEDED',
+E                                                   'PARTIAL',
+E                                                   'BLOCKED',
+E                                                   'DENIED',
+E                                                   'UNAVAILABLE',
+E                                                   'CONFLICT']},
+E                               'data': {'type': ['object', 'null']},
+E                               'evidence_refs': {'type': 'array',
+E                                                 'items': {'type': 'string',
+E                                                           'minLength': 1}},
+E                               'uncertainties': {'type': 'array',
+E                                                 'items': {'type': 'string',
+E                                                           'minLength': 1}},
+E                               'next_action': {'type': ['string', 'null']},
+E                               'error': {'anyOf': [{'$ref': '#/$defs/Error'},
+E                                                   {'type': 'null'}]}},
+E                'required': ['status',
+E                             'data',
+E                             'evidence_refs',
+E                             'uncertainties',
+E                             'next_action',
+E                             'error'],
+E                'additionalProperties': False,
+E                'allOf': [{'if': {'properties': {'status': {'const': 'SUCCEEDED'}}},
+E                           'then': {'properties': {'error': {'type': 'null'}}}},
+E                          {'if': {'properties': {'status': {'enum': ['BLOCKED',
+E                                                                     'DENIED',
+E                                                                     'UNAVAILABLE',
+E                                                                     'CONFLICT']}}},
+E                           'then': {'properties': {'next_action': {'type': 'string',
+E                                                                   'minLength': 1},
+E                                                   'error': {'$ref': '#/$defs/Error'}}}}]}
+E           
+E           On instance:
+E               {'durable_worker': 'NOT_IMPLEMENTED',
+E                'external_integrations': 'NOT_VERIFIED_EXTERNAL',
+E                'provider': {'adapter_installed': False,
+E                             'configured': False,
+E                             'endpoint_host': None,
+E                             'features': {'parallel_calls': 'NOT_VERIFIED',
+E                                          'streaming': 'NOT_VERIFIED',
+E                                          'structured_output': 'NOT_VERIFIED',
+E                                          'tools': 'NOT_VERIFIED',
+E                                          'usage': 'NOT_VERIFIED'},
+E                             'missing': ['SECMA_BASE_URL: approved HTTPS endpoint '
+E                                         'required',
+E                                         'SECMA_MODEL',
+E                                         'SECMA_API_KEY_ENV: configured secret '
+E                                         'reference required',
+E                                         'SECMA_ALLOW_LIVE=1',
+E                                         'Install SECMA live optional dependency'],
+E                             'model': None,
+E                             'pricing': 'NOT_VERIFIED',
+E                             'region': 'NOT_VERIFIED'},
+E                'scope': 'S00_FIXTURE_ONLY',
+E                'status': 'DIAGNOSTIC'}
+
+../agentswarm/.venv/lib/python3.13/site-packages/jsonschema/validators.py:1332: ValidationError
+____ test_ask_requires_local_principal_then_exact_greeting_creates_no_work _____
+
+run_cli = <function run_cli.<locals>.call at 0x7e843280e660>
+
+    def test_ask_requires_local_principal_then_exact_greeting_creates_no_work(run_cli):
+        """S00-T01 A02; IDN-01 contribution: pre-init ask is denied, greeting is local."""
+        denied, response = run_cli("ask", "Hello.", "--json")
+>       assert denied.returncode == 4
+E       assert 0 == 4
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/agentswarm/.venv/bin/python', '-m', 'secma', 'ask', 'Hello.', '--json'], re...tus": "RESPONDED", "text": "Hello!", "tool_calls": [], "uncertainties": [], "usage": {"cost_usd": null}}\n', stderr='').returncode
+
+tests/unit/test_s00_t01.py:107: AssertionError
+________ test_mixed_greeting_and_work_is_blocked_without_claiming_work _________
+
+run_cli = <function run_cli.<locals>.call at 0x7e843280e340>
+
+    def test_mixed_greeting_and_work_is_blocked_without_claiming_work(run_cli):
+        """S00-T01 A03: mixed input is not swallowed by the exact-greeting path."""
+        initialized, _ = run_cli("init", "--json")
+>       assert initialized.returncode == 0
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/clebeson/dev/agentswarm/.venv/bin/python', '-m', 'secma', 'init', '--json'], returncode=2, stdout='{"status": "ERROR", "message": "Invalid input or unavailable local resource"}\n', stderr='').returncode
+
+tests/unit/test_s00_t01.py:128: AssertionError
+____ test_invalid_or_unsupported_cli_input_returns_typed_error[arguments0] _____
+
+run_cli = <function run_cli.<locals>.call at 0x7e843280c7c0>
+arguments = ('ask', '', '--json')
+
+    @pytest.mark.parametrize(
+        "arguments",
+        [
+            ("ask", "", "--json"),
+            ("ask", "é" * 4001, "--json"),
+            ("does-not-exist", "--json"),
+        ],
+    )
+    def test_invalid_or_unsupported_cli_input_returns_typed_error(run_cli, arguments):
+        """Invalid input has a sanitized envelope, never a parser traceback."""
+        completed, response = run_cli(*arguments)
+        assert completed.returncode == 2
+>       assert_error(response, "DENIED", "INVALID_INPUT")
+
+tests/unit/test_s00_t01.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_t01.py:74: in assert_error
+    assert_response(response)
+tests/unit/test_s00_t01.py:70: in assert_response
+    jsonschema.validate(response, schema)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+instance = {'status': 'ERROR', 'message': 'Invalid input or unavailable local resource'}
+schema = {'$schema': 'https://json-schema.org/draft/2020-12/schema', '$ref': '#/$defs/Response', '$defs': {'RequestContext': {'...'status', 'data', 'evidence_refs', 'uncertainties', 'next_action', 'error'], 'additionalProperties': False, ...}, ...}}
+cls = <class 'jsonschema.validators.Draft202012Validator'>, args = ()
+kwargs = {}
+
+    def validate(instance, schema, cls=None, *args, **kwargs):  # noqa: D417
+        """
+        Validate an instance under the given schema.
+    
+            >>> validate([2, 3, 4], {"maxItems": 2})
+            Traceback (most recent call last):
+                ...
+            ValidationError: [2, 3, 4] is too long
+    
+        :func:`~jsonschema.validators.validate` will first verify that the
+        provided schema is itself valid, since not doing so can lead to less
+        obvious error messages and fail in less obvious or consistent ways.
+    
+        If you know you have a valid schema already, especially
+        if you intend to validate multiple instances with
+        the same schema, you likely would prefer using the
+        `jsonschema.protocols.Validator.validate` method directly on a
+        specific validator (e.g. ``Draft202012Validator.validate``).
+    
+    
+        Arguments:
+    
+            instance:
+    
+                The instance to validate
+    
+            schema:
+    
+                The schema to validate with
+    
+            cls (jsonschema.protocols.Validator):
+    
+                The class that will be used to validate the instance.
+    
+        If the ``cls`` argument is not provided, two things will happen
+        in accordance with the specification. First, if the schema has a
+        :kw:`$schema` keyword containing a known meta-schema [#]_ then the
+        proper validator will be used. The specification recommends that
+        all schemas contain :kw:`$schema` properties for this reason. If no
+        :kw:`$schema` property is found, the default validator class is the
+        latest released draft.
+    
+        Any other provided positional and keyword arguments will be passed
+        on when instantiating the ``cls``.
+    
+        Raises:
+    
+            `jsonschema.exceptions.ValidationError`:
+    
+                if the instance is invalid
+    
+            `jsonschema.exceptions.SchemaError`:
+    
+                if the schema itself is invalid
+    
+        .. rubric:: Footnotes
+        .. [#] known by a validator registered with
+            `jsonschema.validators.validates`
+    
+        """
+        if cls is None:
+            cls = validator_for(schema)
+    
+        cls.check_schema(schema)
+        validator = cls(schema, *args, **kwargs)
+        error = exceptions.best_match(validator.iter_errors(instance))
+        if error is not None:
+>           raise error
+E           jsonschema.exceptions.ValidationError: 'data' is a required property
+E           
+E           Failed validating 'required' in schema:
+E               {'type': 'object',
+E                'properties': {'status': {'enum': ['SUCCEEDED',
+E                                                   'PARTIAL',
+E                                                   'BLOCKED',
+E                                                   'DENIED',
+E                                                   'UNAVAILABLE',
+E                                                   'CONFLICT']},
+E                               'data': {'type': ['object', 'null']},
+E                               'evidence_refs': {'type': 'array',
+E                                                 'items': {'type': 'string',
+E                                                           'minLength': 1}},
+E                               'uncertainties': {'type': 'array',
+E                                                 'items': {'type': 'string',
+E                                                           'minLength': 1}},
+E                               'next_action': {'type': ['string', 'null']},
+E                               'error': {'anyOf': [{'$ref': '#/$defs/Error'},
+E                                                   {'type': 'null'}]}},
+E                'required': ['status',
+E                             'data',
+E                             'evidence_refs',
+E                             'uncertainties',
+E                             'next_action',
+E                             'error'],
+E                'additionalProperties': False,
+E                'allOf': [{'if': {'properties': {'status': {'const': 'SUCCEEDED'}}},
+E                           'then': {'properties': {'error': {'type': 'null'}}}},
+E                          {'if': {'properties': {'status': {'enum': ['BLOCKED',
+E                                                                     'DENIED',
+E                                                                     'UNAVAILABLE',
+E                                                                     'CONFLICT']}}},
+E                           'then': {'properties': {'next_action': {'type': 'string',
+E                                                                   'minLength': 1},
+E                                                   'error': {'$ref': '#/$defs/Error'}}}}]}
+E           
+E           On instance:
+E               {'status': 'ERROR',
+E                'message': 'Invalid input or unavailable local resource'}
+
+../agentswarm/.venv/lib/python3.13/site-packages/jsonschema/validators.py:1332: ValidationError
+____ test_invalid_or_unsupported_cli_input_returns_typed_error[arguments1] _____
+
+run_cli = <function run_cli.<locals>.call at 0x7e843280f060>
+arguments = ('ask', 'ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé...ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé', '--json')
+
+    @pytest.mark.parametrize(
+        "arguments",
+        [
+            ("ask", "", "--json"),
+            ("ask", "é" * 4001, "--json"),
+            ("does-not-exist", "--json"),
+        ],
+    )
+    def test_invalid_or_unsupported_cli_input_returns_typed_error(run_cli, arguments):
+        """Invalid input has a sanitized envelope, never a parser traceback."""
+        completed, response = run_cli(*arguments)
+        assert completed.returncode == 2
+>       assert_error(response, "DENIED", "INVALID_INPUT")
+
+tests/unit/test_s00_t01.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_t01.py:74: in assert_error
+    assert_response(response)
+tests/unit/test_s00_t01.py:70: in assert_response
+    jsonschema.validate(response, schema)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+instance = {'status': 'ERROR', 'message': 'Invalid input or unavailable local resource'}
+schema = {'$schema': 'https://json-schema.org/draft/2020-12/schema', '$ref': '#/$defs/Response', '$defs': {'RequestContext': {'...'status', 'data', 'evidence_refs', 'uncertainties', 'next_action', 'error'], 'additionalProperties': False, ...}, ...}}
+cls = <class 'jsonschema.validators.Draft202012Validator'>, args = ()
+kwargs = {}
+
+    def validate(instance, schema, cls=None, *args, **kwargs):  # noqa: D417
+        """
+        Validate an instance under the given schema.
+    
+            >>> validate([2, 3, 4], {"maxItems": 2})
+            Traceback (most recent call last):
+                ...
+            ValidationError: [2, 3, 4] is too long
+    
+        :func:`~jsonschema.validators.validate` will first verify that the
+        provided schema is itself valid, since not doing so can lead to less
+        obvious error messages and fail in less obvious or consistent ways.
+    
+        If you know you have a valid schema already, especially
+        if you intend to validate multiple instances with
+        the same schema, you likely would prefer using the
+        `jsonschema.protocols.Validator.validate` method directly on a
+        specific validator (e.g. ``Draft202012Validator.validate``).
+    
+    
+        Arguments:
+    
+            instance:
+    
+                The instance to validate
+    
+            schema:
+    
+                The schema to validate with
+    
+            cls (jsonschema.protocols.Validator):
+    
+                The class that will be used to validate the instance.
+    
+        If the ``cls`` argument is not provided, two things will happen
+        in accordance with the specification. First, if the schema has a
+        :kw:`$schema` keyword containing a known meta-schema [#]_ then the
+        proper validator will be used. The specification recommends that
+        all schemas contain :kw:`$schema` properties for this reason. If no
+        :kw:`$schema` property is found, the default validator class is the
+        latest released draft.
+    
+        Any other provided positional and keyword arguments will be passed
+        on when instantiating the ``cls``.
+    
+        Raises:
+    
+            `jsonschema.exceptions.ValidationError`:
+    
+                if the instance is invalid
+    
+            `jsonschema.exceptions.SchemaError`:
+    
+                if the schema itself is invalid
+    
+        .. rubric:: Footnotes
+        .. [#] known by a validator registered with
+            `jsonschema.validators.validates`
+    
+        """
+        if cls is None:
+            cls = validator_for(schema)
+    
+        cls.check_schema(schema)
+        validator = cls(schema, *args, **kwargs)
+        error = exceptions.best_match(validator.iter_errors(instance))
+        if error is not None:
+>           raise error
+E           jsonschema.exceptions.ValidationError: 'data' is a required property
+E           
+E           Failed validating 'required' in schema:
+E               {'type': 'object',
+E                'properties': {'status': {'enum': ['SUCCEEDED',
+E                                                   'PARTIAL',
+E                                                   'BLOCKED',
+E                                                   'DENIED',
+E                                                   'UNAVAILABLE',
+E                                                   'CONFLICT']},
+E                               'data': {'type': ['object', 'null']},
+E                               'evidence_refs': {'type': 'array',
+E                                                 'items': {'type': 'string',
+E                                                           'minLength': 1}},
+E                               'uncertainties': {'type': 'array',
+E                                                 'items': {'type': 'string',
+E                                                           'minLength': 1}},
+E                               'next_action': {'type': ['string', 'null']},
+E                               'error': {'anyOf': [{'$ref': '#/$defs/Error'},
+E                                                   {'type': 'null'}]}},
+E                'required': ['status',
+E                             'data',
+E                             'evidence_refs',
+E                             'uncertainties',
+E                             'next_action',
+E                             'error'],
+E                'additionalProperties': False,
+E                'allOf': [{'if': {'properties': {'status': {'const': 'SUCCEEDED'}}},
+E                           'then': {'properties': {'error': {'type': 'null'}}}},
+E                          {'if': {'properties': {'status': {'enum': ['BLOCKED',
+E                                                                     'DENIED',
+E                                                                     'UNAVAILABLE',
+E                                                                     'CONFLICT']}}},
+E                           'then': {'properties': {'next_action': {'type': 'string',
+E                                                                   'minLength': 1},
+E                                                   'error': {'$ref': '#/$defs/Error'}}}}]}
+E           
+E           On instance:
+E               {'status': 'ERROR',
+E                'message': 'Invalid input or unavailable local resource'}
+
+../agentswarm/.venv/lib/python3.13/site-packages/jsonschema/validators.py:1332: ValidationError
+____ test_invalid_or_unsupported_cli_input_returns_typed_error[arguments2] _____
+
+run_cli = <function run_cli.<locals>.call at 0x7e843280efc0>
+arguments = ('does-not-exist', '--json')
+
+    @pytest.mark.parametrize(
+        "arguments",
+        [
+            ("ask", "", "--json"),
+            ("ask", "é" * 4001, "--json"),
+            ("does-not-exist", "--json"),
+        ],
+    )
+    def test_invalid_or_unsupported_cli_input_returns_typed_error(run_cli, arguments):
+        """Invalid input has a sanitized envelope, never a parser traceback."""
+        completed, response = run_cli(*arguments)
+        assert completed.returncode == 2
+>       assert_error(response, "DENIED", "INVALID_INPUT")
+
+tests/unit/test_s00_t01.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_t01.py:74: in assert_error
+    assert_response(response)
+tests/unit/test_s00_t01.py:70: in assert_response
+    jsonschema.validate(response, schema)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+instance = {'status': 'ERROR', 'message': 'Invalid input or unavailable local resource'}
+schema = {'$schema': 'https://json-schema.org/draft/2020-12/schema', '$ref': '#/$defs/Response', '$defs': {'RequestContext': {'...'status', 'data', 'evidence_refs', 'uncertainties', 'next_action', 'error'], 'additionalProperties': False, ...}, ...}}
+cls = <class 'jsonschema.validators.Draft202012Validator'>, args = ()
+kwargs = {}
+
+    def validate(instance, schema, cls=None, *args, **kwargs):  # noqa: D417
+        """
+        Validate an instance under the given schema.
+    
+            >>> validate([2, 3, 4], {"maxItems": 2})
+            Traceback (most recent call last):
+                ...
+            ValidationError: [2, 3, 4] is too long
+    
+        :func:`~jsonschema.validators.validate` will first verify that the
+        provided schema is itself valid, since not doing so can lead to less
+        obvious error messages and fail in less obvious or consistent ways.
+    
+        If you know you have a valid schema already, especially
+        if you intend to validate multiple instances with
+        the same schema, you likely would prefer using the
+        `jsonschema.protocols.Validator.validate` method directly on a
+        specific validator (e.g. ``Draft202012Validator.validate``).
+    
+    
+        Arguments:
+    
+            instance:
+    
+                The instance to validate
+    
+            schema:
+    
+                The schema to validate with
+    
+            cls (jsonschema.protocols.Validator):
+    
+                The class that will be used to validate the instance.
+    
+        If the ``cls`` argument is not provided, two things will happen
+        in accordance with the specification. First, if the schema has a
+        :kw:`$schema` keyword containing a known meta-schema [#]_ then the
+        proper validator will be used. The specification recommends that
+        all schemas contain :kw:`$schema` properties for this reason. If no
+        :kw:`$schema` property is found, the default validator class is the
+        latest released draft.
+    
+        Any other provided positional and keyword arguments will be passed
+        on when instantiating the ``cls``.
+    
+        Raises:
+    
+            `jsonschema.exceptions.ValidationError`:
+    
+                if the instance is invalid
+    
+            `jsonschema.exceptions.SchemaError`:
+    
+                if the schema itself is invalid
+    
+        .. rubric:: Footnotes
+        .. [#] known by a validator registered with
+            `jsonschema.validators.validates`
+    
+        """
+        if cls is None:
+            cls = validator_for(schema)
+    
+        cls.check_schema(schema)
+        validator = cls(schema, *args, **kwargs)
+        error = exceptions.best_match(validator.iter_errors(instance))
+        if error is not None:
+>           raise error
+E           jsonschema.exceptions.ValidationError: 'data' is a required property
+E           
+E           Failed validating 'required' in schema:
+E               {'type': 'object',
+E                'properties': {'status': {'enum': ['SUCCEEDED',
+E                                                   'PARTIAL',
+E                                                   'BLOCKED',
+E                                                   'DENIED',
+E                                                   'UNAVAILABLE',
+E                                                   'CONFLICT']},
+E                               'data': {'type': ['object', 'null']},
+E                               'evidence_refs': {'type': 'array',
+E                                                 'items': {'type': 'string',
+E                                                           'minLength': 1}},
+E                               'uncertainties': {'type': 'array',
+E                                                 'items': {'type': 'string',
+E                                                           'minLength': 1}},
+E                               'next_action': {'type': ['string', 'null']},
+E                               'error': {'anyOf': [{'$ref': '#/$defs/Error'},
+E                                                   {'type': 'null'}]}},
+E                'required': ['status',
+E                             'data',
+E                             'evidence_refs',
+E                             'uncertainties',
+E                             'next_action',
+E                             'error'],
+E                'additionalProperties': False,
+E                'allOf': [{'if': {'properties': {'status': {'const': 'SUCCEEDED'}}},
+E                           'then': {'properties': {'error': {'type': 'null'}}}},
+E                          {'if': {'properties': {'status': {'enum': ['BLOCKED',
+E                                                                     'DENIED',
+E                                                                     'UNAVAILABLE',
+E                                                                     'CONFLICT']}}},
+E                           'then': {'properties': {'next_action': {'type': 'string',
+E                                                                   'minLength': 1},
+E                                                   'error': {'$ref': '#/$defs/Error'}}}}]}
+E           
+E           On instance:
+E               {'status': 'ERROR',
+E                'message': 'Invalid input or unavailable local resource'}
+
+../agentswarm/.venv/lib/python3.13/site-packages/jsonschema/validators.py:1332: ValidationError
+_____________ test_doctor_probe_without_provider_is_not_configured _____________
+
+run_cli = <function run_cli.<locals>.call at 0x7e843280dd00>
+
+    def test_doctor_probe_without_provider_is_not_configured(run_cli):
+        """Provider probe is explicit and cannot imply support without configuration."""
+        completed, response = run_cli("doctor", "--probe", "--json")
+        assert completed.returncode == 3
+>       assert_error(response, "BLOCKED", "NOT_CONFIGURED")
+
+tests/unit/test_s00_t01.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_t01.py:74: in assert_error
+    assert_response(response)
+tests/unit/test_s00_t01.py:70: in assert_response
+    jsonschema.validate(response, schema)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+instance = {'durable_worker': 'NOT_IMPLEMENTED', 'external_integrations': 'NOT_VERIFIED_EXTERNAL', 'provider': {'adapter_installe..._VERIFIED', 'structured_output': 'NOT_VERIFIED', 'tools': 'NOT_VERIFIED', ...}, ...}, 'scope': 'S00_FIXTURE_ONLY', ...}
+schema = {'$schema': 'https://json-schema.org/draft/2020-12/schema', '$ref': '#/$defs/Response', '$defs': {'RequestContext': {'...'status', 'data', 'evidence_refs', 'uncertainties', 'next_action', 'error'], 'additionalProperties': False, ...}, ...}}
+cls = <class 'jsonschema.validators.Draft202012Validator'>, args = ()
+kwargs = {}
+
+    def validate(instance, schema, cls=None, *args, **kwargs):  # noqa: D417
+        """
+        Validate an instance under the given schema.
+    
+            >>> validate([2, 3, 4], {"maxItems": 2})
+            Traceback (most recent call last):
+                ...
+            ValidationError: [2, 3, 4] is too long
+    
+        :func:`~jsonschema.validators.validate` will first verify that the
+        provided schema is itself valid, since not doing so can lead to less
+        obvious error messages and fail in less obvious or consistent ways.
+    
+        If you know you have a valid schema already, especially
+        if you intend to validate multiple instances with
+        the same schema, you likely would prefer using the
+        `jsonschema.protocols.Validator.validate` method directly on a
+        specific validator (e.g. ``Draft202012Validator.validate``).
+    
+    
+        Arguments:
+    
+            instance:
+    
+                The instance to validate
+    
+            schema:
+    
+                The schema to validate with
+    
+            cls (jsonschema.protocols.Validator):
+    
+                The class that will be used to validate the instance.
+    
+        If the ``cls`` argument is not provided, two things will happen
+        in accordance with the specification. First, if the schema has a
+        :kw:`$schema` keyword containing a known meta-schema [#]_ then the
+        proper validator will be used. The specification recommends that
+        all schemas contain :kw:`$schema` properties for this reason. If no
+        :kw:`$schema` property is found, the default validator class is the
+        latest released draft.
+    
+        Any other provided positional and keyword arguments will be passed
+        on when instantiating the ``cls``.
+    
+        Raises:
+    
+            `jsonschema.exceptions.ValidationError`:
+    
+                if the instance is invalid
+    
+            `jsonschema.exceptions.SchemaError`:
+    
+                if the schema itself is invalid
+    
+        .. rubric:: Footnotes
+        .. [#] known by a validator registered with
+            `jsonschema.validators.validates`
+    
+        """
+        if cls is None:
+            cls = validator_for(schema)
+    
+        cls.check_schema(schema)
+        validator = cls(schema, *args, **kwargs)
+        error = exceptions.best_match(validator.iter_errors(instance))
+        if error is not None:
+>           raise error
+E           jsonschema.exceptions.ValidationError: 'data' is a required property
+E           
+E           Failed validating 'required' in schema:
+E               {'type': 'object',
+E                'properties': {'status': {'enum': ['SUCCEEDED',
+E                                                   'PARTIAL',
+E                                                   'BLOCKED',
+E                                                   'DENIED',
+E                                                   'UNAVAILABLE',
+E                                                   'CONFLICT']},
+E                               'data': {'type': ['object', 'null']},
+E                               'evidence_refs': {'type': 'array',
+E                                                 'items': {'type': 'string',
+E                                                           'minLength': 1}},
+E                               'uncertainties': {'type': 'array',
+E                                                 'items': {'type': 'string',
+E                                                           'minLength': 1}},
+E                               'next_action': {'type': ['string', 'null']},
+E                               'error': {'anyOf': [{'$ref': '#/$defs/Error'},
+E                                                   {'type': 'null'}]}},
+E                'required': ['status',
+E                             'data',
+E                             'evidence_refs',
+E                             'uncertainties',
+E                             'next_action',
+E                             'error'],
+E                'additionalProperties': False,
+E                'allOf': [{'if': {'properties': {'status': {'const': 'SUCCEEDED'}}},
+E                           'then': {'properties': {'error': {'type': 'null'}}}},
+E                          {'if': {'properties': {'status': {'enum': ['BLOCKED',
+E                                                                     'DENIED',
+E                                                                     'UNAVAILABLE',
+E                                                                     'CONFLICT']}}},
+E                           'then': {'properties': {'next_action': {'type': 'string',
+E                                                                   'minLength': 1},
+E                                                   'error': {'$ref': '#/$defs/Error'}}}}]}
+E           
+E           On instance:
+E               {'durable_worker': 'NOT_IMPLEMENTED',
+E                'external_integrations': 'NOT_VERIFIED_EXTERNAL',
+E                'provider': {'adapter_installed': False,
+E                             'configured': False,
+E                             'endpoint_host': None,
+E                             'features': {'parallel_calls': 'NOT_VERIFIED',
+E                                          'streaming': 'NOT_VERIFIED',
+E                                          'structured_output': 'NOT_VERIFIED',
+E                                          'tools': 'NOT_VERIFIED',
+E                                          'usage': 'NOT_VERIFIED'},
+E                             'missing': ['SECMA_BASE_URL: approved HTTPS endpoint '
+E                                         'required',
+E                                         'SECMA_MODEL',
+E                                         'SECMA_API_KEY_ENV: configured secret '
+E                                         'reference required',
+E                                         'SECMA_ALLOW_LIVE=1',
+E                                         'Install SECMA live optional dependency'],
+E                             'model': None,
+E                             'pricing': 'NOT_VERIFIED',
+E                             'region': 'NOT_VERIFIED'},
+E                'scope': 'S00_FIXTURE_ONLY',
+E                'status': 'BLOCKED'}
+
+../agentswarm/.venv/lib/python3.13/site-packages/jsonschema/validators.py:1332: ValidationError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_t01.py::test_doctor_reports_provider_disabled_before_and_after_local_init
+FAILED tests/unit/test_s00_t01.py::test_ask_requires_local_principal_then_exact_greeting_creates_no_work
+FAILED tests/unit/test_s00_t01.py::test_mixed_greeting_and_work_is_blocked_without_claiming_work
+FAILED tests/unit/test_s00_t01.py::test_invalid_or_unsupported_cli_input_returns_typed_error[arguments0]
+FAILED tests/unit/test_s00_t01.py::test_invalid_or_unsupported_cli_input_returns_typed_error[arguments1]
+FAILED tests/unit/test_s00_t01.py::test_invalid_or_unsupported_cli_input_returns_typed_error[arguments2]
+FAILED tests/unit/test_s00_t01.py::test_doctor_probe_without_provider_is_not_configured
+7 failed in 0.86s

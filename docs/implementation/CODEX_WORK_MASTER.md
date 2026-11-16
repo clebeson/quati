@@ -1,24 +1,32 @@
-# Authorization precondition
+# Implementation master handoff — Quati v8
 
-This is a FUTURE implementation handoff. Current user instruction is specification
-audit only. Do not execute runtime implementation from this file until explicitly
-authorized. Use WORK_PACKAGES.json and SMALL_MODEL_EXECUTION_PROMPT.md for bounded
-steps, seals, evidence and persistent resume. Retained code is an unapproved candidate.
+## Authorization and current position
 
-# Codex Work Master Handoff — SECMA v8
+Implementation is authorized (`AGENTS.md`; canonical state `work_mode: IMPLEMENTATION_AUTHORIZED`; `docs/governance/LOG.md` LOG-0004). No production access, external write, merge, release or deployment is authorized. The active slice and task are whatever `docs/implementation/implementation_state.json` says; never infer them from this file. Source retained from earlier attempts is an unapproved candidate until its owning task requalifies it; non-conforming candidate modules were removed and the missing work is recorded in `docs/governance/LOG.md`.
 
-Implement SECMA from this English-only authoritative specification. Your job is to produce working, testable Python code, not merely to recreate more PRDs. Start exclusively with `S00`; do not implement downstream slices or a GUI. The canonical order is `README.md` → `AGENTS.md` → `docs/vision/PRODUCT_PRD.md` → `docs/trd/TECHNICAL_REFERENCE.md` → `docs/rfcs/RFC-010_BEHAVIOR_COMPILER.md` → `docs/rfcs/RFC-011_STATECHART_MODEL.md` → `docs/implementation/SLICES/S00.md`.
+Your job is to produce working, tested Python code, not more specification. Work only on the earliest slice whose gate is not `PASS`. Do not implement downstream slices or a GUI.
 
-## Initial workflow
-1. Run `python spec_tools/validate_spec.py` and `python -m pytest tests/test_reference_compiler.py` to check that source specification is internally coherent; note these are L0 checks only.
-2. Confirm which model transport has authorized credentials for **real** tool calling; ask only for the minimum missing secret reference if required. Use `secma doctor` to report endpoint/model/feature gates.
-3. Create a Python module structure matching package boundaries; implement only the CLI, safe policy, Pydantic AI provider, typed intent router, behavior compiler, and SCS search/describe/invoke with two confusable fake capabilities.
-4. Create the L3 harness that starts from `secma ask` with an ordinary natural-language utterance, observes the real provider's actual tool calls, captures arguments and final output, and verifies no gold capability ID was given in model input. Also test a greeting that MUST not create a job.
-5. Store redacted traces, artifacts and a realistic cost/latency report. Update state to `PASS` only when all S00 gates are proven. Record `BLOCKED` rather than faking tool capability if your provider/model does not support it.
-6. Produce PR-ready diff and an independent audit report. Do not merge or deploy without approval; do not obtain production tokens unprompted.
+## Read order
 
-## Future slice constraints
-ERI, durability, providers and specialist agents are integrated one slice at a time, following roadmap; don't scaffold 31 services. Once DBOS is introduced, domain packages must remain isolated from DBOS. Every new adapter advertises feature limitations; a missing harness does not take down SECMA. The user values short, helpful progress and context continuity more than a wall of implementation logs.
+`AGENTS.md` → `IMPLEMENTATION_READY_INDEX.md` → `docs/implementation/PARALLEL_EXECUTION_AND_MODEL_ROLES.md` → `docs/testing/TEST_ENGINEERING_STANDARD.md` → the selected task in `docs/implementation/work_packages/Sxx.md` → only the PRDs, RFCs and contracts that task names. In each PRD the `## Normative detail` and `## Test oracles` sections are authoritative; shared rules are in `docs/prds/PRD_COMMON.md`; lifecycle guards are in `docs/architecture/GUARD_PREDICATES.md`.
 
-## Mandatory reporting format
-`Slice`, `Commit`, `Requirements covered`, `Changed files`, `Tests and proof tiers`, `Real LLM/provider used?`, `Red-team outcome`, `Resource/cost measurements`, `Blocked/unverified items`, `Next gate`, `Rollback`. All in English. Do not report external interoperability as passed based on a fake HTTP server.
+## Workflow for every task
+
+1. **Check the specification (L0).** From `spec_tools/`: `../.venv/bin/python validate_spec.py` and `../.venv/bin/python validate_readiness.py`. These prove internal coherence of the documents only; they never promote a runtime gate.
+2. **SDD.** Select the task's requirement IDs, owned paths and out-of-scope items. If two sources disagree, record a specification bug in `docs/governance/LOG.md` and fix the specification first.
+3. **TDD.** A larger model writes the tests, fixtures and fakes named in the PRD test-oracle rows; a test runner records the failing run. Implementers (smaller models for simple tasks, larger models for kernel or ambiguous work) make them pass inside disjoint owned paths, in parallel where the DAG allows.
+4. **EDD.** A test runner executes the suites and coverage and records redacted evidence with `scripts/record_evidence.py`. Coverage thresholds and determinism rules in `TEST_ENGINEERING_STANDARD.md` are gates.
+5. **Independent review.** A fresh-context larger model audits conformity, unrequested scope and test discrimination, and adds one adversarial negative. An author never accepts its own work.
+6. **Checkpoint.** Only the root coordinator updates canonical state, through `scripts/checkpoint_execution.py --expected-revision <current>`, and appends to `docs/governance/LOG.md`.
+
+## Real-provider proof
+
+Mocks, schema checks and scripted fakes never count as real-provider proof. S00 CAP-01 and CAP-02 each need 30/30 live runs under `docs/testing/TEST_EXECUTION_PROTOCOL.md`, starting from `quati ask` with an ordinary utterance, observing the real provider's tool calls, with no gold capability ID in the model input. If no approved provider configuration is available, ask only for the missing secret reference and report the gate as `BLOCKED`; continue with work that does not depend on it. Credentials are used only through secret references and never appear in logs, patches or evidence.
+
+## Slice constraints
+
+Durability, providers and specialist agents are integrated one slice at a time following `ROADMAP.md`; do not scaffold 31 services. Domain packages stay isolated from ledger backends, model SDKs and transports. Every adapter advertises its feature limits; a missing optional harness returns a typed `UNAVAILABLE` and does not take down Quati.
+
+## Mandatory report format
+
+`Slice`, `Task`, `Requirements covered`, `Changed files`, `Tests and proof tiers` (passed, failed, skipped, expected-failed, errored), `Coverage`, `Real LLM/provider used?`, `Red-team outcome`, `Resource/cost measurements`, `Blocked/unverified items`, `Next gate`, `Rollback`. All in English. Never report external interoperability as passed on the basis of a fake server.

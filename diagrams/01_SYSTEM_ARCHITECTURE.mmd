@@ -9,7 +9,7 @@ flowchart TD
   H --> V[Evidence + Sufficiency Assessment]
   V --> D[Delivery Translator: Human / Machine]
   E --> L[Commitment Ledger + Outbox]
-  L <--> X[DurableRunner: DBOS Adapter]
+  L <--> X[DurableRunner port: LedgerPort SQLite / PostgreSQL]
   X --> W[Bounded Worker + Due-Time Supervisor]
   W --> D
   L --> T[Audit + Observability]

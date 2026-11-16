@@ -5,8 +5,8 @@
 - `docs/vision/`: product PRD, module map and conversation requirement coverage.
 - `docs/prds/`: 31 individual outcome/behavior module PRDs.
 - `docs/trd/`: technical reference, technologies and provider feature matrix.
-- `docs/rfcs/`: 12 interoperable protocol/behavior design RFCs.
-- `docs/adrs/`: 12 architectural decisions and trade-offs.
+- `docs/rfcs/`: 15 interoperable protocol/behavior design RFCs.
+- `docs/adrs/`: 16 architectural decisions and trade-offs.
 - `docs/redteam/`: overall independent challenges, per-module attack sheets, risk register and open blockers.
 - `docs/testing/`: proof tiers, actual model benchmark plan, test ledger and risk coverage justification.
 - `docs/implementation/`: one authoritative S00–S07 roadmap, slice prompts and resumable implementation state.
@@ -17,3 +17,5 @@
 - `diagrams/`: Mermaid source.
 - `docs/presentations/`: English executive synopsis.
 - `README.md`, `AGENTS.md`: entry point and implementation factory rules.
+
+- `docs/governance/LOG.md`: the single governance log (bugs, debt, decisions, exceptions, lessons, risks). The older separate registries are deprecated; see BUGS_DEBT_LOGS_AND_FIXTURES.md.

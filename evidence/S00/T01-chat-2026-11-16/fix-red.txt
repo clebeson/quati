@@ -1,0 +1,21 @@
+# FIX-RED run 2026-11-16 (audit items 1-3; tests before source changes)
+# cmd: .venv/bin/python -m pytest -q tests/unit/test_s00_t01_chat.py tests/integration/cli
+FAILED tests/unit/test_s00_t01_chat.py::test_fr04_jsonl_lines_are_exactly_secma_json_1
+FAILED tests/unit/test_s00_t01_chat.py::test_fr01_one_shot_json_output_is_exactly_secma_json_1[argv0]
+FAILED tests/unit/test_s00_t01_chat.py::test_fr01_one_shot_json_output_is_exactly_secma_json_1[argv1]
+FAILED tests/unit/test_s00_t01_chat.py::test_fr01_one_shot_json_output_is_exactly_secma_json_1[argv2]
+FAILED tests/unit/test_s00_t01_chat.py::test_fr01_one_shot_json_output_is_exactly_secma_json_1[argv3]
+FAILED tests/unit/test_s00_t01_chat.py::test_fr01_one_shot_json_output_is_exactly_secma_json_1[argv4]
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[absent-missing]
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[invalid_json-parse_error]
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[schema_invalid-schema_invalid]
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[wrong_tenant-wrong_tenant]
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[mode_0644-wrong_mode]
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[symlink-not_regular_file]
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[valid_out_of_band-out_of_band_change]
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_policy_before_init_and_loader_raising
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_reports_available_only_for_a_trusted_policy
+FAILED tests/integration/cli/test_chat_session.py::test_chat_transcript_equals_one_shot_sequence
+FAILED tests/integration/cli/test_chat_session.py::test_chat_jsonl_emits_one_response_per_line_through_one_shot_use_cases
+17 failed, 91 passed in 3.41s
+# exit: 1

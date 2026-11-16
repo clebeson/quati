@@ -1,0 +1,21 @@
+Hello
+
+ 	
+olá!
+Hello, please summarize tomorrow's calendar.
+/help
+/status c-1
+/tell c-1 add the budget numbers
+/approvals PENDING
+/approve apr-123
+/deny apr-123 not now
+/bogus
+/status
+ /approve apr-123
+please run /approve apr-123
+approved, send it now
+APPROVED
+quati init
+{"status":"SUCCEEDED","data":{"result_kind":"SESSION_ENDED"},"evidence_refs":[],"uncertainties":[],"next_action":null,"error":null}
+/quit
+Hello

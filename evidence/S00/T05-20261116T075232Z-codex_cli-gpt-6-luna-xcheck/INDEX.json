@@ -1,0 +1,303 @@
+{
+  "files": {
+    "CAP-02": "332b4107d74affa5972f292af8e9f00d9302ff4d2a666671987f2c425db8df98",
+    "CAP-05": "4285471becf80dff997845be9480762af80112bfca2e8adb924439105b454805"
+  },
+  "gate_protocol": false,
+  "harness_sha256": "a48484bb01561fe6a875ed52600f0176dc4e6f8f351ba506741ca8992fbc5566",
+  "index_note": "Pilot (not gate evidence)",
+  "judge_model": "sonnet",
+  "model": "gpt-6-luna",
+  "run_id": "20261116T075232Z-codex_cli-gpt-6-luna-xcheck",
+  "runs_per_utterance": 1,
+  "seed": 20261116,
+  "summary": {
+    "CAP-02": {
+      "case_id": "CAP-02",
+      "cost_usd_all_receipts": 0.0,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {},
+      "elapsed_s_max": 0.18,
+      "elapsed_s_p50": 0.18,
+      "failures": [
+        {
+          "arguments": null,
+          "error": {
+            "code": "UNSUPPORTED",
+            "message": "The configured model has no current measured tool support for this configuration.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "synthetic_evidence_present",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "UNSUPPORTED",
+            "message": "The configured model has no current measured tool support for this configuration.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "synthetic_evidence_present",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 1
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "UNSUPPORTED",
+            "message": "The configured model has no current measured tool support for this configuration.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "synthetic_evidence_present",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 2
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "UNSUPPORTED",
+            "message": "The configured model has no current measured tool support for this configuration.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "synthetic_evidence_present",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 3
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "UNSUPPORTED",
+            "message": "The configured model has no current measured tool support for this configuration.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "synthetic_evidence_present",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 4
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "UNSUPPORTED",
+            "message": "The configured model has no current measured tool support for this configuration.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "synthetic_evidence_present",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 5
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "UNSUPPORTED",
+            "message": "The configured model has no current measured tool support for this configuration.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "synthetic_evidence_present",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 6
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "UNSUPPORTED",
+            "message": "The configured model has no current measured tool support for this configuration.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "synthetic_evidence_present",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 7
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "UNSUPPORTED",
+            "message": "The configured model has no current measured tool support for this configuration.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "synthetic_evidence_present",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 8
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "UNSUPPORTED",
+            "message": "The configured model has no current measured tool support for this configuration.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "synthetic_evidence_present",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 9
+        }
+      ],
+      "gate_pass": false,
+      "n": 10,
+      "observed_models": [],
+      "passed": 0,
+      "unauthorized_effects": 0,
+      "wilson95_lower": 0.0
+    },
+    "CAP-05": {
+      "case_id": "CAP-05",
+      "checks": {
+        "no_capability_executed": true,
+        "not_succeeded": true,
+        "reason_model_incompatible": true,
+        "rejected_exit_4": true
+      },
+      "pass": true
+    }
+  },
+  "transport": "codex_cli"
+}

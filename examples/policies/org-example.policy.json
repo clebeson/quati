@@ -1,0 +1,150 @@
+{
+  "policy_schema_version": "1",
+  "tenant_id": "01JD0000000000000000000001",
+  "revision": 7,
+  "description": "Organization example. Team-space writes need the space manager; outbound email needs approval.",
+  "default_verdict": "DENY",
+  "rules": [
+    {
+      "rule_id": "members-read",
+      "description": "Members and above read in any space they hold a grant on (the grant is checked by SpaceGrant, not here).",
+      "verdict": "ALLOW",
+      "match": {
+        "effects": [
+          "none",
+          "read"
+        ],
+        "tenant_roles": [
+          "OWNER",
+          "ADMIN",
+          "MEMBER"
+        ],
+        "max_data_class": "confidential"
+      }
+    },
+    {
+      "rule_id": "personal-write-self",
+      "description": "Writes into one's own personal space need self approval.",
+      "verdict": "APPROVAL_REQUIRED",
+      "match": {
+        "effects": [
+          "write"
+        ],
+        "tenant_roles": [
+          "OWNER",
+          "ADMIN",
+          "MEMBER"
+        ],
+        "space_kinds": [
+          "PERSONAL"
+        ],
+        "max_data_class": "confidential"
+      },
+      "approver": {
+        "rule": "SELF"
+      },
+      "approval_ttl_seconds": 900
+    },
+    {
+      "rule_id": "team-write-manager",
+      "description": "Writes in team spaces need a manager of that space.",
+      "verdict": "APPROVAL_REQUIRED",
+      "match": {
+        "effects": [
+          "write"
+        ],
+        "tenant_roles": [
+          "OWNER",
+          "ADMIN",
+          "MEMBER"
+        ],
+        "space_kinds": [
+          "TEAM",
+          "SHARED"
+        ],
+        "max_data_class": "confidential"
+      },
+      "approver": {
+        "rule": "SPACE_MANAGER"
+      },
+      "approval_ttl_seconds": 3600
+    },
+    {
+      "rule_id": "org-write-admin",
+      "description": "Writes in the organization space need a tenant admin.",
+      "verdict": "APPROVAL_REQUIRED",
+      "match": {
+        "effects": [
+          "write"
+        ],
+        "tenant_roles": [
+          "OWNER",
+          "ADMIN",
+          "MEMBER"
+        ],
+        "space_kinds": [
+          "ORGANIZATION"
+        ],
+        "max_data_class": "internal"
+      },
+      "approver": {
+        "rule": "TENANT_ADMIN"
+      },
+      "approval_ttl_seconds": 86400
+    },
+    {
+      "rule_id": "outbound-email-approval",
+      "description": "Outbound email needs approval by a space manager.",
+      "verdict": "APPROVAL_REQUIRED",
+      "match": {
+        "capability_id": "email.send*",
+        "effects": [
+          "write"
+        ],
+        "destination": "email:*",
+        "tenant_roles": [
+          "OWNER",
+          "ADMIN",
+          "MEMBER"
+        ],
+        "max_data_class": "internal"
+      },
+      "approver": {
+        "rule": "SPACE_MANAGER"
+      },
+      "approval_ttl_seconds": 1800
+    },
+    {
+      "rule_id": "dangerous-admin",
+      "description": "Dangerous effects need a tenant admin.",
+      "verdict": "APPROVAL_REQUIRED",
+      "match": {
+        "effects": [
+          "dangerous"
+        ],
+        "tenant_roles": [
+          "OWNER",
+          "ADMIN"
+        ]
+      },
+      "approver": {
+        "rule": "TENANT_ADMIN"
+      },
+      "approval_ttl_seconds": 300
+    },
+    {
+      "rule_id": "guests-no-effects",
+      "description": "Guests cannot cause write or dangerous effects.",
+      "verdict": "DENY",
+      "match": {
+        "effects": [
+          "write",
+          "dangerous"
+        ],
+        "tenant_roles": [
+          "GUEST"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+/home/clebeson/dev/agentswarm/.venv/lib/python3.13/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFF.........FF.F.                                                        [100%]
+=================================== FAILURES ===================================
+__________________ test_m01_doctor_missing_provider_is_honest __________________
+
+    def test_m01_doctor_missing_provider_is_honest():
+        code, value = cli('doctor', '--json')
+        assert code == 0
+>       assert value['provider']['configured'] is False
+               ^^^^^^^^^^^^^^^^^
+E       KeyError: 'provider'
+
+tests/unit/test_runtime.py:28: KeyError
+_______________________ test_m01_greeting_creates_no_job _______________________
+
+    def test_m01_greeting_creates_no_job():
+        code, value = cli('ask', 'Good morning.', '--json')
+>       assert code == 0
+E       assert 4 == 0
+
+tests/unit/test_runtime.py:34: AssertionError
+______________ test_m01_mixed_greeting_work_not_silently_dropped _______________
+
+    def test_m01_mixed_greeting_work_not_silently_dropped():
+        code, value = cli('ask', 'Hello, investigate conversion differences.', '--json')
+>       assert code == 3
+E       assert 4 == 3
+
+tests/unit/test_runtime.py:42: AssertionError
+____________ test_m26_default_receipts_exclude_raw_input_and_secret ____________
+
+self = <secma.adapters.local_identity.LocalIdentity object at 0x78f603e6c050>
+
+    def _load(self):
+        self._check_process()
+        try:
+>           _private_stat(self.directory.stat(), directory=True)
+                          ^^^^^^^^^^^^^^^^^^^^^
+
+src/secma/adapters/local_identity.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/clebeson/.config/secma'), follow_symlinks = True
+
+    def stat(self, *, follow_symlinks=True):
+        """
+        Return the result of the stat() system call on this path, like
+        os.stat() does.
+        """
+>       return os.stat(self, follow_symlinks=follow_symlinks)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/clebeson/.config/secma'
+
+/usr/lib/python3.13/pathlib/_local.py:517: FileNotFoundError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-70/test_m26_default_receipts_excl0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78f6040ed480>
+
+    def test_m26_default_receipts_exclude_raw_input_and_secret(tmp_path, monkeypatch):
+        from secma.cli.main import ask
+        monkeypatch.setenv('SECMA_DATA_DIR',str(tmp_path))
+        monkeypatch.setenv('SECMA_API_KEY_ENV','SECRET_TEST_KEY')
+        monkeypatch.setenv('SECRET_TEST_KEY','never-store-this')
+>       code, value = ask('Investigate private customer never-store-this', ProviderConfig())
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_runtime.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/secma/cli/main.py:42: in ask
+    _emit(_service().ask(text))
+          ^^^^^^^^^^^^^^^^^^^^
+src/secma/application/cli_service.py:74: in ask
+    context = self.identity.authenticate()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/secma/adapters/local_identity.py:138: in authenticate
+    record, _ = self._load()
+                ^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <secma.adapters.local_identity.LocalIdentity object at 0x78f603e6c050>
+
+    def _load(self):
+        self._check_process()
+        try:
+            _private_stat(self.directory.stat(), directory=True)
+            signed = json.loads(_read_private(self.record_path))
+            signature = base64.b64decode(signed.pop('signature'), validate=True)
+            key = Ed25519PrivateKey.from_private_bytes(_read_private(self.key_path))
+            public = base64.b64decode(signed['public_key'], validate=True)
+            Ed25519PublicKey.from_public_bytes(public).verify(signature, canonical_bytes(signed))
+            if signed['owner_uid'] != os.getuid() or key.public_key().public_bytes_raw() != public:
+                raise AccessDenied()
+            return signed, key
+        except (OSError, ValueError, KeyError, TypeError, InvalidSignature) as exc:
+>           raise AccessDenied() from exc
+E           secma.application.identity.AccessDenied: UNAUTHENTICATED
+
+src/secma/adapters/local_identity.py:124: AccessDenied
+______________ test_m30_packaged_compiler_matches_reviewed_source ______________
+
+    def test_m30_packaged_compiler_matches_reviewed_source():
+        root = Path(__file__).resolve().parents[2]
+        source = (root/'spec_tools/behavior_compiler.py').read_text()
+        packaged = (root/'src/secma/behavior/validated_reference.py').read_text()
+        expected = source.replace('ROOT=Path(__file__).resolve().parents[1]', "ROOT=Path(__file__).resolve().parents[1] / 'assets'")
+        expected = expected.replace('OFFLINE specification reference compiler/validator, NOT the SECMA runtime.', 'S00 runtime static compiler; authorization is separately enforced by domain policy.')
+        assert expected == packaged
+        for original in (root/'contracts').glob('*.json'):
+>           assert original.read_bytes() == (root/'src/secma/assets/contracts'/original.name).read_bytes()
+E           assert b'{\n  "$sche...  }\n  }\n}\n' == b'{\n  "$sche...  }\n  }\n}\n'
+E             
+E             At index 1136 diff: b'p' != b'c'
+E             Use -v to get more diff
+
+tests/unit/test_runtime.py:160: AssertionError
+_____ test_independent_advisory_classification_cannot_claim_work_completed _____
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-70/test_independent_advisory_clas0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78f603e33460>
+
+    def test_independent_advisory_classification_cannot_claim_work_completed(tmp_path, monkeypatch):
+        from secma.cli.main import ask
+        from secma.application.ports import ModelRun
+>       import secma.adapters.model as adapter
+
+tests/unit/test_runtime.py:173: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Bounded Pydantic AI transport adapter for S00 synthetic discovery.
+    
+    An injected SDK model is a test seam, not a live-provider qualification. All
+    catalog authority remains in application/domain code; model text grants none.
+    """
+    from __future__ import annotations
+    
+    import asyncio
+    from contextlib import asynccontextmanager
+    import os
+    import re
+    import secrets
+    import time
+    import hashlib
+    from typing import Any, Literal
+    from urllib.parse import urlsplit
+    
+    from pydantic import BaseModel, ConfigDict, Field
+>   from pydantic_ai import Agent
+E   ModuleNotFoundError: No module named 'pydantic_ai'
+
+src/secma/adapters/model.py:19: ModuleNotFoundError
+=========================== short test summary info ============================
+FAILED tests/unit/test_runtime.py::test_m01_doctor_missing_provider_is_honest
+FAILED tests/unit/test_runtime.py::test_m01_greeting_creates_no_job - assert ...
+FAILED tests/unit/test_runtime.py::test_m01_mixed_greeting_work_not_silently_dropped
+FAILED tests/unit/test_runtime.py::test_m26_default_receipts_exclude_raw_input_and_secret
+FAILED tests/unit/test_runtime.py::test_m30_packaged_compiler_matches_reviewed_source
+FAILED tests/unit/test_runtime.py::test_independent_advisory_classification_cannot_claim_work_completed
+6 failed, 11 passed in 0.78s

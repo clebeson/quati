@@ -1,0 +1,150 @@
+FFF.                                                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_commit_seal_binds_test_log_and_transcript[None] _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-53/test_commit_seal_binds_test_lo0')
+mutation = None
+
+    @pytest.mark.parametrize('mutation', [None, 'evidence', 'unbound_transcript'])
+    def test_commit_seal_binds_test_log_and_transcript(tmp_path, mutation):
+        import hashlib
+        from validate_readiness import validate_seal_provenance
+        log = tmp_path / 'test.log'
+        transcript = tmp_path / 'transcript.txt'
+        log.write_text('command: offline check; exit: 0')
+        transcript.write_text('redacted reviewer session')
+        seal = {
+            'evidence_refs': ['test.log', 'transcript.txt'],
+            'evidence_sha256': {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                                for p in (log, transcript)},
+            'commit_evidence': {'commit_sha': 'a' * 40, 'test_log_ref': 'test.log',
+                                'transcript_ref': 'transcript.txt'},
+        }
+        if mutation == 'evidence':
+            log.write_text('fabricated completion')
+        if mutation == 'unbound_transcript':
+            seal['commit_evidence']['transcript_ref'] = 'unbound.txt'
+        if mutation:
+            with pytest.raises(ValueError):
+                validate_seal_provenance(seal, tmp_path)
+        else:
+>           validate_seal_provenance(seal, tmp_path)
+
+tests/test_spec_readiness.py:105: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+seal = {'evidence_refs': ['test.log', 'transcript.txt'], 'evidence_sha256': {'test.log': '50be33ee572b4b086da2482df3be71383c3...mmit_sha': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'test_log_ref': 'test.log', 'transcript_ref': 'transcript.txt'}}
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-53/test_commit_seal_binds_test_lo0')
+
+    def validate_seal_provenance(seal, root=ROOT):
+        import hashlib
+        def verify(path, digest):
+            target=(root/path).resolve()
+            require(target.is_relative_to(root.resolve()), 'Seal path escapes package')
+            require(target.is_file() and hashlib.sha256(target.read_bytes()).hexdigest()==digest, 'Stale or missing seal evidence/source/artifact')
+        require(set(seal['evidence_refs']) == set(seal['evidence_sha256']), 'Evidence digest coverage mismatch')
+        for mapping in ('artifact_sha256','evidence_sha256'):
+>           for path,digest in seal[mapping].items(): verify(path,digest)
+                               ^^^^^^^^^^^^^
+E           KeyError: 'artifact_sha256'
+
+spec_tools/validate_readiness.py:81: KeyError
+___________ test_commit_seal_binds_test_log_and_transcript[evidence] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-53/test_commit_seal_binds_test_lo1')
+mutation = 'evidence'
+
+    @pytest.mark.parametrize('mutation', [None, 'evidence', 'unbound_transcript'])
+    def test_commit_seal_binds_test_log_and_transcript(tmp_path, mutation):
+        import hashlib
+        from validate_readiness import validate_seal_provenance
+        log = tmp_path / 'test.log'
+        transcript = tmp_path / 'transcript.txt'
+        log.write_text('command: offline check; exit: 0')
+        transcript.write_text('redacted reviewer session')
+        seal = {
+            'evidence_refs': ['test.log', 'transcript.txt'],
+            'evidence_sha256': {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                                for p in (log, transcript)},
+            'commit_evidence': {'commit_sha': 'a' * 40, 'test_log_ref': 'test.log',
+                                'transcript_ref': 'transcript.txt'},
+        }
+        if mutation == 'evidence':
+            log.write_text('fabricated completion')
+        if mutation == 'unbound_transcript':
+            seal['commit_evidence']['transcript_ref'] = 'unbound.txt'
+        if mutation:
+            with pytest.raises(ValueError):
+>               validate_seal_provenance(seal, tmp_path)
+
+tests/test_spec_readiness.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+seal = {'evidence_refs': ['test.log', 'transcript.txt'], 'evidence_sha256': {'test.log': '50be33ee572b4b086da2482df3be71383c3...mmit_sha': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'test_log_ref': 'test.log', 'transcript_ref': 'transcript.txt'}}
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-53/test_commit_seal_binds_test_lo1')
+
+    def validate_seal_provenance(seal, root=ROOT):
+        import hashlib
+        def verify(path, digest):
+            target=(root/path).resolve()
+            require(target.is_relative_to(root.resolve()), 'Seal path escapes package')
+            require(target.is_file() and hashlib.sha256(target.read_bytes()).hexdigest()==digest, 'Stale or missing seal evidence/source/artifact')
+        require(set(seal['evidence_refs']) == set(seal['evidence_sha256']), 'Evidence digest coverage mismatch')
+        for mapping in ('artifact_sha256','evidence_sha256'):
+>           for path,digest in seal[mapping].items(): verify(path,digest)
+                               ^^^^^^^^^^^^^
+E           KeyError: 'artifact_sha256'
+
+spec_tools/validate_readiness.py:81: KeyError
+______ test_commit_seal_binds_test_log_and_transcript[unbound_transcript] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-53/test_commit_seal_binds_test_lo2')
+mutation = 'unbound_transcript'
+
+    @pytest.mark.parametrize('mutation', [None, 'evidence', 'unbound_transcript'])
+    def test_commit_seal_binds_test_log_and_transcript(tmp_path, mutation):
+        import hashlib
+        from validate_readiness import validate_seal_provenance
+        log = tmp_path / 'test.log'
+        transcript = tmp_path / 'transcript.txt'
+        log.write_text('command: offline check; exit: 0')
+        transcript.write_text('redacted reviewer session')
+        seal = {
+            'evidence_refs': ['test.log', 'transcript.txt'],
+            'evidence_sha256': {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                                for p in (log, transcript)},
+            'commit_evidence': {'commit_sha': 'a' * 40, 'test_log_ref': 'test.log',
+                                'transcript_ref': 'transcript.txt'},
+        }
+        if mutation == 'evidence':
+            log.write_text('fabricated completion')
+        if mutation == 'unbound_transcript':
+            seal['commit_evidence']['transcript_ref'] = 'unbound.txt'
+        if mutation:
+            with pytest.raises(ValueError):
+>               validate_seal_provenance(seal, tmp_path)
+
+tests/test_spec_readiness.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+seal = {'evidence_refs': ['test.log', 'transcript.txt'], 'evidence_sha256': {'test.log': '50be33ee572b4b086da2482df3be71383c3...'commit_sha': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'test_log_ref': 'test.log', 'transcript_ref': 'unbound.txt'}}
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-53/test_commit_seal_binds_test_lo2')
+
+    def validate_seal_provenance(seal, root=ROOT):
+        import hashlib
+        def verify(path, digest):
+            target=(root/path).resolve()
+            require(target.is_relative_to(root.resolve()), 'Seal path escapes package')
+            require(target.is_file() and hashlib.sha256(target.read_bytes()).hexdigest()==digest, 'Stale or missing seal evidence/source/artifact')
+        require(set(seal['evidence_refs']) == set(seal['evidence_sha256']), 'Evidence digest coverage mismatch')
+        for mapping in ('artifact_sha256','evidence_sha256'):
+>           for path,digest in seal[mapping].items(): verify(path,digest)
+                               ^^^^^^^^^^^^^
+E           KeyError: 'artifact_sha256'
+
+spec_tools/validate_readiness.py:81: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_spec_readiness.py::test_commit_seal_binds_test_log_and_transcript[None]
+FAILED tests/test_spec_readiness.py::test_commit_seal_binds_test_log_and_transcript[evidence]
+FAILED tests/test_spec_readiness.py::test_commit_seal_binds_test_log_and_transcript[unbound_transcript]
+3 failed, 1 passed, 11 deselected in 0.09s

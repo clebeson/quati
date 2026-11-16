@@ -1,0 +1,189 @@
+
+==================================== ERRORS ====================================
+_________________ ERROR collecting tests/unit/test_s00_t03.py __________________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_s00_t03.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_s00_t03.py:15: in <module>
+    from s00_t03_support import REPOSITORY_ROOT, build, write_package, manifest_copy
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+_____________ ERROR collecting tests/unit/test_s00_t03_registry.py _____________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_s00_t03_registry.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_s00_t03_registry.py:10: in <module>
+    from s00_t03_support import OTHER_TENANT, build, context, manifest_copy, write_package
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+____________ ERROR collecting tests/unit/test_s00_t03_discovery.py _____________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_s00_t03_discovery.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_s00_t03_discovery.py:16: in <module>
+    from s00_t03_support import ACTOR, OTHER_TENANT, build, context, manifest_copy, write_package
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+_____________ ERROR collecting tests/unit/test_manifest_schema.py ______________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_manifest_schema.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_manifest_schema.py:8: in <module>
+    from s00_t03_support import REPOSITORY_ROOT, build, manifest_copy, write_package
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+______________ ERROR collecting tests/unit/test_package_digest.py ______________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_package_digest.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_package_digest.py:9: in <module>
+    from s00_t03_support import build
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+_____________ ERROR collecting tests/unit/test_mcp_hint_import.py ______________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_mcp_hint_import.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_mcp_hint_import.py:9: in <module>
+    from s00_t03_support import AGENT, build, context
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+___________ ERROR collecting tests/unit/test_lifecycle_promotion.py ____________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_lifecycle_promotion.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_lifecycle_promotion.py:9: in <module>
+    from s00_t03_support import AGENT, build, context
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+_____________ ERROR collecting tests/unit/test_version_conflict.py _____________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_version_conflict.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_version_conflict.py:9: in <module>
+    from s00_t03_support import build, manifest_copy, write_package
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+__________ ERROR collecting tests/unit/test_description_injection.py ___________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_description_injection.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_description_injection.py:11: in <module>
+    from s00_t03_support import build, manifest_copy, write_package
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+___________ ERROR collecting tests/unit/test_selection_none_fits.py ____________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_selection_none_fits.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_selection_none_fits.py:8: in <module>
+    from s00_t03_support import build
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+___________ ERROR collecting tests/unit/test_selection_validation.py ___________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_selection_validation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_selection_validation.py:7: in <module>
+    from s00_t03_support import build
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+_____________ ERROR collecting tests/unit/test_gateway_binding.py ______________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_gateway_binding.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_gateway_binding.py:12: in <module>
+    from s00_t03_support import build
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+_________ ERROR collecting tests/integration/test_registry_restart.py __________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/integration/test_registry_restart.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/integration/test_registry_restart.py:23: in <module>
+    from s00_t03_support import build  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+_ ERROR collecting tests/integration/policy/test_decision_audited_before_invocation.py _
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/integration/policy/test_decision_audited_before_invocation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/integration/policy/test_decision_audited_before_invocation.py:19: in <module>
+    from s00_t03_support import TENANT, build, policy_document  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/s00_t03_support.py:15: in <module>
+    from secma.adapters.capability_store import FileRegistryStore
+E   ModuleNotFoundError: No module named 'secma.adapters.capability_store'
+=========================== short test summary info ============================
+ERROR tests/unit/test_s00_t03.py
+ERROR tests/unit/test_s00_t03_registry.py
+ERROR tests/unit/test_s00_t03_discovery.py
+ERROR tests/unit/test_manifest_schema.py
+ERROR tests/unit/test_package_digest.py
+ERROR tests/unit/test_mcp_hint_import.py
+ERROR tests/unit/test_lifecycle_promotion.py
+ERROR tests/unit/test_version_conflict.py
+ERROR tests/unit/test_description_injection.py
+ERROR tests/unit/test_selection_none_fits.py
+ERROR tests/unit/test_selection_validation.py
+ERROR tests/unit/test_gateway_binding.py
+ERROR tests/integration/test_registry_restart.py
+ERROR tests/integration/policy/test_decision_audited_before_invocation.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 14 errors during collection !!!!!!!!!!!!!!!!!!!
+14 errors in 0.18s

@@ -1,0 +1,40 @@
+# S00-T04 fix round RED: new discriminating tests run against the pre-fix source (2026-11-16)
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_t04_fixes.py::test_p1_1_model_social_label_on_work_text_takes_the_work_path
+FAILED tests/unit/test_s00_t04_fixes.py::test_p1_1_social_reply_is_localized_and_never_defaults_to_english
+FAILED tests/unit/test_s00_t04_fixes.py::test_p1_1_localized_template_through_the_ask
+FAILED tests/unit/test_s00_t04_fixes.py::test_p1_1_social_text_without_template_gets_a_tool_free_model_reply[Wie geht es dir?]
+FAILED tests/unit/test_s00_t04_fixes.py::test_p1_1_social_text_without_template_gets_a_tool_free_model_reply[How are you doing today?]
+FAILED tests/unit/test_s00_t04_fixes.py::test_p1_1_tool_free_social_reply_failures_are_typed
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_1_model_written_reason_code_is_never_displayed
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_2_read_succeeds_then_write_refused_is_partial
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_3_response_from_another_model_fails_closed
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_3_mismatch_inside_the_loop_stops_before_any_invoke
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_3_probe_without_an_observed_model_id_does_not_open_the_gate
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_3_probe_records_the_observed_model_id
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_3_cli_executable_identity_is_part_of_the_config_hash
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_3_codex_reports_the_model_id_from_its_json_events
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_4_cli_transports_get_the_cli_budget_and_config_can_only_lower_it
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_4_cli_budget_lets_a_slow_cli_flow_finish
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_4_the_ask_deadline_is_not_reported_as_a_provider_failure
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_4_provider_timeout_past_the_ask_deadline_is_the_ask_deadline
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_4_configured_deadline_lowers_the_ask_budget
+FAILED tests/unit/test_s00_t04_fixes.py::test_p3_configured_output_tokens_and_timeout_lower_the_ask_caps
+FAILED tests/unit/test_s00_t04_fixes.py::test_p3_model_visible_hashes_are_split_and_named_for_what_they_cover
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_5_unresolved_model_supplied_id_is_recorded_as_a_digest
+FAILED tests/unit/test_s00_t04_fixes.py::test_p2_6_model_calls_carry_injected_clock_timing
+FAILED tests/unit/test_s00_t04_fixes.py::test_l1_search_guidance_says_the_catalog_is_english
+FAILED tests/unit/test_s00_t04_fixes.py::test_l2_system_prompt_forbids_progress_messages
+FAILED tests/unit/test_s00_t04_fixes.py::test_l2_one_bounded_continuation_after_progress_text
+FAILED tests/unit/test_s00_t04_fixes.py::test_l2_continuation_happens_at_most_once_and_never_auto_invokes
+FAILED tests/unit/test_s00_t04_fixes.py::test_l2_no_continuation_without_a_shortlist_or_after_a_choice[items0]
+FAILED tests/unit/test_s00_t04_fixes.py::test_l2_no_continuation_without_a_shortlist_or_after_a_choice[items1]
+FAILED tests/unit/test_s00_t04_fixes.py::test_l2_no_continuation_without_a_shortlist_or_after_a_choice[items2]
+FAILED tests/unit/test_s00_t04_fixes.py::test_l2_no_continuation_without_a_shortlist_or_after_a_choice[items3]
+FAILED tests/unit/test_s00_t04_fixes.py::test_l2_continuation_counts_against_the_request_budget
+FAILED tests/unit/test_s00_t04_fixes.py::test_l3_none_fits_and_empty_shortlist_are_no_capability
+FAILED tests/unit/test_s00_t04_fixes.py::test_l3_result_kinds_are_documented
+PASSED tests/unit/test_s00_t04_fixes.py::test_p1_1_provider_failure_fallback_needs_a_template
+PASSED tests/unit/test_s00_t04_fixes.py::test_p2_2_refusal_before_the_success_does_not_downgrade
+PASSED tests/unit/test_s00_t04_fixes.py::test_l3_model_stopped_without_invoking_is_distinguishable
+34 failed, 3 passed in 1.63s

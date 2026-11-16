@@ -9,7 +9,7 @@
 3. **State explosion and infinite architecture:** 31 modules become 31 services/agents and tests multiply. **Defense:** modular monolith, slices, timeboxed gates, ADR for new runtime/service.
 4. **Cheap model overconfidence:** accepts wrong tool, infers missing facts and signals done. **Defense:** competence-profile gating, output schemas, independent sufficiency, bounded escalation.
 5. **False asynchronous promise:** says “I started” before ledger commit or “delivered” before provider ACK. **Defense:** receipt/outbox state machine, transaction and reconciliation.
-6. **Long-wait resource explosion:** open-source DBOS waiting/sleep workflows consume resources. **Defense:** durable due-time table and bounded sweeper, load benchmark, avoid naive one-wait-per-job.
+6. **Long-wait resource explosion:** per-job waiting/sleep workflows in engine-based designs consume resources (one reason DBOS is not used, ADR-015). **Defense:** durable due-time table and bounded sweeper, load benchmark, avoid naive one-wait-per-job.
 7. **Identity confused with content:** untrusted transcript claims to be the owner. **Defense:** source authentication and per-operation delegation scope.
 8. **Hidden provider coupling:** vendor SDK auth, model feature assumptions or harness lifecycle leak into domain. **Defense:** feature probed adapter, conformance suite, typed unsupported state.
 9. **Memory becomes private-data exfiltration:** retrieval by embedding similarity bypasses ACLs; team brain inherits personal notes. **Defense:** scope filter before + after retrieval, provenance and consent for promotion.
@@ -24,4 +24,4 @@
 Risk review operates on enforcement boundaries: auth gateway, durable state, model selection, outcome assessment, delivery, compiler and artifact provenance. Each module sheet offers two unique cases. Execute one representative candidate per distinct shared invariant, expanding only after a real failure or new branch. No self-generated test fixture may secretly contain the answer in visible prompt metadata.
 
 ## Unresolved assumptions requiring measured evidence
-Small model can perform dynamic SCS discovery at acceptable price/quality; approved provider supports required tool-calling; low idle RAM under local profile; DBOS open-source waiting behavior under 100+ jobs; real users value planned communication cadence; corporate API/harness auth pathways; native Windows/macOS dependencies. All remain unproven.
+Small model can perform dynamic SCS discovery at acceptable price/quality; approved provider supports required tool-calling; low idle RAM under local profile; ledger timer/worker behavior under 100+ jobs; real users value planned communication cadence; corporate API/harness auth pathways; native Windows/macOS dependencies. All remain unproven.

@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'docs/traceability'
 # FR acceptance indices are related coverage, not an assertion of completeness.
 AT = {
-1:['1','2','1'],2:['1','2','1'],3:['1','1,2','1,2'],4:['1,2','1,2','1'],5:['1','1,2','1'],
+1:['1','2','1','3'],2:['1','2','1'],3:['1','1,2','1,2'],4:['1,2','1,2','1'],5:['1','1,2','1'],
 6:['1','1,2','2'],7:['1','1','2'],8:['2','1','2'],9:['1,2','1,2','2'],10:['1','1','2'],
 11:['2','1','2'],12:['1','1,2','1'],13:['1','2','1'],14:['1,2','1','1,2'],15:['1','1,2','2'],
 16:['1','2','1,2'],17:['1','1','2'],18:['1,2','1','2'],19:['1,2','1,2','2'],20:['1,2','1','2'],
@@ -13,13 +13,13 @@ AT = {
 26:['1','1,2','2'],27:['1','1,2','1'],28:['1','2','1,2'],29:['1','1','1,2'],30:['1','2','1,2'],31:['1,2','1','1,2']}
 # Concrete extra coverage needed beyond broad module AT prose.
 FR_SCENARIOS = {
-1:['Invoke every documented command with valid and invalid input; assert JSON keys and stable exit codes.', 'Terminate CLI before launch and before output receipt; distinguish received, started and acknowledged delivery.', 'Install wheel in clean user environment without Docker and run doctor; inspect for listening web sockets.'],
+1:['Invoke every documented command with valid and invalid input; assert JSON keys and stable exit codes.', 'Terminate CLI before launch and before output receipt; distinguish received, started and acknowledged delivery.', 'Install wheel in clean user environment without Docker and run doctor; inspect for listening web sockets.', 'Pipe a scripted line transcript to quati chat --jsonl and to a restarted session; assert one Response per input line, the same use-case calls as the one-shot commands and no state outside the ledger.'],
 2:['Inject owner claims through imported text; authenticated principal remains unchanged and effect is denied.', 'Delegate and retry identical requests in two tenants; assert scope on events, artifacts and capability calls.', 'Omit or expire authority; assert deny and explicit reauthorization next action without permissive fallback.'],
 3:['Run greeting then real work request; compare commitment count, receipt and measured work start.', 'Replay quiet hours, due update and blocking question contexts; assert correct communication decision.', 'Complete job B during conversation A and add a follow-up to A; assert root IDs and revisions remain separate.'],
 4:['Evaluate held-out social, answer, lookup, compound, analytical and write utterances; record confusion matrix.', 'Seed two same-week artifacts; require one focused disambiguation with no cross-tenant candidate.', 'Correct the requested date while work runs; preserve both original and correction events and revise only current scope.'],
 5:['Withhold optional report style while authorized search runs; assert search starts before answer.', 'Compare optional style question with missing write approval; only consequential uncertainty blocks action.', 'Answer a clarification mid-search; assert same root job and revised context instead of second execution.'],
 6:['Restart worker around contact deadline; advance controlled clock; assert one overdue notification.', 'Exercise receipt, actual progress, dependency block, delay, partial and final event types; assert distinct messages/status.', 'Use quiet hours plus urgent exception with reason; assert recipient-specific suppression and auditable override.'],
-7:['SIGKILL around transactional ledger/outbox writes and race duplicate requests; assert one root and monotonic revision.', 'Run start/status/signal/cancel/schedule through real DBOS/PostgreSQL port; inspect domain imports for vendor leakage.', 'Drop send acknowledgement then cancel/restart; reconcile observed effect without duplicate or false reversal.'],
+7:['SIGKILL around transactional ledger/outbox writes and race duplicate requests; assert one root and monotonic revision.', 'Run start/status/signal/cancel/schedule through the real ledger-driven DurableRunner (SQLite; PostgreSQL conformance); inspect domain imports for vendor leakage.', 'Drop send acknowledgement then cancel/restart; reconcile observed effect without duplicate or false reversal.'],
 8:['Classify same task under varying urgency and difficulty; intent and effect risk remain independently typed.', 'Change routing profile then diff, simulate and rollback; verify original prompt/model/capability references restored.', 'Exhaust token/cost limits and submit unknown-risk action; deny delegation or bounded escalation before call.'],
 9:['Return stale contradictory claims; reject unsupported claims and identify evidence gaps and recency.', 'Have executor declare success with no independent assessment; code blocks final delivery.', 'Return insufficient evidence repeatedly; stop at configured retry limit with partial or inconclusive next action.'],
 10:['Deliver one result to authorized human and machine audiences; same result ID and correct schemas.', 'Deliver long report; short summary links exact immutable evidence version with accessible expansion.', 'Retry duplicate callback and lose acknowledgement; preserve attempt history and distinguish uncertain from delivered.'],
@@ -56,22 +56,25 @@ for p in sorted((ROOT/'docs/prds').glob('M*.md')):
  n=int(p.stem[1:]); text=p.read_text(); phase=re.search(r'(?:Delivery slice|Initial contribution slice):\*\* (S\d+)',text)
  if not phase: phase=re.search(r'(S\d+)',text)
  phase=phase.group(1);MODULES[n]=phase
- for ident,kind,body in re.findall(r'\*\*(M\d+-(FR|AT|RT)-\d+)(?: \(MUST\))?:\*\* (.+)',text):
-  body=body.split(' **Evidence:')[0].split(' **Proof:')[0]; idx=int(ident[-2:]); mod=p.stem
-  acceptance=';'.join(f'{mod}-AT-{int(i):02}' for i in AT[n][idx-1].split(',')) if kind=='FR' else (ident if kind=='AT' else f'{mod}-AT-01;{mod}-AT-02')
+ # Red-team and acceptance reference lists are derived from the IDs the PRD declares.
+ all_at=';'.join(sorted(set(re.findall(r'\*\*('+p.stem+r'-AT-\d+)',text))));all_rt=';'.join(sorted(set(re.findall(r'\*\*('+p.stem+r'-RT-\d+)',text))))
+ for ident,kind,hdr,body in re.findall(r'\*\*(M\d+-(FR|AT|RT)-\d+)(?: \(MUST\))?(?: \(([^)]*)\))?:\*\* (.+)',text):
+  tag=re.search(r' \*\*Slice tag:\*\* \((S\d+)\)\s*$',body); body=re.sub(r' \*\*Slice tag:\*\* \(S\d+\)\s*$','',body)
+  body=body.split(' **Evidence:')[0].split(' **Proof:')[0]; idx=int(ident[-2:]); mod=p.stem; line_phase=tag.group(1) if tag else (re.match(r'(S\d+)',hdr).group(1) if re.match(r'(S\d+)',hdr) else phase)
+  acceptance=';'.join(f'{mod}-AT-{int(i):02}' for i in AT[n][idx-1].split(',')) if kind=='FR' else (ident if kind=='AT' else all_at)
   scenario=FR_SCENARIOS[n][idx-1] if kind=='FR' else ('Public-entry positive and discriminating negative: ' if kind=='AT' else 'Adversarial public-entry case; assert code-level rejection or truthful status: ')+body
-  rows.append(dict(id=ident,kind=kind,source=f'docs/prds/{mod}.md',module=mod,first_slice=phase,full_verification_horizon=FULL[n],scope_note='First slice is a partial contribution; full PRD completion requires all applicable rows and integrations.',requirement=body,contracts=';'.join('contracts/'+c+'.schema.json' for c in CONTRACTS[n]),contract_gap=('PROSE_ONLY: '+PROSE[n]) if n in PROSE else 'Semantic runtime checks still required',acceptance_refs=acceptance,redteam_refs=f'{mod}-RT-01;{mod}-RT-02',related_ledger_cases=';'.join(c['case_id'] for c in ledger if mod in c['modules'].split('/')),planned_case='PLAN-'+ident,planned_test=f'tests/planned/test_{mod.lower()}.py::test_{ident.lower().replace("-","_")}',scenario=scenario,required_tiers=TIERS[n],executable_test='',evidence_ref='',verification_status='NOT_RUN'))
+  rows.append(dict(id=ident,kind=kind,source=f'docs/prds/{mod}.md',module=mod,first_slice=line_phase,full_verification_horizon=FULL[n],scope_note='First slice is a partial contribution; full PRD completion requires all applicable rows and integrations.',requirement=body,contracts=';'.join('contracts/'+c+'.schema.json' for c in CONTRACTS[n]),contract_gap=('PROSE_ONLY: '+PROSE[n]) if n in PROSE else 'Semantic runtime checks still required',acceptance_refs=acceptance,redteam_refs=all_rt,related_ledger_cases=';'.join(c['case_id'] for c in ledger if mod in c['modules'].split('/')),planned_case='PLAN-'+ident,planned_test=f'tests/integration/test_{mod.lower()}.py::test_{ident.lower().replace("-","_")}',scenario=scenario,required_tiers=TIERS[n],executable_test='',evidence_ref='',verification_status='NOT_RUN'))
 # Explicit original K invariants are kept as their existing stable identifiers.
 prd=(ROOT/'docs/vision/PRODUCT_PRD.md').read_text()
 kowners={1:(3,4),2:(7,),3:(25,30),4:(2,25),5:(7,10),6:(9,),7:(14,15),8:(17,31),9:(13,25),10:(3,30)}
 for k,body in re.findall(r'- K(\d+): (.+)',prd):
  ns=kowners[int(k)]; base=next(r for r in rows if r['id']==f'M{ns[0]:02}-FR-01').copy()
- base.update(id='K'+k,kind='INVARIANT',source='docs/vision/PRODUCT_PRD.md',module=';'.join(f'M{n:02}' for n in ns),requirement=body,acceptance_refs=';'.join(f'M{n:02}-AT-{i:02}' for n in ns for i in (1,2)),planned_case='PLAN-K'+k,planned_test=f'tests/planned/test_product_invariants.py::test_k{k}',scenario='Exercise positive path and adversarial counterexample for: '+body)
+ base.update(id='K'+k,kind='INVARIANT',source='docs/vision/PRODUCT_PRD.md',module=';'.join(f'M{n:02}' for n in ns),requirement=body,acceptance_refs=';'.join(f'M{n:02}-AT-{i:02}' for n in ns for i in (1,2)),planned_case='PLAN-K'+k,planned_test=f'tests/integration/test_product_invariants.py::test_k{k}',scenario='Exercise positive path and adversarial counterexample for: '+body)
  rows.append(base)
 # Additional shared obligations are maintained in a separate explicit catalog.
 for item in json.loads((OUT/'SHARED_OBLIGATIONS.json').read_text()):
  ns=item['modules'];base=next(r for r in rows if r['id']==f'M{ns[0]:02}-FR-01').copy()
- base.update(id=item['id'],kind='DERIVED',source=item['source'],module=';'.join(f'M{n:02}' for n in ns),first_slice=item['first_slice'],full_verification_horizon=item['horizon'],requirement=item['requirement'],planned_case='PLAN-'+item['id'],planned_test='tests/planned/test_shared.py::test_'+item['id'].lower().replace('-','_'),scenario=item['scenario'],required_tiers=item['tiers'],acceptance_refs=item.get('acceptance_refs','Shared acceptance: '+item['scenario']))
+ base.update(id=item['id'],kind='DERIVED',source=item['source'],module=';'.join(f'M{n:02}' for n in ns),first_slice=item['first_slice'],full_verification_horizon=item['horizon'],requirement=item['requirement'],planned_case='PLAN-'+item['id'],planned_test='tests/integration/test_shared.py::test_'+item['id'].lower().replace('-','_'),scenario=item['scenario'],required_tiers=item['tiers'],acceptance_refs=item.get('acceptance_refs','Shared acceptance: '+item['scenario']))
  rows.append(base)
 plan_file=ROOT/'docs/testing/REQUIREMENT_TEST_PLANS.json'
 plan_lookup={p['requirement_id']:p for p in json.loads(plan_file.read_text())['plans']} if plan_file.is_file() else {}
@@ -79,6 +82,7 @@ for row in rows:
  p=plan_lookup.get(row['id'],{})
  row['test_plan_ref']='docs/testing/REQUIREMENT_TEST_PLANS.json#'+p.get('plan_id','') if p else ''
  row['test_owner_task']=p.get('test_owner_task','')
+ if p.get('planned_test_path'): row['planned_test']=p['planned_test_path']
  row['shared_case_refs']=';'.join(p.get('shared_case_refs',[]))
  row['normative_boundary_ref']='docs/architecture/BOUNDARY_CONTRACTS.md;docs/architecture/TYPE_CATALOG.md'
  row['coverage_extent']='PLANNED_NOT_EXECUTED'

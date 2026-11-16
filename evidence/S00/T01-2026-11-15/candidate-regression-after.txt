@@ -1,0 +1,26 @@
+/home/clebeson/dev/agentswarm/.venv/lib/python3.13/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.............F...                                                        [100%]
+=================================== FAILURES ===================================
+______________ test_m30_packaged_compiler_matches_reviewed_source ______________
+
+    def test_m30_packaged_compiler_matches_reviewed_source():
+        root = Path(__file__).resolve().parents[2]
+        source = (root/'spec_tools/behavior_compiler.py').read_text()
+        packaged = (root/'src/secma/behavior/validated_reference.py').read_text()
+        expected = source.replace('ROOT=Path(__file__).resolve().parents[1]', "ROOT=Path(__file__).resolve().parents[1] / 'assets'")
+        expected = expected.replace('OFFLINE specification reference compiler/validator, NOT the SECMA runtime.', 'S00 runtime static compiler; authorization is separately enforced by domain policy.')
+        assert expected == packaged
+        for original in (root/'contracts').glob('*.json'):
+>           assert original.read_bytes() == (root/'src/secma/assets/contracts'/original.name).read_bytes()
+E           assert b'{\n  "$sche...  }\n  }\n}\n' == b'{\n  "$sche...  }\n  }\n}\n'
+E             
+E             At index 1136 diff: b'p' != b'c'
+E             Use -v to get more diff
+
+tests/unit/test_runtime.py:172: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_runtime.py::test_m30_packaged_compiler_matches_reviewed_source
+1 failed, 16 passed in 0.88s

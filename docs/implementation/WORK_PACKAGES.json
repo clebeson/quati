@@ -1,5 +1,5 @@
 {
-  "schema_version": "secma-work-packages/1",
+  "schema_version": "quati-work-packages/1",
   "ordering": "DAG; conservative serialized default until interfaces sealed",
   "tasks": [
     {
@@ -13,28 +13,29 @@
         "M26"
       ],
       "owned_paths": [
-        "src/secma/cli",
-        "src/secma/application",
-        "tests/unit"
+        "src/quati/cli",
+        "src/quati/application",
+        "tests/unit",
+        "src/quati/adapters/local_identity.py",
+        "src/quati/adapters/evidence.py",
+        "pyproject.toml",
+        "tests/integration"
       ],
-      "deliverable": "doctor, ask, JSON envelope, local principal",
+      "deliverable": "doctor, ask, line-based chat session, JSON envelope, local principal",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
-      "contract_detail": "CLI and error envelope in BOUNDARY_CONTRACTS; RequestContext schema",
+      "contract_detail": "CLI and error envelope in BOUNDARY_CONTRACTS; RequestContext schema; RFC-013 LOCAL bootstrap/device proof; S00_T01_DESIGN.md ownership refinement",
       "test_case_ids": [
-        "SOC-01"
+        "SOC-01",
+        "IDN-01",
+        "IDN-02"
       ],
       "done_conditions": [
         "CLI diagnostic reports missing provider",
         "exact greeting creates no work",
-        "mixed greeting is not dropped"
+        "mixed greeting is not dropped",
+        "chat --jsonl transcript equals the one-shot command sequence"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S00/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -44,10 +45,13 @@
         "M01-FR-01",
         "M01-FR-02",
         "M01-FR-03",
+        "M01-FR-04",
         "M01-AT-01",
         "M01-AT-02",
+        "M01-AT-03",
         "M01-RT-01",
         "M01-RT-02",
+        "M01-RT-03",
         "M02-FR-01",
         "M02-FR-02",
         "M02-FR-03",
@@ -79,25 +83,43 @@
           "full_proof_owner_task": "S00-T05",
           "mode": "CONTRIBUTION_ONLY",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-01",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-02",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S00-T01-A01",
           "expected_observation": "CLI diagnostic reports missing provider",
-          "planned_test_path": "tests/planned/test_s00_t01.py::test_a01",
+          "planned_test_path": "tests/unit/test_s00_t01.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T01-A02",
           "expected_observation": "exact greeting creates no work",
-          "planned_test_path": "tests/planned/test_s00_t01.py::test_a02",
+          "planned_test_path": "tests/unit/test_s00_t01.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T01-A03",
           "expected_observation": "mixed greeting is not dropped",
-          "planned_test_path": "tests/planned/test_s00_t01.py::test_a03",
+          "planned_test_path": "tests/unit/test_s00_t01.py::test_a03",
+          "status": "NOT_RUN"
+        },
+        {
+          "assertion_id": "S00-T01-A04",
+          "expected_observation": "chat --jsonl transcript equals the one-shot command sequence",
+          "planned_test_path": "tests/integration/cli/test_chat_session.py::test_chat_transcript_equals_one_shot_sequence",
           "status": "NOT_RUN"
         }
       ],
@@ -108,10 +130,13 @@
           "M01-FR-01",
           "M01-FR-02",
           "M01-FR-03",
+          "M01-FR-04",
           "M01-AT-01",
           "M01-AT-02",
+          "M01-AT-03",
           "M01-RT-01",
           "M01-RT-02",
+          "M01-RT-03",
           "M02-FR-01",
           "M02-FR-02",
           "M02-FR-03",
@@ -150,8 +175,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S00-T02",
@@ -167,9 +200,10 @@
       ],
       "owned_paths": [
         "contracts",
-        "src/secma/domain",
-        "src/secma/behavior",
-        "tests/unit"
+        "src/quati/domain",
+        "src/quati/behavior",
+        "tests/unit",
+        "tests/integration"
       ],
       "deliverable": "manifest validation, protected policy, deterministic compiler",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -178,20 +212,17 @@
         "CMP-01",
         "CMP-02",
         "CMP-03",
-        "CAP-03"
+        "CAP-03",
+        "POL-01",
+        "POL-04"
       ],
       "done_conditions": [
         "malformed nested schemas/duplicate YAML/escaping paths rejected",
         "protected transitions cannot bypass guards",
-        "effective options change hashes"
+        "effective options change hashes",
+        "decision-policy sidecar validates exact thresholds, retains every blocking field and rejects unknown authority keys"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S00/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -261,25 +292,43 @@
           "full_proof_owner_task": "S00-T05",
           "mode": "CONTRIBUTION_ONLY",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-01",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-04",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S00-T02-A01",
           "expected_observation": "malformed nested schemas/duplicate YAML/escaping paths rejected",
-          "planned_test_path": "tests/planned/test_s00_t02.py::test_a01",
+          "planned_test_path": "tests/unit/test_s00_t02.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T02-A02",
           "expected_observation": "protected transitions cannot bypass guards",
-          "planned_test_path": "tests/planned/test_s00_t02.py::test_a02",
+          "planned_test_path": "tests/unit/test_s00_t02.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T02-A03",
           "expected_observation": "effective options change hashes",
-          "planned_test_path": "tests/planned/test_s00_t02.py::test_a03",
+          "planned_test_path": "tests/unit/test_s00_t02.py::test_a03",
+          "status": "NOT_RUN"
+        },
+        {
+          "assertion_id": "S00-T02-A04",
+          "expected_observation": "decision-policy sidecar validates exact thresholds, retains every blocking field and rejects unknown authority keys",
+          "planned_test_path": "tests/unit/test_decision_policy.py::test_contract",
           "status": "NOT_RUN"
         }
       ],
@@ -339,8 +388,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S00-T03",
@@ -355,9 +412,10 @@
         "M25"
       ],
       "owned_paths": [
-        "src/secma/application",
-        "src/secma/adapters",
-        "tests/unit"
+        "src/quati/application",
+        "src/quati/adapters",
+        "tests/unit",
+        "tests/integration"
       ],
       "deliverable": "separate definitions/bindings/assurance; bounded search/describe/invoke/status",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -365,20 +423,24 @@
       "test_case_ids": [
         "CAP-01",
         "CAP-02",
-        "CAP-03"
+        "CAP-03",
+        "REG-01",
+        "REG-02",
+        "REG-03",
+        "REG-04",
+        "REG-05",
+        "REG-06",
+        "REG-07",
+        "REG-08",
+        "REG-09",
+        "REG-10"
       ],
       "done_conditions": [
         "new definition is discoverable without root prompt edits",
         "no arbitrary code loading",
         "denied/disabled/stale binding never executes"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S00/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -440,25 +502,85 @@
           "full_proof_owner_task": "S00-T05",
           "mode": "CONTRIBUTION_ONLY",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-01",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-02",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-03",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-04",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-05",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-06",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-07",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-08",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-09",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-10",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S00-T03-A01",
           "expected_observation": "new definition is discoverable without root prompt edits",
-          "planned_test_path": "tests/planned/test_s00_t03.py::test_a01",
+          "planned_test_path": "tests/unit/test_s00_t03.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T03-A02",
           "expected_observation": "no arbitrary code loading",
-          "planned_test_path": "tests/planned/test_s00_t03.py::test_a02",
+          "planned_test_path": "tests/unit/test_s00_t03.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T03-A03",
           "expected_observation": "denied/disabled/stale binding never executes",
-          "planned_test_path": "tests/planned/test_s00_t03.py::test_a03",
+          "planned_test_path": "tests/unit/test_s00_t03.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -516,8 +638,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S00-T04",
@@ -532,9 +662,10 @@
         "M26"
       ],
       "owned_paths": [
-        "src/secma/adapters",
+        "src/quati/adapters",
         "tests/unit",
-        "tests/evals"
+        "tests/evals",
+        "tests/integration"
       ],
       "deliverable": "one approved actual provider, feature probe, typed classification",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -549,13 +680,7 @@
         "malformed outputs bounded",
         "no credentials in traces"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S00/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -603,7 +728,7 @@
         },
         {
           "case_id": "MOD-01",
-          "full_proof_owner_task": "S00-T05",
+          "full_proof_owner_task": "S04-T05",
           "mode": "CONTRIBUTION_ONLY",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
@@ -612,25 +737,25 @@
         {
           "assertion_id": "S00-T04-A01",
           "expected_observation": "unknown tool support remains unverified",
-          "planned_test_path": "tests/planned/test_s00_t04.py::test_a01",
+          "planned_test_path": "tests/unit/test_s00_t04.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T04-A02",
           "expected_observation": "real nonce call round-trip",
-          "planned_test_path": "tests/planned/test_s00_t04.py::test_a02",
+          "planned_test_path": "tests/unit/test_s00_t04.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T04-A03",
           "expected_observation": "malformed outputs bounded",
-          "planned_test_path": "tests/planned/test_s00_t04.py::test_a03",
+          "planned_test_path": "tests/unit/test_s00_t04.py::test_a03",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T04-A04",
           "expected_observation": "no credentials in traces",
-          "planned_test_path": "tests/planned/test_s00_t04.py::test_a04",
+          "planned_test_path": "tests/unit/test_s00_t04.py::test_a04",
           "status": "NOT_RUN"
         }
       ],
@@ -683,8 +808,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S00-T05",
@@ -708,7 +841,7 @@
         "evidence/S00",
         "governance/seals"
       ],
-      "deliverable": "real CLI-to-model trajectory, model role calibration and seal review",
+      "deliverable": "real CLI-to-model trajectory, repeated-run (30 of 30) discovery proof and seal review",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
       "contract_detail": "CAP/SOC/MOD case oracles and governance seal schema",
       "test_case_ids": [
@@ -717,22 +850,31 @@
         "CAP-02",
         "CAP-03",
         "CAP-05",
-        "MOD-01"
+        "IDN-01",
+        "IDN-02",
+        "POL-01",
+        "POL-04",
+        "REG-01",
+        "REG-02",
+        "REG-03",
+        "REG-04",
+        "REG-05",
+        "REG-06",
+        "REG-07",
+        "REG-08",
+        "REG-09",
+        "REG-10"
       ],
       "done_conditions": [
         "CAP01/02 blind genuine discovery",
         "greeting/no-job",
-        "26/30 minimum low-risk routing and zero critical safety failures",
-        "all required S00 gates sealed"
+        "CAP-01 and CAP-02 each pass in 30 of 30 repeated live runs with logged trajectories and recorded provider/model identity; zero critical safety failures",
+        "all required S00 gates sealed",
+        "IDN-01 and IDN-02 pass against the LOCAL profile (unauthenticated call denied before repository access; out-of-scope space denied at N=1)"
       ],
       "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
         "TESTS_VERIFIED",
         "EVIDENCE_VERIFIED",
-        "SECURITY_REVIEWED",
-        "INDEPENDENT_AUDIT_PASSED",
         "SLICE_ACCEPTED"
       ],
       "evidence_directory": "evidence/S00/<unique-run-id>",
@@ -744,10 +886,13 @@
         "M01-FR-01",
         "M01-FR-02",
         "M01-FR-03",
+        "M01-FR-04",
         "M01-AT-01",
         "M01-AT-02",
+        "M01-AT-03",
         "M01-RT-01",
         "M01-RT-02",
+        "M01-RT-03",
         "M14-FR-01",
         "M14-FR-02",
         "M14-FR-03",
@@ -813,7 +958,12 @@
         "SH-10",
         "SH-11",
         "SH-12",
-        "SH-13"
+        "SH-13",
+        "M02-FR-01",
+        "M02-AT-01",
+        "M02-RT-01",
+        "M02-FR-02",
+        "M02-FR-03"
       ],
       "owned_requirement_plan_ids": [],
       "final_acceptance_plan_ids": [],
@@ -849,7 +999,85 @@
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         },
         {
-          "case_id": "MOD-01",
+          "case_id": "IDN-01",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-02",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-01",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-04",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-01",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-02",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-03",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-04",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-05",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-06",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-07",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-08",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-09",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-10",
           "full_proof_owner_task": "S00-T05",
           "mode": "FULL_REQUIRED",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
@@ -859,25 +1087,31 @@
         {
           "assertion_id": "S00-T05-A01",
           "expected_observation": "CAP01/02 blind genuine discovery",
-          "planned_test_path": "tests/planned/test_s00_t05.py::test_a01",
+          "planned_test_path": "tests/evals/test_s00_t05.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T05-A02",
           "expected_observation": "greeting/no-job",
-          "planned_test_path": "tests/planned/test_s00_t05.py::test_a02",
+          "planned_test_path": "tests/evals/test_s00_t05.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T05-A03",
-          "expected_observation": "26/30 minimum low-risk routing and zero critical safety failures",
-          "planned_test_path": "tests/planned/test_s00_t05.py::test_a03",
+          "expected_observation": "CAP-01 and CAP-02 each pass in 30 of 30 repeated live runs with logged trajectories and recorded provider/model identity; zero critical safety failures",
+          "planned_test_path": "tests/evals/test_s00_t05.py::test_a03",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S00-T05-A04",
           "expected_observation": "all required S00 gates sealed",
-          "planned_test_path": "tests/planned/test_s00_t05.py::test_a04",
+          "planned_test_path": "tests/evals/test_s00_t05.py::test_a04",
+          "status": "NOT_RUN"
+        },
+        {
+          "assertion_id": "S00-T05-A05",
+          "expected_observation": "IDN-01 and IDN-02 pass against the LOCAL profile (unauthenticated call denied before repository access; out-of-scope space denied at N=1)",
+          "planned_test_path": "tests/evals/test_s00_t05.py::test_a05",
           "status": "NOT_RUN"
         }
       ],
@@ -888,10 +1122,13 @@
           "M01-FR-01",
           "M01-FR-02",
           "M01-FR-03",
+          "M01-FR-04",
           "M01-AT-01",
           "M01-AT-02",
+          "M01-AT-03",
           "M01-RT-01",
           "M01-RT-02",
+          "M01-RT-03",
           "M14-FR-01",
           "M14-FR-02",
           "M14-FR-03",
@@ -974,8 +1211,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S01-T01",
@@ -991,8 +1236,8 @@
         "M31"
       ],
       "owned_paths": [
-        "src/secma/domain",
-        "src/secma/application",
+        "src/quati/domain",
+        "src/quati/application",
         "tests/unit"
       ],
       "deliverable": "typed context and ephemeral conversation revision",
@@ -1008,13 +1253,7 @@
         "no model text grants authority",
         "non-durable scope explicitly disclosed"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S01/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -1087,19 +1326,19 @@
         {
           "assertion_id": "S01-T01-A01",
           "expected_observation": "request intent/risk/complexity separated",
-          "planned_test_path": "tests/planned/test_s01_t01.py::test_a01",
+          "planned_test_path": "tests/unit/test_s01_t01.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T01-A02",
           "expected_observation": "no model text grants authority",
-          "planned_test_path": "tests/planned/test_s01_t01.py::test_a02",
+          "planned_test_path": "tests/unit/test_s01_t01.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T01-A03",
           "expected_observation": "non-durable scope explicitly disclosed",
-          "planned_test_path": "tests/planned/test_s01_t01.py::test_a03",
+          "planned_test_path": "tests/unit/test_s01_t01.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -1162,8 +1401,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S01-T02",
@@ -1178,8 +1425,9 @@
         "M05"
       ],
       "owned_paths": [
-        "src/secma/application",
-        "tests/evals"
+        "src/quati/application",
+        "tests/evals",
+        "tests/unit"
       ],
       "deliverable": "critical vs optional clarification and safe read kickoff",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -1193,13 +1441,7 @@
         "ambiguous authority stops unsafe dispatch",
         "no fabricated receipt"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S01/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -1255,19 +1497,19 @@
         {
           "assertion_id": "S01-T02-A01",
           "expected_observation": "optional preference does not block read-only discovery",
-          "planned_test_path": "tests/planned/test_s01_t02.py::test_a01",
+          "planned_test_path": "tests/evals/test_s01_t02.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T02-A02",
           "expected_observation": "ambiguous authority stops unsafe dispatch",
-          "planned_test_path": "tests/planned/test_s01_t02.py::test_a02",
+          "planned_test_path": "tests/evals/test_s01_t02.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T02-A03",
           "expected_observation": "no fabricated receipt",
-          "planned_test_path": "tests/planned/test_s01_t02.py::test_a03",
+          "planned_test_path": "tests/evals/test_s01_t02.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -1319,8 +1561,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S01-T03",
@@ -1337,7 +1587,7 @@
         "M31"
       ],
       "owned_paths": [
-        "src/secma/application",
+        "src/quati/application",
         "tests/integration",
         "tests/evals"
       ],
@@ -1354,13 +1604,7 @@
         "provider failure retains explicit next action",
         "no duplicate start"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S01/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -1434,25 +1678,25 @@
         {
           "assertion_id": "S01-T03-A01",
           "expected_observation": "follow-up changes existing work only",
-          "planned_test_path": "tests/planned/test_s01_t03.py::test_a01",
+          "planned_test_path": "tests/integration/test_s01_t03.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T03-A02",
           "expected_observation": "second job can finish first",
-          "planned_test_path": "tests/planned/test_s01_t03.py::test_a02",
+          "planned_test_path": "tests/integration/test_s01_t03.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T03-A03",
           "expected_observation": "provider failure retains explicit next action",
-          "planned_test_path": "tests/planned/test_s01_t03.py::test_a03",
+          "planned_test_path": "tests/integration/test_s01_t03.py::test_a03",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T03-A04",
           "expected_observation": "no duplicate start",
-          "planned_test_path": "tests/planned/test_s01_t03.py::test_a04",
+          "planned_test_path": "tests/integration/test_s01_t03.py::test_a04",
           "status": "NOT_RUN"
         }
       ],
@@ -1522,8 +1766,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S01-T04",
@@ -1562,13 +1814,8 @@
         "baseline comparison and all critical negatives documented"
       ],
       "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
         "TESTS_VERIFIED",
         "EVIDENCE_VERIFIED",
-        "SECURITY_REVIEWED",
-        "INDEPENDENT_AUDIT_PASSED",
         "SLICE_ACCEPTED"
       ],
       "evidence_directory": "evidence/S01/<unique-run-id>",
@@ -1676,19 +1923,19 @@
         {
           "assertion_id": "S01-T04-A01",
           "expected_observation": "all S01 gates pass",
-          "planned_test_path": "tests/planned/test_s01_t04.py::test_a01",
+          "planned_test_path": "tests/evals/test_s01_t04.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T04-A02",
           "expected_observation": "prototype lifetime honest",
-          "planned_test_path": "tests/planned/test_s01_t04.py::test_a02",
+          "planned_test_path": "tests/evals/test_s01_t04.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T04-A03",
           "expected_observation": "baseline comparison and all critical negatives documented",
-          "planned_test_path": "tests/planned/test_s01_t04.py::test_a03",
+          "planned_test_path": "tests/evals/test_s01_t04.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -1766,8 +2013,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S02-T01",
@@ -1784,8 +2039,8 @@
       ],
       "owned_paths": [
         "contracts",
-        "src/secma/domain",
-        "src/secma/adapters",
+        "src/quati/domain",
+        "src/quati/adapters",
         "tests/integration"
       ],
       "deliverable": "v2 effect-bearing control chart and SQL migrations",
@@ -1795,7 +2050,9 @@
         "DUR-01",
         "DUR-02",
         "DUR-03",
-        "DUR-04"
+        "DUR-04",
+        "DUR-08",
+        "DUR-09"
       ],
       "done_conditions": [
         "all cancellation/uncertain-effect/deadline paths represented",
@@ -1803,13 +2060,7 @@
         "migration preserves prior IDs",
         "schema examples validated"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S02/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -1884,31 +2135,43 @@
           "full_proof_owner_task": "S02-T05",
           "mode": "CONTRIBUTION_ONLY",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DUR-08",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DUR-09",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S02-T01-A01",
           "expected_observation": "all cancellation/uncertain-effect/deadline paths represented",
-          "planned_test_path": "tests/planned/test_s02_t01.py::test_a01",
+          "planned_test_path": "tests/integration/test_s02_t01.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T01-A02",
           "expected_observation": "no reference v1 chart activation",
-          "planned_test_path": "tests/planned/test_s02_t01.py::test_a02",
+          "planned_test_path": "tests/integration/test_s02_t01.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T01-A03",
           "expected_observation": "migration preserves prior IDs",
-          "planned_test_path": "tests/planned/test_s02_t01.py::test_a03",
+          "planned_test_path": "tests/integration/test_s02_t01.py::test_a03",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T01-A04",
           "expected_observation": "schema examples validated",
-          "planned_test_path": "tests/planned/test_s02_t01.py::test_a04",
+          "planned_test_path": "tests/integration/test_s02_t01.py::test_a04",
           "status": "NOT_RUN"
         }
       ],
@@ -1973,8 +2236,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S02-T02",
@@ -1989,8 +2260,8 @@
         "M26"
       ],
       "owned_paths": [
-        "src/secma/application",
-        "src/secma/adapters",
+        "src/quati/application",
+        "src/quati/adapters",
         "tests/integration",
         "tests/chaos"
       ],
@@ -2009,13 +2280,7 @@
         "concurrent key creates one root",
         "changed input with same key conflicts"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S02/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -2087,25 +2352,25 @@
         {
           "assertion_id": "S02-T02-A01",
           "expected_observation": "crash before commit creates no receipt",
-          "planned_test_path": "tests/planned/test_s02_t02.py::test_a01",
+          "planned_test_path": "tests/integration/test_s02_t02.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T02-A02",
           "expected_observation": "after commit restores same root",
-          "planned_test_path": "tests/planned/test_s02_t02.py::test_a02",
+          "planned_test_path": "tests/integration/test_s02_t02.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T02-A03",
           "expected_observation": "concurrent key creates one root",
-          "planned_test_path": "tests/planned/test_s02_t02.py::test_a03",
+          "planned_test_path": "tests/integration/test_s02_t02.py::test_a03",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T02-A04",
           "expected_observation": "changed input with same key conflicts",
-          "planned_test_path": "tests/planned/test_s02_t02.py::test_a04",
+          "planned_test_path": "tests/integration/test_s02_t02.py::test_a04",
           "status": "NOT_RUN"
         }
       ],
@@ -2161,13 +2426,21 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S02-T03",
       "slice": "S02",
-      "title": "DBOS worker and timer reconciliation",
+      "title": "Ledger-driven worker and timer reconciliation",
       "depends_on": [
         "S02-T02"
       ],
@@ -2177,31 +2450,37 @@
         "M28"
       ],
       "owned_paths": [
-        "src/secma/adapters",
-        "src/secma/application",
-        "tests/chaos"
+        "src/quati/adapters",
+        "src/quati/application",
+        "tests/chaos",
+        "tests/unit"
       ],
-      "deliverable": "DurableRunner adapter, bounded due-time sweeper",
+      "deliverable": "ledger-driven DurableRunner (ADR-015), worker lock/heartbeat, bounded due-time sweeper with catch-up, local inbox sink, S00 registry import (RFC-015 §6)",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
-      "contract_detail": "start/status/signal/cancel/schedule port and persisted timers",
+      "contract_detail": "RFC-003 enqueue/status/signal/cancel/schedule, conformance suite, persisted timers",
       "test_case_ids": [
         "DUR-02",
         "DUR-04",
         "DUR-05",
-        "REL-02"
+        "REL-02",
+        "DUR-06",
+        "DUR-07",
+        "DUR-10",
+        "WRK-01",
+        "WRK-02",
+        "WRK-03",
+        "WRK-04",
+        "WRK-05",
+        "DEL-L01",
+        "DEL-L02",
+        "REG-11"
       ],
       "done_conditions": [
         "SIGKILL/restart resumes from durable intent",
         "duplicate events not repeated",
         "100 due timers do not create indefinitely sleeping workflows"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S02/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -2266,25 +2545,91 @@
           "full_proof_owner_task": "S02-T05",
           "mode": "CONTRIBUTION_ONLY",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DUR-06",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DUR-07",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DUR-10",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "WRK-01",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "WRK-02",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "WRK-03",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "WRK-04",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "WRK-05",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DEL-L01",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DEL-L02",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-11",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S02-T03-A01",
           "expected_observation": "SIGKILL/restart resumes from durable intent",
-          "planned_test_path": "tests/planned/test_s02_t03.py::test_a01",
+          "planned_test_path": "tests/chaos/test_s02_t03.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T03-A02",
           "expected_observation": "duplicate events not repeated",
-          "planned_test_path": "tests/planned/test_s02_t03.py::test_a02",
+          "planned_test_path": "tests/chaos/test_s02_t03.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T03-A03",
           "expected_observation": "100 due timers do not create indefinitely sleeping workflows",
-          "planned_test_path": "tests/planned/test_s02_t03.py::test_a03",
+          "planned_test_path": "tests/chaos/test_s02_t03.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -2339,8 +2684,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S02-T04",
@@ -2356,10 +2709,11 @@
         "M25"
       ],
       "owned_paths": [
-        "src/secma/domain",
-        "src/secma/application",
-        "src/secma/adapters",
-        "tests/integration"
+        "src/quati/domain",
+        "src/quati/application",
+        "src/quati/adapters",
+        "tests/integration",
+        "tests/unit"
       ],
       "deliverable": "current-goal assessment, outbound attempt and reconciliation",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -2368,7 +2722,15 @@
         "DUR-03",
         "REL-03",
         "SUF-01",
-        "SUF-02"
+        "SUF-02",
+        "POL-02",
+        "POL-03",
+        "POL-05",
+        "POL-06",
+        "POL-08",
+        "POL-09",
+        "IDN-12",
+        "IDN-13"
       ],
       "done_conditions": [
         "no completion from executor prose",
@@ -2376,13 +2738,7 @@
         "response loss stays uncertain and not blindly resent",
         "confirmed receipt before delivered"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S02/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -2456,31 +2812,79 @@
           "full_proof_owner_task": "S02-T05",
           "mode": "CONTRIBUTION_ONLY",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-02",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-03",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-05",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-06",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-08",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-09",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-12",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-13",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S02-T04-A01",
           "expected_observation": "no completion from executor prose",
-          "planned_test_path": "tests/planned/test_s02_t04.py::test_a01",
+          "planned_test_path": "tests/integration/test_s02_t04.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T04-A02",
           "expected_observation": "partial result stays partial",
-          "planned_test_path": "tests/planned/test_s02_t04.py::test_a02",
+          "planned_test_path": "tests/integration/test_s02_t04.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T04-A03",
           "expected_observation": "response loss stays uncertain and not blindly resent",
-          "planned_test_path": "tests/planned/test_s02_t04.py::test_a03",
+          "planned_test_path": "tests/integration/test_s02_t04.py::test_a03",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T04-A04",
           "expected_observation": "confirmed receipt before delivered",
-          "planned_test_path": "tests/planned/test_s02_t04.py::test_a04",
+          "planned_test_path": "tests/integration/test_s02_t04.py::test_a04",
           "status": "NOT_RUN"
         }
       ],
@@ -2544,8 +2948,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S02-T05",
@@ -2568,7 +2980,7 @@
         "evidence/S02",
         "governance/seals"
       ],
-      "deliverable": "real DBOS/PostgreSQL fault matrix and CLI tell/status/messages",
+      "deliverable": "real ledger-worker fault matrix (SQLite LOCAL; PostgreSQL if present) and CLI tell/status/messages",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
       "contract_detail": "S02 four gates; crash positions in TEST_EXECUTION_PROTOCOL",
       "test_case_ids": [
@@ -2581,21 +2993,39 @@
         "REL-02",
         "REL-03",
         "SUF-01",
-        "SUF-02"
+        "SUF-02",
+        "IDN-03",
+        "DUR-06",
+        "DUR-07",
+        "DUR-08",
+        "DUR-09",
+        "DUR-10",
+        "WRK-01",
+        "WRK-02",
+        "WRK-03",
+        "WRK-04",
+        "WRK-05",
+        "DEL-L01",
+        "DEL-L02",
+        "POL-02",
+        "POL-03",
+        "POL-05",
+        "POL-06",
+        "POL-08",
+        "POL-09",
+        "IDN-12",
+        "IDN-13",
+        "REG-11"
       ],
       "done_conditions": [
         "all crash windows reproduced",
         "no lost accepted root/no duplicate external effect in tested scenarios",
-        "one meaningful due update"
+        "one meaningful due update",
+        "IDN-03 personal-to-organization write returns APPROVAL_REQUIRED and approval allows exactly one digest"
       ],
       "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
         "TESTS_VERIFIED",
         "EVIDENCE_VERIFIED",
-        "SECURITY_REVIEWED",
-        "INDEPENDENT_AUDIT_PASSED",
         "SLICE_ACCEPTED"
       ],
       "evidence_directory": "evidence/S02/<unique-run-id>",
@@ -2607,10 +3037,13 @@
         "M01-FR-01",
         "M01-FR-02",
         "M01-FR-03",
+        "M01-FR-04",
         "M01-AT-01",
         "M01-AT-02",
+        "M01-AT-03",
         "M01-RT-01",
         "M01-RT-02",
+        "M01-RT-03",
         "M06-FR-01",
         "M06-FR-02",
         "M06-FR-03",
@@ -2658,7 +3091,11 @@
         "SH-10",
         "SH-11",
         "SH-12",
-        "SH-13"
+        "SH-13",
+        "M25-FR-03",
+        "M25-RT-02",
+        "M25-AT-02",
+        "M02-FR-02"
       ],
       "owned_requirement_plan_ids": [
         "COV-M05-FR-01",
@@ -2758,25 +3195,163 @@
           "full_proof_owner_task": "S02-T05",
           "mode": "FULL_REQUIRED",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-03",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DUR-06",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DUR-07",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DUR-08",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DUR-09",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DUR-10",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "WRK-01",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "WRK-02",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "WRK-03",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "WRK-04",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "WRK-05",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DEL-L01",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "DEL-L02",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-02",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-03",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-05",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-06",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-08",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-09",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-12",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-13",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-11",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S02-T05-A01",
           "expected_observation": "all crash windows reproduced",
-          "planned_test_path": "tests/planned/test_s02_t05.py::test_a01",
+          "planned_test_path": "tests/chaos/test_s02_t05.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T05-A02",
           "expected_observation": "no lost accepted root/no duplicate external effect in tested scenarios",
-          "planned_test_path": "tests/planned/test_s02_t05.py::test_a02",
+          "planned_test_path": "tests/chaos/test_s02_t05.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S02-T05-A03",
           "expected_observation": "one meaningful due update",
-          "planned_test_path": "tests/planned/test_s02_t05.py::test_a03",
+          "planned_test_path": "tests/chaos/test_s02_t05.py::test_a03",
+          "status": "NOT_RUN"
+        },
+        {
+          "assertion_id": "S02-T05-A04",
+          "expected_observation": "IDN-03 personal-to-organization write returns APPROVAL_REQUIRED and approval allows exactly one digest",
+          "planned_test_path": "tests/chaos/test_s02_t05.py::test_a04",
           "status": "NOT_RUN"
         }
       ],
@@ -2787,10 +3362,13 @@
           "M01-FR-01",
           "M01-FR-02",
           "M01-FR-03",
+          "M01-FR-04",
           "M01-AT-01",
           "M01-AT-02",
+          "M01-AT-03",
           "M01-RT-01",
           "M01-RT-02",
+          "M01-RT-03",
           "M06-FR-01",
           "M06-FR-02",
           "M06-FR-03",
@@ -2855,8 +3433,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S03-T01",
@@ -2871,30 +3457,32 @@
         "M11"
       ],
       "owned_paths": [
-        "src/secma/application",
-        "src/secma/adapters",
+        "src/quati/application",
+        "src/quati/adapters",
         "tests/integration",
-        "tests/evals"
+        "tests/evals",
+        "tests/unit"
       ],
       "deliverable": "typed facts/inferences, retrieval/correction/expiry",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
       "contract_detail": "MemoryPort; BrainDocument provenance and ACL",
       "test_case_ids": [
         "MEM-01",
-        "MEM-02"
+        "MEM-02",
+        "MEM-03",
+        "MEM-04",
+        "MEM-05",
+        "MEM-06",
+        "MEM-09",
+        "MEM-08",
+        "MEM-07"
       ],
       "done_conditions": [
         "two tenants same phrase never mix",
         "old method resolves with source or one question",
         "stale facts marked/corrected without losing lineage"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S03/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -2945,25 +3533,67 @@
           "full_proof_owner_task": "S03-T04",
           "mode": "CONTRIBUTION_ONLY",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-03",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-04",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-05",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-06",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-09",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-08",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-07",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S03-T01-A01",
           "expected_observation": "two tenants same phrase never mix",
-          "planned_test_path": "tests/planned/test_s03_t01.py::test_a01",
+          "planned_test_path": "tests/integration/test_s03_t01.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S03-T01-A02",
           "expected_observation": "old method resolves with source or one question",
-          "planned_test_path": "tests/planned/test_s03_t01.py::test_a02",
+          "planned_test_path": "tests/integration/test_s03_t01.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S03-T01-A03",
           "expected_observation": "stale facts marked/corrected without losing lineage",
-          "planned_test_path": "tests/planned/test_s03_t01.py::test_a03",
+          "planned_test_path": "tests/integration/test_s03_t01.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -3016,8 +3646,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S03-T02",
@@ -3030,9 +3668,10 @@
         "M12"
       ],
       "owned_paths": [
-        "src/secma/application",
-        "src/secma/adapters",
-        "tests/integration"
+        "src/quati/application",
+        "src/quati/adapters",
+        "tests/integration",
+        "tests/unit"
       ],
       "deliverable": "artifact register/revise/read, data source versions",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -3045,13 +3684,7 @@
         "screenshot/missing source cannot fabricate series",
         "artifact ACL retained"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S03/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -3083,19 +3716,19 @@
         {
           "assertion_id": "S03-T02-A01",
           "expected_observation": "chart revision produces v2 while v1 unchanged",
-          "planned_test_path": "tests/planned/test_s03_t02.py::test_a01",
+          "planned_test_path": "tests/integration/test_s03_t02.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S03-T02-A02",
           "expected_observation": "screenshot/missing source cannot fabricate series",
-          "planned_test_path": "tests/planned/test_s03_t02.py::test_a02",
+          "planned_test_path": "tests/integration/test_s03_t02.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S03-T02-A03",
           "expected_observation": "artifact ACL retained",
-          "planned_test_path": "tests/planned/test_s03_t02.py::test_a03",
+          "planned_test_path": "tests/integration/test_s03_t02.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -3129,8 +3762,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S03-T03",
@@ -3146,9 +3787,9 @@
         "M30"
       ],
       "owned_paths": [
-        "src/secma/behavior",
-        "src/secma/application",
-        "src/secma/adapters",
+        "src/quati/behavior",
+        "src/quati/application",
+        "src/quati/adapters",
         "tests/unit"
       ],
       "deliverable": "inspect/correct/delete, profile version/rollback, safe skill loading",
@@ -3156,7 +3797,8 @@
       "contract_detail": "ProfilePort; behavior schema; skill source/path/scope policy",
       "test_case_ids": [
         "PREF-01",
-        "CMP-04"
+        "CMP-04",
+        "REG-12"
       ],
       "done_conditions": [
         "style changes remain scoped",
@@ -3164,13 +3806,7 @@
         "skill never auto-executes or grants authority",
         "traversal rejected"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S03/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -3229,31 +3865,37 @@
           "full_proof_owner_task": "S03-T04",
           "mode": "CONTRIBUTION_ONLY",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-12",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S03-T03-A01",
           "expected_observation": "style changes remain scoped",
-          "planned_test_path": "tests/planned/test_s03_t03.py::test_a01",
+          "planned_test_path": "tests/unit/test_s03_t03.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S03-T03-A02",
           "expected_observation": "rollback exact digest",
-          "planned_test_path": "tests/planned/test_s03_t03.py::test_a02",
+          "planned_test_path": "tests/unit/test_s03_t03.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S03-T03-A03",
           "expected_observation": "skill never auto-executes or grants authority",
-          "planned_test_path": "tests/planned/test_s03_t03.py::test_a03",
+          "planned_test_path": "tests/unit/test_s03_t03.py::test_a03",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S03-T03-A04",
           "expected_observation": "traversal rejected",
-          "planned_test_path": "tests/planned/test_s03_t03.py::test_a04",
+          "planned_test_path": "tests/unit/test_s03_t03.py::test_a04",
           "status": "NOT_RUN"
         }
       ],
@@ -3314,8 +3956,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S03-T04",
@@ -3345,7 +3995,15 @@
         "MEM-02",
         "ART-01",
         "PREF-01",
-        "CMP-04"
+        "CMP-04",
+        "MEM-03",
+        "MEM-04",
+        "MEM-05",
+        "MEM-06",
+        "MEM-09",
+        "MEM-08",
+        "MEM-07",
+        "REG-12"
       ],
       "done_conditions": [
         "all four S03 gates pass",
@@ -3353,13 +4011,8 @@
         "source gaps visible"
       ],
       "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
         "TESTS_VERIFIED",
         "EVIDENCE_VERIFIED",
-        "SECURITY_REVIEWED",
-        "INDEPENDENT_AUDIT_PASSED",
         "SLICE_ACCEPTED"
       ],
       "evidence_directory": "evidence/S03/<unique-run-id>",
@@ -3549,25 +4202,73 @@
           "full_proof_owner_task": "S03-T04",
           "mode": "FULL_REQUIRED",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-03",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-04",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-05",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-06",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-09",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-08",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MEM-07",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "REG-12",
+          "full_proof_owner_task": "S03-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S03-T04-A01",
           "expected_observation": "all four S03 gates pass",
-          "planned_test_path": "tests/planned/test_s03_t04.py::test_a01",
+          "planned_test_path": "tests/evals/test_s03_t04.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S03-T04-A02",
           "expected_observation": "historical artifact/editability and profile change proved",
-          "planned_test_path": "tests/planned/test_s03_t04.py::test_a02",
+          "planned_test_path": "tests/evals/test_s03_t04.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S03-T04-A03",
           "expected_observation": "source gaps visible",
-          "planned_test_path": "tests/planned/test_s03_t04.py::test_a03",
+          "planned_test_path": "tests/evals/test_s03_t04.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -3633,23 +4334,33 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S04-T01",
       "slice": "S04",
       "title": "Harness and brain provider contracts",
       "depends_on": [
-        "S03-T04"
+        "S02-T05"
       ],
       "modules": [
         "M18",
         "M20"
       ],
       "owned_paths": [
-        "src/secma/application",
-        "tests/integration"
+        "src/quati/application",
+        "tests/integration",
+        "tests/chaos",
+        "tests/unit"
       ],
       "deliverable": "feature flags and stable lifecycle/brain interfaces",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -3663,13 +4374,7 @@
         "optional resume/write/watch return UNSUPPORTED",
         "missing remote brain cannot take down local functions"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S04/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -3721,13 +4426,13 @@
         {
           "assertion_id": "S04-T01-A01",
           "expected_observation": "optional resume/write/watch return UNSUPPORTED",
-          "planned_test_path": "tests/planned/test_s04_t01.py::test_a01",
+          "planned_test_path": "tests/integration/test_s04_t01.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S04-T01-A02",
           "expected_observation": "missing remote brain cannot take down local functions",
-          "planned_test_path": "tests/planned/test_s04_t01.py::test_a02",
+          "planned_test_path": "tests/integration/test_s04_t01.py::test_a02",
           "status": "NOT_RUN"
         }
       ],
@@ -3769,8 +4474,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S04-T02",
@@ -3784,7 +4497,7 @@
         "M20"
       ],
       "owned_paths": [
-        "src/secma/adapters",
+        "src/quati/adapters",
         "tests/integration",
         "tests/external"
       ],
@@ -3801,13 +4514,7 @@
         "real harness produces actual artifact and can be removed without losing root",
         "local brain enforces ACL before/after fetch"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S04/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -3865,13 +4572,13 @@
         {
           "assertion_id": "S04-T02-A01",
           "expected_observation": "real harness produces actual artifact and can be removed without losing root",
-          "planned_test_path": "tests/planned/test_s04_t02.py::test_a01",
+          "planned_test_path": "tests/integration/test_s04_t02.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S04-T02-A02",
           "expected_observation": "local brain enforces ACL before/after fetch",
-          "planned_test_path": "tests/planned/test_s04_t02.py::test_a02",
+          "planned_test_path": "tests/integration/test_s04_t02.py::test_a02",
           "status": "NOT_RUN"
         }
       ],
@@ -3913,8 +4620,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S04-T03",
@@ -3928,9 +4643,11 @@
         "M25"
       ],
       "owned_paths": [
-        "src/secma/adapters",
-        "src/secma/application",
-        "tests/integration"
+        "src/quati/adapters",
+        "src/quati/application",
+        "tests/integration",
+        "tests/unit",
+        "tests/chaos"
       ],
       "deliverable": "trusted tool-effect mapping, dispatch authorization, uncertainty",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -3944,13 +4661,7 @@
         "claimed read-only tool is audited for side effects",
         "lost response reconciled before retry"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S04/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -4000,19 +4711,19 @@
         {
           "assertion_id": "S04-T03-A01",
           "expected_observation": "metadata cannot escalate",
-          "planned_test_path": "tests/planned/test_s04_t03.py::test_a01",
+          "planned_test_path": "tests/integration/test_s04_t03.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S04-T03-A02",
           "expected_observation": "claimed read-only tool is audited for side effects",
-          "planned_test_path": "tests/planned/test_s04_t03.py::test_a02",
+          "planned_test_path": "tests/integration/test_s04_t03.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S04-T03-A03",
           "expected_observation": "lost response reconciled before retry",
-          "planned_test_path": "tests/planned/test_s04_t03.py::test_a03",
+          "planned_test_path": "tests/integration/test_s04_t03.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -4058,8 +4769,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S04-T04",
@@ -4073,29 +4792,27 @@
         "M29"
       ],
       "owned_paths": [
-        "src/secma/adapters",
+        "src/quati/adapters",
         "tests/integration",
-        "tests/external"
+        "tests/external",
+        "tests/unit"
       ],
       "deliverable": "signed fake Slack inbound and provider-neutral delivery",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
       "contract_detail": "ChannelPort; DeliveryPort; bounded retry-after",
       "test_case_ids": [
         "CHN-01",
-        "CHN-02"
+        "CHN-02",
+        "POL-01",
+        "POL-10"
       ],
       "done_conditions": [
         "bad/stale signatures and replay rejected",
         "429/backoff budget enforced",
-        "real Slack support unclaimed until separate L4 smoke"
+        "real Slack support unclaimed until separate L4 smoke",
+        "signed untrusted channel content cannot approve a write (POL-10)"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S04/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -4138,25 +4855,43 @@
           "full_proof_owner_task": "S04-T05",
           "mode": "CONTRIBUTION_ONLY",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-01",
+          "full_proof_owner_task": "S00-T05",
+          "mode": "REGRESSION_REUSE_OR_RETEST",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-10",
+          "full_proof_owner_task": "S04-T05",
+          "mode": "CONTRIBUTION_ONLY",
+          "rule": "Full channel approval-injection proof belongs to S04; S00 local evidence cannot close it."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S04-T04-A01",
           "expected_observation": "bad/stale signatures and replay rejected",
-          "planned_test_path": "tests/planned/test_s04_t04.py::test_a01",
+          "planned_test_path": "tests/integration/test_s04_t04.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S04-T04-A02",
           "expected_observation": "429/backoff budget enforced",
-          "planned_test_path": "tests/planned/test_s04_t04.py::test_a02",
+          "planned_test_path": "tests/integration/test_s04_t04.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S04-T04-A03",
           "expected_observation": "real Slack support unclaimed until separate L4 smoke",
-          "planned_test_path": "tests/planned/test_s04_t04.py::test_a03",
+          "planned_test_path": "tests/integration/test_s04_t04.py::test_a03",
+          "status": "NOT_RUN"
+        },
+        {
+          "assertion_id": "S04-T04-A04",
+          "expected_observation": "signed untrusted channel content cannot approve a write (POL-10)",
+          "planned_test_path": "tests/integration/test_approval_injection.py::test_pol_10",
           "status": "NOT_RUN"
         }
       ],
@@ -4201,8 +4936,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S04-T05",
@@ -4233,21 +4976,19 @@
         "BRN-02",
         "MCP-01",
         "CHN-01",
-        "CHN-02"
+        "CHN-02",
+        "MOD-01",
+        "POL-10"
       ],
       "done_conditions": [
         "all claimed enabled features have proper tier",
         "real harness mandatory",
-        "unconfigured optional external writes stay unverified"
+        "unconfigured optional external writes stay unverified",
+        "MOD-01 sealed 30-case benchmark (at least 26 correct, zero critical safety failures) passes for each role before autonomous routing or role promotion is enabled"
       ],
       "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
         "TESTS_VERIFIED",
         "EVIDENCE_VERIFIED",
-        "SECURITY_REVIEWED",
-        "INDEPENDENT_AUDIT_PASSED",
         "SLICE_ACCEPTED"
       ],
       "evidence_directory": "evidence/S04/<unique-run-id>",
@@ -4289,7 +5030,12 @@
         "SH-04",
         "SH-06",
         "SH-07",
-        "SH-11"
+        "SH-11",
+        "M17-FR-02",
+        "M31-FR-02",
+        "M17-RT-01",
+        "K8",
+        "SH-09"
       ],
       "owned_requirement_plan_ids": [
         "COV-M10-FR-01",
@@ -4421,25 +5167,43 @@
           "full_proof_owner_task": "S04-T05",
           "mode": "FULL_REQUIRED",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "MOD-01",
+          "full_proof_owner_task": "S04-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-10",
+          "full_proof_owner_task": "S04-T05",
+          "mode": "FULL_REQUIRED",
+          "rule": "Full channel approval-injection proof belongs to S04; S00 local evidence cannot close it."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S04-T05-A01",
           "expected_observation": "all claimed enabled features have proper tier",
-          "planned_test_path": "tests/planned/test_s04_t05.py::test_a01",
+          "planned_test_path": "tests/integration/test_s04_t05.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S04-T05-A02",
           "expected_observation": "real harness mandatory",
-          "planned_test_path": "tests/planned/test_s04_t05.py::test_a02",
+          "planned_test_path": "tests/integration/test_s04_t05.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S04-T05-A03",
           "expected_observation": "unconfigured optional external writes stay unverified",
-          "planned_test_path": "tests/planned/test_s04_t05.py::test_a03",
+          "planned_test_path": "tests/integration/test_s04_t05.py::test_a03",
+          "status": "NOT_RUN"
+        },
+        {
+          "assertion_id": "S04-T05-A04",
+          "expected_observation": "MOD-01 sealed 30-case benchmark (at least 26 correct, zero critical safety failures) passes for each role before autonomous routing or role promotion is enabled",
+          "planned_test_path": "tests/integration/test_s04_t05.py::test_a04",
           "status": "NOT_RUN"
         }
       ],
@@ -4497,23 +5261,33 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S05-T01",
       "slice": "S05",
       "title": "Bounded transitive reference discovery",
       "depends_on": [
-        "S04-T05"
+        "S04-T05",
+        "S03-T04"
       ],
       "modules": [
         "M21"
       ],
       "owned_paths": [
-        "src/secma/application",
-        "src/secma/adapters",
-        "tests/integration"
+        "src/quati/application",
+        "src/quati/adapters",
+        "tests/integration",
+        "tests/unit"
       ],
       "deliverable": "source graph, visited/failed/out-of-scope inventory",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -4527,13 +5301,7 @@
         "redirects cannot bypass scope",
         "no fetched code execution"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S05/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -4564,25 +5332,25 @@
         {
           "assertion_id": "S05-T01-A01",
           "expected_observation": "cycles terminate",
-          "planned_test_path": "tests/planned/test_s05_t01.py::test_a01",
+          "planned_test_path": "tests/integration/test_s05_t01.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S05-T01-A02",
           "expected_observation": "inaccessible link listed",
-          "planned_test_path": "tests/planned/test_s05_t01.py::test_a02",
+          "planned_test_path": "tests/integration/test_s05_t01.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S05-T01-A03",
           "expected_observation": "redirects cannot bypass scope",
-          "planned_test_path": "tests/planned/test_s05_t01.py::test_a03",
+          "planned_test_path": "tests/integration/test_s05_t01.py::test_a03",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S05-T01-A04",
           "expected_observation": "no fetched code execution",
-          "planned_test_path": "tests/planned/test_s05_t01.py::test_a04",
+          "planned_test_path": "tests/integration/test_s05_t01.py::test_a04",
           "status": "NOT_RUN"
         }
       ],
@@ -4615,8 +5383,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S05-T02",
@@ -4630,9 +5406,10 @@
         "M22"
       ],
       "owned_paths": [
-        "src/secma/application",
+        "src/quati/application",
         "tests/integration",
-        "tests/evals"
+        "tests/evals",
+        "tests/unit"
       ],
       "deliverable": "evidence-derived conventions and source-linked PRD",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -4645,13 +5422,7 @@
         "conflicting ADR not silently resolved",
         "artifact contains traceable acceptance plan"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S05/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -4691,19 +5462,19 @@
         {
           "assertion_id": "S05-T02-A01",
           "expected_observation": "explicit rule vs common pattern vs exception distinguished",
-          "planned_test_path": "tests/planned/test_s05_t02.py::test_a01",
+          "planned_test_path": "tests/integration/test_s05_t02.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S05-T02-A02",
           "expected_observation": "conflicting ADR not silently resolved",
-          "planned_test_path": "tests/planned/test_s05_t02.py::test_a02",
+          "planned_test_path": "tests/integration/test_s05_t02.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S05-T02-A03",
           "expected_observation": "artifact contains traceable acceptance plan",
-          "planned_test_path": "tests/planned/test_s05_t02.py::test_a03",
+          "planned_test_path": "tests/integration/test_s05_t02.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -4745,8 +5516,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S05-T03",
@@ -4761,9 +5540,10 @@
         "M24"
       ],
       "owned_paths": [
-        "src/secma/application",
+        "src/quati/application",
         "tests/integration",
-        "tests/evals"
+        "tests/evals",
+        "tests/unit"
       ],
       "deliverable": "hypothesis timelines and justified causal estimands",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -4777,13 +5557,7 @@
         "Simpson reversal and selection bias detected",
         "no causality without declared identification assumptions"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S05/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -4837,19 +5611,19 @@
         {
           "assertion_id": "S05-T03-A01",
           "expected_observation": "coincident deployment is not proof",
-          "planned_test_path": "tests/planned/test_s05_t03.py::test_a01",
+          "planned_test_path": "tests/integration/test_s05_t03.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S05-T03-A02",
           "expected_observation": "Simpson reversal and selection bias detected",
-          "planned_test_path": "tests/planned/test_s05_t03.py::test_a02",
+          "planned_test_path": "tests/integration/test_s05_t03.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S05-T03-A03",
           "expected_observation": "no causality without declared identification assumptions",
-          "planned_test_path": "tests/planned/test_s05_t03.py::test_a03",
+          "planned_test_path": "tests/integration/test_s05_t03.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -4899,8 +5673,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S05-T04",
@@ -4927,21 +5709,28 @@
         "DIS-01",
         "DIS-02",
         "INC-01",
-        "CAU-01"
+        "CAU-01",
+        "IDN-04",
+        "IDN-05",
+        "IDN-06",
+        "IDN-07",
+        "IDN-08",
+        "IDN-09",
+        "IDN-10",
+        "IDN-11",
+        "POL-03",
+        "POL-07",
+        "POL-08"
       ],
       "done_conditions": [
         "all four gates pass",
         "recommendations retain uncertainty",
-        "no unsupported expert or real-world efficacy claim"
+        "no unsupported expert or real-world efficacy claim",
+        "SERVER profile identity cases IDN-04..IDN-11 pass, including conformance of IDN-01..03 on LOCAL and SERVER (RFC-013 section 12)"
       ],
       "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
         "TESTS_VERIFIED",
         "EVIDENCE_VERIFIED",
-        "SECURITY_REVIEWED",
-        "INDEPENDENT_AUDIT_PASSED",
         "SLICE_ACCEPTED"
       ],
       "evidence_directory": "evidence/S05/<unique-run-id>",
@@ -4981,7 +5770,18 @@
         "SH-01",
         "SH-05",
         "SH-07",
-        "SH-12"
+        "SH-12",
+        "M02-FR-02",
+        "M02-AT-02",
+        "M02-FR-03",
+        "M25-FR-02",
+        "M02-RT-02",
+        "M25-FR-01",
+        "M25-FR-03",
+        "M25-RT-02",
+        "M25-AT-01",
+        "M02-RT-01",
+        "M02-FR-01"
       ],
       "owned_requirement_plan_ids": [
         "COV-M09-FR-01",
@@ -5087,25 +5887,97 @@
           "full_proof_owner_task": "S05-T04",
           "mode": "FULL_REQUIRED",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-04",
+          "full_proof_owner_task": "S05-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-05",
+          "full_proof_owner_task": "S05-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-06",
+          "full_proof_owner_task": "S05-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-07",
+          "full_proof_owner_task": "S05-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-08",
+          "full_proof_owner_task": "S05-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-09",
+          "full_proof_owner_task": "S05-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-10",
+          "full_proof_owner_task": "S05-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "IDN-11",
+          "full_proof_owner_task": "S05-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-03",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "REGRESSION_REUSE_OR_RETEST",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-07",
+          "full_proof_owner_task": "S05-T04",
+          "mode": "FULL_REQUIRED",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
+        },
+        {
+          "case_id": "POL-08",
+          "full_proof_owner_task": "S02-T05",
+          "mode": "REGRESSION_REUSE_OR_RETEST",
+          "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
       ],
       "local_assertions": [
         {
           "assertion_id": "S05-T04-A01",
           "expected_observation": "all four gates pass",
-          "planned_test_path": "tests/planned/test_s05_t04.py::test_a01",
+          "planned_test_path": "tests/evals/test_s05_t04.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S05-T04-A02",
           "expected_observation": "recommendations retain uncertainty",
-          "planned_test_path": "tests/planned/test_s05_t04.py::test_a02",
+          "planned_test_path": "tests/evals/test_s05_t04.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S05-T04-A03",
           "expected_observation": "no unsupported expert or real-world efficacy claim",
-          "planned_test_path": "tests/planned/test_s05_t04.py::test_a03",
+          "planned_test_path": "tests/evals/test_s05_t04.py::test_a03",
+          "status": "NOT_RUN"
+        },
+        {
+          "assertion_id": "S05-T04-A04",
+          "expected_observation": "SERVER profile identity cases IDN-04..IDN-11 pass, including conformance of IDN-01..03 on LOCAL and SERVER (RFC-013 section 12)",
+          "planned_test_path": "tests/evals/test_s05_t04.py::test_a04",
           "status": "NOT_RUN"
         }
       ],
@@ -5161,8 +6033,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S06-T01",
@@ -5176,8 +6056,8 @@
         "M30"
       ],
       "owned_paths": [
-        "src/secma/behavior",
-        "src/secma/application",
+        "src/quati/behavior",
+        "src/quati/application",
         "tests/unit"
       ],
       "deliverable": "agent proposes, trusted compiler validates",
@@ -5191,13 +6071,7 @@
         "proposal cannot activate itself",
         "unknown refs/unsafe semantics fail before evaluation"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S06/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -5246,13 +6120,13 @@
         {
           "assertion_id": "S06-T01-A01",
           "expected_observation": "proposal cannot activate itself",
-          "planned_test_path": "tests/planned/test_s06_t01.py::test_a01",
+          "planned_test_path": "tests/unit/test_s06_t01.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S06-T01-A02",
           "expected_observation": "unknown refs/unsafe semantics fail before evaluation",
-          "planned_test_path": "tests/planned/test_s06_t01.py::test_a02",
+          "planned_test_path": "tests/unit/test_s06_t01.py::test_a02",
           "status": "NOT_RUN"
         }
       ],
@@ -5297,8 +6171,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S06-T02",
@@ -5314,7 +6196,7 @@
       ],
       "owned_paths": [
         "tests/evals",
-        "src/secma/application"
+        "src/quati/application"
       ],
       "deliverable": "same-fixture comparable eval and quality/safety veto",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -5328,13 +6210,7 @@
         "any critical safety failure vetoes",
         "cost/quality comparisons show sample/CI"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S06/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -5383,7 +6259,7 @@
         },
         {
           "case_id": "MOD-01",
-          "full_proof_owner_task": "S00-T05",
+          "full_proof_owner_task": "S04-T05",
           "mode": "REGRESSION_REUSE_OR_RETEST",
           "rule": "Contribution tests prove local done conditions only. Full case proof required at its owner; later reuse requires current sealed hashes."
         }
@@ -5392,19 +6268,19 @@
         {
           "assertion_id": "S06-T02-A01",
           "expected_observation": "overfit seed candidate fails holdout",
-          "planned_test_path": "tests/planned/test_s06_t02.py::test_a01",
+          "planned_test_path": "tests/evals/test_s06_t02.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S06-T02-A02",
           "expected_observation": "any critical safety failure vetoes",
-          "planned_test_path": "tests/planned/test_s06_t02.py::test_a02",
+          "planned_test_path": "tests/evals/test_s06_t02.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S06-T02-A03",
           "expected_observation": "cost/quality comparisons show sample/CI",
-          "planned_test_path": "tests/planned/test_s06_t02.py::test_a03",
+          "planned_test_path": "tests/evals/test_s06_t02.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -5458,8 +6334,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S06-T03",
@@ -5474,8 +6358,8 @@
         "M30"
       ],
       "owned_paths": [
-        "src/secma/application",
-        "src/secma/adapters",
+        "src/quati/application",
+        "src/quati/adapters",
         "tests/integration"
       ],
       "deliverable": "authorized atomic activation and last-working restoration",
@@ -5491,13 +6375,7 @@
         "invalidated seal cannot promote",
         "rollback restores prompt/statechart/routing/config identities"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S06/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -5565,19 +6443,19 @@
         {
           "assertion_id": "S06-T03-A01",
           "expected_observation": "no self-approval",
-          "planned_test_path": "tests/planned/test_s06_t03.py::test_a01",
+          "planned_test_path": "tests/integration/test_s06_t03.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S06-T03-A02",
           "expected_observation": "invalidated seal cannot promote",
-          "planned_test_path": "tests/planned/test_s06_t03.py::test_a02",
+          "planned_test_path": "tests/integration/test_s06_t03.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S06-T03-A03",
           "expected_observation": "rollback restores prompt/statechart/routing/config identities",
-          "planned_test_path": "tests/planned/test_s06_t03.py::test_a03",
+          "planned_test_path": "tests/integration/test_s06_t03.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -5635,8 +6513,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S06-T04",
@@ -5667,13 +6553,8 @@
         "baseline and raw failures retained"
       ],
       "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
         "TESTS_VERIFIED",
         "EVIDENCE_VERIFIED",
-        "SECURITY_REVIEWED",
-        "INDEPENDENT_AUDIT_PASSED",
         "SLICE_ACCEPTED"
       ],
       "evidence_directory": "evidence/S06/<unique-run-id>",
@@ -5811,13 +6692,13 @@
         {
           "assertion_id": "S06-T04-A01",
           "expected_observation": "all four gates pass with separate author/reviewer evidence",
-          "planned_test_path": "tests/planned/test_s06_t04.py::test_a01",
+          "planned_test_path": "tests/evals/test_s06_t04.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S06-T04-A02",
           "expected_observation": "baseline and raw failures retained",
-          "planned_test_path": "tests/planned/test_s06_t04.py::test_a02",
+          "planned_test_path": "tests/evals/test_s06_t04.py::test_a02",
           "status": "NOT_RUN"
         }
       ],
@@ -5871,8 +6752,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S07-T01",
@@ -5886,8 +6775,8 @@
         "M28"
       ],
       "owned_paths": [
-        "src/secma/cli",
-        "src/secma/adapters",
+        "src/quati/cli",
+        "src/quati/adapters",
         "tests/packaging"
       ],
       "deliverable": "wheel/service start-stop/uninstall for each target OS",
@@ -5901,13 +6790,7 @@
         "exit vs worker lifecycle explicit",
         "reboot resumes durable obligations"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S07/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -5917,10 +6800,13 @@
         "M01-FR-01",
         "M01-FR-02",
         "M01-FR-03",
+        "M01-FR-04",
         "M01-AT-01",
         "M01-AT-02",
+        "M01-AT-03",
         "M01-RT-01",
         "M01-RT-02",
+        "M01-RT-03",
         "M28-FR-01",
         "M28-FR-02",
         "M28-FR-03",
@@ -5948,19 +6834,19 @@
         {
           "assertion_id": "S07-T01-A01",
           "expected_observation": "fresh native host works without Docker",
-          "planned_test_path": "tests/planned/test_s07_t01.py::test_a01",
+          "planned_test_path": "tests/packaging/test_s07_t01.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S07-T01-A02",
           "expected_observation": "exit vs worker lifecycle explicit",
-          "planned_test_path": "tests/planned/test_s07_t01.py::test_a02",
+          "planned_test_path": "tests/packaging/test_s07_t01.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S07-T01-A03",
           "expected_observation": "reboot resumes durable obligations",
-          "planned_test_path": "tests/planned/test_s07_t01.py::test_a03",
+          "planned_test_path": "tests/packaging/test_s07_t01.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -5971,10 +6857,13 @@
           "M01-FR-01",
           "M01-FR-02",
           "M01-FR-03",
+          "M01-FR-04",
           "M01-AT-01",
           "M01-AT-02",
+          "M01-AT-03",
           "M01-RT-01",
           "M01-RT-02",
+          "M01-RT-03",
           "M28-FR-01",
           "M28-FR-02",
           "M28-FR-03",
@@ -6003,8 +6892,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S07-T02",
@@ -6020,7 +6917,7 @@
         "M28"
       ],
       "owned_paths": [
-        "src/secma/adapters",
+        "src/quati/adapters",
         "tests/packaging",
         "tests/chaos"
       ],
@@ -6036,13 +6933,7 @@
         "restore does not resend unknown effects",
         "cross-tenant access rejected"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S07/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -6112,19 +7003,19 @@
         {
           "assertion_id": "S07-T02-A01",
           "expected_observation": "unapproved outbound endpoints blocked",
-          "planned_test_path": "tests/planned/test_s07_t02.py::test_a01",
+          "planned_test_path": "tests/packaging/test_s07_t02.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S07-T02-A02",
           "expected_observation": "restore does not resend unknown effects",
-          "planned_test_path": "tests/planned/test_s07_t02.py::test_a02",
+          "planned_test_path": "tests/packaging/test_s07_t02.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S07-T02-A03",
           "expected_observation": "cross-tenant access rejected",
-          "planned_test_path": "tests/planned/test_s07_t02.py::test_a03",
+          "planned_test_path": "tests/packaging/test_s07_t02.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -6190,8 +7081,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S07-T03",
@@ -6221,13 +7120,7 @@
         "tenant access denied",
         "retention clears payloads without fabricating archived evidence"
       ],
-      "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
-        "TESTS_VERIFIED",
-        "EVIDENCE_VERIFIED"
-      ],
+      "required_seals": [],
       "evidence_directory": "evidence/S07/<unique-run-id>",
       "rollback": "Revert this task source/config version; retain prior evidence and IDs. Migrations require the documented reversible/drain strategy. Never undo external effects by assumption.",
       "resume_action": "Verify dependency and input digests; resume active step from canonical state, rerunning only invalidated evidence.",
@@ -6285,19 +7178,19 @@
         {
           "assertion_id": "S07-T03-A01",
           "expected_observation": "measure idle and 100 jobs on declared host",
-          "planned_test_path": "tests/planned/test_s07_t03.py::test_a01",
+          "planned_test_path": "tests/packaging/test_s07_t03.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S07-T03-A02",
           "expected_observation": "tenant access denied",
-          "planned_test_path": "tests/planned/test_s07_t03.py::test_a02",
+          "planned_test_path": "tests/packaging/test_s07_t03.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S07-T03-A03",
           "expected_observation": "retention clears payloads without fabricating archived evidence",
-          "planned_test_path": "tests/planned/test_s07_t03.py::test_a03",
+          "planned_test_path": "tests/packaging/test_s07_t03.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -6351,8 +7244,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     },
     {
       "id": "S07-T04",
@@ -6371,7 +7272,8 @@
       "owned_paths": [
         "docs/audit",
         "evidence/S07",
-        "governance/seals"
+        "governance/seals",
+        "tests/packaging"
       ],
       "deliverable": "complete evidence inventory, limitations and release owner review",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -6388,13 +7290,8 @@
         "release ready is not deployment permission"
       ],
       "required_seals": [
-        "SPEC_READY",
-        "CONTRACT_READY",
-        "TEST_PLAN_READY",
         "TESTS_VERIFIED",
         "EVIDENCE_VERIFIED",
-        "SECURITY_REVIEWED",
-        "INDEPENDENT_AUDIT_PASSED",
         "SLICE_ACCEPTED"
       ],
       "evidence_directory": "evidence/S07/<unique-run-id>",
@@ -6406,10 +7303,13 @@
         "M01-FR-01",
         "M01-FR-02",
         "M01-FR-03",
+        "M01-FR-04",
         "M01-AT-01",
         "M01-AT-02",
+        "M01-AT-03",
         "M01-RT-01",
         "M01-RT-02",
+        "M01-RT-03",
         "M02-FR-01",
         "M02-FR-02",
         "M02-FR-03",
@@ -6456,10 +7356,13 @@
         "COV-M01-FR-01",
         "COV-M01-FR-02",
         "COV-M01-FR-03",
+        "COV-M01-FR-04",
         "COV-M01-AT-01",
         "COV-M01-AT-02",
+        "COV-M01-AT-03",
         "COV-M01-RT-01",
         "COV-M01-RT-02",
+        "COV-M01-RT-03",
         "COV-M02-FR-01",
         "COV-M02-FR-02",
         "COV-M02-FR-03",
@@ -6511,10 +7414,13 @@
         "COV-M01-FR-01",
         "COV-M01-FR-02",
         "COV-M01-FR-03",
+        "COV-M01-FR-04",
         "COV-M01-AT-01",
         "COV-M01-AT-02",
+        "COV-M01-AT-03",
         "COV-M01-RT-01",
         "COV-M01-RT-02",
+        "COV-M01-RT-03",
         "COV-M02-FR-01",
         "COV-M02-FR-02",
         "COV-M02-FR-03",
@@ -6592,19 +7498,19 @@
         {
           "assertion_id": "S07-T04-A01",
           "expected_observation": "all S07 gates and earlier slice seals valid",
-          "planned_test_path": "tests/planned/test_s07_t04.py::test_a01",
+          "planned_test_path": "tests/packaging/test_s07_t04.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S07-T04-A02",
           "expected_observation": "no relevant P0/P1",
-          "planned_test_path": "tests/planned/test_s07_t04.py::test_a02",
+          "planned_test_path": "tests/packaging/test_s07_t04.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S07-T04-A03",
           "expected_observation": "release ready is not deployment permission",
-          "planned_test_path": "tests/planned/test_s07_t04.py::test_a03",
+          "planned_test_path": "tests/packaging/test_s07_t04.py::test_a03",
           "status": "NOT_RUN"
         }
       ],
@@ -6615,10 +7521,13 @@
           "M01-FR-01",
           "M01-FR-02",
           "M01-FR-03",
+          "M01-FR-04",
           "M01-AT-01",
           "M01-AT-02",
+          "M01-AT-03",
           "M01-RT-01",
           "M01-RT-02",
+          "M01-RT-03",
           "M02-FR-01",
           "M02-FR-02",
           "M02-FR-03",
@@ -6676,8 +7585,16 @@
           "decision",
           "fixture"
         ],
-        "update_rule": "Record new bugs/debt/decisions immediately; create achievement only after evidence verification. Preserve historical records and append new versions."
-      }
+        "update_rule": "Append new governance events to docs/governance/LOG.md; preserve and inspect legacy memory records. Fixture provenance remains in versioned fixture records. No new separate bug/debt/decision/lesson registries.",
+        "governance_log": "docs/governance/LOG.md"
+      },
+      "optional_seals": [
+        "SPEC_READY",
+        "CONTRACT_READY",
+        "TEST_PLAN_READY",
+        "SECURITY_REVIEWED",
+        "INDEPENDENT_AUDIT_PASSED"
+      ]
     }
   ],
   "authorization_source": "docs/implementation/implementation_state.json"

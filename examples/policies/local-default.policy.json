@@ -1,0 +1,63 @@
+{
+  "policy_schema_version": "1",
+  "tenant_id": "01JD0000000000000000000000",
+  "revision": 1,
+  "description": "Single-user default. tenant_id is replaced by quati init. Everything not listed is denied.",
+  "default_verdict": "DENY",
+  "rules": [
+    {
+      "rule_id": "read-own-spaces",
+      "description": "Read effects are allowed in the owner's personal and organization spaces, up to confidential data.",
+      "verdict": "ALLOW",
+      "match": {
+        "effects": [
+          "none",
+          "read"
+        ],
+        "tenant_roles": [
+          "OWNER"
+        ],
+        "space_kinds": [
+          "PERSONAL",
+          "ORGANIZATION"
+        ],
+        "max_data_class": "confidential"
+      }
+    },
+    {
+      "rule_id": "write-self-approval",
+      "description": "Write effects need the owner's own approval.",
+      "verdict": "APPROVAL_REQUIRED",
+      "match": {
+        "effects": [
+          "write"
+        ],
+        "tenant_roles": [
+          "OWNER"
+        ],
+        "max_data_class": "confidential"
+      },
+      "approver": {
+        "rule": "SELF"
+      },
+      "approval_ttl_seconds": 900
+    },
+    {
+      "rule_id": "dangerous-approval",
+      "description": "Dangerous effects always need approval (also enforced by a built-in rule).",
+      "verdict": "APPROVAL_REQUIRED",
+      "match": {
+        "effects": [
+          "dangerous"
+        ],
+        "tenant_roles": [
+          "OWNER"
+        ]
+      },
+      "approver": {
+        "rule": "SELF"
+      },
+      "approval_ttl_seconds": 300
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.7, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/clebeson/dev/SECMA
+configfile: pyproject.toml
+plugins: anyio-4.16.0, platformdirs-4.14.5
+collected 58 items
+
+tests/unit/test_s00_t03.py ...                                           [  5%]
+tests/unit/test_s00_t03_registry.py ......                               [ 15%]
+tests/unit/test_s00_t03_discovery.py .............                       [ 37%]
+tests/unit/test_s00_t03_domain.py ........                               [ 51%]
+tests/unit/test_s00_t03_edges.py .........                               [ 67%]
+tests/unit/test_manifest_schema.py ..                                    [ 70%]
+tests/unit/test_package_digest.py ..                                     [ 74%]
+tests/unit/test_mcp_hint_import.py ..                                    [ 77%]
+tests/unit/test_lifecycle_promotion.py .                                 [ 79%]
+tests/unit/test_version_conflict.py ..                                   [ 82%]
+tests/unit/test_description_injection.py ..                              [ 86%]
+tests/unit/test_selection_none_fits.py .                                 [ 87%]
+tests/unit/test_selection_validation.py .                                [ 89%]
+tests/unit/test_gateway_binding.py .                                     [ 91%]
+tests/integration/test_registry_restart.py ..                            [ 94%]
+tests/integration/policy/test_decision_audited_before_invocation.py ...  [100%]
+
+============================== 58 passed in 1.26s ==============================

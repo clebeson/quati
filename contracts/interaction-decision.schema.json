@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "ERI interaction decision",
+  "description": "Final interaction decision for one turn, timer or async result. Sole producer: M03 via InteractionPort.decide; persisted by M07 via InteractionPort.apply. M04 (reference resolution), M05 (clarification eligibility) and M06 (communication kind and timing) supply inputs but never emit this type.",
   "type": "object",
   "required": [
     "request_id",

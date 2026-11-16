@@ -1,6 +1,6 @@
 {
   "compiler_version": "1.1.1",
-  "policy_ref": "trusted_policy/default",
+  "policy_ref": "trusted_policy/default@d4d8687ea30638650ea9e6879e170c891d15ddf785155a59d26b74b86e9c5791",
   "policy_hash": "d4d8687ea30638650ea9e6879e170c891d15ddf785155a59d26b74b86e9c5791",
   "source_versions": {
     "behavior": "1.0.0",
@@ -16,7 +16,7 @@
   "behavior_version": "1.0.0",
   "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
   "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
-  "prompt_hash": "e66e02c198301d5e5a07b0b5e06384cd76f2230e1fed3b54a4d05225d75ec013",
+  "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
   "sections": [
     "kernel_invariants",
     "role",

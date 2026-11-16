@@ -1,0 +1,299 @@
+FFFFFFFFFFFFF                                                            [100%]
+=================================== FAILURES ===================================
+_ test_g1_templated_social_text_greets_whatever_the_tool_gate[wrong-UNSUPPORTED] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g1_templated_social_text_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669d9062c0>
+mode = 'wrong', gate = 'UNSUPPORTED'
+
+    @pytest.mark.parametrize(("mode", "gate"), [("wrong", "UNSUPPORTED"), ("fail", "NOT_VERIFIED"), (None, "UNPROBED")])
+    def test_g1_templated_social_text_greets_whatever_the_tool_gate(tmp_path, monkeypatch, mode, gate):
+        if mode is None:
+            script = Script()
+            harness = Harness(tmp_path, monkeypatch, script)
+        else:
+            harness, script, _probe = probed(tmp_path, monkeypatch, mode)
+        before = len(script.requests)
+        code, value = harness.ask(GREETING)
+        data = value["data"]
+>       assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", "Hello!")
+                                                            ^^^^^^^^^^^^
+E       KeyError: 'text'
+
+tests/unit/test_s00_t04_fixes4.py:45: KeyError
+_ test_g1_templated_social_text_greets_whatever_the_tool_gate[fail-NOT_VERIFIED] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g1_templated_social_text_1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669d906060>
+mode = 'fail', gate = 'NOT_VERIFIED'
+
+    @pytest.mark.parametrize(("mode", "gate"), [("wrong", "UNSUPPORTED"), ("fail", "NOT_VERIFIED"), (None, "UNPROBED")])
+    def test_g1_templated_social_text_greets_whatever_the_tool_gate(tmp_path, monkeypatch, mode, gate):
+        if mode is None:
+            script = Script()
+            harness = Harness(tmp_path, monkeypatch, script)
+        else:
+            harness, script, _probe = probed(tmp_path, monkeypatch, mode)
+        before = len(script.requests)
+        code, value = harness.ask(GREETING)
+        data = value["data"]
+>       assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", "Hello!")
+                                                            ^^^^^^^^^^^^
+E       KeyError: 'text'
+
+tests/unit/test_s00_t04_fixes4.py:45: KeyError
+__ test_g1_templated_social_text_greets_whatever_the_tool_gate[None-UNPROBED] __
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g1_templated_social_text_2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669c6f1d90>
+mode = None, gate = 'UNPROBED'
+
+    @pytest.mark.parametrize(("mode", "gate"), [("wrong", "UNSUPPORTED"), ("fail", "NOT_VERIFIED"), (None, "UNPROBED")])
+    def test_g1_templated_social_text_greets_whatever_the_tool_gate(tmp_path, monkeypatch, mode, gate):
+        if mode is None:
+            script = Script()
+            harness = Harness(tmp_path, monkeypatch, script)
+        else:
+            harness, script, _probe = probed(tmp_path, monkeypatch, mode)
+        before = len(script.requests)
+        code, value = harness.ask(GREETING)
+        data = value["data"]
+>       assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", "Hello!")
+                                                            ^^^^^^^^^^^^
+E       KeyError: 'text'
+
+tests/unit/test_s00_t04_fixes4.py:45: KeyError
+___________ test_g1_greeting_also_works_with_no_provider_configured ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g1_greeting_also_works_wi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669c64e9c0>
+
+    def test_g1_greeting_also_works_with_no_provider_configured(tmp_path, monkeypatch):
+        harness = Harness(tmp_path, monkeypatch, Script(), config=ProviderConfig())
+        code, value = harness.ask("Bom dia, tudo bem?")
+>       assert (code, value["data"]["result_kind"], value["data"]["text"]) == (0, "GREETING", "Olá!")
+                                                    ^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'text'
+
+tests/unit/test_s00_t04_fixes4.py:62: KeyError
+_ test_g2_tool_sub_check_records_a_typed_detail[text-UNSUPPORTED-NO_TOOL_CALL] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g2_tool_sub_check_records0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669c64ecf0>
+mode = 'text', verdict = 'UNSUPPORTED', detail = 'NO_TOOL_CALL'
+
+    @pytest.mark.parametrize(("mode", "verdict", "detail"), [
+        ("text", "UNSUPPORTED", "NO_TOOL_CALL"),
+        ("name", "UNSUPPORTED", "WRONG_TOOL_NAME"),
+        ("extra_key", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("wrong", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("second", "UNSUPPORTED", "EXTRA_CALLS"),
+        ("fail", "NOT_VERIFIED", "TRANSPORT_ERROR:TEMPORARILY_UNAVAILABLE:UPSTREAM_ERROR"),
+    ])
+    def test_g2_tool_sub_check_records_a_typed_detail(tmp_path, monkeypatch, mode, verdict, detail):
+        harness, script, probe = probed(tmp_path, monkeypatch, mode)
+        tools = probe["data"]["verdicts"]["tools"]
+>       assert (tools["verdict"], tools["detail"]) == (verdict, detail)
+                                  ^^^^^^^^^^^^^^^
+E       KeyError: 'detail'
+
+tests/unit/test_s00_t04_fixes4.py:79: KeyError
+_ test_g2_tool_sub_check_records_a_typed_detail[name-UNSUPPORTED-WRONG_TOOL_NAME] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g2_tool_sub_check_records1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669c66b550>
+mode = 'name', verdict = 'UNSUPPORTED', detail = 'WRONG_TOOL_NAME'
+
+    @pytest.mark.parametrize(("mode", "verdict", "detail"), [
+        ("text", "UNSUPPORTED", "NO_TOOL_CALL"),
+        ("name", "UNSUPPORTED", "WRONG_TOOL_NAME"),
+        ("extra_key", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("wrong", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("second", "UNSUPPORTED", "EXTRA_CALLS"),
+        ("fail", "NOT_VERIFIED", "TRANSPORT_ERROR:TEMPORARILY_UNAVAILABLE:UPSTREAM_ERROR"),
+    ])
+    def test_g2_tool_sub_check_records_a_typed_detail(tmp_path, monkeypatch, mode, verdict, detail):
+        harness, script, probe = probed(tmp_path, monkeypatch, mode)
+        tools = probe["data"]["verdicts"]["tools"]
+>       assert (tools["verdict"], tools["detail"]) == (verdict, detail)
+                                  ^^^^^^^^^^^^^^^
+E       KeyError: 'detail'
+
+tests/unit/test_s00_t04_fixes4.py:79: KeyError
+_ test_g2_tool_sub_check_records_a_typed_detail[extra_key-UNSUPPORTED-ARGUMENTS_MISMATCH] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g2_tool_sub_check_records2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669c66ad50>
+mode = 'extra_key', verdict = 'UNSUPPORTED', detail = 'ARGUMENTS_MISMATCH'
+
+    @pytest.mark.parametrize(("mode", "verdict", "detail"), [
+        ("text", "UNSUPPORTED", "NO_TOOL_CALL"),
+        ("name", "UNSUPPORTED", "WRONG_TOOL_NAME"),
+        ("extra_key", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("wrong", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("second", "UNSUPPORTED", "EXTRA_CALLS"),
+        ("fail", "NOT_VERIFIED", "TRANSPORT_ERROR:TEMPORARILY_UNAVAILABLE:UPSTREAM_ERROR"),
+    ])
+    def test_g2_tool_sub_check_records_a_typed_detail(tmp_path, monkeypatch, mode, verdict, detail):
+        harness, script, probe = probed(tmp_path, monkeypatch, mode)
+        tools = probe["data"]["verdicts"]["tools"]
+>       assert (tools["verdict"], tools["detail"]) == (verdict, detail)
+                                  ^^^^^^^^^^^^^^^
+E       KeyError: 'detail'
+
+tests/unit/test_s00_t04_fixes4.py:79: KeyError
+_ test_g2_tool_sub_check_records_a_typed_detail[wrong-UNSUPPORTED-ARGUMENTS_MISMATCH] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g2_tool_sub_check_records3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669c6eb5c0>
+mode = 'wrong', verdict = 'UNSUPPORTED', detail = 'ARGUMENTS_MISMATCH'
+
+    @pytest.mark.parametrize(("mode", "verdict", "detail"), [
+        ("text", "UNSUPPORTED", "NO_TOOL_CALL"),
+        ("name", "UNSUPPORTED", "WRONG_TOOL_NAME"),
+        ("extra_key", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("wrong", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("second", "UNSUPPORTED", "EXTRA_CALLS"),
+        ("fail", "NOT_VERIFIED", "TRANSPORT_ERROR:TEMPORARILY_UNAVAILABLE:UPSTREAM_ERROR"),
+    ])
+    def test_g2_tool_sub_check_records_a_typed_detail(tmp_path, monkeypatch, mode, verdict, detail):
+        harness, script, probe = probed(tmp_path, monkeypatch, mode)
+        tools = probe["data"]["verdicts"]["tools"]
+>       assert (tools["verdict"], tools["detail"]) == (verdict, detail)
+                                  ^^^^^^^^^^^^^^^
+E       KeyError: 'detail'
+
+tests/unit/test_s00_t04_fixes4.py:79: KeyError
+_ test_g2_tool_sub_check_records_a_typed_detail[second-UNSUPPORTED-EXTRA_CALLS] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g2_tool_sub_check_records4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669c3a8050>
+mode = 'second', verdict = 'UNSUPPORTED', detail = 'EXTRA_CALLS'
+
+    @pytest.mark.parametrize(("mode", "verdict", "detail"), [
+        ("text", "UNSUPPORTED", "NO_TOOL_CALL"),
+        ("name", "UNSUPPORTED", "WRONG_TOOL_NAME"),
+        ("extra_key", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("wrong", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("second", "UNSUPPORTED", "EXTRA_CALLS"),
+        ("fail", "NOT_VERIFIED", "TRANSPORT_ERROR:TEMPORARILY_UNAVAILABLE:UPSTREAM_ERROR"),
+    ])
+    def test_g2_tool_sub_check_records_a_typed_detail(tmp_path, monkeypatch, mode, verdict, detail):
+        harness, script, probe = probed(tmp_path, monkeypatch, mode)
+        tools = probe["data"]["verdicts"]["tools"]
+>       assert (tools["verdict"], tools["detail"]) == (verdict, detail)
+                                  ^^^^^^^^^^^^^^^
+E       KeyError: 'detail'
+
+tests/unit/test_s00_t04_fixes4.py:79: KeyError
+_ test_g2_tool_sub_check_records_a_typed_detail[fail-NOT_VERIFIED-TRANSPORT_ERROR:TEMPORARILY_UNAVAILABLE:UPSTREAM_ERROR] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g2_tool_sub_check_records5')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669c3584b0>
+mode = 'fail', verdict = 'NOT_VERIFIED'
+detail = 'TRANSPORT_ERROR:TEMPORARILY_UNAVAILABLE:UPSTREAM_ERROR'
+
+    @pytest.mark.parametrize(("mode", "verdict", "detail"), [
+        ("text", "UNSUPPORTED", "NO_TOOL_CALL"),
+        ("name", "UNSUPPORTED", "WRONG_TOOL_NAME"),
+        ("extra_key", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("wrong", "UNSUPPORTED", "ARGUMENTS_MISMATCH"),
+        ("second", "UNSUPPORTED", "EXTRA_CALLS"),
+        ("fail", "NOT_VERIFIED", "TRANSPORT_ERROR:TEMPORARILY_UNAVAILABLE:UPSTREAM_ERROR"),
+    ])
+    def test_g2_tool_sub_check_records_a_typed_detail(tmp_path, monkeypatch, mode, verdict, detail):
+        harness, script, probe = probed(tmp_path, monkeypatch, mode)
+        tools = probe["data"]["verdicts"]["tools"]
+>       assert (tools["verdict"], tools["detail"]) == (verdict, detail)
+                                  ^^^^^^^^^^^^^^^
+E       KeyError: 'detail'
+
+tests/unit/test_s00_t04_fixes4.py:79: KeyError
+_ test_g2_supported_tool_check_has_no_detail_and_tolerates_nonce_case_and_whitespace _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-341/test_g2_supported_tool_check_h0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79669c359fd0>
+
+    def test_g2_supported_tool_check_has_no_detail_and_tolerates_nonce_case_and_whitespace(tmp_path, monkeypatch):
+        harness, script, probe = probed(tmp_path, monkeypatch, "spaced")
+>       assert probe["data"]["verdicts"]["tools"]["verdict"] == "SUPPORTED"
+E       AssertionError: assert 'UNSUPPORTED' == 'SUPPORTED'
+E         
+E         - SUPPORTED
+E         + UNSUPPORTED
+E         ? ++
+
+tests/unit/test_s00_t04_fixes4.py:92: AssertionError
+____ test_g2_cli_argument_encodings_that_carry_the_exact_nonce_are_accepted ____
+
+    def test_g2_cli_argument_encodings_that_carry_the_exact_nonce_are_accepted():
+>       plain = _claude_probe(lambda nonce: json.dumps({"nonce": nonce}))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s00_t04_fixes4.py:113: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments_json = <function test_g2_cli_argument_encodings_that_carry_the_exact_nonce_are_accepted.<locals>.<lambda> at 0x79669c3694e0>
+result = '', structured = True
+
+    def _claude_probe(arguments_json, *, result="", structured=True):
+        from secma.adapters.providers.cli import ClaudeCliProvider
+        from test_provider_adapters import Runner, claude_result, make_cli
+    
+        class Echo(Runner):
+            def __call__(self, argv, stdin_text, timeout_s, cwd, env):
+                nonce = stdin_text.rsplit("set to ", 1)[-1].rstrip(".")
+                encoded = arguments_json(nonce)
+                envelope = {"kind": "tool_call", "tool_name": PROBE_TOOL, "arguments_json": encoded, "text": ""}
+                return claude_result(**({"structured_output": envelope} if structured else {"result": result}))
+    
+        provider = make_cli(ClaudeCliProvider, Echo())
+>       return provider._probe_feature("tools")
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'ClaudeCliProvider' object has no attribute '_probe_feature'
+
+tests/unit/test_s00_t04_fixes4.py:109: AttributeError
+__________________ test_g2_cli_unparseable_replies_are_typed ___________________
+
+    def test_g2_cli_unparseable_replies_are_typed():
+>       verdict, reason, detail = _claude_probe(lambda nonce: "{nonce: " + nonce)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s00_t04_fixes4.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments_json = <function test_g2_cli_unparseable_replies_are_typed.<locals>.<lambda> at 0x79669c326520>
+result = '', structured = True
+
+    def _claude_probe(arguments_json, *, result="", structured=True):
+        from secma.adapters.providers.cli import ClaudeCliProvider
+        from test_provider_adapters import Runner, claude_result, make_cli
+    
+        class Echo(Runner):
+            def __call__(self, argv, stdin_text, timeout_s, cwd, env):
+                nonce = stdin_text.rsplit("set to ", 1)[-1].rstrip(".")
+                encoded = arguments_json(nonce)
+                envelope = {"kind": "tool_call", "tool_name": PROBE_TOOL, "arguments_json": encoded, "text": ""}
+                return claude_result(**({"structured_output": envelope} if structured else {"result": result}))
+    
+        provider = make_cli(ClaudeCliProvider, Echo())
+>       return provider._probe_feature("tools")
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'ClaudeCliProvider' object has no attribute '_probe_feature'
+
+tests/unit/test_s00_t04_fixes4.py:109: AttributeError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g1_templated_social_text_greets_whatever_the_tool_gate[wrong-UNSUPPORTED]
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g1_templated_social_text_greets_whatever_the_tool_gate[fail-NOT_VERIFIED]
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g1_templated_social_text_greets_whatever_the_tool_gate[None-UNPROBED]
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g1_greeting_also_works_with_no_provider_configured
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g2_tool_sub_check_records_a_typed_detail[text-UNSUPPORTED-NO_TOOL_CALL]
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g2_tool_sub_check_records_a_typed_detail[name-UNSUPPORTED-WRONG_TOOL_NAME]
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g2_tool_sub_check_records_a_typed_detail[extra_key-UNSUPPORTED-ARGUMENTS_MISMATCH]
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g2_tool_sub_check_records_a_typed_detail[wrong-UNSUPPORTED-ARGUMENTS_MISMATCH]
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g2_tool_sub_check_records_a_typed_detail[second-UNSUPPORTED-EXTRA_CALLS]
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g2_tool_sub_check_records_a_typed_detail[fail-NOT_VERIFIED-TRANSPORT_ERROR:TEMPORARILY_UNAVAILABLE:UPSTREAM_ERROR]
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g2_supported_tool_check_has_no_detail_and_tolerates_nonce_case_and_whitespace
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g2_cli_argument_encodings_that_carry_the_exact_nonce_are_accepted
+FAILED tests/unit/test_s00_t04_fixes4.py::test_g2_cli_unparseable_replies_are_typed
+13 failed in 0.38s

@@ -1,0 +1,13 @@
+{
+  "behavior_suite_is_post_hoc": true,
+  "code_digest_src_secma": "cdd142b1a7c1eee3f0fbd438805bac1ba1e45bc97834da372a637cc04744135a",
+  "datasets": {
+    "behavior_suite.json": "0373bcde6a53e19a056def142fbf9a81529b5f3e0cf48a91e4e8691679aa6903",
+    "cap01_paraphrases.json": "645736436635f1aa5de82eadd83a70f6dc83f032954a5df1d0fdbc6712acbab6",
+    "cap02_paraphrases.json": "de5cace7c4062e4602e45785be94ef2940522a98cf7c3f833c35c98cf9898cd3"
+  },
+  "harness_sha256": "2e93065bd46c048639e5098e7c50c32f78ea02b7137e645c0f7f0ecfc4dd4706",
+  "run_id": "20261116T085714Z-codex_cli-gpt-6-luna-pilot5",
+  "runner_sha256": "6597aa51129701e9ee63588da3cdbe036da70e92905e430f5889f6f158414a04",
+  "written_before_first_call": true
+}

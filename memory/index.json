@@ -14,7 +14,7 @@
     },
     {
       "record_id": "BUG-2026-001",
-      "version": 1,
+      "version": 2,
       "record_type": "bug",
       "status": "OPEN",
       "path": "memory/bugs/BUG-2026-001.json",

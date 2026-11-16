@@ -13,7 +13,7 @@ CMP-01,compiler,M30,S00,L0,Same config produces same prompt digest,Audit and rep
 CMP-02,compiler,M30/M25,S00,L0+L1,Unsafe guard/action name rejected,No prompt-generated authority,NOT_RUN
 CMP-03,compiler,M30,S00,L0,Dead-end/unreachable state rejected,Avoid stuck commitments,NOT_RUN
 CMP-04,compiler,M30,S03,L0,Config rollback restores previous digest,Reversible customization,NOT_RUN
-MOD-01,small-model,M17/M31,S00,L3,Cheap model role calibrated with real tool calls,Cannot infer competence from context size,NOT_RUN
+MOD-01,small-model,M17/M31,S04,L3,Cheap model role calibrated with real tool calls,Cannot infer competence from context size,NOT_RUN
 MOD-02,small-model,M17/M31,S01,L3,Escalation when answer high-risk/uncertain,Safety and quality,NOT_RUN
 REL-01,relationship,M03/M05,S01,L3,Additional scope during active research,Human continuity,NOT_RUN
 REL-02,relationship,M06,S02,L2+L3,Meaningful progress by due time without spam,Stakeholder trust,NOT_RUN
@@ -22,9 +22,9 @@ DUR-01,durability,M07,S02,L2,Crash before commitment storage,No false receipt,NO
 DUR-02,durability,M07,S02,L2,Crash after durable commit and before worker,Accepted work survives,NOT_RUN
 DUR-03,durability,M07/M10,S02,L2,Possible side effect before ACK; uncertain reconciled,Avoid duplicate external effects,NOT_RUN
 DUR-04,durability,M07,S02,L2,Two workers same idempotency key,Avoid duplicate commitments,NOT_RUN
-DUR-05,durability,M07/M28,S02,L2,100 due commitments bounded worker memory,Avoid long DBOS sleeps,NOT_RUN
+DUR-05,durability,M07/M28,S02,L2,100 due commitments bounded worker memory,Avoid long-lived sleeping workflows,NOT_RUN
 SUF-01,quality,M09,S02,L2+L3,Weak evidence cannot cause complete state,Prevent polished but false output,NOT_RUN
-SUF-02,quality,M09,S02,L2+L3,Bounded reinvestigation and partial result,Avoid infinite loop,NOT_RUN
+SUF-02,quality,M09,S02,L2,Bounded reinvestigation and partial result,Avoid infinite loop,NOT_RUN
 MEM-01,context,M11/M04,S03,L3,Recall last week correct source and tenant,Memory correctness,NOT_RUN
 MEM-02,context,M11/M04,S03,L3,Two similar references trigger clarification,No hallucinated references,NOT_RUN
 ART-01,artifacts,M12,S03,L2,Chart edit retains original data and version,Reproducible updates,NOT_RUN
@@ -45,4 +45,58 @@ EVO-02,evolution,M27/M25,S06,L1,Agent-proposed permission change rejected,No sel
 OPS-01,portability,M28/M01,S07,L5,Native Windows/macOS/Linux install without Docker,Credible personal product,NOT_RUN
 OPS-02,enterprise,M28/M17,S07,L5,Corporate proxy/CA/egress allowlist,Enterprise adoption,NOT_RUN
 OPS-03,resources,M28/M07,S07,L5,Idle CPU/RAM and 100 pending jobs measured,Resource-lean claims,NOT_RUN
-EVD-01,evidence,M26/M02,S07,L1+L5,"Audit log actor/tenant ACL, bounded retention and denial export privacy",Trace privacy and retention are not established by redaction alone,NOT_RUN
+EVD-01,evidence,M26/M02,S07,L1,"Audit log actor/tenant ACL, bounded retention and denial export privacy",Trace privacy and retention are not established by redaction alone,NOT_RUN
+IDN-01,identity,M02/M25,S00,L2,Unauthenticated CLI call denied before repository access; forged actor ignored,Forged identity is the first attack on any entry point,NOT_RUN
+IDN-02,identity,M02/M25,S00,L1,Out-of-scope space read denied even with one principal,Scope check must run at N=1 so 1<=>N holds,NOT_RUN
+IDN-03,identity,M02/M25,S02,L2,Personal-to-organization write needs approval bound to the digest,Confidentiality across spaces needs explicit approval,NOT_RUN
+IDN-04,identity,M02/M25,S05,L2,Cross-team search leaks nothing,Existence leaks are not covered by access denial alone,NOT_RUN
+IDN-05,identity,M02/M25,S05,L2,Removed member loses access despite unexpired token,Token claims must not outlive membership,NOT_RUN
+IDN-06,identity,M02/M25,S05,L2,Tenant admin without grant cannot read personal space,Admin power is not read power,NOT_RUN
+IDN-07,identity,M02/M25,S05,L2,Capability token audience and scope enforced,Token confusion across bindings,NOT_RUN
+IDN-08,identity,M02/M25,S05,L2,A2A agent message cannot approve,"Agents are data sources, not approvers",NOT_RUN
+IDN-09,identity,M02/M25,S05,L2,Cross-tenant request denied; RLS returns zero rows,Application and database layers must both hold,NOT_RUN
+IDN-10,identity,M02/M25,S05,L2,Identity conformance passes on LOCAL and SERVER profiles,Proves LOCAL and SERVER share one contract,NOT_RUN
+IDN-11,identity,M02/M25,S05,L2,Refresh-token replay revokes session,Session theft recovery,NOT_RUN
+DUR-06,durability,M07/M28,S02,L2,"Claim results, lease_owner and attempt counter in the ledger, and event rows for each backend",Claim exclusivity is not covered by DUR-04 (duplicate command) or DUR-05 (bounded memory),NOT_RUN
+DUR-07,durability,M07,S02,L2,"Lease reclaim record, single event, single outbox row and single timer row",Lease reclaim after a killed worker differs from DUR-01 (pre-commit crash of one process) because it covers a competing second worker,NOT_RUN
+DUR-08,durability,M07/M26,S02,L2,"Startup exit status, error message naming the migration, and unchanged ledger schema",No existing case checks migration integrity,NOT_RUN
+DUR-09,durability,M07,S02,L2,"PRAGMA integrity_check result, committed transaction count and acknowledged-commit list",SQLite journal-mode write concurrency is specific to the LOCAL backend and not covered by DUR-04,NOT_RUN
+DUR-10,durability,M07/M28,S02,L2,"Reclaim count, lease-epoch fencing checks and the rejected late commit record",Distinct from DUR-07 because the original holder survives and returns,NOT_RUN
+WRK-01,worker,M07/M28,S02,L2,"Exit code and diagnostic of worker B, worker_locks row and takeover record",No existing case covers the single-worker lock,NOT_RUN
+WRK-02,worker,M07/M28,S02,L2,"Timer row status, late_by_seconds value and a single delivered message",Catch-up after downtime is not covered by DUR-05,NOT_RUN
+WRK-03,worker,M07/M28/M10,S02,L2,"Timer status, absence of delivery rows and the audit event",Expiry semantics differ from WRK-02 catch-up,NOT_RUN
+WRK-04,worker,M07/M01,S02,L2,Doctor JSON output and exit codes before and after the fresh heartbeat,Heartbeat health is not covered by other cases,NOT_RUN
+WRK-05,worker,M07/M01,S02,L2,Scheduler entries written; status/doctor JSON and exit codes,Install and missing-worker warning are not covered by WRK-04 heartbeat health,NOT_RUN
+DEL-L01,delivery,M10/M07,S02,L2,InboxMessage status transitions and notifier outcomes,Inbox acknowledgement semantics are specific to the local sink,NOT_RUN
+DEL-L02,delivery,M10/M02,S02,L2,Result sets and denial decisions per profile,Inbox isolation is distinct from IDN-04/IDN-09 which test search and generic resources,NOT_RUN
+POL-01,policy,M25/M02,S00,L2,Approval request state history and policy decisions,Untrusted text must never approve; no existing case covers forged approvals,NOT_RUN
+POL-02,policy,M25/M02,S02,L2,"CLI exit status, request state and audit event",Distinguishes the approval CLI guard from IDN-08 (remote agent),NOT_RUN
+POL-03,policy,M25/M02,S02,L2,Refusal decisions and policy load result,Principal-type enforcement is not covered by IDN-08,NOT_RUN
+POL-04,policy,M25/M02,S00,L2,"Decision records, doctor output and policy_version in effect",Fail-closed policy loading is not covered elsewhere,NOT_RUN
+POL-05,policy,M25/M02,S02,L2,Dispatch recheck results and outbox state,Binding integrity is broader than IDN-03 digest check,NOT_RUN
+POL-06,policy,M25/M02,S02,L2,Dispatch recheck decisions and request state,Time-of-use recheck is not covered by DUR-03,NOT_RUN
+POL-07,policy,M25/M02,S05,L2,"Apply warning, access decisions and audit records",Policy versus SpaceGrant separation is distinct from IDN-06 which has no policy rule,NOT_RUN
+POL-08,policy,M25/M02,S02,L2,"Approval records with approver, digest and target",Extends IDN-03 to team-to-organization and personal-to-team flows,NOT_RUN
+POL-09,policy,M25/M02,S02,L2,Decision record with integrity label and approval prompt text,Taint-based approval is distinct from POL-01 forged approvals,NOT_RUN
+IDN-12,identity,M25/M02,S02,L2,Decision record with recipient provenance and integrity label,Document-derived recipients are not covered by IDN-03 (declassification),NOT_RUN
+IDN-13,identity,M25/M02,S02,L2,Decision record with label and reader set,External-reader check differs from IDN-03 which writes to another internal space,NOT_RUN
+MEM-03,memory,M11/M04,S03,L3,Retrieved memory ids and the response,Knowledge update is not covered by MEM-01/MEM-02 retrieval cases,NOT_RUN
+MEM-04,memory,M11/M04,S03,L3,Response with known_as_of and the memory ids used,Temporal reasoning is distinct from MEM-02 which tests file retrieval,NOT_RUN
+MEM-05,memory,M11/M04,S03,L3,Response and the empty retrieval set,Abstention is not covered by MEM-01/MEM-02,NOT_RUN
+MEM-06,memory,M11/M04,S03,L2,Memory record state and the resulting intent recipients,Memory poisoning defense is not covered by MEM-01/MEM-02,NOT_RUN
+MEM-09,memory,M11/M04,S03,L2,Candidate entry statuses; trust origins; size check result and promotion outcome,Consolidation as a poisoning and bloat path is not covered by MEM-06,NOT_RUN
+MEM-08,memory,M11/M27,S03,L2,Supersession links; cited evidence refs and the answer,Wrong-note correction against evidence is not covered by MEM-03 knowledge update,NOT_RUN
+MEM-07,memory,M11/M07,S03,L2,Active snapshot id; episode digests and retrieval results before; during and after the run,Offline consolidation isolation is not covered by MEM-01..06,NOT_RUN
+REG-01,registry,M14/M15/M16,S00,L1,Schema validation errors,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-02,registry,M14/M15/M16,S00,L1,"Load result, audit event and candidate list",Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-03,registry,M14/M15/M16,S00,L1,Registry record with effect class and stored hint,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-04,registry,M14/M15/M16,S00,L1,Decision record and lifecycle state,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-05,registry,M14/M15/M16,S00,L2,Search results and root prompt hash,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-06,registry,M14/M15/M16,S00,L1,Install result and registry rows,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-07,registry,M14/M15/M16,S00,L1,Lint finding and decision record,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-08,registry,M14/M15/M16,S00,L1,Response and invocation log,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-09,registry,M14/M15/M16,S00,L1,Validation result and selection-error record,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-10,registry,M14/M15/M16,S00,L1,Visible tool list and gateway decision,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-11,registry,M14/M15/M16,S02,L2,Registry row hashes before and after,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+REG-12,registry,M14/M15/M16,S03,L1,Harness decision and tool call log,Registry control behavior listed in RFC-015 section 12,NOT_RUN
+POL-10,policy,M25/M29,S04,L2,Signed channel content cannot approve a write,S00 local denial does not prove S04 authenticated transport behavior,NOT_RUN

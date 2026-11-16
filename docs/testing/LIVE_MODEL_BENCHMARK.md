@@ -1,7 +1,7 @@
 # Live Model Competence Bench — Blind Routing and Communication
 
 ## Benchmark objective
-Determine whether a specific provider/model/prompt/config can *autonomously* identify intent, discover a newly installed capability, choose valid tools, follow the state contract, communicate concisely and recognize insufficient evidence. Model/provider compatibility is not an intrinsic property of SECMA's manifest.
+Determine whether a specific provider/model/prompt/config can *autonomously* identify intent, discover a newly installed capability, choose valid tools, follow the state contract, communicate concisely and recognize insufficient evidence. Model/provider compatibility is not an intrinsic property of Quati's manifest.
 
 ## Protocol
 1. Register 2–4 capabilities including at least two confusable domains; keep target identities in a sealed fixture file only.
@@ -9,7 +9,7 @@ Determine whether a specific provider/model/prompt/config can *autonomously* ide
 3. Capture the real provider's tool calls, arguments, reasoning decision fields (not private chain-of-thought), returned tool results, control gate decisions, elapsed time, cost and final human delivery.
 4. Repeat with synthetic distractors, disabled tools, wrong permission, unsupported tools, newly installed binding while conversation lives, and no-tool greeting.
 5. Run multi-turn episodes where user adds constraints while executor works, user requests prior artifact a week later, and a second async job finishes first.
-6. Have evaluators blinded to implementation path score outcome, correctness, unnecessary questions and communication timing. Compare against baseline (direct specialist CLI invocation and prior SECMA profile) to ensure SECMA adds value.
+6. Have evaluators blinded to implementation path score outcome, correctness, unnecessary questions and communication timing. Compare against baseline (direct specialist CLI invocation and prior Quati profile) to ensure Quati adds value.
 
 ## Initial dataset distribution (proposed; not executed)
 | Family | Seed count | Why it matters |

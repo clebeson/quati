@@ -1,0 +1,45 @@
+# RED run 2026-11-16 (tests written before src/secma/cli/chat.py exists)
+# cmd: .venv/bin/python -m pytest -q tests/unit/test_s00_t01_chat.py tests/integration/test_s00_t01.py
+
+==================================== ERRORS ====================================
+_______________ ERROR collecting tests/unit/test_s00_t01_chat.py _______________
+ImportError while importing test module '/home/clebeson/dev/SECMA/tests/unit/test_s00_t01_chat.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_s00_t01_chat.py:26: in <module>
+    from secma.cli.chat import MAX_LINE_BYTES, run_chat
+E   ModuleNotFoundError: No module named 'secma.cli.chat'
+=========================== short test summary info ============================
+ERROR tests/unit/test_s00_t01_chat.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.19s
+# exit: 2
+
+# cmd: .venv/bin/python -m pytest -q tests/integration/test_s00_t01.py (run separately so collection error above does not mask it)
+        assert raw.decode('utf-8').split('\n')[:-1] == [line for line, _ in EQUIVALENTS] + ['Hello']
+>       assert chat.returncode == 0, chat.stderr
+E       AssertionError: b''
+E       assert 2 == 0
+tests/integration/test_s00_t01.py:142: AssertionError
+        assert chat.returncode == 2
+>       assert first.returncode == second.returncode == 0
+E       assert 2 == 0
+tests/integration/test_s00_t01.py:203: AssertionError
+>       assert chat.returncode == single.returncode == 4
+E       assert 2 == 4
+tests/integration/test_s00_t01.py:213: AssertionError
+        assert chat.returncode == 2
+>       assert value['data']['reason'] == tag
+        assert chat.returncode == 2
+>       assert value['data']['reason'] == tag
+FAILED tests/integration/test_s00_t01.py::test_a04 - AssertionError: b''
+FAILED tests/integration/test_s00_t01.py::test_a04_over_limit_line_exits_2_with_earlier_turns_intact
+FAILED tests/integration/test_s00_t01.py::test_chat_restart_loses_nothing_and_writes_only_receipts
+FAILED tests/integration/test_s00_t01.py::test_chat_before_init_reports_unauthenticated_like_one_shot_and_exits_4
+FAILED tests/integration/test_s00_t01.py::test_chat_untrustworthy_line_exits_2_through_public_path[caf\xe9\nHello\n-chat_invalid_utf8]
+FAILED tests/integration/test_s00_t01.py::test_chat_untrustworthy_line_exits_2_through_public_path[a\x00b\nHello\n-chat_nul_byte]
+6 failed in 1.66s
+# exit: 1

@@ -3,24 +3,21 @@ requires = ["setuptools>=75"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "secma"
+name = "quati"
 version = "0.1.0"
-description = "SECMA S00 read-only fixture discovery prototype; live gate not yet verified"
+description = "Quati S00 local CLI and identity; discovery and live gates remain unqualified"
 requires-python = ">=3.12"
-dependencies = ["PyYAML==6.0.3", "jsonschema==4.26.0"]
+dependencies = ["PyYAML==6.0.3", "jsonschema==4.26.0", "typer==0.28.0", "platformdirs==4.14.5", "cryptography==50.0.2"]
 
 [project.optional-dependencies]
-live = ["pydantic-ai-slim[openai]==2.68.0", "openai==3.51.0"]
-test = ["pytest==9.2.0"]
+live = ["pydantic-ai-slim[openai]==2.68.0", "openai==3.51.0", "anthropic==2.8.0"]
+test = ["pytest==9.2.0", "coverage==7.16.1"]
 
 [project.scripts]
-secma = "secma.cli.main:main"
+quati = "quati.cli.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.setuptools.package-data]
-secma = ["assets/contracts/*.json", "assets/examples/statecharts/*.yaml", "assets/examples/behavior/*.yaml"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

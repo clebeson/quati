@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Capability registry record (RFC-015)",
+  "description": "Registry-owned state for one installed capability version. Only the registry writes it; packages cannot supply it.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "capability_id",
+    "capability_version",
+    "package_sha256",
+    "source",
+    "lifecycle",
+    "assurance",
+    "effect_class_reviewed",
+    "assurance_evidence",
+    "updated_at",
+    "revision"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "scs-registry/1.0"
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9_-]*)+$"
+    },
+    "capability_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "package_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "import_kind": {
+      "type": "string",
+      "enum": [
+        "scs",
+        "skill_md",
+        "mcp_tool",
+        "a2a_skill",
+        "entry_point",
+        "fixture"
+      ]
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "VALIDATED",
+        "STAGED",
+        "ENABLED",
+        "DEPRECATED",
+        "DISABLED"
+      ]
+    },
+    "assurance": {
+      "type": "string",
+      "enum": [
+        "C0",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5"
+      ]
+    },
+    "effect_class_reviewed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "none",
+        "read",
+        "write",
+        "dangerous",
+        null
+      ],
+      "description": "Null until a human review; enforcement uses dangerous while null."
+    },
+    "vendor_hints": {
+      "type": "object",
+      "description": "Untrusted imported hints (MCP annotations, allowed-tools). Never enforced."
+    },
+    "assurance_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "level",
+          "evidence_sha256",
+          "recorded_at"
+        ],
+        "properties": {
+          "level": {
+            "enum": [
+              "C0",
+              "C1",
+              "C2",
+              "C3",
+              "C4",
+              "C5"
+            ]
+          },
+          "evidence_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "model_digest": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "catalog_digest": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "enabled_by_approval": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "approval_request_id of a HUMAN approval (RFC-014)."
+    },
+    "lint_report_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "skill": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "name",
+        "path",
+        "sha256",
+        "has_scripts"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "maxLength": 64
+        },
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "has_scripts": {
+          "type": "boolean"
+        },
+        "requested_permissions_hint": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowed_tools_hint": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lint_report_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Where the skill was imported from (M16)."
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1,
+          "description": "License identifier; \"UNKNOWN\" when the skill declares none (M16)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "lifecycle": {
+            "const": "ENABLED"
+          }
+        },
+        "required": [
+          "lifecycle"
+        ]
+      },
+      "then": {
+        "required": [
+          "enabled_by_approval",
+          "effect_class_reviewed"
+        ],
+        "properties": {
+          "assurance": {
+            "enum": [
+              "C2",
+              "C3",
+              "C4",
+              "C5"
+            ]
+          },
+          "enabled_by_approval": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effect_class_reviewed": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}

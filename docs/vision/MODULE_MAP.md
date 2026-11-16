@@ -1,4 +1,4 @@
-# SECMA v8 — Module Inventory
+# Quati v8 — Module Inventory
 
 The architecture contains **31 responsibility modules** but deliberately starts as a modular Python monolith, not 31 services or LLM agents. Each module has a detailed normative PRD and an independent red-team sheet.
 

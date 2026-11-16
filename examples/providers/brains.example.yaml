@@ -1,7 +1,7 @@
 providers:
   - id: local-markdown
     kind: local_directory
-    root: $SECMA_WORKSPACE/knowledge
+    root: $QUATI_WORKSPACE/knowledge
     features: [list, search, read]
     allowed_scopes: [personal]
     write: disabled

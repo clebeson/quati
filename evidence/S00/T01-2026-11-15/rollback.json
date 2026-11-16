@@ -1,0 +1,17 @@
+{
+  "archive": "evidence/S00/T01-2026-11-15/rollback-inputs.zip",
+  "restored_input_paths": [
+    "src/secma/cli/main.py",
+    "src/secma/adapters/evidence.py",
+    "src/AGENTS.md",
+    "pyproject.toml",
+    "tests/unit/test_runtime.py"
+  ],
+  "new_runtime_paths_to_remove_only_when_rolling_back": [
+    "src/secma/adapters/local_identity.py",
+    "src/secma/application/identity.py",
+    "src/secma/application/cli_service.py"
+  ],
+  "evidence_policy": "Preserve all evidence and governance records; do not roll back authorization/progress by overwriting canonical state. Record a revisioned reconciliation instead.",
+  "source_commit": null
+}

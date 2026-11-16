@@ -1,0 +1,275 @@
+/home/clebeson/dev/agentswarm/.venv/lib/python3.13/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFFFFFFF                                                             [100%]
+=================================== FAILURES ===================================
+____ test_idn01_corrupt_scalar_credentials_fail_closed_in_public_cli[null] _____
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-76/test_idn01_corrupt_scalar_cred0')
+corruption = 'null'
+
+    @pytest.mark.parametrize('corruption', ['null', '42', '"broken-record"'])
+    def test_idn01_corrupt_scalar_credentials_fail_closed_in_public_cli(tmp_path, corruption):
+        """A valid JSON scalar is still an invalid credential, never an uncaught exception."""
+        directory = tmp_path / 'config'
+        directory.mkdir(mode=0o700)
+        record = directory / 'identity.json'
+        record.write_text(corruption)
+        record.chmod(0o600)
+        diagnostic = run_cli(directory, 'doctor', '--json')
+>       assert diagnostic.returncode == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/clebeson/dev/agentswarm/.venv/bin/python', '-m', 'secma', 'doctor', '--json'], returncod...te=True)\n                                 ^^^^^^^^^^\nAttributeError: \'NoneType\' object has no attribute \'pop\'\n').returncode
+
+tests/unit/test_s00_t01_review.py:35: AssertionError
+_____ test_idn01_corrupt_scalar_credentials_fail_closed_in_public_cli[42] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-76/test_idn01_corrupt_scalar_cred1')
+corruption = '42'
+
+    @pytest.mark.parametrize('corruption', ['null', '42', '"broken-record"'])
+    def test_idn01_corrupt_scalar_credentials_fail_closed_in_public_cli(tmp_path, corruption):
+        """A valid JSON scalar is still an invalid credential, never an uncaught exception."""
+        directory = tmp_path / 'config'
+        directory.mkdir(mode=0o700)
+        record = directory / 'identity.json'
+        record.write_text(corruption)
+        record.chmod(0o600)
+        diagnostic = run_cli(directory, 'doctor', '--json')
+>       assert diagnostic.returncode == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/clebeson/dev/agentswarm/.venv/bin/python', '-m', 'secma', 'doctor', '--json'], returncod...alidate=True)\n                                 ^^^^^^^^^^\nAttributeError: \'int\' object has no attribute \'pop\'\n').returncode
+
+tests/unit/test_s00_t01_review.py:35: AssertionError
+_ test_idn01_corrupt_scalar_credentials_fail_closed_in_public_cli["broken-record"] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-76/test_idn01_corrupt_scalar_cred2')
+corruption = '"broken-record"'
+
+    @pytest.mark.parametrize('corruption', ['null', '42', '"broken-record"'])
+    def test_idn01_corrupt_scalar_credentials_fail_closed_in_public_cli(tmp_path, corruption):
+        """A valid JSON scalar is still an invalid credential, never an uncaught exception."""
+        directory = tmp_path / 'config'
+        directory.mkdir(mode=0o700)
+        record = directory / 'identity.json'
+        record.write_text(corruption)
+        record.chmod(0o600)
+        diagnostic = run_cli(directory, 'doctor', '--json')
+>       assert diagnostic.returncode == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/clebeson/dev/agentswarm/.venv/bin/python', '-m', 'secma', 'doctor', '--json'], returncod...alidate=True)\n                                 ^^^^^^^^^^\nAttributeError: \'str\' object has no attribute \'pop\'\n').returncode
+
+tests/unit/test_s00_t01_review.py:35: AssertionError
+____________ test_m01_corrupt_fifo_credential_does_not_hang_doctor _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-76/test_m01_corrupt_fifo_credenti0')
+
+    def test_m01_corrupt_fifo_credential_does_not_hang_doctor(tmp_path):
+        """A nonregular local credential must be rejected without a blocking FIFO read."""
+        directory = tmp_path / 'config'
+        directory.mkdir(mode=0o700)
+        os.mkfifo(directory / 'identity.json', mode=0o600)
+>       diagnostic = run_cli(directory, 'doctor', '--json')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s00_t01_review.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_t01_review.py:22: in run_cli
+    return subprocess.run([sys.executable, '-m', 'secma', *arguments], cwd=ROOT, env=env,
+/usr/lib/python3.13/subprocess.py:556: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/subprocess.py:1222: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.13/subprocess.py:2129: in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/home/clebeson/dev/agentswarm/.venv/bin/pytho...>
+endtime = 186255.106604359, orig_timeout = 3, stdout_seq = [], stderr_seq = []
+skip_check_and_raise = False
+
+    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,
+                       skip_check_and_raise=False):
+        """Convenience for checking if a timeout has expired."""
+        if endtime is None:
+            return
+        if skip_check_and_raise or _time() > endtime:
+>           raise TimeoutExpired(
+                    self.args, orig_timeout,
+                    output=b''.join(stdout_seq) if stdout_seq else None,
+                    stderr=b''.join(stderr_seq) if stderr_seq else None)
+E           subprocess.TimeoutExpired: Command '['/home/clebeson/dev/agentswarm/.venv/bin/python', '-m', 'secma', 'doctor', '--json']' timed out after 3 seconds
+
+/usr/lib/python3.13/subprocess.py:1269: TimeoutExpired
+_________ test_m26_canonical_digest_escapes_unicode_per_secma_json_v1 __________
+
+    def test_m26_canonical_digest_escapes_unicode_per_secma_json_v1():
+>       assert canonical_bytes({'greeting': 'Olá'}) == b'{"greeting":"Ol\\u00e1"}'
+E       assert b'{"greeting":"Ol\xc3\xa1"}' == b'{"greeting":"Ol\\u00e1"}'
+E         
+E         At index 15 diff: b'\xc3' != b'\\'
+E         Use -v to get more diff
+
+tests/unit/test_s00_t01_review.py:54: AssertionError
+___________ test_m26_canonical_digest_rejects_nonfinite_values[nan] ____________
+
+invalid = nan
+
+    @pytest.mark.parametrize('invalid', [float('nan'), float('inf'), float('-inf')])
+    def test_m26_canonical_digest_rejects_nonfinite_values(invalid):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/test_s00_t01_review.py:59: Failed
+___________ test_m26_canonical_digest_rejects_nonfinite_values[inf] ____________
+
+invalid = inf
+
+    @pytest.mark.parametrize('invalid', [float('nan'), float('inf'), float('-inf')])
+    def test_m26_canonical_digest_rejects_nonfinite_values(invalid):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/test_s00_t01_review.py:59: Failed
+___________ test_m26_canonical_digest_rejects_nonfinite_values[-inf] ___________
+
+invalid = -inf
+
+    @pytest.mark.parametrize('invalid', [float('nan'), float('inf'), float('-inf')])
+    def test_m26_canonical_digest_rejects_nonfinite_values(invalid):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/test_s00_t01_review.py:59: Failed
+____ test_idn01_signed_claims_still_require_the_typed_contract[invalid_sub] ____
+
+mutation = 'invalid_sub'
+
+    @pytest.mark.parametrize('mutation', ['invalid_sub', 'invalid_tid', 'fractional_expiry', 'unknown_property'])
+    def test_idn01_signed_claims_still_require_the_typed_contract(mutation):
+        """A real valid signature does not make malformed token fields schema-valid."""
+        now = int(time.time())
+        claims = {'iss': 'secma-local', 'sub': '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+                  'tid': '01ARZ3NDEKTSV4RRFFQ69G5FAW', 'pkind': 'HUMAN', 'aud': 'secma-local',
+                  'scope': 'secma:converse secma:work.read', 'exp': now + 600, 'iat': now,
+                  'nbf': now, 'jti': '0123456789abcdef', 'sid': 'session',
+                  'amr': ['local_os', 'device_key'], 'auth_time': now, 'client_id': 'secma-cli'}
+        if mutation == 'invalid_sub':
+            claims['sub'] = 'display-name-from-untrusted-input'
+        elif mutation == 'invalid_tid':
+            claims['tid'] = 123
+        elif mutation == 'fractional_expiry':
+            claims['exp'] = now + 599.5
+        else:
+            claims['unregistered_claim'] = 'untrusted metadata'
+        key = Ed25519PrivateKey.generate()
+        token = LocalToken(claims, key.sign(canonical_bytes(claims)))
+>       with pytest.raises(AccessDenied):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_t01_review.py:82: Failed
+____ test_idn01_signed_claims_still_require_the_typed_contract[invalid_tid] ____
+
+mutation = 'invalid_tid'
+
+    @pytest.mark.parametrize('mutation', ['invalid_sub', 'invalid_tid', 'fractional_expiry', 'unknown_property'])
+    def test_idn01_signed_claims_still_require_the_typed_contract(mutation):
+        """A real valid signature does not make malformed token fields schema-valid."""
+        now = int(time.time())
+        claims = {'iss': 'secma-local', 'sub': '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+                  'tid': '01ARZ3NDEKTSV4RRFFQ69G5FAW', 'pkind': 'HUMAN', 'aud': 'secma-local',
+                  'scope': 'secma:converse secma:work.read', 'exp': now + 600, 'iat': now,
+                  'nbf': now, 'jti': '0123456789abcdef', 'sid': 'session',
+                  'amr': ['local_os', 'device_key'], 'auth_time': now, 'client_id': 'secma-cli'}
+        if mutation == 'invalid_sub':
+            claims['sub'] = 'display-name-from-untrusted-input'
+        elif mutation == 'invalid_tid':
+            claims['tid'] = 123
+        elif mutation == 'fractional_expiry':
+            claims['exp'] = now + 599.5
+        else:
+            claims['unregistered_claim'] = 'untrusted metadata'
+        key = Ed25519PrivateKey.generate()
+        token = LocalToken(claims, key.sign(canonical_bytes(claims)))
+>       with pytest.raises(AccessDenied):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_t01_review.py:82: Failed
+_ test_idn01_signed_claims_still_require_the_typed_contract[fractional_expiry] _
+
+mutation = 'fractional_expiry'
+
+    @pytest.mark.parametrize('mutation', ['invalid_sub', 'invalid_tid', 'fractional_expiry', 'unknown_property'])
+    def test_idn01_signed_claims_still_require_the_typed_contract(mutation):
+        """A real valid signature does not make malformed token fields schema-valid."""
+        now = int(time.time())
+        claims = {'iss': 'secma-local', 'sub': '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+                  'tid': '01ARZ3NDEKTSV4RRFFQ69G5FAW', 'pkind': 'HUMAN', 'aud': 'secma-local',
+                  'scope': 'secma:converse secma:work.read', 'exp': now + 600, 'iat': now,
+                  'nbf': now, 'jti': '0123456789abcdef', 'sid': 'session',
+                  'amr': ['local_os', 'device_key'], 'auth_time': now, 'client_id': 'secma-cli'}
+        if mutation == 'invalid_sub':
+            claims['sub'] = 'display-name-from-untrusted-input'
+        elif mutation == 'invalid_tid':
+            claims['tid'] = 123
+        elif mutation == 'fractional_expiry':
+            claims['exp'] = now + 599.5
+        else:
+            claims['unregistered_claim'] = 'untrusted metadata'
+        key = Ed25519PrivateKey.generate()
+        token = LocalToken(claims, key.sign(canonical_bytes(claims)))
+>       with pytest.raises(AccessDenied):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_t01_review.py:82: Failed
+_ test_idn01_signed_claims_still_require_the_typed_contract[unknown_property] __
+
+mutation = 'unknown_property'
+
+    @pytest.mark.parametrize('mutation', ['invalid_sub', 'invalid_tid', 'fractional_expiry', 'unknown_property'])
+    def test_idn01_signed_claims_still_require_the_typed_contract(mutation):
+        """A real valid signature does not make malformed token fields schema-valid."""
+        now = int(time.time())
+        claims = {'iss': 'secma-local', 'sub': '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+                  'tid': '01ARZ3NDEKTSV4RRFFQ69G5FAW', 'pkind': 'HUMAN', 'aud': 'secma-local',
+                  'scope': 'secma:converse secma:work.read', 'exp': now + 600, 'iat': now,
+                  'nbf': now, 'jti': '0123456789abcdef', 'sid': 'session',
+                  'amr': ['local_os', 'device_key'], 'auth_time': now, 'client_id': 'secma-cli'}
+        if mutation == 'invalid_sub':
+            claims['sub'] = 'display-name-from-untrusted-input'
+        elif mutation == 'invalid_tid':
+            claims['tid'] = 123
+        elif mutation == 'fractional_expiry':
+            claims['exp'] = now + 599.5
+        else:
+            claims['unregistered_claim'] = 'untrusted metadata'
+        key = Ed25519PrivateKey.generate()
+        token = LocalToken(claims, key.sign(canonical_bytes(claims)))
+>       with pytest.raises(AccessDenied):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AccessDenied
+
+tests/unit/test_s00_t01_review.py:82: Failed
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_t01_review.py::test_idn01_corrupt_scalar_credentials_fail_closed_in_public_cli[null]
+FAILED tests/unit/test_s00_t01_review.py::test_idn01_corrupt_scalar_credentials_fail_closed_in_public_cli[42]
+FAILED tests/unit/test_s00_t01_review.py::test_idn01_corrupt_scalar_credentials_fail_closed_in_public_cli["broken-record"]
+FAILED tests/unit/test_s00_t01_review.py::test_m01_corrupt_fifo_credential_does_not_hang_doctor
+FAILED tests/unit/test_s00_t01_review.py::test_m26_canonical_digest_escapes_unicode_per_secma_json_v1
+FAILED tests/unit/test_s00_t01_review.py::test_m26_canonical_digest_rejects_nonfinite_values[nan]
+FAILED tests/unit/test_s00_t01_review.py::test_m26_canonical_digest_rejects_nonfinite_values[inf]
+FAILED tests/unit/test_s00_t01_review.py::test_m26_canonical_digest_rejects_nonfinite_values[-inf]
+FAILED tests/unit/test_s00_t01_review.py::test_idn01_signed_claims_still_require_the_typed_contract[invalid_sub]
+FAILED tests/unit/test_s00_t01_review.py::test_idn01_signed_claims_still_require_the_typed_contract[invalid_tid]
+FAILED tests/unit/test_s00_t01_review.py::test_idn01_signed_claims_still_require_the_typed_contract[fractional_expiry]
+FAILED tests/unit/test_s00_t01_review.py::test_idn01_signed_claims_still_require_the_typed_contract[unknown_property]
+12 failed in 3.32s

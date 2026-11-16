@@ -1,0 +1,11 @@
+Combined 12 files, skipped 6
+Wrote JSON report to evidence/S00/T01-2026-11-15/coverage-delivery.json
+Name                                   Stmts   Miss Branch BrPart  Cover   Missing
+----------------------------------------------------------------------------------
+src/secma/adapters/evidence.py            34      1      8      1    95%   36
+src/secma/adapters/local_identity.py     109      6     16      4    92%   44, 87, 103-104, 117, 123
+src/secma/application/cli_service.py      65      0     20      0   100%
+src/secma/application/identity.py         66      1     22      1    98%   46
+src/secma/cli/main.py                     41      2      4      1    93%   52, 67
+----------------------------------------------------------------------------------
+TOTAL                                    315     10     70      7    96%

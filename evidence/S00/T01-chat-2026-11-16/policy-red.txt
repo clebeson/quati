@@ -1,0 +1,13 @@
+# POLICY-RED run 2026-11-16 (RFC-014 5.1 init policy + trusted loader in doctor; tests before source)
+# cmd: .venv/bin/python -m pytest -q tests/unit/test_s00_t01_chat.py tests/integration/cli
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[absent-missing]
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[symlink-not_regular_file]
+FAILED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_policy_before_init_and_loader_raising
+FAILED tests/unit/test_s00_t01_chat.py::test_init_reports_template_problems_and_writes_no_policy
+FAILED tests/integration/cli/test_init_policy.py::test_fresh_init_installs_trusted_policy_registry_and_audit_event
+FAILED tests/integration/cli/test_init_policy.py::test_hand_edited_policy_is_out_of_band
+FAILED tests/integration/cli/test_init_policy.py::test_registry_wrong_mode_or_deleted_or_forged_is_unavailable
+FAILED tests/integration/cli/test_init_policy.py::test_init_twice_leaves_policy_and_registry_unchanged
+FAILED tests/integration/cli/test_init_policy.py::test_init_never_replaces_a_hand_edited_policy_or_a_lone_registry
+9 failed, 106 passed in 7.65s
+# exit: 1

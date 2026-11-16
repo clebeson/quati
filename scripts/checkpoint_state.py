@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""CAS-update implementation progress without advancing across open gates."""
+"""Legacy CAS state updater for unjournaled state files only.
+
+It refuses any state file that has an execution ledger or journal beside it, because
+writing such state without the journal would desynchronize checkpoint_execution.py.
+"""
 
 import argparse
 import json
@@ -11,6 +15,7 @@ from pathlib import Path
 
 VALID_STATUSES = {"NOT_STARTED", "IN_PROGRESS", "PASS", "FAIL", "BLOCKED"}
 VALID_GATE_STATUSES = VALID_STATUSES | {"NOT_RUN"}
+JOURNAL_ARTIFACTS = ("execution_ledger.jsonl", "execution_journal")
 DEFAULT_STATE = Path(__file__).resolve().parents[1] / "docs/implementation/implementation_state.json"
 
 
@@ -132,6 +137,12 @@ def main(argv=None):
     args = parser().parse_args(argv)
     if not args.state.is_file():
         print(f"State file does not exist: {args.state}", file=sys.stderr)
+        return 2
+    journaled = [name for name in JOURNAL_ARTIFACTS if (args.state.parent / name).exists()]
+    if journaled:
+        print(f"State update rejected: {args.state} is governed by {', '.join(journaled)}; "
+              "use scripts/checkpoint_execution.py so the journal, ledger and state stay consistent.",
+              file=sys.stderr)
         return 2
     try:
         revision = write_locked(args.state, args, gate_updates(args.gate))

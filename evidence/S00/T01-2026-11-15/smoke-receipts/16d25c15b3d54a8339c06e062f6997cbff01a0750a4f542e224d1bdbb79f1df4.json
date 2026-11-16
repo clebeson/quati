@@ -1,0 +1,14 @@
+{
+  "cost_usd": null,
+  "evidence_version": "s00/1",
+  "output_hash": "66973728d0d6708e6f4f930dbb70aae5e87bbd5f7e3bb84243fad10ccf3d54a4",
+  "policy_version": "s00-fixture-readonly/1",
+  "principal_hash": "e14cec97ec30aa6ea2028ef4d22f9c0f0f00792f24cc2ee78b3b6225e063a5a1",
+  "proof_tier": "L1",
+  "provider_used": false,
+  "request_hash": "df96200d3317f150e959c0e226dd2057cbe9079bafa7393d7173869e30cc0557",
+  "request_id": "request-07bef0f13fa74c7ca1da5e03aa6c4200",
+  "status": "BLOCKED",
+  "timestamp": "2026-11-15T21:54:48.478708+00:00",
+  "trace_id": "92aba96cab9946c38fe668982d5a4146"
+}

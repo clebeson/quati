@@ -1,0 +1,45 @@
+E           TypeError: 'NoneType' object is not subscriptable
+tests/unit/test_s00_t03_audit_fixes.py:37: TypeError
+E           TypeError: 'NoneType' object is not subscriptable
+tests/unit/test_s00_t03_audit_fixes.py:52: TypeError
+E       AssertionError: assert ('SUCCEEDED', None, 1) == ('UNAVAILABLE...AVAILABLE', 0)
+E         
+E         At index 0 diff: 'SUCCEEDED' != 'UNAVAILABLE'
+E         Use -v to get more diff
+tests/unit/test_s00_t03_audit_fixes.py:79: AssertionError
+E               secma.domain.capability_registry.Refusal: CONFLICT REVISION_CONFLICT REVISION_CONFLICT: registry store changed
+E       AssertionError: assert ('SUCCEEDED',...CEEDED', None) == ('SUCCEEDED',..._unavailable')
+E         
+E         At index 1 diff: 'SUCCEEDED' != 'DENIED'
+E         Use -v to get more diff
+tests/unit/test_s00_t03_audit_fixes.py:135: AssertionError
+E       AssertionError: assert [{'capability... only.', ...}] == []
+E         
+E         Left contains one more item: {'capability_id': 'fixtures.calendar-read', 'capability_version': '1.0.0', 'name': 'calendar-read', 'outcome_summary':...e synthetic personal calendar that start after the current time, with title, start, end and location. Read only.', ...}
+E         Use -v to get more diff
+tests/unit/test_s00_t03_audit_fixes.py:147: AssertionError
+E       AssertionError: assert (7 == 7 and ['fixtures.fo...foxtrot', ...] == ['fixtures.fo...orecast-echo']
+E        +  where 7 = len({'fixtures.forecast-alpha', 'fixtures.forecast-bravo', 'fixtures.forecast-charlie', 'fixtures.forecast-delta', 'fixtures.forecast-echo', 'fixtures.forecast-foxtrot', ...})
+E        +    where {'fixtures.forecast-alpha', 'fixtures.forecast-bravo', 'fixtures.forecast-charlie', 'fixtures.forecast-delta', 'fixtures.forecast-echo', 'fixtures.forecast-foxtrot', ...} = set(['fixtures.forecast-alpha', 'fixtures.forecast-bravo', 'fixtures.forecast-charlie', 'fixtures.forecast-delta', 'fixtures.forecast-echo', 'fixtures.forecast-foxtrot', ...])
+E         
+E         Left contains 2 more items, first extra item: 'fixtures.forecast-foxtrot'
+E         Use -v to get more diff)
+tests/unit/test_s00_t03_audit_fixes.py:165: AssertionError
+E       AssertionError: assert ('reuni', 'o'..., 'xima', 'm') == ('reuniao', 'proxima', 'fim')
+E         
+E         At index 0 diff: 'reuni' != 'reuniao'
+E         Left contains 2 more items, first extra item: 'xima'
+E         Use -v to get more diff
+tests/unit/test_s00_t03_audit_fixes.py:171: AssertionError
+E       TypeError: 'NoneType' object is not subscriptable
+tests/unit/test_s00_t03_audit_fixes.py:192: TypeError
+FAILED tests/unit/test_s00_t03_audit_fixes.py::test_p1_1_handler_identity_and_permission_floor
+FAILED tests/unit/test_s00_t03_audit_fixes.py::test_p1_2_write_handler_never_executes
+FAILED tests/unit/test_s00_t03_audit_fixes.py::test_p1_3_selected_binding_is_the_policy_bound_binding
+FAILED tests/unit/test_s00_t03_audit_fixes.py::test_p1_4_losing_concurrent_install_keeps_the_winner
+FAILED tests/unit/test_s00_t03_audit_fixes.py::test_p2_1_replay_is_policy_checked
+FAILED tests/unit/test_s00_t03_audit_fixes.py::test_p2_2_tampered_registry_manifest_is_not_loadable
+FAILED tests/unit/test_s00_t03_audit_fixes.py::test_p2_3_shortlist_is_union_capped_at_five
+FAILED tests/unit/test_s00_t03_audit_fixes.py::test_tokenization_folds_diacritics_both_ways
+FAILED tests/unit/test_s00_t03_audit_fixes.py::test_p3_agent_cannot_stage_and_audit_is_write_ahead
+9 failed in 0.27s

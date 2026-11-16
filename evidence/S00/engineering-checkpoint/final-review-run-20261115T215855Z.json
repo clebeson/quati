@@ -1,0 +1,36 @@
+{
+  "record_type": "engineering_checkpoint_final_review_run",
+  "scope": "temporary filesystem fixtures; canonical state and revisions 9/10 were read-only checked, not modified",
+  "timestamp_utc": "2026-11-15T21:58:55.766877Z",
+  "command": "python3 -m pytest tests/unit/test_execution_checkpoint.py tests/unit/test_execution_checkpoint_review.py -q",
+  "result": {
+    "exit_code": 0,
+    "summary": "22 passed"
+  },
+  "compatibility_check": {
+    "result": "PASS_READ_ONLY",
+    "canonical_revision": 10,
+    "ledger_revisions": [
+      9,
+      10
+    ],
+    "journal_revisions": [
+      9,
+      10
+    ]
+  },
+  "complexity_metrics": {
+    "prepare_event_ccx": 3,
+    "recover_ccx": 11,
+    "apply_active_work_patch_ccx": 8,
+    "measurement": "ripwire --metrics; quality delta unavailable because workspace has no git HEAD/baseline"
+  },
+  "python": "3.13.7",
+  "platform": "Linux-6.17.0-41-generic-x86_64-with-glibc2.42",
+  "source_sha256": {
+    "scripts/checkpoint_execution.py": "3a875b03ab9884007c8d0b84812f31bc9721738d913f34b6996311615e0126bd",
+    "tests/unit/test_execution_checkpoint.py": "6bfd1ee2a4f1842f3763ea88863136396af63283e46b1503fe333ca04ed57df4",
+    "tests/unit/test_execution_checkpoint_review.py": "60b0c9def60e17988c695a03e613983ba078f6fd02d0e5c7a678a5811607cf82"
+  },
+  "proof_tier": "local deterministic filesystem CLI/recovery tests; no provider or external integration evidence"
+}

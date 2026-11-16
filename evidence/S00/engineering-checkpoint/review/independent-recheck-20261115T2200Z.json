@@ -1,0 +1,54 @@
+{
+  "evidence_schema": "secma-engineering-review/1",
+  "proof_tier": "L1_ENGINEERING_SUBPROCESS",
+  "review_id": "EXECUTION_CHECKPOINT_REVIEW_2026-11-15",
+  "created_at": "2026-11-15T22:04:13.462229Z",
+  "command": "python3 -m pytest tests/unit/test_execution_checkpoint.py tests/unit/test_execution_checkpoint_review.py -q",
+  "result": {
+    "status": "PASS",
+    "passed": 30,
+    "failed": 0
+  },
+  "additional_checks": {
+    "same_revision_concurrent_cli_writers": {
+      "repetitions_after_full_suite": 5,
+      "each_result": "one_saved_revision_one_revision_conflict"
+    },
+    "sigkill_recovery_points": [
+      "after_prepared_journal_atomic_write_before_state_replace",
+      "after_state_atomic_replace_before_ledger_append"
+    ],
+    "recovery_assertion": "normal_helper_cli_reconciles_one_event_then_stops_for_reread"
+  },
+  "environment": {
+    "python": "3.13.7",
+    "platform": "Linux-6.17.0-41-generic-x86_64-with-glibc2.42"
+  },
+  "files": {
+    "scripts/checkpoint_execution.py": {
+      "sha256": "084a8031de982c7a61b80806f285909011ce45e9c7ef1c919f10dab5d493e6f5"
+    },
+    "tests/unit/test_execution_checkpoint.py": {
+      "sha256": "cf5bf83d53e3a5281a120324176a91625c06a3d25da27dfbc95b7ac359007408"
+    },
+    "tests/unit/test_execution_checkpoint_review.py": {
+      "sha256": "adfb668f6fe54e9d1eddf5919eefe965ac09972ca8357ab1faeba901879e33aa"
+    },
+    "docs/governance/PERSISTENT_STATE_AND_MEMORY.md": {
+      "sha256": "1840f3729c5e7be92273e735d401aae8660eb7f1249222cdc9f219b533fb60ee"
+    },
+    "state/schemas/implementation-state.schema.json": {
+      "sha256": "dc047daff8f5f4b2a04cbe118d8de42c066dcb68ef2e049b4fa785e9d5d7cf48"
+    },
+    "docs/audit/EXECUTION_CHECKPOINT_REVIEW.md": {
+      "sha256": "ed692a376921a30d8c76e31568cb0abad4e33da95808e118eca93fcfc9cd21e7"
+    }
+  },
+  "limitations": [
+    "temporary local filesystem only; project canonical state was not read or modified by the review tests",
+    "controlled SIGKILL process interruption is not host power-loss qualification",
+    "does not qualify SECMA product commitment ledger recovery",
+    "does not qualify native Windows/macOS or network filesystems",
+    "advisory lock coverage excludes path aliases and non-participating writers"
+  ]
+}

@@ -1,0 +1,7 @@
+Audit-fix regression, 2026-11-16 UTC
+317 passed, 1 skipped in 10.02s
+hermetic unit (PATH=/usr/bin:/bin):
+257 passed in 8.78s
+live (SECMA_LIVE_SMOKE=claude_cli, model haiku = claude-haiku-5-5, Claude Code 2.1.325):
+1 passed (run once, see live_claude_cli_probe_2026-11-16.json sha256 abf9b478...c9b8)
+TOTAL                                                1189     13    322      8    99%

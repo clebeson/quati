@@ -1,11 +1,11 @@
-# SECMA project structure and ownership
+# Quati project structure and ownership
 
 Status: normative implementation blueprint. Existing source is an unapproved partial candidate; its presence never overrides the specification. All authored files, tests, prompts, comments and internal records are English. User-facing product language follows requester preference.
 
 ## Single repository, modular Python application
 
 ```text
-SECMA/
+Quati/
   AGENTS.md                         # Rules inherited by all agents
   README.md                         # Current status and entry point
   pyproject.toml                    # Package/dependency declaration
@@ -34,17 +34,17 @@ SECMA/
     governance/                    # Workflow, seal policy, memory and resume protocol
     audit/                         # Independent reports and correction/disposition records
     research/                      # Sources, retrieval dates and verification limits
-  src/secma/
+  src/quati/
     domain/                        # Pure types, reducers, authorization invariants
     application/                   # Use cases and provider-neutral ports
     behavior/                      # Trusted prompt/context/statechart compiler
-    adapters/                      # Model, DBOS, PostgreSQL, filesystem, provider transports
+    adapters/                      # Model, SQLite/PostgreSQL ledger, worker, filesystem, provider transports
     cli/                           # Parsing/presentation only; no authority decisions
     assets/                        # Generated packaged copies of canonical schemas/examples
   tests/
     specification/                 # Future consolidated L0 lane; current L0 files also retained
     unit/                          # L1 guards, reducers, validation and application boundaries
-    integration/                   # L2 real DBOS/PostgreSQL plus explicitly synthetic providers
+    integration/                   # L2 real SQLite ledger/worker (PostgreSQL conformance) plus explicitly synthetic providers
     chaos/                         # Process termination, partial commits and reconciliation
     evals/                         # L3 genuine model behavior; labels not visible to model
     external/                      # L4 authorized live provider smoke
@@ -71,14 +71,14 @@ SECMA/
   CHECKPOINT.md                    # Human resume pointer, never a second progress authority
 ```
 
-Directories are created when their first owned artifact is needed. Empty directories do not prove implementation. Do not create a service, agent or database for every directory. S00–S01 have no production worker. DBOS and PostgreSQL enter only in S02.
+Directories are created when their first owned artifact is needed. Empty directories do not prove implementation. Do not create a service, agent or database for every directory. S00–S01 have no production worker. The SQLite LedgerPort and ledger-driven worker enter in S02 (DBOS is not used, ADR-015).
 
 ## Ownership and import rules
 
 | Area | Single owner | Allowed dependencies | Prohibited dependencies |
 |---|---|---|---|
 | domain | core maintainer | Python standard library, pure domain contracts | SDKs, database drivers, network/filesystem calls, adapters |
-| application | use-case maintainer | domain and application ports | concrete model/DBOS/MCP provider types |
+| application | use-case maintainer | domain and application ports | concrete model/ledger-backend/MCP provider types |
 | behavior | compiler maintainer | canonical schema validation and trusted registries | executable YAML, eval, implicit privilege grants |
 | adapters | one owner per adapter | application ports, SDKs and storage | rewriting domain policy or ledger ownership |
 | cli | interface maintainer | application facade, composition root | direct provider dispatch bypassing use cases |
@@ -86,6 +86,10 @@ Directories are created when their first owned artifact is needed. Empty directo
 | tests/evals/audit | reviewer separate from implementer where required | public entry paths | gold labels in model-visible catalogs/prompts |
 
 Application use cases receive an EvidenceSink port; filesystem receipt writing is an adapter. Schema validation may use jsonschema in a boundary adapter, not provider-specific SDK types in domain. Packaged assets are generated from contracts/examples and verified for byte equivalence; never independently edited. Existing candidate deviations are tracked as defects and repaired only after implementation is authorized.
+
+## Planned test path convention
+
+Planned test locators in `WORK_PACKAGES.json`, `ACCEPTANCE_CASES.json`, `REQUIREMENT_TEST_PLANS.json` and the traceability matrix point at the real lane directories, never at a `tests/planned/` placeholder: `tests/unit` (L0/L1), `tests/integration` (L2), `tests/chaos` (fault and durability), `tests/evals` (L3 real model), `tests/external` (L4 authorized live smoke) and `tests/packaging` (L5 native OS/corporate checks). A locator is a design target and does not claim that an executable test exists. `tests/packaging/` is the lane for native packaging, resource and corporate-hardening checks and is created when S07 work is authorized.
 
 ## Naming and compatibility
 

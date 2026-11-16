@@ -1,0 +1,158 @@
+{
+  "tier": "L1",
+  "provider_called": false,
+  "synthetic_inputs": true,
+  "runs": [
+    {
+      "args": [
+        "doctor",
+        "--json"
+      ],
+      "exit_code": 0,
+      "response": {
+        "data": {
+          "durable_worker": "NOT_IMPLEMENTED",
+          "external_integrations": "NOT_VERIFIED_EXTERNAL",
+          "identity": {
+            "authenticator": "local-os",
+            "initialized": false,
+            "qualification": "POSIX_LOCAL_ONLY",
+            "secret_store": "owner_only_file",
+            "status": "NOT_CONFIGURED"
+          },
+          "provider": {
+            "adapter_installed": false,
+            "configured": false,
+            "endpoint_host": null,
+            "features": {
+              "parallel_calls": "NOT_VERIFIED",
+              "streaming": "NOT_VERIFIED",
+              "structured_output": "NOT_VERIFIED",
+              "tools": "NOT_VERIFIED",
+              "usage": "NOT_VERIFIED"
+            },
+            "missing": [
+              "SECMA_BASE_URL: approved HTTPS endpoint required",
+              "SECMA_MODEL",
+              "SECMA_API_KEY_ENV: configured secret reference required",
+              "SECMA_ALLOW_LIVE=1",
+              "Install SECMA live optional dependency"
+            ],
+            "model": null,
+            "pricing": "NOT_VERIFIED",
+            "region": "NOT_VERIFIED"
+          },
+          "scope": "S00_FIXTURE_ONLY"
+        },
+        "error": null,
+        "evidence_refs": [],
+        "next_action": null,
+        "status": "SUCCEEDED",
+        "uncertainties": []
+      }
+    },
+    {
+      "args": [
+        "init",
+        "--profile",
+        "local",
+        "--json"
+      ],
+      "exit_code": 0,
+      "response": {
+        "data": {
+          "initialized": true,
+          "principal_id": "01M7GK9BCHCQWTJ1ZDEWA4D2JT",
+          "profile": "LOCAL",
+          "secret_store": "owner_only_file",
+          "tenant_id": "01M7GK9BCHWK3WAED5Y9DGVCGJ"
+        },
+        "error": null,
+        "evidence_refs": [],
+        "next_action": null,
+        "status": "SUCCEEDED",
+        "uncertainties": []
+      }
+    },
+    {
+      "args": [
+        "ask",
+        "Olá!",
+        "--json"
+      ],
+      "exit_code": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "provider_used": false,
+          "request_id": "request-47e95347bf074cb3b556964583abbd70",
+          "result_status": "RESPONDED",
+          "scope": "S00_FIXTURE_ONLY",
+          "text": "Olá!",
+          "tool_calls": [],
+          "trace_id": "de6493f6b3604b86aa7872118e6e2719",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": null,
+        "evidence_refs": [
+          "sha256:5a62f15af853311a4c6083db2a68d136b4fc18a3b23b0820df7aabd155d4b4e0:/tmp/secma-t01-smoke-v32somn1/data/receipts/9d3a5f407f644477b659211b1738adbc.json"
+        ],
+        "next_action": null,
+        "status": "SUCCEEDED",
+        "uncertainties": []
+      }
+    },
+    {
+      "args": [
+        "ask",
+        "Olá, investigue o problema de conversão.",
+        "--json"
+      ],
+      "exit_code": 3,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "provider_used": false,
+          "request_id": "request-07bef0f13fa74c7ca1da5e03aa6c4200",
+          "scope": "S00_FIXTURE_ONLY",
+          "tool_calls": [],
+          "trace_id": "92aba96cab9946c38fe668982d5a4146",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "NOT_CONFIGURED",
+          "message": "No configured provider can process this request.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:16d25c15b3d54a8339c06e062f6997cbff01a0750a4f542e224d1bdbb79f1df4:/tmp/secma-t01-smoke-v32somn1/data/receipts/54a9d19f98fc41b69abce41be32efe64.json"
+        ],
+        "next_action": "Configure the authorized model; no durable work was accepted.",
+        "status": "BLOCKED",
+        "uncertainties": [
+          "SECMA_BASE_URL: approved HTTPS endpoint required",
+          "SECMA_MODEL",
+          "SECMA_API_KEY_ENV: configured secret reference required",
+          "SECMA_ALLOW_LIVE=1",
+          "Install SECMA live optional dependency"
+        ]
+      }
+    }
+  ],
+  "receipt_artifacts": [
+    {
+      "observed_ref": "sha256:5a62f15af853311a4c6083db2a68d136b4fc18a3b23b0820df7aabd155d4b4e0:/tmp/secma-t01-smoke-v32somn1/data/receipts/9d3a5f407f644477b659211b1738adbc.json",
+      "retained_path": "evidence/S00/T01-2026-11-15/smoke-receipts/5a62f15af853311a4c6083db2a68d136b4fc18a3b23b0820df7aabd155d4b4e0.json",
+      "sha256": "5a62f15af853311a4c6083db2a68d136b4fc18a3b23b0820df7aabd155d4b4e0"
+    },
+    {
+      "observed_ref": "sha256:16d25c15b3d54a8339c06e062f6997cbff01a0750a4f542e224d1bdbb79f1df4:/tmp/secma-t01-smoke-v32somn1/data/receipts/54a9d19f98fc41b69abce41be32efe64.json",
+      "retained_path": "evidence/S00/T01-2026-11-15/smoke-receipts/16d25c15b3d54a8339c06e062f6997cbff01a0750a4f542e224d1bdbb79f1df4.json",
+      "sha256": "16d25c15b3d54a8339c06e062f6997cbff01a0750a4f542e224d1bdbb79f1df4"
+    }
+  ]
+}

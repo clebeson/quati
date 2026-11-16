@@ -1,0 +1,14 @@
+[run]
+branch = True
+parallel = True
+include =
+    */src/quati/application/identity.py
+    */src/quati/application/cli_service.py
+    */src/quati/adapters/local_identity.py
+    */src/quati/adapters/evidence.py
+    */src/quati/cli/main.py
+    */src/quati/application/providers.py
+    */src/quati/application/ports.py
+    */src/quati/adapters/providers/*.py
+[report]
+show_missing = True

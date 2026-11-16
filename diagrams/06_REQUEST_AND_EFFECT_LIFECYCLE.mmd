@@ -3,7 +3,7 @@ sequenceDiagram
   participant CLI
   participant ERI
   participant Ledger
-  participant DBOS
+  participant Worker as Ledger-driven worker
   participant Tool
   participant Outbox
   User->>CLI: ask(request)
@@ -11,10 +11,11 @@ sequenceDiagram
   ERI->>Ledger: persist commitment + receipt intent
   Ledger-->>CLI: commitment ID
   CLI-->>User: concise, truthful receipt
-  ERI->>DBOS: start durable job
-  DBOS->>Tool: authorized read/side-effect intent
-  Tool-->>DBOS: evidence or uncertain effect
-  DBOS->>Ledger: result/event and evidence refs
+  ERI->>Ledger: enqueue work item (READY)
+  Worker->>Ledger: claim work item with lease
+  Worker->>Tool: authorized read/side-effect intent
+  Tool-->>Worker: evidence or uncertain effect
+  Worker->>Ledger: result/event and evidence refs
   Ledger->>Outbox: store delivery intent
   Outbox-->>User: channel delivery attempt
   Outbox->>Ledger: confirmed ACK or uncertain

@@ -1,5 +1,5 @@
 {
-  "schema_version": "secma-control-table/2",
+  "schema_version": "quati-control-table/2",
   "initial": "RECEIVED",
   "terminal": [
     "DELIVERED",
@@ -95,6 +95,20 @@
       "action": "prepare_partial_delivery"
     },
     {
+      "source": "EVIDENCE_REVIEW",
+      "event": "goal_revision",
+      "target": "IN_PROGRESS",
+      "guard": "authorized_feedback_current_revision",
+      "action": "merge_feedback"
+    },
+    {
+      "source": "READY_TO_DELIVER",
+      "event": "goal_revision",
+      "target": "IN_PROGRESS",
+      "guard": "authorized_feedback_current_revision",
+      "action": "merge_feedback"
+    },
+    {
       "source": "READY_TO_DELIVER",
       "event": "dispatch",
       "target": "SEND_PENDING",
@@ -123,6 +137,13 @@
       "action": "schedule_reconciliation"
     },
     {
+      "source": "SEND_PENDING",
+      "event": "goal_revision",
+      "target": "CANCEL_REQUESTED",
+      "guard": "authorized_feedback_current_revision",
+      "action": "record_cancel_request"
+    },
+    {
       "source": "EFFECT_UNCERTAIN",
       "event": "confirmed_delivered",
       "target": "DELIVERED",
@@ -135,6 +156,13 @@
       "target": "READY_TO_DELIVER",
       "guard": "provider_proves_no_effect_and_retry_budget",
       "action": "prepare_retry"
+    },
+    {
+      "source": "EFFECT_UNCERTAIN",
+      "event": "confirmed_no_effect_exhausted",
+      "target": "BLOCKED",
+      "guard": "provider_proves_no_effect",
+      "action": "record_blocker_with_owner"
     },
     {
       "source": "BLOCKED",
@@ -156,6 +184,20 @@
       "target": "EFFECT_UNCERTAIN",
       "guard": "unknown_effect_requires_reconciliation",
       "action": "schedule_reconciliation"
+    },
+    {
+      "source": "BLOCKED",
+      "event": "resume_cancellation",
+      "target": "NEEDS_RECONCILIATION",
+      "guard": "unknown_effect_requires_reconciliation",
+      "action": "schedule_reconciliation"
+    },
+    {
+      "source": "BLOCKED",
+      "event": "resume_acceptance",
+      "target": "CLASSIFIED",
+      "guard": "acceptance_block_resolved_authorized",
+      "action": "resume_acceptance"
     },
     {
       "source": "ACKNOWLEDGED",
@@ -341,6 +383,13 @@
     },
     {
       "source": "IN_PROGRESS",
+      "event": "budget_exhausted",
+      "target": "BLOCKED",
+      "guard": "budget_exhausted",
+      "action": "record_blocker_with_owner"
+    },
+    {
+      "source": "WAITING_INPUT",
       "event": "budget_exhausted",
       "target": "BLOCKED",
       "guard": "budget_exhausted",

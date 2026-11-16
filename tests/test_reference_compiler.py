@@ -51,9 +51,30 @@ def test_scs_write_requires_approval():
     c['effects']='dangerous';c['requires_approval']=False
     with pytest.raises(ValueError):validate_schema(c,'scs-capability.schema.json')
 
-def test_scs_draft_cannot_be_enabled():
+def test_scs_manifest_cannot_self_declare_lifecycle():
+    # RFC-015 REG-01: lifecycle/assurance are registry-owned.
     c=json.loads((ROOT/'examples/capabilities/example_analytic_research.json').read_text())
-    c['lifecycle']='enabled';c['assurance']='DRAFT'
+    c['lifecycle']='ENABLED';c['assurance']='C5'
+    with pytest.raises(ValueError):validate_schema(c,'scs-capability.schema.json')
+
+def test_registry_record_low_assurance_cannot_be_enabled():
+    r=json.loads((ROOT/'examples/registry/example_registry_record.json').read_text())
+    r['lifecycle']='ENABLED';r['assurance']='C1';r['enabled_by_approval']='apr-1'
+    with pytest.raises(ValueError):validate_schema(r,'capability-registry-record.schema.json')
+
+def test_registry_record_enabled_requires_human_approval_ref():
+    r=json.loads((ROOT/'examples/registry/example_registry_record.json').read_text())
+    r['lifecycle']='ENABLED';r['assurance']='C2';r['enabled_by_approval']=None
+    with pytest.raises(ValueError):validate_schema(r,'capability-registry-record.schema.json')
+
+def test_scs_write_requires_destinations_and_verification():
+    c=json.loads((ROOT/'examples/capabilities/example_analytic_research.json').read_text())
+    c['effects']='write';c['requires_approval']=True;c.pop('outcome_verification',None)
+    with pytest.raises(ValueError):validate_schema(c,'scs-capability.schema.json')
+
+def test_scs_id_must_be_namespaced():
+    c=json.loads((ROOT/'examples/capabilities/example_analytic_research.json').read_text())
+    c['id']='research'
     with pytest.raises(ValueError):validate_schema(c,'scs-capability.schema.json')
 
 def test_state_machine_terminal_has_no_outgoing():

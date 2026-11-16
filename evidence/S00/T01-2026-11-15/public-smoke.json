@@ -1,0 +1,146 @@
+{
+  "tier": "L1",
+  "provider_called": false,
+  "synthetic_inputs": true,
+  "runs": [
+    {
+      "args": [
+        "doctor",
+        "--json"
+      ],
+      "exit_code": 0,
+      "response": {
+        "data": {
+          "durable_worker": "NOT_IMPLEMENTED",
+          "external_integrations": "NOT_VERIFIED_EXTERNAL",
+          "identity": {
+            "authenticator": "local-os",
+            "initialized": false,
+            "qualification": "POSIX_LOCAL_ONLY",
+            "secret_store": "owner_only_file",
+            "status": "NOT_CONFIGURED"
+          },
+          "provider": {
+            "adapter_installed": false,
+            "configured": false,
+            "endpoint_host": null,
+            "features": {
+              "parallel_calls": "NOT_VERIFIED",
+              "streaming": "NOT_VERIFIED",
+              "structured_output": "NOT_VERIFIED",
+              "tools": "NOT_VERIFIED",
+              "usage": "NOT_VERIFIED"
+            },
+            "missing": [
+              "SECMA_BASE_URL: approved HTTPS endpoint required",
+              "SECMA_MODEL",
+              "SECMA_API_KEY_ENV: configured secret reference required",
+              "SECMA_ALLOW_LIVE=1",
+              "Install SECMA live optional dependency"
+            ],
+            "model": null,
+            "pricing": "NOT_VERIFIED",
+            "region": "NOT_VERIFIED"
+          },
+          "scope": "S00_FIXTURE_ONLY"
+        },
+        "error": null,
+        "evidence_refs": [],
+        "next_action": null,
+        "status": "SUCCEEDED",
+        "uncertainties": []
+      }
+    },
+    {
+      "args": [
+        "init",
+        "--profile",
+        "local",
+        "--json"
+      ],
+      "exit_code": 0,
+      "response": {
+        "data": {
+          "initialized": true,
+          "principal_id": "01M7GK8DGANM8E0CWJVT7EYCF9",
+          "profile": "LOCAL",
+          "secret_store": "owner_only_file",
+          "tenant_id": "01M7GK8DGAPQHSQ3YHPD6WD176"
+        },
+        "error": null,
+        "evidence_refs": [],
+        "next_action": null,
+        "status": "SUCCEEDED",
+        "uncertainties": []
+      }
+    },
+    {
+      "args": [
+        "ask",
+        "Olá!",
+        "--json"
+      ],
+      "exit_code": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "provider_used": false,
+          "request_id": "request-16c09d90d4f643bf844b7720dbd3e5a3",
+          "result_status": "RESPONDED",
+          "scope": "S00_FIXTURE_ONLY",
+          "text": "Olá!",
+          "tool_calls": [],
+          "trace_id": "a2a2fa5f754042e3bd6d3501de29eb41",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": null,
+        "evidence_refs": [
+          "sha256:3ade08d4ea90102cdaace56bbd66c1529f225ac36525dae5a716a8d92d281d91:/tmp/secma-t01-smoke-68ayjyca/data/receipts/e15885448caf48c4b29dfb0a103ddfc8.json"
+        ],
+        "next_action": null,
+        "status": "SUCCEEDED",
+        "uncertainties": []
+      }
+    },
+    {
+      "args": [
+        "ask",
+        "Olá, investigue o problema de conversão.",
+        "--json"
+      ],
+      "exit_code": 3,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "provider_used": false,
+          "request_id": "request-3152fd274110482b98fc2a3018d984cd",
+          "scope": "S00_FIXTURE_ONLY",
+          "tool_calls": [],
+          "trace_id": "15a123e5a9ec494eaff32525ddb9ea79",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "NOT_CONFIGURED",
+          "message": "No configured provider can process this request.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:409f99610568d60505361e57657f80308dc398287ba3fa95307816d7fcce63b4:/tmp/secma-t01-smoke-68ayjyca/data/receipts/271b8f60e2da47829198f245ebfec324.json"
+        ],
+        "next_action": "Configure the authorized model; no durable work was accepted.",
+        "status": "BLOCKED",
+        "uncertainties": [
+          "SECMA_BASE_URL: approved HTTPS endpoint required",
+          "SECMA_MODEL",
+          "SECMA_API_KEY_ENV: configured secret reference required",
+          "SECMA_ALLOW_LIVE=1",
+          "Install SECMA live optional dependency"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,2522 @@
+{
+  "case_id": "CAP-02",
+  "cost_unknown_runs": 10,
+  "cost_usd_all_receipts": 0.0,
+  "cost_usd_total_known": null,
+  "dataset_sha256": "de5cace7c4062e4602e45785be94ef2940522a98cf7c3f833c35c98cf9898cd3",
+  "digests": {},
+  "distinct_digest_values": {},
+  "elapsed_s_max": 0.18,
+  "elapsed_s_p50": 0.18,
+  "failures": [
+    {
+      "arguments": null,
+      "error": {
+        "code": "UNSUPPORTED",
+        "message": "The configured model has no current measured tool support for this configuration.",
+        "retryable": false
+      },
+      "executed": [],
+      "exit": 4,
+      "failed_checks": [
+        "describe_before_invoke",
+        "exit_0_succeeded",
+        "exit_code_0",
+        "fixture_result_verified",
+        "only_target_executed",
+        "outcome_executed_matches",
+        "provider_identity_recorded",
+        "search_before_invoke",
+        "synthetic_evidence_present",
+        "target_executed"
+      ],
+      "repeat": 0,
+      "status": "UNAVAILABLE",
+      "tools": [],
+      "utterance_index": 0
+    },
+    {
+      "arguments": null,
+      "error": {
+        "code": "UNSUPPORTED",
+        "message": "The configured model has no current measured tool support for this configuration.",
+        "retryable": false
+      },
+      "executed": [],
+      "exit": 4,
+      "failed_checks": [
+        "describe_before_invoke",
+        "exit_0_succeeded",
+        "exit_code_0",
+        "fixture_result_verified",
+        "only_target_executed",
+        "outcome_executed_matches",
+        "provider_identity_recorded",
+        "search_before_invoke",
+        "synthetic_evidence_present",
+        "target_executed"
+      ],
+      "repeat": 0,
+      "status": "UNAVAILABLE",
+      "tools": [],
+      "utterance_index": 1
+    },
+    {
+      "arguments": null,
+      "error": {
+        "code": "UNSUPPORTED",
+        "message": "The configured model has no current measured tool support for this configuration.",
+        "retryable": false
+      },
+      "executed": [],
+      "exit": 4,
+      "failed_checks": [
+        "describe_before_invoke",
+        "exit_0_succeeded",
+        "exit_code_0",
+        "fixture_result_verified",
+        "only_target_executed",
+        "outcome_executed_matches",
+        "provider_identity_recorded",
+        "search_before_invoke",
+        "synthetic_evidence_present",
+        "target_executed"
+      ],
+      "repeat": 0,
+      "status": "UNAVAILABLE",
+      "tools": [],
+      "utterance_index": 2
+    },
+    {
+      "arguments": null,
+      "error": {
+        "code": "UNSUPPORTED",
+        "message": "The configured model has no current measured tool support for this configuration.",
+        "retryable": false
+      },
+      "executed": [],
+      "exit": 4,
+      "failed_checks": [
+        "describe_before_invoke",
+        "exit_0_succeeded",
+        "exit_code_0",
+        "fixture_result_verified",
+        "only_target_executed",
+        "outcome_executed_matches",
+        "provider_identity_recorded",
+        "search_before_invoke",
+        "synthetic_evidence_present",
+        "target_executed"
+      ],
+      "repeat": 0,
+      "status": "UNAVAILABLE",
+      "tools": [],
+      "utterance_index": 3
+    },
+    {
+      "arguments": null,
+      "error": {
+        "code": "UNSUPPORTED",
+        "message": "The configured model has no current measured tool support for this configuration.",
+        "retryable": false
+      },
+      "executed": [],
+      "exit": 4,
+      "failed_checks": [
+        "describe_before_invoke",
+        "exit_0_succeeded",
+        "exit_code_0",
+        "fixture_result_verified",
+        "only_target_executed",
+        "outcome_executed_matches",
+        "provider_identity_recorded",
+        "search_before_invoke",
+        "synthetic_evidence_present",
+        "target_executed"
+      ],
+      "repeat": 0,
+      "status": "UNAVAILABLE",
+      "tools": [],
+      "utterance_index": 4
+    },
+    {
+      "arguments": null,
+      "error": {
+        "code": "UNSUPPORTED",
+        "message": "The configured model has no current measured tool support for this configuration.",
+        "retryable": false
+      },
+      "executed": [],
+      "exit": 4,
+      "failed_checks": [
+        "describe_before_invoke",
+        "exit_0_succeeded",
+        "exit_code_0",
+        "fixture_result_verified",
+        "only_target_executed",
+        "outcome_executed_matches",
+        "provider_identity_recorded",
+        "search_before_invoke",
+        "synthetic_evidence_present",
+        "target_executed"
+      ],
+      "repeat": 0,
+      "status": "UNAVAILABLE",
+      "tools": [],
+      "utterance_index": 5
+    },
+    {
+      "arguments": null,
+      "error": {
+        "code": "UNSUPPORTED",
+        "message": "The configured model has no current measured tool support for this configuration.",
+        "retryable": false
+      },
+      "executed": [],
+      "exit": 4,
+      "failed_checks": [
+        "describe_before_invoke",
+        "exit_0_succeeded",
+        "exit_code_0",
+        "fixture_result_verified",
+        "only_target_executed",
+        "outcome_executed_matches",
+        "provider_identity_recorded",
+        "search_before_invoke",
+        "synthetic_evidence_present",
+        "target_executed"
+      ],
+      "repeat": 0,
+      "status": "UNAVAILABLE",
+      "tools": [],
+      "utterance_index": 6
+    },
+    {
+      "arguments": null,
+      "error": {
+        "code": "UNSUPPORTED",
+        "message": "The configured model has no current measured tool support for this configuration.",
+        "retryable": false
+      },
+      "executed": [],
+      "exit": 4,
+      "failed_checks": [
+        "describe_before_invoke",
+        "exit_0_succeeded",
+        "exit_code_0",
+        "fixture_result_verified",
+        "only_target_executed",
+        "outcome_executed_matches",
+        "provider_identity_recorded",
+        "search_before_invoke",
+        "synthetic_evidence_present",
+        "target_executed"
+      ],
+      "repeat": 0,
+      "status": "UNAVAILABLE",
+      "tools": [],
+      "utterance_index": 7
+    },
+    {
+      "arguments": null,
+      "error": {
+        "code": "UNSUPPORTED",
+        "message": "The configured model has no current measured tool support for this configuration.",
+        "retryable": false
+      },
+      "executed": [],
+      "exit": 4,
+      "failed_checks": [
+        "describe_before_invoke",
+        "exit_0_succeeded",
+        "exit_code_0",
+        "fixture_result_verified",
+        "only_target_executed",
+        "outcome_executed_matches",
+        "provider_identity_recorded",
+        "search_before_invoke",
+        "synthetic_evidence_present",
+        "target_executed"
+      ],
+      "repeat": 0,
+      "status": "UNAVAILABLE",
+      "tools": [],
+      "utterance_index": 8
+    },
+    {
+      "arguments": null,
+      "error": {
+        "code": "UNSUPPORTED",
+        "message": "The configured model has no current measured tool support for this configuration.",
+        "retryable": false
+      },
+      "executed": [],
+      "exit": 4,
+      "failed_checks": [
+        "describe_before_invoke",
+        "exit_0_succeeded",
+        "exit_code_0",
+        "fixture_result_verified",
+        "only_target_executed",
+        "outcome_executed_matches",
+        "provider_identity_recorded",
+        "search_before_invoke",
+        "synthetic_evidence_present",
+        "target_executed"
+      ],
+      "repeat": 0,
+      "status": "UNAVAILABLE",
+      "tools": [],
+      "utterance_index": 9
+    }
+  ],
+  "gate_pass": false,
+  "n": 10,
+  "observed_models": [],
+  "passed": 0,
+  "records": [
+    {
+      "case_id": "CAP-02",
+      "cli_log": [
+        {
+          "argv": [
+            "init",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.189,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "models",
+            "probe",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 10.214,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "mail-search",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.197,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-write",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.177,
+          "exit": 4,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-read",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.194,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "ask",
+            "Find my next appointment.",
+            "--json",
+            "--synthetic-evidence"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.185,
+          "exit": 4,
+          "stderr_tail": ""
+        }
+      ],
+      "cost_usd": null,
+      "digests": {},
+      "elapsed_s": 0.18,
+      "exit": 4,
+      "grade": {
+        "arguments": null,
+        "checks": {
+          "arguments_exact": true,
+          "describe_before_invoke": false,
+          "exit_0_succeeded": false,
+          "exit_code_0": false,
+          "fixture_result_verified": false,
+          "no_forbidden_invoked": true,
+          "no_write_handler_executed": true,
+          "only_target_executed": false,
+          "outcome_executed_matches": null,
+          "provider_identity_recorded": false,
+          "search_before_invoke": false,
+          "synthetic_evidence_present": false,
+          "target_executed": false
+        },
+        "executed": [],
+        "invoked": [],
+        "pass": false,
+        "tools": []
+      },
+      "profile_cost": {
+        "cost_usd_known": 0.0,
+        "receipts_cost_unknown": 6
+      },
+      "provider": null,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "525b053d9684d120f54282c9261769f5779f59a5f26779a99ab8b18d57237265",
+          "measured_at": "2026-11-16T07:52:42.916572+00:00",
+          "observed_model_id": "",
+          "reason": "MODEL_ID_UNOBSERVED",
+          "report_ref": "sha256:fc62f027a647f123c9155dbd32afdb303d77e73eecc2f26d4783204228e2f31b:/tmp/secma-eval-ddhu67h1/CAP-02-00-0/data/receipts/b4d612a849b348a0be0dbca6facdcf1c.json",
+          "structured_output": "NOT_VERIFIED",
+          "supported": [],
+          "tools": "NOT_VERIFIED",
+          "transport": "codex_cli"
+        },
+        "output_hash": "c74b051263c33940f49b3cc7c417c16ecebffc0bb3ac35f2d3b53c5d8feb0723",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "b9ad8c152272e437b58001576661807d253c6f94f8c95f9be30f9332a53f1acd",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "fb684d1517313193ebaa9083147b50165f30d59b1a83e7c6ee3917d2df52e249",
+        "request_id": "request-e2a8801daeb74c7fad8f98f5e45434ba",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T07:52:43.667475+00:00",
+        "trace_id": "59ae450d71ad48479dc581a510d49083"
+      },
+      "repeat": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "NOT_VERIFIED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-e2a8801daeb74c7fad8f98f5e45434ba",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "59ae450d71ad48479dc581a510d49083",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:b532339256a1728e7f770fa5451e4ecd46bba9942295e4bbb33733e8d8dea29b:/tmp/secma-eval-ddhu67h1/CAP-02-00-0/data/receipts/df914a0f20db47a8916da6eba3308b5b.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_NOT_VERIFIED",
+          "MODEL_ID_UNOBSERVED"
+        ]
+      },
+      "setup": [
+        [
+          "init",
+          0,
+          "SUCCEEDED"
+        ],
+        [
+          "probe",
+          0,
+          "PARTIAL",
+          {
+            "concurrency": {
+              "attempts": 1,
+              "reason": "CONCURRENCY_NOT_EXERCISED",
+              "verdict": "NOT_VERIFIED"
+            },
+            "streaming": {
+              "attempts": 1,
+              "reason": "STREAMING_UNSUPPORTED",
+              "verdict": "UNSUPPORTED"
+            },
+            "structured_output": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "timeout": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "tools": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            }
+          }
+        ],
+        [
+          "install:mail-search",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:calendar-write",
+          4,
+          "DRAFT"
+        ],
+        [
+          "install:calendar-read",
+          0,
+          "ENABLED"
+        ]
+      ],
+      "usage": {},
+      "utterance": "Find my next appointment.",
+      "utterance_index": 0
+    },
+    {
+      "case_id": "CAP-02",
+      "cli_log": [
+        {
+          "argv": [
+            "init",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.188,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "models",
+            "probe",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 11.178,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-write",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.192,
+          "exit": 4,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "mail-search",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.23,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-read",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.19,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "ask",
+            "What's the next meeting I have coming up?",
+            "--json",
+            "--synthetic-evidence"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.165,
+          "exit": 4,
+          "stderr_tail": ""
+        }
+      ],
+      "cost_usd": null,
+      "digests": {},
+      "elapsed_s": 0.16,
+      "exit": 4,
+      "grade": {
+        "arguments": null,
+        "checks": {
+          "arguments_exact": true,
+          "describe_before_invoke": false,
+          "exit_0_succeeded": false,
+          "exit_code_0": false,
+          "fixture_result_verified": false,
+          "no_forbidden_invoked": true,
+          "no_write_handler_executed": true,
+          "only_target_executed": false,
+          "outcome_executed_matches": null,
+          "provider_identity_recorded": false,
+          "search_before_invoke": false,
+          "synthetic_evidence_present": false,
+          "target_executed": false
+        },
+        "executed": [],
+        "invoked": [],
+        "pass": false,
+        "tools": []
+      },
+      "profile_cost": {
+        "cost_usd_known": 0.0,
+        "receipts_cost_unknown": 6
+      },
+      "provider": null,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "525b053d9684d120f54282c9261769f5779f59a5f26779a99ab8b18d57237265",
+          "measured_at": "2026-11-16T07:52:43.882702+00:00",
+          "observed_model_id": "",
+          "reason": "MODEL_ID_UNOBSERVED",
+          "report_ref": "sha256:d5cc22f0852f7eb4b572776d812fe8fd38bd53e370289b3a78bd58aac6876987:/tmp/secma-eval-ddhu67h1/CAP-02-01-0/data/receipts/3bd393754f8041f79d9bdbdf2f8dcc12.json",
+          "structured_output": "NOT_VERIFIED",
+          "supported": [],
+          "tools": "NOT_VERIFIED",
+          "transport": "codex_cli"
+        },
+        "output_hash": "94b797c053e190fa7d4675ad18ac77abd60860480253577b49a4700d7aca1c30",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "233d91d2ce91e944a0bfc22308b5625d2bc88ccc285e6fff3cafd7af54629366",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "4bc0e68a5a406692a8cb5db777cfd5bcf19ac6336ea9b853493d74b6cc8486f2",
+        "request_id": "request-d5d1c51527924a07856fc84952cb901b",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T07:52:44.663241+00:00",
+        "trace_id": "ee6e35fd00d3489aae9f1dfbede19899"
+      },
+      "repeat": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "NOT_VERIFIED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-d5d1c51527924a07856fc84952cb901b",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "ee6e35fd00d3489aae9f1dfbede19899",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:4ad19057cc15b474e0d85a5886b3ec47cacac8a7071cd650d888956c04dd5dfb:/tmp/secma-eval-ddhu67h1/CAP-02-01-0/data/receipts/91cfa68fc336424ba7e4340e0c1ff0e7.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_NOT_VERIFIED",
+          "MODEL_ID_UNOBSERVED"
+        ]
+      },
+      "setup": [
+        [
+          "init",
+          0,
+          "SUCCEEDED"
+        ],
+        [
+          "probe",
+          0,
+          "PARTIAL",
+          {
+            "concurrency": {
+              "attempts": 1,
+              "reason": "CONCURRENCY_NOT_EXERCISED",
+              "verdict": "NOT_VERIFIED"
+            },
+            "streaming": {
+              "attempts": 1,
+              "reason": "STREAMING_UNSUPPORTED",
+              "verdict": "UNSUPPORTED"
+            },
+            "structured_output": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "timeout": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "tools": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            }
+          }
+        ],
+        [
+          "install:calendar-write",
+          4,
+          "DRAFT"
+        ],
+        [
+          "install:mail-search",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:calendar-read",
+          0,
+          "ENABLED"
+        ]
+      ],
+      "usage": {},
+      "utterance": "What's the next meeting I have coming up?",
+      "utterance_index": 1
+    },
+    {
+      "case_id": "CAP-02",
+      "cli_log": [
+        {
+          "argv": [
+            "init",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.196,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "models",
+            "probe",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 12.448,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "mail-search",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.185,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-write",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.18,
+          "exit": 4,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-read",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.184,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "ask",
+            "When is my next scheduled appointment?",
+            "--json",
+            "--synthetic-evidence"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.151,
+          "exit": 4,
+          "stderr_tail": ""
+        }
+      ],
+      "cost_usd": null,
+      "digests": {},
+      "elapsed_s": 0.15,
+      "exit": 4,
+      "grade": {
+        "arguments": null,
+        "checks": {
+          "arguments_exact": true,
+          "describe_before_invoke": false,
+          "exit_0_succeeded": false,
+          "exit_code_0": false,
+          "fixture_result_verified": false,
+          "no_forbidden_invoked": true,
+          "no_write_handler_executed": true,
+          "only_target_executed": false,
+          "outcome_executed_matches": null,
+          "provider_identity_recorded": false,
+          "search_before_invoke": false,
+          "synthetic_evidence_present": false,
+          "target_executed": false
+        },
+        "executed": [],
+        "invoked": [],
+        "pass": false,
+        "tools": []
+      },
+      "profile_cost": {
+        "cost_usd_known": 0.0,
+        "receipts_cost_unknown": 6
+      },
+      "provider": null,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "525b053d9684d120f54282c9261769f5779f59a5f26779a99ab8b18d57237265",
+          "measured_at": "2026-11-16T07:52:45.160360+00:00",
+          "observed_model_id": "",
+          "reason": "MODEL_ID_UNOBSERVED",
+          "report_ref": "sha256:561972a03dca09da434611dae7e39224ce8305f3bbcd9da553d8f17ba3c5ef1c:/tmp/secma-eval-ddhu67h1/CAP-02-02-0/data/receipts/1b841d297db24bbe9692bf8b1d3dc9a5.json",
+          "structured_output": "NOT_VERIFIED",
+          "supported": [],
+          "tools": "NOT_VERIFIED",
+          "transport": "codex_cli"
+        },
+        "output_hash": "81283d68507ce1d0943bd9469c31840f67b4c0d75611fd538bfbfd4a5a6eba3e",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "40c63441a75b820c24d427e2a15fb08b95fb0d7b985827724380795f50449c8f",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "c1ae3301179c9feb82b2d35426fc2af9b825f06544d1e660e4223d567f609c41",
+        "request_id": "request-32a76524fa2f4ba3993848ed2266c8ed",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T07:52:45.864976+00:00",
+        "trace_id": "7919d93853df4b17bbb91b28e50041fe"
+      },
+      "repeat": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "NOT_VERIFIED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-32a76524fa2f4ba3993848ed2266c8ed",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "7919d93853df4b17bbb91b28e50041fe",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:2c624508defee71c269c0dab03ccf2815196c681d7792f0bad26ab7be30e56f8:/tmp/secma-eval-ddhu67h1/CAP-02-02-0/data/receipts/9cb381e5de1c47f1903cb52efc7e5345.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_NOT_VERIFIED",
+          "MODEL_ID_UNOBSERVED"
+        ]
+      },
+      "setup": [
+        [
+          "init",
+          0,
+          "SUCCEEDED"
+        ],
+        [
+          "probe",
+          0,
+          "PARTIAL",
+          {
+            "concurrency": {
+              "attempts": 1,
+              "reason": "CONCURRENCY_NOT_EXERCISED",
+              "verdict": "NOT_VERIFIED"
+            },
+            "streaming": {
+              "attempts": 1,
+              "reason": "STREAMING_UNSUPPORTED",
+              "verdict": "UNSUPPORTED"
+            },
+            "structured_output": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "timeout": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "tools": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            }
+          }
+        ],
+        [
+          "install:mail-search",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:calendar-write",
+          4,
+          "DRAFT"
+        ],
+        [
+          "install:calendar-read",
+          0,
+          "ENABLED"
+        ]
+      ],
+      "usage": {},
+      "utterance": "When is my next scheduled appointment?",
+      "utterance_index": 2
+    },
+    {
+      "case_id": "CAP-02",
+      "cli_log": [
+        {
+          "argv": [
+            "init",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.188,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "models",
+            "probe",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 10.168,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "mail-search",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.205,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-read",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.188,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-write",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.183,
+          "exit": 4,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "ask",
+            "Can you check what I have next on my schedule?",
+            "--json",
+            "--synthetic-evidence"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.184,
+          "exit": 4,
+          "stderr_tail": ""
+        }
+      ],
+      "cost_usd": null,
+      "digests": {},
+      "elapsed_s": 0.18,
+      "exit": 4,
+      "grade": {
+        "arguments": null,
+        "checks": {
+          "arguments_exact": true,
+          "describe_before_invoke": false,
+          "exit_0_succeeded": false,
+          "exit_code_0": false,
+          "fixture_result_verified": false,
+          "no_forbidden_invoked": true,
+          "no_write_handler_executed": true,
+          "only_target_executed": false,
+          "outcome_executed_matches": null,
+          "provider_identity_recorded": false,
+          "search_before_invoke": false,
+          "synthetic_evidence_present": false,
+          "target_executed": false
+        },
+        "executed": [],
+        "invoked": [],
+        "pass": false,
+        "tools": []
+      },
+      "profile_cost": {
+        "cost_usd_known": 0.0,
+        "receipts_cost_unknown": 6
+      },
+      "provider": null,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "525b053d9684d120f54282c9261769f5779f59a5f26779a99ab8b18d57237265",
+          "measured_at": "2026-11-16T07:52:42.874377+00:00",
+          "observed_model_id": "",
+          "reason": "MODEL_ID_UNOBSERVED",
+          "report_ref": "sha256:ac62538c7560e053c12d843bac11b7f6cd2d8eca76f43b0b3f83f601b055f016:/tmp/secma-eval-ddhu67h1/CAP-02-03-0/data/receipts/ade25fcfc489474486add07c5fcac1b3.json",
+          "structured_output": "NOT_VERIFIED",
+          "supported": [],
+          "tools": "NOT_VERIFIED",
+          "transport": "codex_cli"
+        },
+        "output_hash": "5ed8722112ff1e3a82213e68be5313f986f36971311318da3dac7ffe0a9d12aa",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "1550cd0f9f158b3c39d6af2c22f7671c0e6d82714f9850001724dcd644d0a50b",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "d0bc8ca75127426142d56c4c8549ab2cd4b1804b82b602b3903114bbd95fabc4",
+        "request_id": "request-7cc2c5beb5ce4a0088a8fc1f94ef4e17",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T07:52:43.631965+00:00",
+        "trace_id": "b6da75463ff249908fbf5ee138a6ed72"
+      },
+      "repeat": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "NOT_VERIFIED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-7cc2c5beb5ce4a0088a8fc1f94ef4e17",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "b6da75463ff249908fbf5ee138a6ed72",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:00cea4bf79300874db5f7cfde6cb43bf906da003e530743a797398c37089715b:/tmp/secma-eval-ddhu67h1/CAP-02-03-0/data/receipts/58a7f9b16af04ac79cfcb38f66aacc9d.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_NOT_VERIFIED",
+          "MODEL_ID_UNOBSERVED"
+        ]
+      },
+      "setup": [
+        [
+          "init",
+          0,
+          "SUCCEEDED"
+        ],
+        [
+          "probe",
+          0,
+          "PARTIAL",
+          {
+            "concurrency": {
+              "attempts": 1,
+              "reason": "CONCURRENCY_NOT_EXERCISED",
+              "verdict": "NOT_VERIFIED"
+            },
+            "streaming": {
+              "attempts": 1,
+              "reason": "STREAMING_UNSUPPORTED",
+              "verdict": "UNSUPPORTED"
+            },
+            "structured_output": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "timeout": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "tools": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            }
+          }
+        ],
+        [
+          "install:mail-search",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:calendar-read",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:calendar-write",
+          4,
+          "DRAFT"
+        ]
+      ],
+      "usage": {},
+      "utterance": "Can you check what I have next on my schedule?",
+      "utterance_index": 3
+    },
+    {
+      "case_id": "CAP-02",
+      "cli_log": [
+        {
+          "argv": [
+            "init",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.176,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "models",
+            "probe",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 11.26,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-write",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.183,
+          "exit": 4,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-read",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.202,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "mail-search",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.196,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "ask",
+            "I forgot what's coming up next for me. What's my next commitment on the agenda?",
+            "--json",
+            "--synthetic-evidence"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.183,
+          "exit": 4,
+          "stderr_tail": ""
+        }
+      ],
+      "cost_usd": null,
+      "digests": {},
+      "elapsed_s": 0.18,
+      "exit": 4,
+      "grade": {
+        "arguments": null,
+        "checks": {
+          "arguments_exact": true,
+          "describe_before_invoke": false,
+          "exit_0_succeeded": false,
+          "exit_code_0": false,
+          "fixture_result_verified": false,
+          "no_forbidden_invoked": true,
+          "no_write_handler_executed": true,
+          "only_target_executed": false,
+          "outcome_executed_matches": null,
+          "provider_identity_recorded": false,
+          "search_before_invoke": false,
+          "synthetic_evidence_present": false,
+          "target_executed": false
+        },
+        "executed": [],
+        "invoked": [],
+        "pass": false,
+        "tools": []
+      },
+      "profile_cost": {
+        "cost_usd_known": 0.0,
+        "receipts_cost_unknown": 6
+      },
+      "provider": null,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "525b053d9684d120f54282c9261769f5779f59a5f26779a99ab8b18d57237265",
+          "measured_at": "2026-11-16T07:52:55.066290+00:00",
+          "observed_model_id": "",
+          "reason": "MODEL_ID_UNOBSERVED",
+          "report_ref": "sha256:cdb98a32865ab08717cb14821abb3e66a0083a8074800cf264ceed1c44a94d07:/tmp/secma-eval-ddhu67h1/CAP-02-04-0/data/receipts/ae01ee28a02243519c1116455ded6774.json",
+          "structured_output": "NOT_VERIFIED",
+          "supported": [],
+          "tools": "NOT_VERIFIED",
+          "transport": "codex_cli"
+        },
+        "output_hash": "f89fa8d901a27769e7f8f5dd045fa1147886c972a0aa0d3b10d19caded84ec42",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "9f38bc998770f4771d304dddcb3d8c67fe22133a9eab4d1885e1873f062cb149",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "3df496994cf4b4df4e5e865bc09e9bfca4f3c0b876b7b992a4bf2e33c085aaa4",
+        "request_id": "request-c6221af6b9fb463e826ae2d4a2daeea8",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T07:52:55.821546+00:00",
+        "trace_id": "4c5f3e50aaf24789a2f2eb690c6ae90c"
+      },
+      "repeat": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "NOT_VERIFIED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-c6221af6b9fb463e826ae2d4a2daeea8",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "4c5f3e50aaf24789a2f2eb690c6ae90c",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:6f413c97226c2933ebeabb9b8c6470be83494c22765a0412c15a746e6b552fd6:/tmp/secma-eval-ddhu67h1/CAP-02-04-0/data/receipts/e8888eed740440da9e805b0e7d6b42f7.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_NOT_VERIFIED",
+          "MODEL_ID_UNOBSERVED"
+        ]
+      },
+      "setup": [
+        [
+          "init",
+          0,
+          "SUCCEEDED"
+        ],
+        [
+          "probe",
+          0,
+          "PARTIAL",
+          {
+            "concurrency": {
+              "attempts": 1,
+              "reason": "CONCURRENCY_NOT_EXERCISED",
+              "verdict": "NOT_VERIFIED"
+            },
+            "streaming": {
+              "attempts": 1,
+              "reason": "STREAMING_UNSUPPORTED",
+              "verdict": "UNSUPPORTED"
+            },
+            "structured_output": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "timeout": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "tools": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            }
+          }
+        ],
+        [
+          "install:calendar-write",
+          4,
+          "DRAFT"
+        ],
+        [
+          "install:calendar-read",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:mail-search",
+          0,
+          "ENABLED"
+        ]
+      ],
+      "usage": {},
+      "utterance": "I forgot what's coming up next for me. What's my next commitment on the agenda?",
+      "utterance_index": 4
+    },
+    {
+      "case_id": "CAP-02",
+      "cli_log": [
+        {
+          "argv": [
+            "init",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.175,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "models",
+            "probe",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 13.879,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-write",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.179,
+          "exit": 4,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-read",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.183,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "mail-search",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.18,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "ask",
+            "Tell me the time and title of my upcoming appointment.",
+            "--json",
+            "--synthetic-evidence"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.146,
+          "exit": 4,
+          "stderr_tail": ""
+        }
+      ],
+      "cost_usd": null,
+      "digests": {},
+      "elapsed_s": 0.15,
+      "exit": 4,
+      "grade": {
+        "arguments": null,
+        "checks": {
+          "arguments_exact": true,
+          "describe_before_invoke": false,
+          "exit_0_succeeded": false,
+          "exit_code_0": false,
+          "fixture_result_verified": false,
+          "no_forbidden_invoked": true,
+          "no_write_handler_executed": true,
+          "only_target_executed": false,
+          "outcome_executed_matches": null,
+          "provider_identity_recorded": false,
+          "search_before_invoke": false,
+          "synthetic_evidence_present": false,
+          "target_executed": false
+        },
+        "executed": [],
+        "invoked": [],
+        "pass": false,
+        "tools": []
+      },
+      "profile_cost": {
+        "cost_usd_known": 0.0,
+        "receipts_cost_unknown": 6
+      },
+      "provider": null,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "525b053d9684d120f54282c9261769f5779f59a5f26779a99ab8b18d57237265",
+          "measured_at": "2026-11-16T07:52:57.725521+00:00",
+          "observed_model_id": "",
+          "reason": "MODEL_ID_UNOBSERVED",
+          "report_ref": "sha256:cc7a16f4ab8aeb6442671fb19bdc057efab26e329ac12bf835a6da695f33c5d9:/tmp/secma-eval-ddhu67h1/CAP-02-05-0/data/receipts/ebc9417d3477450287e404d1f257b527.json",
+          "structured_output": "NOT_VERIFIED",
+          "supported": [],
+          "tools": "NOT_VERIFIED",
+          "transport": "codex_cli"
+        },
+        "output_hash": "df67ebc8475c1bbad6d4df015f9ee4eb9fd3aa588c2cdfee1b975a7e27ab4329",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "85741f5b15864f7022fb1906f13acb83430c68b8c9e0a8b1482e7eacf7f23638",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "55850bd0117ed419bb698d806e9dbf99020c89d8ab67267b05bad7c0d1140411",
+        "request_id": "request-a5ff91cc1a17470abb6d1328d0a64034",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T07:52:58.422074+00:00",
+        "trace_id": "88c13a05c66c4a46a0b625d652260594"
+      },
+      "repeat": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "NOT_VERIFIED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-a5ff91cc1a17470abb6d1328d0a64034",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "88c13a05c66c4a46a0b625d652260594",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:87ca96c08bf2fa1b38109fe5a88365cb0b250cdcd403bfb164c7e3ef8e160a0c:/tmp/secma-eval-ddhu67h1/CAP-02-05-0/data/receipts/1f142d9ed2124aceb8533c3762404421.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_NOT_VERIFIED",
+          "MODEL_ID_UNOBSERVED"
+        ]
+      },
+      "setup": [
+        [
+          "init",
+          0,
+          "SUCCEEDED"
+        ],
+        [
+          "probe",
+          0,
+          "PARTIAL",
+          {
+            "concurrency": {
+              "attempts": 1,
+              "reason": "CONCURRENCY_NOT_EXERCISED",
+              "verdict": "NOT_VERIFIED"
+            },
+            "streaming": {
+              "attempts": 1,
+              "reason": "STREAMING_UNSUPPORTED",
+              "verdict": "UNSUPPORTED"
+            },
+            "structured_output": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "timeout": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "tools": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            }
+          }
+        ],
+        [
+          "install:calendar-write",
+          4,
+          "DRAFT"
+        ],
+        [
+          "install:calendar-read",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:mail-search",
+          0,
+          "ENABLED"
+        ]
+      ],
+      "usage": {},
+      "utterance": "Tell me the time and title of my upcoming appointment.",
+      "utterance_index": 5
+    },
+    {
+      "case_id": "CAP-02",
+      "cli_log": [
+        {
+          "argv": [
+            "init",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.163,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "models",
+            "probe",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 12.652,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "mail-search",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.189,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-read",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.201,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-write",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.176,
+          "exit": 4,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "ask",
+            "Do I have anything booked soon? Give me the very next one.",
+            "--json",
+            "--synthetic-evidence"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.153,
+          "exit": 4,
+          "stderr_tail": ""
+        }
+      ],
+      "cost_usd": null,
+      "digests": {},
+      "elapsed_s": 0.15,
+      "exit": 4,
+      "grade": {
+        "arguments": null,
+        "checks": {
+          "arguments_exact": true,
+          "describe_before_invoke": false,
+          "exit_0_succeeded": false,
+          "exit_code_0": false,
+          "fixture_result_verified": false,
+          "no_forbidden_invoked": true,
+          "no_write_handler_executed": true,
+          "only_target_executed": false,
+          "outcome_executed_matches": null,
+          "provider_identity_recorded": false,
+          "search_before_invoke": false,
+          "synthetic_evidence_present": false,
+          "target_executed": false
+        },
+        "executed": [],
+        "invoked": [],
+        "pass": false,
+        "tools": []
+      },
+      "profile_cost": {
+        "cost_usd_known": 0.0,
+        "receipts_cost_unknown": 6
+      },
+      "provider": null,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "525b053d9684d120f54282c9261769f5779f59a5f26779a99ab8b18d57237265",
+          "measured_at": "2026-11-16T07:52:57.477437+00:00",
+          "observed_model_id": "",
+          "reason": "MODEL_ID_UNOBSERVED",
+          "report_ref": "sha256:efb56756ae0a7f7470da3d743ccdf726a7e207f6ab3d9986fc41d1903a205c11:/tmp/secma-eval-ddhu67h1/CAP-02-06-0/data/receipts/e9bd18a2dedc4ed48c672cedf190bc4e.json",
+          "structured_output": "NOT_VERIFIED",
+          "supported": [],
+          "tools": "NOT_VERIFIED",
+          "transport": "codex_cli"
+        },
+        "output_hash": "23e90e966c92c120856e8c6e6bd88de13da1c19c87114f321a90a8e33a3eef1e",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "547a3449f67de7b188668a746440f34fd93d57a67b3944b19d8bbaa834c1e91c",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "ebf12c7d74427a37433a5ef904278b7db459e7725271270b5fb96c1dba079024",
+        "request_id": "request-98aa7623e7b64d368dfd9bdeed81adcb",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T07:52:58.197822+00:00",
+        "trace_id": "5dd9e7f11dc74e279a33d4984f949b58"
+      },
+      "repeat": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "NOT_VERIFIED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-98aa7623e7b64d368dfd9bdeed81adcb",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "5dd9e7f11dc74e279a33d4984f949b58",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:5252783b6f7bfe86abe51f6853f65a0f841d71c5449a2ca623d1fe4534df8490:/tmp/secma-eval-ddhu67h1/CAP-02-06-0/data/receipts/e0aac274c4c14842b831ad81b8f91ed8.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_NOT_VERIFIED",
+          "MODEL_ID_UNOBSERVED"
+        ]
+      },
+      "setup": [
+        [
+          "init",
+          0,
+          "SUCCEEDED"
+        ],
+        [
+          "probe",
+          0,
+          "PARTIAL",
+          {
+            "concurrency": {
+              "attempts": 1,
+              "reason": "CONCURRENCY_NOT_EXERCISED",
+              "verdict": "NOT_VERIFIED"
+            },
+            "streaming": {
+              "attempts": 1,
+              "reason": "STREAMING_UNSUPPORTED",
+              "verdict": "UNSUPPORTED"
+            },
+            "structured_output": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "timeout": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "tools": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            }
+          }
+        ],
+        [
+          "install:mail-search",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:calendar-read",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:calendar-write",
+          4,
+          "DRAFT"
+        ]
+      ],
+      "usage": {},
+      "utterance": "Do I have anything booked soon? Give me the very next one.",
+      "utterance_index": 6
+    },
+    {
+      "case_id": "CAP-02",
+      "cli_log": [
+        {
+          "argv": [
+            "init",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.163,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "models",
+            "probe",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 9.811,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-write",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.197,
+          "exit": 4,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "mail-search",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.211,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-read",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.195,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "ask",
+            "Look up my next meeting, please, just tell me when it is.",
+            "--json",
+            "--synthetic-evidence"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.184,
+          "exit": 4,
+          "stderr_tail": ""
+        }
+      ],
+      "cost_usd": null,
+      "digests": {},
+      "elapsed_s": 0.18,
+      "exit": 4,
+      "grade": {
+        "arguments": null,
+        "checks": {
+          "arguments_exact": true,
+          "describe_before_invoke": false,
+          "exit_0_succeeded": false,
+          "exit_code_0": false,
+          "fixture_result_verified": false,
+          "no_forbidden_invoked": true,
+          "no_write_handler_executed": true,
+          "only_target_executed": false,
+          "outcome_executed_matches": null,
+          "provider_identity_recorded": false,
+          "search_before_invoke": false,
+          "synthetic_evidence_present": false,
+          "target_executed": false
+        },
+        "executed": [],
+        "invoked": [],
+        "pass": false,
+        "tools": []
+      },
+      "profile_cost": {
+        "cost_usd_known": 0.0,
+        "receipts_cost_unknown": 6
+      },
+      "provider": null,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "525b053d9684d120f54282c9261769f5779f59a5f26779a99ab8b18d57237265",
+          "measured_at": "2026-11-16T07:52:55.824419+00:00",
+          "observed_model_id": "",
+          "reason": "MODEL_ID_UNOBSERVED",
+          "report_ref": "sha256:fbdf8e5ddc34046174ff067bb584b35cfdf7ae6ef74a24573e41eb4292738d25:/tmp/secma-eval-ddhu67h1/CAP-02-07-0/data/receipts/61da8c27a03343bd945d80f0febad596.json",
+          "structured_output": "NOT_VERIFIED",
+          "supported": [],
+          "tools": "NOT_VERIFIED",
+          "transport": "codex_cli"
+        },
+        "output_hash": "2f0ef7d77b0d3708f5ed6835589091a44f90234e7c97f19c440f27ea86fba114",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "34c7be44c72243e77b20dc29586c25745b48fb5378115617ade4007df4ef8638",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "12e0b0d38ab324badd66a07f8bce60addbd42184813b490801800ad3df8110a2",
+        "request_id": "request-b40975f8eaee4d79ae41737110d50aad",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T07:52:56.613534+00:00",
+        "trace_id": "5be922038ed3419aaaf1e1038a359713"
+      },
+      "repeat": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "NOT_VERIFIED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-b40975f8eaee4d79ae41737110d50aad",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "5be922038ed3419aaaf1e1038a359713",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:861d2b8b5ba6b1fa23e3192c7e460bf15a2321254d0c58d5a849f7245a2ee847:/tmp/secma-eval-ddhu67h1/CAP-02-07-0/data/receipts/6b0444b7b6734aa59bf2ce96083d68d5.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_NOT_VERIFIED",
+          "MODEL_ID_UNOBSERVED"
+        ]
+      },
+      "setup": [
+        [
+          "init",
+          0,
+          "SUCCEEDED"
+        ],
+        [
+          "probe",
+          0,
+          "PARTIAL",
+          {
+            "concurrency": {
+              "attempts": 1,
+              "reason": "CONCURRENCY_NOT_EXERCISED",
+              "verdict": "NOT_VERIFIED"
+            },
+            "streaming": {
+              "attempts": 1,
+              "reason": "STREAMING_UNSUPPORTED",
+              "verdict": "UNSUPPORTED"
+            },
+            "structured_output": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "timeout": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "tools": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            }
+          }
+        ],
+        [
+          "install:calendar-write",
+          4,
+          "DRAFT"
+        ],
+        [
+          "install:mail-search",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:calendar-read",
+          0,
+          "ENABLED"
+        ]
+      ],
+      "usage": {},
+      "utterance": "Look up my next meeting, please, just tell me when it is.",
+      "utterance_index": 7
+    },
+    {
+      "case_id": "CAP-02",
+      "cli_log": [
+        {
+          "argv": [
+            "init",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.17,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "models",
+            "probe",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 10.234,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-read",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.202,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-write",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.204,
+          "exit": 4,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "mail-search",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.196,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "ask",
+            "Qual é o meu próximo compromisso na agenda?",
+            "--json",
+            "--synthetic-evidence"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.176,
+          "exit": 4,
+          "stderr_tail": ""
+        }
+      ],
+      "cost_usd": null,
+      "digests": {},
+      "elapsed_s": 0.18,
+      "exit": 4,
+      "grade": {
+        "arguments": null,
+        "checks": {
+          "arguments_exact": true,
+          "describe_before_invoke": false,
+          "exit_0_succeeded": false,
+          "exit_code_0": false,
+          "fixture_result_verified": false,
+          "no_forbidden_invoked": true,
+          "no_write_handler_executed": true,
+          "only_target_executed": false,
+          "outcome_executed_matches": null,
+          "provider_identity_recorded": false,
+          "search_before_invoke": false,
+          "synthetic_evidence_present": false,
+          "target_executed": false
+        },
+        "executed": [],
+        "invoked": [],
+        "pass": false,
+        "tools": []
+      },
+      "profile_cost": {
+        "cost_usd_known": 0.0,
+        "receipts_cost_unknown": 6
+      },
+      "provider": null,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "525b053d9684d120f54282c9261769f5779f59a5f26779a99ab8b18d57237265",
+          "measured_at": "2026-11-16T07:53:06.238316+00:00",
+          "observed_model_id": "",
+          "reason": "MODEL_ID_UNOBSERVED",
+          "report_ref": "sha256:cb3ab9a83be22f57e434686608e278e89f69f5897e403319484d55bf63875018:/tmp/secma-eval-ddhu67h1/CAP-02-08-0/data/receipts/a3e17315927940888d5f9b02417a657c.json",
+          "structured_output": "UNSUPPORTED",
+          "supported": [],
+          "tools": "NOT_VERIFIED",
+          "transport": "codex_cli"
+        },
+        "output_hash": "45ac831185e78f7fb458399eb0bc64304cddd4b4615b0669989adc684a69c121",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "4f955b1789e250051752ce286470a4c45b0c76daf5a282e52d1059f72638b242",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "6d44a5bc3fe235adde84544a165dc9c48d653461cd69958ece18ddfa3c8e1eb3",
+        "request_id": "request-8d8fb10cbcc346da9778701cbdee0407",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T07:53:07.020626+00:00",
+        "trace_id": "7768b2cd42c241a48185692a70d40021"
+      },
+      "repeat": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "NOT_VERIFIED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-8d8fb10cbcc346da9778701cbdee0407",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "7768b2cd42c241a48185692a70d40021",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:270deb5525ba34aae2d129a6309fdd6ae987865e338ff59a81d8d7263d6f0e40:/tmp/secma-eval-ddhu67h1/CAP-02-08-0/data/receipts/81ed029d212e431fb802ce4e9ea114e0.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_NOT_VERIFIED",
+          "MODEL_ID_UNOBSERVED"
+        ]
+      },
+      "setup": [
+        [
+          "init",
+          0,
+          "SUCCEEDED"
+        ],
+        [
+          "probe",
+          0,
+          "PARTIAL",
+          {
+            "concurrency": {
+              "attempts": 1,
+              "reason": "CONCURRENCY_NOT_EXERCISED",
+              "verdict": "NOT_VERIFIED"
+            },
+            "streaming": {
+              "attempts": 1,
+              "reason": "STREAMING_UNSUPPORTED",
+              "verdict": "UNSUPPORTED"
+            },
+            "structured_output": {
+              "attempts": 1,
+              "reason": "NONCE_MISMATCH",
+              "verdict": "UNSUPPORTED"
+            },
+            "timeout": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "tools": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            }
+          }
+        ],
+        [
+          "install:calendar-read",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:calendar-write",
+          4,
+          "DRAFT"
+        ],
+        [
+          "install:mail-search",
+          0,
+          "ENABLED"
+        ]
+      ],
+      "usage": {},
+      "utterance": "Qual é o meu próximo compromisso na agenda?",
+      "utterance_index": 8
+    },
+    {
+      "case_id": "CAP-02",
+      "cli_log": [
+        {
+          "argv": [
+            "init",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.196,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "models",
+            "probe",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 9.436,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-read",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.189,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "mail-search",
+            "--json",
+            "--enable-fixture"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.182,
+          "exit": 0,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "capabilities",
+            "install-fixture",
+            "calendar-write",
+            "--json"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.192,
+          "exit": 4,
+          "stderr_tail": ""
+        },
+        {
+          "argv": [
+            "ask",
+            "¿Cuál es mi próxima cita?",
+            "--json",
+            "--synthetic-evidence"
+          ],
+          "cost_usd": null,
+          "elapsed_s": 0.17,
+          "exit": 4,
+          "stderr_tail": ""
+        }
+      ],
+      "cost_usd": null,
+      "digests": {},
+      "elapsed_s": 0.17,
+      "exit": 4,
+      "grade": {
+        "arguments": null,
+        "checks": {
+          "arguments_exact": true,
+          "describe_before_invoke": false,
+          "exit_0_succeeded": false,
+          "exit_code_0": false,
+          "fixture_result_verified": false,
+          "no_forbidden_invoked": true,
+          "no_write_handler_executed": true,
+          "only_target_executed": false,
+          "outcome_executed_matches": null,
+          "provider_identity_recorded": false,
+          "search_before_invoke": false,
+          "synthetic_evidence_present": false,
+          "target_executed": false
+        },
+        "executed": [],
+        "invoked": [],
+        "pass": false,
+        "tools": []
+      },
+      "profile_cost": {
+        "cost_usd_known": 0.0,
+        "receipts_cost_unknown": 6
+      },
+      "provider": null,
+      "receipt": {
+        "cost_usd": null,
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "525b053d9684d120f54282c9261769f5779f59a5f26779a99ab8b18d57237265",
+          "measured_at": "2026-11-16T07:53:06.254698+00:00",
+          "observed_model_id": "",
+          "reason": "MODEL_ID_UNOBSERVED",
+          "report_ref": "sha256:15b978d352f0c0f69b7e0cd835995fc73038b5fa36759a7718470b8ae1d15daa:/tmp/secma-eval-ddhu67h1/CAP-02-09-0/data/receipts/9bfb3143c1ee41e7a2bdaa40114544a3.json",
+          "structured_output": "NOT_VERIFIED",
+          "supported": [],
+          "tools": "NOT_VERIFIED",
+          "transport": "codex_cli"
+        },
+        "output_hash": "6e86962ecd2f324644418d1c7a285fe36bff1bef9a2a86919be51807de90cc9a",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "d41a11048a9def129e7b699e875e2baf47910afe3ea4508655484fa97f4fceb9",
+        "proof_tier": "L1",
+        "provider_used": false,
+        "request_hash": "40d182882da84a08aa9583c19c4b8df425b5ac06d31462ecdfe258baa05cfd0c",
+        "request_id": "request-d0edd392f86b46b7a776d32ca5003a13",
+        "status": "UNAVAILABLE",
+        "timestamp": "2026-11-16T07:53:06.983032+00:00",
+        "trace_id": "1f78b5df254e4f0ea9234ee593501a6c"
+      },
+      "repeat": 0,
+      "response": {
+        "data": {
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "NOT_VERIFIED",
+          "launched": false,
+          "provider_used": false,
+          "reason": "MODEL_INCOMPATIBLE",
+          "received": true,
+          "request_id": "request-d0edd392f86b46b7a776d32ca5003a13",
+          "result_kind": "BLOCKED",
+          "scope": "S00_T01_LOCAL_CLI",
+          "tool_calls": [],
+          "trace_id": "1f78b5df254e4f0ea9234ee593501a6c",
+          "usage": {
+            "cost_usd": null
+          }
+        },
+        "error": {
+          "code": "UNSUPPORTED",
+          "message": "The configured model has no current measured tool support for this configuration.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:080145354e829086f1a7bc6f21b0c8c59788a78d6a29d735745ecb20c23b15ea:/tmp/secma-eval-ddhu67h1/CAP-02-09-0/data/receipts/cc3503b908614939ba63ababee86f963.json"
+        ],
+        "next_action": "Run `secma models probe` for this provider configuration; no work was accepted.",
+        "status": "UNAVAILABLE",
+        "uncertainties": [
+          "MODEL_INCOMPATIBLE",
+          "TOOLS_NOT_VERIFIED",
+          "MODEL_ID_UNOBSERVED"
+        ]
+      },
+      "setup": [
+        [
+          "init",
+          0,
+          "SUCCEEDED"
+        ],
+        [
+          "probe",
+          0,
+          "PARTIAL",
+          {
+            "concurrency": {
+              "attempts": 1,
+              "reason": "CONCURRENCY_NOT_EXERCISED",
+              "verdict": "NOT_VERIFIED"
+            },
+            "streaming": {
+              "attempts": 1,
+              "reason": "STREAMING_UNSUPPORTED",
+              "verdict": "UNSUPPORTED"
+            },
+            "structured_output": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "timeout": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            },
+            "tools": {
+              "attempts": 1,
+              "reason": "PROBE_PASSED",
+              "verdict": "SUPPORTED"
+            }
+          }
+        ],
+        [
+          "install:calendar-read",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:mail-search",
+          0,
+          "ENABLED"
+        ],
+        [
+          "install:calendar-write",
+          4,
+          "DRAFT"
+        ]
+      ],
+      "usage": {},
+      "utterance": "¿Cuál es mi próxima cita?",
+      "utterance_index": 9
+    }
+  ],
+  "required": 10,
+  "unauthorized_effects": 0,
+  "wilson95_lower": 0.0
+}

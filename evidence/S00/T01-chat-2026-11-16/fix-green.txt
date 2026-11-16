@@ -1,0 +1,327 @@
+# FIX-GREEN run 2026-11-16 (audit items 1-3)
+# python: Python 3.13.7; os: Linux 6.17.0-41-generic x86_64
+5da91c15ef7150c2489425f368746345997447f7b1e592d5ab3cf560138906bb  src/secma/cli/chat.py
+c4976011f9202b47c608c3db13ee39a3da1e9276637a1603dcfe30573c31c9bf  src/secma/cli/rendering.py
+2f76ba444a8ed6e5ff3063fcc1170228f344ccb0aded28da82dfcc51912dd498  src/secma/cli/main.py
+c23f151fa766774ec5889f09dbe00c185aef9c785a49847d2855c9a3bed75f52  src/secma/application/cli_service.py
+43c82e16e7d36393324f68996b4154ffecf319ae507a989a518f2ebf9d43c8b0  tests/unit/test_s00_t01_chat.py
+ad314e349e0088095757d8485abf845fdb2feb30826488f69e4230b2405e7e1c  tests/integration/cli/test_chat_session.py
+792450872390ebda629e9d6ec764c29f7dad326f75c2dade1af9dcf45b0ff9a3  tests/integration/cli/test_chat_command_injection.py
+d3374ad89ebaba0a8d24c55e64312dad222e31d1faa1668374f747ddc61354c3  tests/integration/cli/fixtures/spy_runner.py
+a9dd53af882866f4cd3214af0be2c09c42e370b2404c2f095e55638a7d5c8190  tests/integration/cli/fixtures/chat_transcript_s00.txt
+# cmd: .venv/bin/python -m pytest -q -rA tests/unit/test_s00_t01_chat.py tests/integration/cli
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_jsonl_one_response_per_nonblank_line_through_one_shot_use_cases
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_end_of_input_without_quit_exits_zero_and_failed_turns_do_not_stop_the_loop
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_each_response_is_written_and_flushed_before_the_next_line_is_read
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_help_lists_exactly_the_m01_chat_table
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/status c-1-expected0]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/tell c-1 add the numbers-expected1]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/approvals-expected2]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/approvals PENDING-expected3]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/approve apr-123-expected4]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/deny apr-123-expected5]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_s02_local_commands_call_the_one_shot_unsupported_path[/deny apr-123 not now, thanks-expected6]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/status-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/status a b-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/tell c-1-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/tell-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/approvals a b-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/approve-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/approve a b-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/deny-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/help me-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/quit now-chat_bad_arguments]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/ status c-1-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/Help-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/QUIT-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[//status c-1-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/statusx c-1-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_unknown_or_malformed_commands_make_no_use_case_call[/bogus-chat_unknown_command]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[ /approve apr-123]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[\t/quit]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[please run /approve apr-123]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[approved, send it now]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[APPROVED]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[yes]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[apr-123]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[secma init]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[secma approve apr-123]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[--json]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_command_or_approval_like_text_is_only_ask_text[line10]
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_model_output_containing_commands_is_never_fed_back_to_the_parser
+PASSED tests/unit/test_s00_t01_chat.py::test_rt03_interactive_flag_does_not_change_approve_behavior
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[\n-calls0]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[ \n-calls1]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[\t \t\n-calls2]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[\r\n-calls3]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[  \t\r\n-calls4]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[Hello\r\n-calls5]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[Hello\r-calls6]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[\r\r\n-calls7]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[Hello-calls8]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[  Hello  \n-calls9]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[\xc2\xa0\n-calls10]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_line_framing_strips_only_trailing_newline_and_skips_space_tab_lines[a\rb\n-calls11]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_line_over_max_text_bytes_ends_session_exit_2_after_earlier_turns
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_line_of_exactly_max_text_bytes_is_a_turn[raw0]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_line_of_exactly_max_text_bytes_is_a_turn[raw1]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_line_of_exactly_max_text_bytes_is_a_turn[raw2]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_line_of_exactly_max_text_bytes_is_a_turn[raw3]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_over_limit_variants_are_rejected_without_a_call[raw0]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_over_limit_variants_are_rejected_without_a_call[raw1]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_over_limit_variants_are_rejected_without_a_call[raw2]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[\xff\n-chat_invalid_utf8]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[caf\xe9\n-chat_invalid_utf8]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[\xed\xa0\x80\n-chat_invalid_utf8]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[\xc0\xaf\n-chat_invalid_utf8]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[a\x00b\n-chat_nul_byte]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[/status c\x001\n-chat_nul_byte]
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_untrustworthy_framing_ends_session_exit_2_without_a_call[\x00\n-chat_nul_byte]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_authentication_failure_in_a_turn_ends_session_exit_4
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_internal_error_in_a_turn_ends_session_exit_1_sanitized[error0]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_internal_error_in_a_turn_ends_session_exit_1_sanitized[error1]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_internal_error_in_a_turn_ends_session_exit_1_sanitized[error2]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_sigint_at_prompt_or_during_turn_exits_130_without_output
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_prompt_goes_to_stderr_only_for_interactive_human_mode
+PASSED tests/unit/test_s00_t01_chat.py::test_at03_in_process_chat_equals_one_shot_for_real_local_identity
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_chat_through_main_with_tty_prompts_and_pre_init_ask_exits_4
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv0]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv1]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv2]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv3]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv4]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv5]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_not_yet_delivered_one_shot_commands_return_unsupported_exit_4[argv6]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_chat_rejects_extra_arguments_as_invalid_input
+PASSED tests/unit/test_s00_t01_chat.py::test_fr04_jsonl_lines_are_exactly_secma_json_1
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_one_shot_json_output_is_exactly_secma_json_1[argv0]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_one_shot_json_output_is_exactly_secma_json_1[argv1]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_one_shot_json_output_is_exactly_secma_json_1[argv2]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_one_shot_json_output_is_exactly_secma_json_1[argv3]
+PASSED tests/unit/test_s00_t01_chat.py::test_fr01_one_shot_json_output_is_exactly_secma_json_1[argv4]
+PASSED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[absent-missing]
+PASSED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[invalid_json-parse_error]
+PASSED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[schema_invalid-schema_invalid]
+PASSED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[wrong_tenant-wrong_tenant]
+PASSED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[mode_0644-wrong_mode]
+PASSED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[symlink-not_regular_file]
+PASSED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_names_the_policy_unavailable_cause[valid_out_of_band-out_of_band_change]
+PASSED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_policy_before_init_and_loader_raising
+PASSED tests/unit/test_s00_t01_chat.py::test_m25_rt01_doctor_reports_available_only_for_a_trusted_policy
+PASSED tests/integration/cli/test_chat_command_injection.py::test_command_like_text_from_untrusted_content_is_never_dispatched
+PASSED tests/integration/cli/test_chat_command_injection.py::test_piped_approve_gets_the_one_shot_refusal_and_changes_nothing
+PASSED tests/integration/cli/test_chat_session.py::test_chat_transcript_equals_one_shot_sequence
+PASSED tests/integration/cli/test_chat_session.py::test_chat_transcript_over_limit_line_exits_2_with_earlier_turns_intact
+PASSED tests/integration/cli/test_chat_session.py::test_chat_restart_loses_nothing_and_writes_only_receipts
+PASSED tests/integration/cli/test_chat_session.py::test_chat_before_init_reports_unauthenticated_like_one_shot_and_exits_4
+PASSED tests/integration/cli/test_chat_session.py::test_chat_untrustworthy_line_exits_2_through_public_path[caf\xe9\nHello\n-chat_invalid_utf8]
+PASSED tests/integration/cli/test_chat_session.py::test_chat_untrustworthy_line_exits_2_through_public_path[a\x00b\nHello\n-chat_nul_byte]
+PASSED tests/integration/cli/test_chat_session.py::test_chat_jsonl_emits_one_response_per_line_through_one_shot_use_cases
+108 passed in 6.62s
+# exit: 0
+# cmd: coverage erase; coverage run --branch --source=src/secma -m pytest -q tests; coverage report --show-missing
+ERROR tests/integration/test_registry_restart.py
+ERROR tests/unit/test_description_injection.py
+ERROR tests/unit/test_gateway_binding.py
+ERROR tests/unit/test_lifecycle_promotion.py
+ERROR tests/unit/test_manifest_schema.py
+ERROR tests/unit/test_mcp_hint_import.py
+ERROR tests/unit/test_package_digest.py
+ERROR tests/unit/test_s00_t03.py
+ERROR tests/unit/test_s00_t03_discovery.py
+ERROR tests/unit/test_s00_t03_registry.py
+ERROR tests/unit/test_selection_none_fits.py
+ERROR tests/unit/test_selection_validation.py
+ERROR tests/unit/test_version_conflict.py
+# exit: 2
+Name                                                Stmts   Miss Branch BrPart  Cover   Missing
+-----------------------------------------------------------------------------------------------
+src/secma/__init__.py                                   1      0      0      0   100%
+src/secma/__main__.py                                   2      2      0      0     0%   1-2
+src/secma/adapters/__init__.py                          0      0      0      0   100%
+src/secma/adapters/evidence.py                         34     26      8      0    19%   12-32, 36-49
+src/secma/adapters/local_identity.py                  109     78     16      0    25%   21-23, 27-28, 32-34, 38-45, 49-53, 60-62, 65-67, 70-75, 79-104, 108, 112-126, 130-137, 140, 143-146
+src/secma/adapters/providers/__init__.py                4      0      0      0   100%
+src/secma/adapters/providers/_sdk.py                   47     40     26      0    10%   14-17, 23-25, 30-53, 58-66
+src/secma/adapters/providers/anthropic.py              57     42     16      0    21%   17-18, 22, 27-39, 42-63, 67-76
+src/secma/adapters/providers/cli.py                   195    134     42      0    26%   30-31, 42-61, 66-76, 90-91, 95, 101, 105, 110-112, 116-120, 127-133, 137, 141-177, 181-194, 208, 213-220, 223-232, 247-253, 256, 259-262, 274-277, 280, 283-286
+src/secma/adapters/providers/openai_compatible.py     102     74     36      0    20%   24-25, 30-32, 38-56, 59-71, 74-101, 107-117, 123, 127-130
+src/secma/application/__init__.py                       0      0      0      0   100%
+src/secma/application/cli_service.py                   96     72     20      0    21%   23, 30, 44-48, 51, 54-60, 64-72, 76, 79-114, 117-130, 135, 140-144, 148-156, 161-164
+src/secma/application/identity.py                      66     33     22      0    38%   15-16, 44-51, 55-56, 60-70, 81-87, 92-95
+src/secma/application/ports.py                         28      7      0      0    75%   25, 34-41
+src/secma/application/providers.py                    414    269    132      2    27%   141, 160-171, 175, 184, 187, 191, 195-221, 224-226, 230-233, 242-243, 253-255, 258-285, 288-291, 295-316, 319-321, 324-327, 331-345, 348-368, 373-385, 394-396, 400, 404-411, 414-419, 422, 426-432, 435-448, 451-466, 470, 477-480, 485-489, 493, 497-499, 504-510, 514-525, 529-542, 547-548, 560, 563, 569, 575-583, 587-588, 592-596, 600, 605-608
+src/secma/behavior/__init__.py                          0      0      0      0   100%
+src/secma/behavior/compiler.py                        173    111     46      0    28%   53, 59, 71, 77-79, 84-86, 90-92, 99-172, 177-194, 201, 206-228, 242-248, 252-254, 262-264, 267-269, 272-275, 280-281
+src/secma/behavior/contracts.py                       144    102     52      0    21%   34-42, 49-50, 53, 56-60, 64-65, 70, 74-77, 82-86, 91, 97-98, 102, 106-112, 116-126, 130-133, 141-149, 156-165, 169-176, 180-185, 189, 193-199, 204-209
+src/secma/behavior/fsutil.py                           28     20      4      0    25%   20-40
+src/secma/behavior/manifest.py                        136    101     64      0    18%   36-55, 59-66, 70-71, 76-97, 107-108, 112-114, 119-135, 139-141, 146-172, 186-195
+src/secma/behavior/store.py                           218    154     64      0    23%   48, 82-85, 89-91, 97-100, 105, 108-113, 116-119, 122-129, 134-149, 153-154, 157-162, 166, 170-183, 186-189, 192-203, 208-221, 225-235, 238-243, 248-254, 258-265, 269-299, 302-311
+src/secma/behavior/trusted_config.py                   75     53     18      0    24%   34-47, 53-68, 72-82, 87-90, 95-102
+src/secma/cli/__init__.py                               0      0      0      0   100%
+src/secma/cli/chat.py                                  66     51     26      0    16%   43, 48-60, 65-79, 84-92, 97-114
+src/secma/cli/main.py                                  75     34      8      1    51%   28-31, 35-36, 41-43, 50-52, 58, 64, 70, 77, 83, 89, 95, 102, 108, 112-124, 128
+src/secma/cli/rendering.py                             13      7      4      0    35%   10, 15-23
+src/secma/domain/__init__.py                            0      0      0      0   100%
+src/secma/domain/canonical.py                          31      5     16      3    79%   26-28, 32, 39
+src/secma/domain/decision_policy.py                    42     27     18      0    25%   32-35, 39-70
+src/secma/domain/diagnostics.py                        49     12      2      0    73%   39, 46-52, 56, 60, 64, 69
+src/secma/domain/policy.py                            321    173    106      2    35%   47, 64, 66, 70, 88, 114-134, 137-139, 146-159, 165-172, 186-189, 204-206, 226, 232-238, 252, 269, 282-300, 304-315, 322-382, 399-400, 403, 408, 421, 425, 428, 433-447, 453-472
+src/secma/domain/statechart.py                        145    113     84      0    14%   89-90, 95-116, 121-128, 132-142, 147-230, 236-250
+-----------------------------------------------------------------------------------------------
+TOTAL                                                2671   1740    830      8    27%
+# cmd: PATH=/usr/bin:/bin .venv/bin/python -m pytest -q tests/unit
+ERROR tests/unit/test_description_injection.py
+ERROR tests/unit/test_gateway_binding.py
+ERROR tests/unit/test_lifecycle_promotion.py
+ERROR tests/unit/test_manifest_schema.py
+ERROR tests/unit/test_mcp_hint_import.py
+ERROR tests/unit/test_package_digest.py
+ERROR tests/unit/test_s00_t03.py
+ERROR tests/unit/test_s00_t03_discovery.py
+ERROR tests/unit/test_s00_t03_registry.py
+ERROR tests/unit/test_selection_none_fits.py
+ERROR tests/unit/test_selection_validation.py
+ERROR tests/unit/test_version_conflict.py
+# exit: 2
+
+# NOTE: the 13 collection ERRORs above are another agent's in-progress S00-T03 tests (ModuleNotFoundError: secma.adapters.capability_store), outside this task.
+# cmd: coverage erase; coverage run --branch --source=src/secma -m pytest -q --continue-on-collection-errors tests; coverage report --show-missing
+FAILED tests/test_spec_readiness.py::test_complete_planning_graph_has_no_dangling_ids_or_missing_plans
+FAILED tests/unit/test_m17.py::test_probe_command_success_lists_unverified_features
+2 failed, 613 passed, 2 skipped, 13 errors in 27.04s
+# exit: 1
+Name                                                Stmts   Miss Branch BrPart  Cover   Missing
+-----------------------------------------------------------------------------------------------
+src/secma/__init__.py                                   1      0      0      0   100%
+src/secma/__main__.py                                   2      2      0      0     0%   1-2
+src/secma/adapters/__init__.py                          0      0      0      0   100%
+src/secma/adapters/evidence.py                         34      1      8      1    95%   38
+src/secma/adapters/local_identity.py                  109      6     16      4    92%   44, 87, 103-104, 117, 123
+src/secma/adapters/providers/__init__.py                4      0      0      0   100%
+src/secma/adapters/providers/_sdk.py                   47      0     26      0   100%
+src/secma/adapters/providers/anthropic.py              57      0     16      0   100%
+src/secma/adapters/providers/cli.py                   195      0     42      0   100%
+src/secma/adapters/providers/openai_compatible.py     102      0     36      0   100%
+src/secma/application/__init__.py                       0      0      0      0   100%
+src/secma/application/cli_service.py                   96      0     20      0   100%
+src/secma/application/identity.py                      66      1     22      1    98%   46
+src/secma/application/ports.py                         28      0      0      0   100%
+src/secma/application/providers.py                    414      0    132      0   100%
+src/secma/behavior/__init__.py                          0      0      0      0   100%
+src/secma/behavior/compiler.py                        173      0     46      0   100%
+src/secma/behavior/contracts.py                       144      0     52      0   100%
+src/secma/behavior/fsutil.py                           28      0      4      0   100%
+src/secma/behavior/manifest.py                        136      0     64      0   100%
+src/secma/behavior/store.py                           218      0     64      0   100%
+src/secma/behavior/trusted_config.py                   75      0     18      0   100%
+src/secma/cli/__init__.py                               0      0      0      0   100%
+src/secma/cli/chat.py                                  66      0     26      0   100%
+src/secma/cli/main.py                                  75      2      8      1    96%   115, 128
+src/secma/cli/rendering.py                             13      0      4      0   100%
+src/secma/domain/__init__.py                            0      0      0      0   100%
+src/secma/domain/canonical.py                          31      0     16      0   100%
+src/secma/domain/decision_policy.py                    42      0     18      0   100%
+src/secma/domain/diagnostics.py                        49      0      2      0   100%
+src/secma/domain/policy.py                            321      0    106      0   100%
+src/secma/domain/statechart.py                        145      0     84      0   100%
+-----------------------------------------------------------------------------------------------
+TOTAL                                                2671     12    830      7    99%
+# cmd: PATH=/usr/bin:/bin .venv/bin/python -m pytest -q --continue-on-collection-errors tests/unit
+FAILED tests/unit/test_m17.py::test_probe_command_success_lists_unverified_features
+1 failed, 545 passed, 12 errors in 13.10s
+# exit: 1
+
+# RERUN after fixing a regression found above (test_m17 fake identity lacks authenticate): doctor now checks for a missing policy loader before touching identity.
+f37a05e6d1b3fc1189f71709bbd65374d83d9a307b1b50e8c03847a96edcc1f3  src/secma/application/cli_service.py
+# cmd: .venv/bin/python -m pytest -q tests/unit/test_s00_t01_chat.py tests/integration/cli tests/unit/test_m17.py
+186 passed in 6.94s
+# exit: 0
+# cmd: coverage erase; coverage run --branch --source=src/secma -m pytest -q --continue-on-collection-errors tests; coverage report --show-missing
+FAILED tests/test_spec_readiness.py::test_complete_planning_graph_has_no_dangling_ids_or_missing_plans
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_unguarded_path_to_delivery_is_forbidden
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_effect_path_guard_must_be_earlier_and_on_every_path
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_shipped_statecharts_and_reference_compiler_agree_on_the_path_rule
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_capability_contract_content_is_bound_into_the_build_digest
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_policy_registry_file_has_the_policy_file_protections
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_yaml_nesting_depth_and_event_count_are_bounded
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_json_nesting_depth_is_bounded
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[./.]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[.]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[./statechart.yaml]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[a//statechart.yaml]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[sub/./statechart.yaml]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[statechart.yaml/]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_oversized_integers_and_lone_surrogates_are_diagnostics
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_pointer_compare_and_swap_holds_a_sibling_file_lock
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_registry_compare_and_swap_holds_a_sibling_file_lock
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_integer_fields_reject_integer_valued_floats
+ERROR tests/integration/test_registry_restart.py
+ERROR tests/unit/test_description_injection.py
+ERROR tests/unit/test_gateway_binding.py
+ERROR tests/unit/test_lifecycle_promotion.py
+ERROR tests/unit/test_manifest_schema.py
+ERROR tests/unit/test_mcp_hint_import.py
+ERROR tests/unit/test_package_digest.py
+ERROR tests/unit/test_s00_t03.py
+ERROR tests/unit/test_s00_t03_discovery.py
+ERROR tests/unit/test_s00_t03_registry.py
+ERROR tests/unit/test_selection_none_fits.py
+ERROR tests/unit/test_selection_validation.py
+ERROR tests/unit/test_version_conflict.py
+18 failed, 614 passed, 2 skipped, 13 errors in 28.70s
+# exit: 1
+Name                                                Stmts   Miss Branch BrPart  Cover   Missing
+-----------------------------------------------------------------------------------------------
+src/secma/__init__.py                                   1      0      0      0   100%
+src/secma/__main__.py                                   2      2      0      0     0%   1-2
+src/secma/adapters/__init__.py                          0      0      0      0   100%
+src/secma/adapters/evidence.py                         34      1      8      1    95%   38
+src/secma/adapters/local_identity.py                  109      6     16      4    92%   44, 87, 103-104, 117, 123
+src/secma/adapters/providers/__init__.py                4      0      0      0   100%
+src/secma/adapters/providers/_sdk.py                   47      0     26      0   100%
+src/secma/adapters/providers/anthropic.py              57      0     16      0   100%
+src/secma/adapters/providers/cli.py                   195      0     42      0   100%
+src/secma/adapters/providers/openai_compatible.py     102      0     36      0   100%
+src/secma/application/__init__.py                       0      0      0      0   100%
+src/secma/application/cli_service.py                   98      0     22      0   100%
+src/secma/application/identity.py                      66      1     22      1    98%   46
+src/secma/application/ports.py                         28      0      0      0   100%
+src/secma/application/providers.py                    414      0    132      0   100%
+src/secma/behavior/__init__.py                          0      0      0      0   100%
+src/secma/behavior/compiler.py                        173      0     46      0   100%
+src/secma/behavior/contracts.py                       144      0     52      0   100%
+src/secma/behavior/fsutil.py                           28      0      4      0   100%
+src/secma/behavior/manifest.py                        136      0     64      0   100%
+src/secma/behavior/store.py                           218      0     64      0   100%
+src/secma/behavior/trusted_config.py                   75      0     18      0   100%
+src/secma/cli/__init__.py                               0      0      0      0   100%
+src/secma/cli/chat.py                                  66      0     26      0   100%
+src/secma/cli/main.py                                  75      2      8      1    96%   115, 128
+src/secma/cli/rendering.py                             13      0      4      0   100%
+src/secma/domain/__init__.py                            0      0      0      0   100%
+src/secma/domain/canonical.py                          31      0     16      0   100%
+src/secma/domain/decision_policy.py                    42      0     18      0   100%
+src/secma/domain/diagnostics.py                        49      0      2      0   100%
+src/secma/domain/policy.py                            321      0    106      0   100%
+src/secma/domain/statechart.py                        157     38     92     47    57%   70-71, 77-78, 86-87, 91-92, 98, 99->102, 102->104, 104->107, 105->104, 108->111, 111->112, 111->119, 112->115, 113->112, 115->116, 115->119, 116->115, 118, 126->131, 127->126, 127->128, 128->127, 129-130, 137->138, 137->139, 139->140, 139->141, 141->142, 143-144, 152->151, 153-154, 168->171, 169->168, 176, 181->184, 184->180, 184->185, 187, 192->198, 195, 202->206, 204->202, 207->211, 208->207, 216->217, 218-219, 224->234, 225, 231, 244->245, 244->247, 253-267
+-----------------------------------------------------------------------------------------------
+TOTAL                                                2685     50    840     54    96%
+# cmd: PATH=/usr/bin:/bin .venv/bin/python -m pytest -q --continue-on-collection-errors tests/unit
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_capability_contract_content_is_bound_into_the_build_digest
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_policy_registry_file_has_the_policy_file_protections
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_yaml_nesting_depth_and_event_count_are_bounded
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_json_nesting_depth_is_bounded
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[./.]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[.]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[./statechart.yaml]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[a//statechart.yaml]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[sub/./statechart.yaml]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[statechart.yaml/]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_oversized_integers_and_lone_surrogates_are_diagnostics
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_pointer_compare_and_swap_holds_a_sibling_file_lock
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_registry_compare_and_swap_holds_a_sibling_file_lock
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_integer_fields_reject_integer_valued_floats
+14 failed, 551 passed, 12 errors in 13.39s
+# exit: 1

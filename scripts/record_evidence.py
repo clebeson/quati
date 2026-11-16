@@ -80,7 +80,7 @@ def main(argv=None):
     if not command:
         print("A command is required after --", file=sys.stderr)
         return 2
-    secret_env_name = os.environ.get("SECMA_API_KEY_ENV", "SECMA_API_KEY")
+    secret_env_name = os.environ.get("QUATI_API_KEY_ENV", "QUATI_API_KEY")
     secret = os.environ.get(secret_env_name, "") if secret_env_name else ""
     started_at = datetime.now(timezone.utc)
     start = time.monotonic()
@@ -106,7 +106,7 @@ def main(argv=None):
         except (OSError, ValueError):
             source_hashes[str(source)] = None
     manifest = {
-        "schema_version": "secma-engineering-run/1",
+        "schema_version": "quati-engineering-run/1",
         "started_at": started_at.isoformat().replace("+00:00", "Z"),
         "duration_seconds": round(elapsed, 6),
         "runtime": {"implementation": sys.implementation.name, "version": sys.version.split()[0]},

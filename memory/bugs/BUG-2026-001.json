@@ -1,7 +1,7 @@
 {
   "record_id": "BUG-2026-001",
   "record_type": "bug",
-  "version": 1,
+  "version": 2,
   "status": "OPEN",
   "owner": "SECMA specification maintainer",
   "created_at": "2026-11-15T17:28:23.792130+00:00",
@@ -21,7 +21,7 @@
     "observed": "Independent review reproduced acceptance before correction",
     "reproduction": "Use the exact Python reproduction in the independent runtime review",
     "root_cause": "Protected target/action checks did not cover start_work semantics",
-    "regression_case": "tests/unit/test_runtime.py::test_independent_start_action_cannot_skip_receipt",
-    "resolution": "Static validator corrected; candidate source must be requalified against revised specification during future implementation"
+    "regression_case": "tests/test_audit_regressions.py::test_ct03_protected_start_without_receipt_rejected",
+    "resolution": "Static reference validator corrected and covered by the regression case. The non-conforming candidate runtime compiler was removed on 2026-11-15; the runtime compiler delivered by S00-T02 must carry an equivalent discriminating regression before this record closes (LOG.md)."
   }
 }

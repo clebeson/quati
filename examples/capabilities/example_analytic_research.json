@@ -1,5 +1,5 @@
 {
-  "schema_version": "scs/1.0",
+  "schema_version": "scs/1.1",
   "id": "research.analytical-investigation",
   "version": "1.0.0",
   "name": "Analytical investigation",
@@ -79,9 +79,12 @@
   "effects": "read",
   "requires_approval": false,
   "dependencies": [],
-  "lifecycle": "staged",
-  "assurance": "C1",
   "evaluation": [
     "evals/seed_eri.jsonl#CASE-07"
-  ]
+  ],
+  "outcome_verification": {
+    "mode": "evidence_check",
+    "description": "Every finding cites at least one evidence_ref that resolves."
+  },
+  "data_class_ceiling": "INTERNAL"
 }

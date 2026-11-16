@@ -55,7 +55,9 @@
       "pattern": "^\\d+\\.\\d+\\.\\d+$"
     },
     "policy_ref": {
-      "const": "trusted_policy/default"
+      "type": "string",
+      "pattern": "^(trusted_policy/default|trusted_policy/[A-Za-z0-9._/-]+@[0-9a-f]{64})$",
+      "description": "Active policy version (RFC-014): trusted_policy/<id>@<policy_version digest>, where policy_hash MUST equal the digest. The bare trusted_policy/default form denotes only the built-in kernel baseline with no tenant policy document (L0 reference compiler, pre-policy bootstrap)."
     },
     "policy_hash": {
       "type": "string",

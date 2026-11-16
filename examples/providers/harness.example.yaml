@@ -12,6 +12,6 @@ authority:
   allowed_scopes: [workspace.read, workspace.write_approved]
   tenant_mode: per_request
 tests:
-  contract_suite: tests/adapters/chart-specialist
+  contract_suite: tests/integration/harness/chart-specialist-1/
   external_smoke: NOT_VERIFIED_EXTERNAL
 status: STAGED

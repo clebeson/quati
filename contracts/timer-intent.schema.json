@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quati.local/contracts/timer-intent.schema.json",
+  "title": "TimerIntent (ledger timer, RFC-003 section 6)",
+  "type": "object",
+  "required": [
+    "timer_id",
+    "tenant_id",
+    "space_id",
+    "commitment_id",
+    "timer_key",
+    "kind",
+    "status",
+    "fire_at",
+    "fire_until",
+    "created_at"
+  ],
+  "properties": {
+    "timer_id": {
+      "$ref": "identity.schema.json#/$defs/Ulid"
+    },
+    "tenant_id": {
+      "$ref": "identity.schema.json#/$defs/Ulid"
+    },
+    "space_id": {
+      "$ref": "identity.schema.json#/$defs/Ulid"
+    },
+    "commitment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timer_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique per (tenant_id, commitment_id)."
+    },
+    "kind": {
+      "enum": [
+        "REMINDER",
+        "FOLLOW_UP",
+        "DEADLINE_CHECK",
+        "RETRY",
+        "SWEEP"
+      ]
+    },
+    "status": {
+      "enum": [
+        "PENDING",
+        "FIRED",
+        "EXPIRED",
+        "CANCELLED"
+      ]
+    },
+    "fire_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "fire_until": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "recurrence": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional RFC 5545 RRULE; missed occurrences are skipped, never replayed."
+    },
+    "fired_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "late_by_seconds": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Set when fired after fire_at."
+    },
+    "expired_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "work_item_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "FIRED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "fired_at",
+          "late_by_seconds"
+        ],
+        "properties": {
+          "fired_at": {
+            "type": "string"
+          },
+          "late_by_seconds": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

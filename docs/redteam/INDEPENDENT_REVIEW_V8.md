@@ -1,4 +1,4 @@
-# Adversarial Design Review — SECMA v8
+# Adversarial Design Review — Quati v8
 
 **Review performed:** static adversarial inspection of specification artifacts, schemas, statechart examples and reference compiler only. This is not an independent security penetration test or a live LLM evaluation.
 
@@ -10,8 +10,8 @@
 - Evidence tiers: L0–L5, blind actual-model routing tests and explicit never-claim-live-from-mock rule.
 
 ## Remaining P0 verification blockers
-1. No SECMA production runtime code or real user-initiated LLM tool trajectory exists in this package.
-2. No DBOS/PostgreSQL crash, data consistency, concurrency or uncertain external send has been executed on SECMA.
+1. No Quati production runtime code or real user-initiated LLM tool trajectory exists in this package.
+2. No DBOS/PostgreSQL crash, data consistency, concurrency or uncertain external send has been executed on Quati.
 3. No installed real connector has passed authorized provider smoke.
 4. Full protected policy engine and semantic statechart reducer are design only; whitelist validation alone is insufficient authorization proof.
 5. A single small language model cannot be assumed reliable at every specialist depth without empirical profiles.
@@ -25,4 +25,4 @@
 - Specialist causal output requires statistical evidence and subject-matter review.
 
 ## Red-team conclusion
-**GO for S00 implementation with security guardrails; NO-GO for declaring SECMA product functionality or production readiness.** Do not promote any capability from manifest-only assurance or proceed to S02 before a genuine S00 blind tool-calling proof. The factory must fix measured defects at the owning boundary rather than add generic abstractions and a large number of shallow tests.
+**GO for S00 implementation with security guardrails; NO-GO for declaring Quati product functionality or production readiness.** Do not promote any capability from manifest-only assurance or proceed to S02 before a genuine S00 blind tool-calling proof. The factory must fix measured defects at the owning boundary rather than add generic abstractions and a large number of shallow tests.

@@ -2,7 +2,7 @@
 
 `FULL_REQUIREMENTS_MATRIX.csv` is a generated planning and audit index. The original module FR, AT and RT identifiers and wording are retained; product invariants and explicitly catalogued shared normative obligations are added with source locators. Shared obligations use stable `SH-*` IDs in `SHARED_OBLIGATIONS.json`.
 
-Every matrix row has a planned case and planned test locator. These are design targets, and a locator under `tests/planned/` does not claim that an executable test exists. `executable_test` and `evidence_ref` remain empty and `verification_status` remains `NOT_RUN` until actual test and evidence records are independently added. Related cases from `docs/testing/TEST_LEDGER.csv` are pointers for reuse, not proof of coverage or execution. Regenerate with:
+Every matrix row has a planned case and planned test locator. These are design targets, and a locator under `tests/unit`, `tests/integration`, `tests/evals`, `tests/external`, `tests/chaos` or `tests/packaging` does not claim that an executable test exists. `executable_test` and `evidence_ref` remain empty and `verification_status` remains `NOT_RUN` until actual test and evidence records are independently added. Related cases from `docs/testing/TEST_LEDGER.csv` are pointers for reuse, not proof of coverage or execution. Regenerate with:
 
 ```sh
 ../.venv/bin/python docs/traceability/build_matrix.py

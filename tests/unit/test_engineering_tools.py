@@ -7,8 +7,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
-PYTHON = ROOT.parent / ".venv" / "bin" / "python"
+PYTHON = Path(sys.executable).absolute()
 
 
 def cli(script, *args, **kwargs):
@@ -49,13 +51,41 @@ def test_checkpoint_state_writes_atomically_with_revision_and_gates(tmp_path):
     assert after["slices"]["S00"]["gates"]["S00-GATE-01"] == "PASS"
 
 
+@pytest.mark.parametrize("artifact", ["execution_ledger.jsonl", "execution_journal"])
+def test_checkpoint_state_refuses_journaled_state(tmp_path, artifact):
+    """Fail closed: legacy writes beside a ledger/journal would brick checkpoint_execution.py."""
+    path = tmp_path / "implementation_state.json"
+    original = json.dumps({"revision": 0, "current_slice": "S00",
+                           "slices": {"S00": {"status": "NOT_STARTED", "gates": {"S00-GATE-01": "NOT_RUN"}}}})
+    path.write_text(original)
+    if artifact.endswith(".jsonl"):
+        (tmp_path / artifact).write_text("")
+    else:
+        (tmp_path / artifact).mkdir()
+    result = cli("checkpoint_state.py", "--state", path, "--expected-revision", "0", "--slice", "S00", "--status", "IN_PROGRESS")
+    assert result.returncode == 2
+    assert "checkpoint_execution.py" in result.stderr
+    assert path.read_text() == original
+    assert not path.with_name(path.name + ".lock").exists()
+
+
+def test_checkpoint_state_updates_unjournaled_state(tmp_path):
+    path = tmp_path / "implementation_state.json"
+    path.write_text(json.dumps({"revision": 0, "current_slice": "S00",
+                                "slices": {"S00": {"status": "NOT_STARTED", "gates": {"S00-GATE-01": "NOT_RUN"}}}}))
+    result = cli("checkpoint_state.py", "--state", path, "--expected-revision", "0", "--slice", "S00", "--status", "IN_PROGRESS")
+    assert result.returncode == 0, result.stderr
+    after = json.loads(path.read_text())
+    assert after["revision"] == 1 and after["slices"]["S00"]["status"] == "IN_PROGRESS"
+
+
 def test_record_evidence_redacts_secret_and_omits_arguments(tmp_path):
     secret = "fixture-secret-do-not-persist"
     evdir = tmp_path / "evidence"
     result = cli(
         "record_evidence.py", "--evidence-dir", evdir, "--source", ROOT / "AGENTS.md", "--",
         str(PYTHON), "-c", f"import sys; print(sys.argv[1]); print('{secret}', file=sys.stderr)", secret,
-        env={**os.environ, "SECMA_API_KEY_ENV": "SECMA_TEST_SECRET", "SECMA_TEST_SECRET": secret},
+        env={**os.environ, "QUATI_API_KEY_ENV": "QUATI_TEST_SECRET", "QUATI_TEST_SECRET": secret},
     )
     assert result.returncode == 0, result.stderr
     runs = list(evdir.iterdir())

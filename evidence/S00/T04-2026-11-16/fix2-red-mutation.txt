@@ -1,0 +1,26 @@
+R1 cli wording: KILLED (1 failed, 20 passed in 0.98s)
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r1_cli_tool_instructions_say_the_tools_are_available
+R1 reply language: KILLED (1 failed, 20 passed in 1.03s)
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r1_protocol_says_reply_in_the_language_of_the_request
+R1 no-search continuation: KILLED (3 failed, 18 passed in 1.06s)
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r1_work_request_with_zero_tool_calls_gets_one_continuation
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r1_non_social_classification_without_work_flag_also_continues
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r1_at_most_one_continuation_per_ask
+R2 conversation: KILLED (2 failed, 19 passed in 0.97s)
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r2_social_classification_and_tool_free_loop_is_a_conversation
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r2_conversation_text_is_bounded_and_empty_text_is_typed
+R3 bounded retry: KILLED (2 failed, 19 passed in 1.02s)
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r3_probe_retries_a_transient_tool_miss_once_and_records_it
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r3_probe_with_unverified_tools_is_partial_not_succeeded
+R3 partial status: KILLED (3 failed, 18 passed in 1.01s)
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r3_probe_with_unverified_tools_is_partial_not_succeeded
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r3_wrong_nonce_is_a_measurement_and_is_not_retried
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r3_probe_without_an_observed_model_id_is_partial
+R4 describe guard: KILLED (2 failed, 19 passed in 0.99s)
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r4_invoke_without_describe_is_refused_and_the_model_can_recover
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r4_describe_required_after_a_success_does_not_make_it_partial
+R4 not partial: KILLED (1 failed, 20 passed in 1.01s)
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r4_describe_required_after_a_success_does_not_make_it_partial
+R5 model visible: KILLED (1 failed, 20 passed in 0.93s)
+    FAILED tests/unit/test_s00_t04_fixes2.py::test_r5_synthetic_evidence_records_the_exact_model_visible_text
+ALL_KILLED

@@ -1,4 +1,4 @@
-"""OFFLINE specification reference compiler/validator, NOT the SECMA runtime.
+"""OFFLINE specification reference compiler/validator, NOT the Quati runtime.
 
 Only validates and renders authorized declarative files; it does not invoke models,
 execute guards, start DBOS, write production policy or prove agent competence.
@@ -150,6 +150,14 @@ def validate_machine(machine):
             for n in ed[q.popleft()]:
                 if n not in found:found.add(n);q.append(n)
         return found
+    # M30 rule 7 path rule: effects are reachable only through an earlier authorizing edge.
+    unguarded=defaultdict(list)
+    for t in transitions:
+        if t['guard'] not in ('authorized_request','safe_to_begin'): unguarded[t['source']].append(t['target'])
+    unauthorized=walk(initial,unguarded)
+    for t in transitions:
+        if t['action'] in ('commit_receipt','start_work','prepare_delivery','record_delivery') and t['source'] in unauthorized:
+            raise ValueError('UNGUARDED_EFFECT_PATH: '+t['action']+' reachable without an earlier authorized_request')
     reachable=walk(initial,edges)
     if reachable!=states: raise ValueError('Unreachable states: '+str(sorted(states-reachable)))
     reverse=defaultdict(list)
@@ -180,7 +188,7 @@ def validate_behavior(profile):
                 else 'Reply in the requester language.')
     # This preview never interpolates executable code, secrets, or untrusted tools.
     prompt='\n'.join([
-      'Protected SECMA invariants: never bypass identity, approval, durable commitments or evidence gates.',
+      'Protected Quati invariants: never bypass identity, approval, durable commitments or evidence gates.',
       'Role: '+profile['role'].strip(),
       'Interaction verbosity: '+profile['interaction']['verbosity'],
       'Interaction cadence: '+profile['interaction']['cadence'],
@@ -193,8 +201,10 @@ def validate_behavior(profile):
       language,
       'This prompt does not grant rights; all actions pass trusted code authorization.'
     ])
-    return {'compiler_version': COMPILER_VERSION, 'policy_ref': TRUSTED_POLICY['id'],
-        'policy_hash': digest(TRUSTED_POLICY),
+    # RFC-014: receipt policy_ref is trusted_policy/<id>@<policy_version> and policy_hash equals that digest.
+    policy_hash = digest(TRUSTED_POLICY)
+    return {'compiler_version': COMPILER_VERSION, 'policy_ref': TRUSTED_POLICY['id'] + '@' + policy_hash,
+        'policy_hash': policy_hash,
         'source_versions': {'behavior': profile['version'], 'statechart': machine['version']},
         'effective_limits': limits,
         'behavior_id':profile['id'],'behavior_version':profile['version'],

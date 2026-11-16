@@ -1,0 +1,768 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Versioned executive decision thresholds (A-13)",
+  "description": "Operator-owned decision-policy sidecar (<config_dir>/decision-policy.json). Defines every behavior_policy.* and routing_policy.* field named by docs/prds/DECISION_RULES.md. It cannot grant authority or disable a kernel check; invalid bytes produce CONFIG_INVALID.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "revision",
+    "behavior_policy",
+    "routing_policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "decision-policy/1"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1,
+      "description": "Monotonic operator revision; the value used is recorded with decision_policy_hash."
+    },
+    "behavior_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blocking_fields",
+        "max_open_questions",
+        "max_reasks_per_field",
+        "min_update_interval_s",
+        "max_updates_per_hour",
+        "default_next_contact_s",
+        "urgent_deadline_s",
+        "reinvestigation_budget",
+        "max_evidence_age_s",
+        "max_summary_chars",
+        "default_language",
+        "max_delivery_attempts"
+      ],
+      "properties": {
+        "blocking_fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "enum": [
+              "target_resource",
+              "destructive_or_external_effect_confirmation",
+              "recipient",
+              "deadline_if_stated_relative_and_unresolvable",
+              "authorization_scope"
+            ]
+          },
+          "default": [
+            "target_resource",
+            "destructive_or_external_effect_confirmation",
+            "recipient",
+            "deadline_if_stated_relative_and_unresolvable",
+            "authorization_scope"
+          ],
+          "description": "Fields whose absence makes a question blocking (M05). Exactly the five-field minimum set; an operator cannot remove one."
+        },
+        "max_open_questions": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "default": 1,
+          "description": "Maximum open non-blocking questions per commitment (M05)."
+        },
+        "max_reasks_per_field": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3,
+          "default": 1,
+          "description": "Times an answered field may be asked again, only after its answer failed validation (M05, M03-RT-02)."
+        },
+        "min_update_interval_s": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "local",
+            "channel"
+          ],
+          "default": {
+            "local": 60,
+            "channel": 300
+          },
+          "description": "Minimum seconds between two unsolicited UPDATE messages to one recipient, counted across all of that recipient's commitments, unless the state is terminal or blocked (M06).",
+          "properties": {
+            "local": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 86400,
+              "default": 60,
+              "description": "Local CLI surface."
+            },
+            "channel": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 86400,
+              "default": 300,
+              "description": "External channel surface."
+            }
+          }
+        },
+        "max_updates_per_hour": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60,
+          "default": 6,
+          "description": "Maximum unsolicited messages per recipient, across all of that recipient's commitments, in any rolling 3600 s window (M06)."
+        },
+        "default_next_contact_s": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 604800,
+          "default": 900,
+          "description": "Floor, in seconds, of the next-contact interval: delay_interval_s = max(default_next_contact_s, horizon_s / 8) when no earlier deadline applies (M06)."
+        },
+        "urgent_deadline_s": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 604800,
+          "default": 3600,
+          "description": "A deadline within this many seconds justifies an urgent alert during quiet hours (M06)."
+        },
+        "reinvestigation_budget": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 2,
+          "description": "Maximum INVESTIGATE_MORE rounds per commitment (M09)."
+        },
+        "max_evidence_age_s": {
+          "type": "object",
+          "required": [
+            "default"
+          ],
+          "default": {
+            "default": 86400
+          },
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$"
+          },
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 31536000
+          },
+          "properties": {
+            "default": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 31536000,
+              "default": 86400,
+              "description": "Age limit for evidence classes without their own entry."
+            }
+          },
+          "description": "Per evidence class maximum age in seconds before evidence is stale (M09). Keys are evidence class ids."
+        },
+        "max_summary_chars": {
+          "type": "integer",
+          "minimum": 200,
+          "maximum": 20000,
+          "default": 1200,
+          "description": "Maximum characters of any human-facing non-DELIVER message and of the M10 summary."
+        },
+        "default_language": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8})*$",
+          "default": "en",
+          "description": "BCP 47 tag used when the audience language tag is unsupported; the fallback records uncertainty language_fallback (M10)."
+        },
+        "max_delivery_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3,
+          "description": "Maximum delivery attempts for one delivery before a proven no-effect outcome blocks instead of retrying (GUARD_PREDICATES.md G21, G25)."
+        }
+      }
+    },
+    "routing_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "min_candidate_score",
+        "ambiguity_margin",
+        "small_model_max_complexity",
+        "candidate_score_weights",
+        "recency_horizon_s",
+        "max_reference_candidates"
+      ],
+      "properties": {
+        "min_candidate_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5,
+          "description": "Score at or above which a reference candidate is plausible (M04)."
+        },
+        "ambiguity_margin": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.15,
+          "description": "Top-two score gap below which two plausible candidates are ambiguous (M04)."
+        },
+        "small_model_max_complexity": {
+          "enum": [
+            "trivial",
+            "short"
+          ],
+          "default": "short",
+          "description": "Highest complexity routed to the small model role (DECISION_RULES \u00a73.3)."
+        },
+        "candidate_score_weights": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "exact_id",
+            "title_overlap",
+            "time_window",
+            "ownership",
+            "recency"
+          ],
+          "default": {
+            "exact_id": 0.35,
+            "title_overlap": 0.25,
+            "time_window": 0.2,
+            "ownership": 0.1,
+            "recency": 0.1
+          },
+          "description": "Feature weights of the reference score (DECISION_RULES \u00a74). The config validator also requires the sum to equal 1 within 1e-9.",
+          "properties": {
+            "exact_id": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.35,
+              "description": "Weight of feature exact_id."
+            },
+            "title_overlap": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.25,
+              "description": "Weight of feature title_overlap."
+            },
+            "time_window": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.2,
+              "description": "Weight of feature time_window."
+            },
+            "ownership": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.1,
+              "description": "Weight of feature ownership."
+            },
+            "recency": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.1,
+              "description": "Weight of feature recency."
+            }
+          }
+        },
+        "recency_horizon_s": {
+          "type": "integer",
+          "minimum": 3600,
+          "maximum": 31536000,
+          "default": 2592000,
+          "description": "Age at which the recency feature reaches 0 (M04)."
+        },
+        "max_reference_candidates": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 5,
+          "description": "Maximum ranked reference candidates kept per request (M04)."
+        }
+      }
+    },
+    "discovery_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_depth",
+        "max_documents",
+        "max_total_bytes",
+        "max_document_bytes",
+        "max_seconds",
+        "max_redirects",
+        "min_pattern_documents",
+        "min_pattern_support_ratio",
+        "standard_sources",
+        "reuse_license_allowlist",
+        "reuse_max_release_age_days"
+      ],
+      "description": "Bounded discovery crawl and reuse checks (M21).",
+      "properties": {
+        "max_depth": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 4,
+          "description": "Maximum edge distance from any root."
+        },
+        "max_documents": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 100,
+          "description": "Maximum fetched documents per crawl."
+        },
+        "max_total_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 8388608,
+          "description": "Maximum bytes fetched per crawl."
+        },
+        "max_document_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1048576,
+          "description": "A larger document is truncated at the limit and its node is marked truncated=true."
+        },
+        "max_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 60,
+          "description": "Wall-clock limit measured by the injected clock."
+        },
+        "max_redirects": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 3,
+          "description": "Per reference; exceeding it gives disposition FAILED with reason UNSUPPORTED."
+        },
+        "min_pattern_documents": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3,
+          "description": "Minimum supporting documents for an inferred pattern."
+        },
+        "min_pattern_support_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.6,
+          "description": "Minimum supporting fraction of in-scope documents of the same kind."
+        },
+        "standard_sources": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": [],
+          "description": "Path globs whose documents have authority EXPLICIT_STANDARD; everything else is REFERENCE (in scope) or UNTRUSTED (fetched text from external hosts)."
+        },
+        "reuse_license_allowlist": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": [
+            "MIT",
+            "Apache-2.0",
+            "BSD-2-Clause",
+            "BSD-3-Clause",
+            "ISC",
+            "PSF-2.0"
+          ],
+          "description": "SPDX identifiers that pass LICENSE."
+        },
+        "reuse_max_release_age_days": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 730,
+          "description": "Latest release older than this fails MAINTENANCE."
+        }
+      }
+    },
+    "specification_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_work_items",
+        "max_work_items_per_requirement",
+        "max_acceptance_tests_per_requirement",
+        "max_open_decisions_reported",
+        "max_draft_chars"
+      ],
+      "description": "Specification drafting and decomposition bounds (M22).",
+      "properties": {
+        "max_work_items": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 20,
+          "description": "Maximum work items per decomposition."
+        },
+        "max_work_items_per_requirement": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3,
+          "description": "Maximum work items derived from one requirement."
+        },
+        "max_acceptance_tests_per_requirement": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3,
+          "description": "Maximum acceptance tests per requirement."
+        },
+        "max_open_decisions_reported": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 10,
+          "description": "Beyond this, the remainder is summarized as one gap with the count."
+        },
+        "max_draft_chars": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 40000,
+          "description": "A longer draft is rejected with OUTPUT_INVALID."
+        }
+      }
+    },
+    "incident_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "min_hypotheses",
+        "max_hypotheses",
+        "min_corroborating_sources",
+        "max_clock_skew_s",
+        "max_timeline_events"
+      ],
+      "description": "Incident investigation bounds (M23).",
+      "properties": {
+        "min_hypotheses": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 2,
+          "description": "Minimum competing hypotheses kept until CAUSE is reached."
+        },
+        "max_hypotheses": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 5,
+          "description": "Further hypotheses are dropped with a notice."
+        },
+        "min_corroborating_sources": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 2,
+          "description": "Independent sources needed for CAUSE."
+        },
+        "max_clock_skew_s": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 120,
+          "description": "A source with a larger or unknown offset cannot provide ordering evidence for CAUSE."
+        },
+        "max_timeline_events": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 5000,
+          "description": "Events beyond are summarized as counts per source."
+        }
+      }
+    },
+    "causal_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "min_stratum_n",
+        "max_rows",
+        "ci_level",
+        "causal_lexicon"
+      ],
+      "description": "Causal analysis bounds (M24).",
+      "properties": {
+        "min_stratum_n": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 30,
+          "description": "Smaller strata are flagged and excluded from stratified estimates."
+        },
+        "max_rows": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1000000,
+          "description": "Larger datasets return BUDGET_EXCEEDED unless sampled by an explicit request."
+        },
+        "ci_level": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "default": 0.95,
+          "description": "Confidence level for intervals (Wilson for proportions)."
+        },
+        "causal_lexicon": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": [
+            "causes",
+            "caused",
+            "drives",
+            "leads to",
+            "results in",
+            "effect of",
+            "impact of",
+            "because of",
+            "due to"
+          ],
+          "description": "Phrases treated as causal claims (English list)."
+        }
+      }
+    },
+    "evolution_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "min_holdout_n",
+        "max_safety_regressions",
+        "monitor_window_runs",
+        "regression_tolerance",
+        "result_ttl_s"
+      ],
+      "description": "Evaluation and promotion gates for behavior changes (M27).",
+      "properties": {
+        "min_holdout_n": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 30,
+          "description": "Holdout smaller than this cannot support promotion (EVIDENCE_INSUFFICIENT)."
+        },
+        "max_safety_regressions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 0,
+          "default": 0,
+          "description": "Not configurable above 0 (kernel invariant)."
+        },
+        "monitor_window_runs": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 50,
+          "description": "Runs observed after promotion."
+        },
+        "regression_tolerance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.05,
+          "description": "Allowed absolute failure-rate increase versus holdout before auto-rollback."
+        },
+        "result_ttl_s": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 604800,
+          "description": "An evaluation older than this, or with any changed digest, expires."
+        }
+      }
+    },
+    "lifecycle_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "egress_allowlist",
+        "resource_sample_interval_s",
+        "resource_sample_duration_s",
+        "sleep_gap_threshold_s",
+        "heartbeat_interval_s",
+        "max_queue_depth",
+        "backup_retention",
+        "bundle_license_allowlist"
+      ],
+      "description": "Installation, doctor, egress and backup settings (M28).",
+      "properties": {
+        "egress_allowlist": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": [],
+          "description": "Hostnames allowed for outbound connections; empty means offline."
+        },
+        "proxy_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "Explicit proxy; null means unset."
+        },
+        "use_system_proxy": {
+          "type": "boolean",
+          "default": false,
+          "description": "OS proxy settings are reported but used only when this is true."
+        },
+        "ca_bundle_path": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "Additional CA bundle, reported by digest; null means unset."
+        },
+        "resource_sample_interval_s": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 5,
+          "description": "Doctor sampling interval for RSS/CPU."
+        },
+        "resource_sample_duration_s": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 60,
+          "description": "Idle and workload measurement windows."
+        },
+        "sleep_gap_threshold_s": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 30,
+          "description": "Monotonic vs wall-clock gap counted as a sleep event."
+        },
+        "heartbeat_interval_s": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 30,
+          "description": "Remote worker heartbeat; missing for 2 intervals means not always-on."
+        },
+        "max_queue_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 100,
+          "description": "Admission bound; more returns TEMPORARILY_UNAVAILABLE (OPS-03)."
+        },
+        "backup_retention": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 7,
+          "description": "Kept backups."
+        },
+        "bundle_license_allowlist": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": [
+            "MIT",
+            "Apache-2.0",
+            "BSD-2-Clause",
+            "BSD-3-Clause",
+            "ISC",
+            "PSF-2.0",
+            "MPL-2.0"
+          ],
+          "description": "Licenses allowed for bundled files."
+        }
+      }
+    },
+    "channel_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "signature_tolerance_s",
+        "replay_retention_s",
+        "max_rate_limit_retries",
+        "max_retry_after_s",
+        "delivery_expiry_s",
+        "max_reconcile_attempts"
+      ],
+      "description": "Inbound signature, replay, retry and delivery expiry settings (M29).",
+      "properties": {
+        "signature_tolerance_s": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 300,
+          "description": "Maximum absolute difference between signed timestamp and received_at."
+        },
+        "replay_retention_s": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 86400,
+          "description": "Dedupe key retention; must be >= signature_tolerance_s (validated by the loader, else CONFIG_INVALID)."
+        },
+        "max_rate_limit_retries": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 3,
+          "description": "429 retries per attempt."
+        },
+        "max_retry_after_s": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 60,
+          "description": "Larger Retry-After makes the intent BLOCKED TEMPORARILY_UNAVAILABLE with next_contact_at."
+        },
+        "delivery_expiry_s": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 86400,
+          "description": "PENDING intents older than this become BLOCKED DEADLINE_EXCEEDED with an inbox item."
+        },
+        "max_reconcile_attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 5,
+          "description": "After that, the attempt stays UNCERTAIN and the user is told delivery is unconfirmed."
+        }
+      }
+    },
+    "context_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_recent_turns",
+        "max_repairs",
+        "max_escalations",
+        "min_eval_n"
+      ],
+      "description": "Context envelope and model-escalation bounds (M31).",
+      "properties": {
+        "max_recent_turns": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 6,
+          "description": "Recent turns before trimming."
+        },
+        "max_repairs": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 2,
+          "description": "Structured-output repairs (ModelPort ladder)."
+        },
+        "max_escalations": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1,
+          "description": "Stronger-role attempts per decision."
+        },
+        "min_eval_n": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 30,
+          "description": "Minimum N for an EVALUATED record (MOD-01 uses 30)."
+        }
+      }
+    }
+  }
+}

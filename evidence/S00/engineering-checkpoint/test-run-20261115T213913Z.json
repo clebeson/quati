@@ -1,0 +1,21 @@
+{
+  "record_type": "engineering_checkpoint_test_run",
+  "scope": "local temporary filesystem fixtures only; no canonical state write",
+  "timestamp_utc": "2026-11-15T21:39:13.242925Z",
+  "command": "python3 -m pytest tests/unit/test_execution_checkpoint.py -q",
+  "result": {
+    "exit_code": 0,
+    "summary": "5 passed"
+  },
+  "initial_red": {
+    "command": "python3 -m pytest tests/unit/test_execution_checkpoint.py -q",
+    "summary": "4 failed because scripts/checkpoint_execution.py did not yet exist"
+  },
+  "python": "3.13.7",
+  "platform": "Linux-6.17.0-41-generic-x86_64-with-glibc2.42",
+  "source_sha256": {
+    "scripts/checkpoint_execution.py": "aeb1a8be05f8446540e35e3af166c7f0e8bdad004f8023f79d5a850fb7ef9b43",
+    "tests/unit/test_execution_checkpoint.py": "6b6f6d6c57209eda5557c0a90b0121a13a09c8cbeeeae2f8c44d8d6513a7d826"
+  },
+  "proof_tier": "local deterministic filesystem CLI tests; no provider or external integration evidence"
+}

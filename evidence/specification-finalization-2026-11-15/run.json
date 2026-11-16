@@ -1,0 +1,70 @@
+{
+  "tier": "L0",
+  "timestamp": "2026-11-15T21:10:02.523930+00:00",
+  "status": "PASS",
+  "runtime_qualified": false,
+  "independent_audit": false,
+  "source_commit": null,
+  "source_snapshot": {
+    "path": "evidence/specification-finalization-2026-11-15/source_snapshot.json",
+    "sha256": "a4b2a6376791f708daeae63e6e26c6c6195bff08abdaf70dbc01e076bc58f170"
+  },
+  "runs": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "spec_tools/validate_spec.py"
+      ],
+      "exit_code": 0,
+      "output": "evidence/specification-finalization-2026-11-15/check-1.txt",
+      "sha256": "5f0ac5db201fc1c6298c9eef415bb2885ad052caf31b395692e4ccb4a8f24ea8",
+      "elapsed_seconds": 0.371
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "spec_tools/validate_readiness.py"
+      ],
+      "exit_code": 0,
+      "output": "evidence/specification-finalization-2026-11-15/check-2.txt",
+      "sha256": "3ddf2cfb574f99caf83c60872602bb68440b59bb5ae295a4132f961bcf2a30fd",
+      "elapsed_seconds": 0.3379
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "pytest",
+        "tests/test_reference_compiler.py",
+        "tests/test_audit_regressions.py",
+        "tests/test_spec_readiness.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "output": "evidence/specification-finalization-2026-11-15/check-3.txt",
+      "sha256": "5cba95917bc1621c3318d3b4b123d4e7127ebb5853472adaa8dc36ea7b627129",
+      "elapsed_seconds": 0.9376
+    }
+  ],
+  "environment": {
+    "python": "3.13.7 (main, Mar  3 2026, 12:19:54) [GCC 15.2.0]",
+    "platform": "Linux-6.17.0-41-generic-x86_64-with-glibc2.42",
+    "packages": {
+      "pytest": "9.1.1",
+      "PyYAML": "6.0.2",
+      "jsonschema": "4.19.2"
+    }
+  },
+  "checks": {
+    "specification_tests_passed": 54,
+    "cases_planned_not_run": 101,
+    "one_full_proof_owner_per_case": true,
+    "three_seals_per_slice_only": true,
+    "candidate_source_unchanged": true
+  },
+  "historical_evidence_preserved": true,
+  "provider": null,
+  "model": null,
+  "cost": null,
+  "persistent_save_receipt": null
+}

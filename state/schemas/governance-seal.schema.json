@@ -151,6 +151,29 @@
         "manifest_sha256"
       ],
       "additionalProperties": false
+    },
+    "commit_evidence": {
+      "type": "object",
+      "required": [
+        "commit_sha",
+        "test_log_ref",
+        "transcript_ref"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "commit_sha": {
+          "type": "string",
+          "pattern": "^([a-f0-9]{40}|[a-f0-9]{64})$"
+        },
+        "test_log_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transcript_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   },
   "required": [
@@ -160,7 +183,6 @@
     "verdict",
     "issued_at",
     "issuer",
-    "artifact_sha256",
     "requirement_ids",
     "test_ids",
     "evidence_refs",
@@ -169,8 +191,7 @@
     "unresolved_findings",
     "supersedes",
     "signature",
-    "evidence_sha256",
-    "source_snapshot"
+    "evidence_sha256"
   ],
   "additionalProperties": false,
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -181,7 +202,8 @@
           "kind": {
             "enum": [
               "INDEPENDENT_AUDIT_PASSED",
-              "SECURITY_REVIEWED"
+              "SECURITY_REVIEWED",
+              "EVIDENCE_VERIFIED"
             ]
           },
           "verdict": {
@@ -215,6 +237,29 @@
             "maxItems": 0
           }
         }
+      }
+    }
+  ],
+  "oneOf": [
+    {
+      "required": [
+        "source_snapshot",
+        "artifact_sha256"
+      ],
+      "not": {
+        "required": [
+          "commit_evidence"
+        ]
+      }
+    },
+    {
+      "required": [
+        "commit_evidence"
+      ],
+      "not": {
+        "required": [
+          "source_snapshot"
+        ]
       }
     }
   ]

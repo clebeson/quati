@@ -1,5 +1,8 @@
 # SECMA specification readiness audit — v8.1
 
+> Historical audit snapshot. The current reconciliation and observed checks are in `SPECIFICATION_FINALIZATION_2026-11-15.md`; older counts and dispositions describe their original scope.
+
+
 ## Scope and claim boundary
 
 The user changed the task from implementation to specification audit and preparation.

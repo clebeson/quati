@@ -23,7 +23,7 @@ SECTIONS = [
 
 def build() -> str:
     sections = SECTIONS + [(f'Module M{n:02}', f'docs/prds/M{n:02}.md') for n in range(1, 32)]
-    result = ['# SECMA v8 — Consolidated English Product and Technical Specification',
+    result = ['# Quati v8 — Consolidated English Product and Technical Specification',
               '> Generated reading bundle. Canonical detail remains in source files and their IDs. '
               'Design requirements do not constitute runtime evidence. Rebuild with '
               '`python spec_tools/build_consolidated.py`.']
@@ -36,4 +36,4 @@ def build() -> str:
 
 
 if __name__ == '__main__':
-    (ROOT / 'SECMA_CONSOLIDATED_SPEC_V8_EN.md').write_text(build(), encoding='utf-8')
+    (ROOT / 'QUATI_CONSOLIDATED_SPEC_V8_EN.md').write_text(build(), encoding='utf-8')

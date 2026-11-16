@@ -7,12 +7,13 @@
     "document_id",
     "version",
     "tenant_id",
-    "visibility",
+    "space_id",
     "title",
     "content_ref",
     "source_uri",
     "retrieved_at",
-    "acl_ref"
+    "acl_ref",
+    "content_sha256"
   ],
   "properties": {
     "provider_id": {
@@ -31,14 +32,10 @@
       "type": "string",
       "minLength": 1
     },
-    "visibility": {
+    "space_id": {
       "type": "string",
-      "enum": [
-        "private",
-        "team",
-        "organization",
-        "public"
-      ]
+      "minLength": 1,
+      "description": "Owning space (RFC-013 \u00a72); visibility derives from the space kind and its grants"
     },
     "title": {
       "type": "string",
@@ -58,8 +55,14 @@
     },
     "acl_ref": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "description": "Derived from the space grants at retrieval time; never authored by the provider"
+    },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "description": "A document returned by a brain provider. Access is decided by space_id grants (RFC-013), not by provider-declared visibility."
 }

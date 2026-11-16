@@ -12,6 +12,8 @@ records all three failing. Fixes were then applied:
    The reference compiler and packaged S00 copy remain byte-equivalent except resource
    root and descriptive docstring. This is static protection; production commitment
    statecharts remain quarantined until S02 transactional/recovery validation.
+   >
+   > Correction 2026-11-15: this equivalence no longer holds; see docs/governance/LOG.md LOG-0003. Packaged assets must be regenerated and requalified by the owning task.
 3. One endpoint validator serves doctor and model transport, rejecting invalid ports,
    URL credentials, whitespace, query, fragment and non-HTTPS URLs.
 

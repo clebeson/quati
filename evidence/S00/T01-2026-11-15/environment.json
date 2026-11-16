@@ -1,0 +1,22 @@
+{
+  "interpreter": "/home/clebeson/dev/agentswarm/.venv/bin/python",
+  "python": "3.13.7 (main, Mar  3 2026, 12:19:54) [GCC 15.2.0]",
+  "platform": "Linux-6.17.0-41-generic-x86_64-with-glibc2.42",
+  "packages": {
+    "typer": "0.28.0",
+    "platformdirs": "4.14.5",
+    "cryptography": "50.0.2",
+    "PyYAML": "6.0.3",
+    "jsonschema": "4.26.0",
+    "pytest": "9.2.0"
+  },
+  "coverage": {
+    "version": "7.16.1",
+    "library_source": "Read-only existing local environment; exact path recorded by coverage-run metadata"
+  },
+  "provider": null,
+  "model": null,
+  "real_provider_calls": 0,
+  "agent_cost_usd": null,
+  "note": "Core tests ran offline; no user/provider credential values are retained."
+}

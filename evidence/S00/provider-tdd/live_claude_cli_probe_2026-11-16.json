@@ -1,0 +1,30 @@
+{
+  "aborted": null,
+  "config_hash": "6f3d90b05bd0c99517b0a9a8a67f93dcd4e7e5d40164000bd73cfeb89414f4d2",
+  "evidence_refs": [],
+  "evidence_version": "s00/1",
+  "features": {
+    "concurrency": "NOT_VERIFIED",
+    "streaming": "UNSUPPORTED",
+    "structured_output": "SUPPORTED",
+    "timeout": "SUPPORTED",
+    "tools": "SUPPORTED"
+  },
+  "kind": "feature_report",
+  "measured_at": "2026-11-16T03:55:13.366201+00:00",
+  "metadata_attestations": {
+    "pricing": "UNKNOWN",
+    "region": "UNKNOWN"
+  },
+  "model_or_adapter_version": "claude-haiku-5-5",
+  "observations": {
+    "concurrency": "CONCURRENCY_NOT_EXERCISED",
+    "streaming": "STREAMING_UNSUPPORTED",
+    "structured_output": "PROBE_PASSED",
+    "timeout": "PROBE_PASSED",
+    "tools": "PROBE_PASSED"
+  },
+  "provider_id": "claude_cli",
+  "timestamp": "2026-11-16T03:55:13.366544+00:00",
+  "transport": "claude_cli"
+}

@@ -36,6 +36,13 @@ def test_ct03_protected_delivery_bypass_rejected():
         validate_machine(machine)
 
 
+def test_ct03_protected_start_without_receipt_rejected():
+    machine = load_yaml(ROOT / 'examples/statecharts/commitment.yaml')
+    machine['transitions'].append({'source': 'RECEIVED', 'event': 'start_without_receipt', 'target': 'IN_PROGRESS', 'guard': 'always', 'action': 'start_work'})
+    with pytest.raises(ValueError, match='Protected'):
+        validate_machine(machine)
+
+
 def test_ct03_guard_replacement_rejected():
     machine = load_yaml(ROOT / 'examples/statecharts/commitment.yaml')
     machine['transitions'][0]['guard'] = 'always'

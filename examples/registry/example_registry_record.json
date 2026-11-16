@@ -1,0 +1,21 @@
+{
+  "schema_version": "scs-registry/1.0",
+  "tenant_id": "local",
+  "capability_id": "research.analytical-investigation",
+  "capability_version": "1.0.0",
+  "package_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "source": "file:///examples/capabilities",
+  "import_kind": "scs",
+  "lifecycle": "STAGED",
+  "assurance": "C2",
+  "effect_class_reviewed": "read",
+  "vendor_hints": {},
+  "assurance_evidence": [
+    {"level": "C2", "evidence_sha256": "1111111111111111111111111111111111111111111111111111111111111111", "model_digest": null, "catalog_digest": null, "recorded_at": "2026-11-15T00:00:00Z"}
+  ],
+  "enabled_by_approval": null,
+  "lint_report_ref": null,
+  "skill": null,
+  "updated_at": "2026-11-15T00:00:00Z",
+  "revision": 1
+}

@@ -1,0 +1,30 @@
+{
+  "aborted": null,
+  "config_hash": "846702a3db145f38d8a1410543d967186f17de4e2c436b5f39561a9b26eefe98",
+  "evidence_refs": [],
+  "evidence_version": "s00/1",
+  "features": {
+    "concurrency": "NOT_VERIFIED",
+    "streaming": "UNSUPPORTED",
+    "structured_output": "SUPPORTED",
+    "timeout": "SUPPORTED",
+    "tools": "SUPPORTED"
+  },
+  "kind": "feature_report",
+  "measured_at": "2026-11-16T05:07:08.512333+00:00",
+  "metadata_attestations": {
+    "pricing": "UNKNOWN",
+    "region": "UNKNOWN"
+  },
+  "model_or_adapter_version": "gpt-6-luna",
+  "observations": {
+    "concurrency": "CONCURRENCY_NOT_EXERCISED",
+    "streaming": "STREAMING_UNSUPPORTED",
+    "structured_output": "PROBE_PASSED",
+    "timeout": "PROBE_PASSED",
+    "tools": "PROBE_PASSED"
+  },
+  "provider_id": "codex_cli",
+  "timestamp": "2026-11-16T05:07:08.512740+00:00",
+  "transport": "codex_cli"
+}

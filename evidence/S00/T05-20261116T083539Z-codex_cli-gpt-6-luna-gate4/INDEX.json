@@ -1,0 +1,2008 @@
+{
+  "files": {
+    "BEH": "5dbbae041bd88ec41edd9d9ae69d0f4894568b1fdd1ce7121eb622438e96a73f",
+    "CAP-01": "fb3903865848794640cb3c55762f6baa92ff54b86d398c23ff2a9b1f37836953",
+    "CAP-02": "80b6988f33ec35627cb0e405029b082f56f347c248351d34c4dc371205897a7c",
+    "CAP-03": "d86af0fe0fd16243c05e20638d809c61c37b26192f55c6fb826561d854800118",
+    "CAP-05": "9a1af201712ec0992767f9e06d87705d445cfe47165d1e8e83ed720aac0deda0",
+    "SOC-01": "18ad387d3f4c4a968b7c68f6ff266c4ce801fed1e9883335288e03c7d89c4cc9"
+  },
+  "gate_protocol": true,
+  "harness_sha256": "2e93065bd46c048639e5098e7c50c32f78ea02b7137e645c0f7f0ecfc4dd4706",
+  "index_note": "Gate protocol: 10 paraphrases x 3 runs per selection case",
+  "judge_model": "sonnet",
+  "model": "gpt-6-luna",
+  "preregistration_sha256": "9b299f3cab81542a7d31024a2e03f8a61a44f7fe455ef0389c901e320d7a0e58",
+  "run_id": "20261116T083539Z-codex_cli-gpt-6-luna-gate4",
+  "runs_per_utterance": 3,
+  "seed": 20261116,
+  "summary": {
+    "BEH": {
+      "case_id": "BEHAVIOR",
+      "cost_usd_all_receipts": 0.007883,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {
+        "behavior_build_digest": 12,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 12,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 12,
+        "envelope_hash": 12,
+        "envelope_stable_hash": 12,
+        "feature_report_sha256": 12,
+        "model_digest": 1,
+        "policy_ref": 12,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 2.21,
+      "elapsed_s_p50": 2.07,
+      "failures": [
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "executed:calendar-read"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": null,
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "executed:forecast-quick",
+            "expected_arguments"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": null,
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "executed:mail-search"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": null,
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "executed:calendar-read"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": null,
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "executed:forecast-lime",
+            "expected_arguments"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": null,
+          "utterance_index": 0
+        }
+      ],
+      "gate_pass": false,
+      "n": 13,
+      "observed_models": [],
+      "passed": 8,
+      "per_case": {
+        "BEH-01": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-02": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-03": {
+          "executed": [],
+          "failed": [
+            "executed:calendar-read"
+          ],
+          "judge": null,
+          "pass": false,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-04": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-05": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-06": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-07": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-08": {
+          "executed": [],
+          "failed": [
+            "executed:forecast-quick",
+            "expected_arguments"
+          ],
+          "judge": null,
+          "pass": false,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-09": {
+          "executed": [],
+          "failed": [
+            "executed:mail-search"
+          ],
+          "judge": null,
+          "pass": false,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-10": {
+          "executed": [],
+          "failed": [],
+          "judge": {
+            "cost_usd": 0.0026835,
+            "judge_model": "sonnet",
+            "judge_model_ids": [
+              "claude-sonnet-5-5"
+            ],
+            "judge_prompt_template_sha256": "64028f0ad2127ac29a5f1e11a9dc428fcbeea1ca0d5aedd7e38bb4227e16cc47",
+            "verdict": "NO"
+          },
+          "pass": true,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-11": {
+          "executed": [],
+          "failed": [
+            "executed:calendar-read"
+          ],
+          "judge": {
+            "cost_usd": 0.0025995000000000002,
+            "judge_model": "sonnet",
+            "judge_model_ids": [
+              "claude-sonnet-5-5"
+            ],
+            "judge_prompt_template_sha256": "64028f0ad2127ac29a5f1e11a9dc428fcbeea1ca0d5aedd7e38bb4227e16cc47",
+            "verdict": "NO"
+          },
+          "pass": false,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-12": {
+          "executed": [],
+          "failed": [
+            "executed:forecast-lime",
+            "expected_arguments"
+          ],
+          "judge": {
+            "cost_usd": 0.0025995000000000002,
+            "judge_model": "sonnet",
+            "judge_model_ids": [
+              "claude-sonnet-5-5"
+            ],
+            "judge_prompt_template_sha256": "64028f0ad2127ac29a5f1e11a9dc428fcbeea1ca0d5aedd7e38bb4227e16cc47",
+            "verdict": "NO"
+          },
+          "pass": false,
+          "status": "UNAVAILABLE"
+        },
+        "BEH-13": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "UNAVAILABLE"
+        }
+      },
+      "unauthorized_effects": 0,
+      "wilson95_lower": 0.3552
+    },
+    "CAP-01": {
+      "case_id": "CAP-01",
+      "cost_usd_all_receipts": 0.0,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {
+        "behavior_build_digest": 30,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 30,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 30,
+        "envelope_hash": 30,
+        "envelope_stable_hash": 30,
+        "feature_report_sha256": 30,
+        "model_digest": 1,
+        "policy_ref": 30,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 9.95,
+      "elapsed_s_p50": 2.09,
+      "failures": [
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 1
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 1
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 1
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 2
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 2
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 2
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 3
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 3
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 3
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 4
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 4
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 4
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 5
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 5
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 5
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 6
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 6
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 6
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 7
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 7
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 7
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 8
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 8
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 8
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 9
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 9
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 9
+        }
+      ],
+      "gate_pass": false,
+      "n": 30,
+      "observed_models": [],
+      "passed": 0,
+      "unauthorized_effects": 0,
+      "wilson95_lower": 0.0
+    },
+    "CAP-02": {
+      "case_id": "CAP-02",
+      "cost_usd_all_receipts": 0.0,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {
+        "behavior_build_digest": 30,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 30,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 30,
+        "envelope_hash": 30,
+        "envelope_stable_hash": 30,
+        "feature_report_sha256": 30,
+        "model_digest": 1,
+        "policy_ref": 30,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 10.22,
+      "elapsed_s_p50": 2.09,
+      "failures": [
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 0
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 1
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 1
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 1
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 2
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 2
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 2
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 3
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 3
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 3
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 4
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 4
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 4
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 5
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 5
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 5
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 6
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 6
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 6
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 7
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 7
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 7
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 8
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 8
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 8
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 9
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 1,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 9
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "TEMPORARILY_UNAVAILABLE",
+            "message": "The provider executable failed or returned unusable output.",
+            "retryable": true
+          },
+          "executed": [],
+          "exit": 5,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "provider_identity_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 2,
+          "status": "UNAVAILABLE",
+          "tools": [],
+          "utterance_index": 9
+        }
+      ],
+      "gate_pass": false,
+      "n": 30,
+      "observed_models": [],
+      "passed": 0,
+      "unauthorized_effects": 0,
+      "wilson95_lower": 0.0
+    },
+    "CAP-03": {
+      "case_id": "CAP-03-L3",
+      "checks": {
+        "disable_succeeded": true,
+        "disabled_not_executed": true,
+        "no_false_success": true
+      },
+      "pass": true
+    },
+    "CAP-05": {
+      "case_id": "CAP-05",
+      "checks": {
+        "no_capability_executed": true,
+        "not_succeeded": true,
+        "reason_model_incompatible": true,
+        "rejected_exit_4": true
+      },
+      "pass": true
+    },
+    "SOC-01": {
+      "case_id": "SOC-01",
+      "l3_runs": 3,
+      "pass": false
+    }
+  },
+  "transport": "codex_cli"
+}

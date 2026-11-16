@@ -34,7 +34,6 @@
       "enum": [
         "mock",
         "pydantic",
-        "dbos",
         "codex",
         "claude",
         "hermes",

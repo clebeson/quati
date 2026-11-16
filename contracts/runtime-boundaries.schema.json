@@ -1,12 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "SECMA normative runtime boundary records, not authentication proof",
+  "$id": "https://quati.local/contracts/runtime-boundaries.schema.json",
+  "title": "Quati normative runtime boundary records, not authentication proof",
   "$defs": {
     "RequestContext": {
       "type": "object",
       "properties": {
         "schema_version": {
-          "const": "secma-context/1"
+          "const": "quati-context/2"
         },
         "request_id": {
           "type": "string",
@@ -39,6 +40,68 @@
         "deadline_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "principal_kind": {
+          "enum": [
+            "HUMAN",
+            "AGENT",
+            "SERVICE"
+          ],
+          "description": "Kind of the authenticated subject (RFC-013 §2)."
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Authenticated session (token sid claim)."
+        },
+        "token_jti": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Access-token id used for revocation checks; the token itself never enters the context or model input."
+        },
+        "space_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "description": "Spaces explicitly targeted by this request; readable scope is still resolved live by AuthorizationPort."
+        },
+        "act": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "actor_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "principal_kind": {
+                "enum": [
+                  "AGENT",
+                  "SERVICE"
+                ]
+              }
+            },
+            "required": [
+              "actor_id",
+              "principal_kind"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 3,
+          "description": "Delegation chain (RFC 8693 act), outermost first; null when the subject acts directly. Depth > 3 is rejected."
+        },
+        "profile": {
+          "enum": [
+            "LOCAL",
+            "SERVER"
+          ],
+          "description": "Deployment profile (ADR-013)."
         }
       },
       "required": [
@@ -50,7 +113,13 @@
         "channel",
         "authenticated_origin_ref",
         "policy_version",
-        "deadline_at"
+        "deadline_at",
+        "principal_kind",
+        "session_id",
+        "token_jti",
+        "space_ids",
+        "act",
+        "profile"
       ],
       "additionalProperties": false
     },
@@ -154,6 +223,7 @@
             "IDEMPOTENCY_CONFLICT",
             "NOT_FOUND",
             "NOT_CONFIGURED",
+            "CONFIG_INVALID",
             "UNSUPPORTED",
             "TEMPORARILY_UNAVAILABLE",
             "DEADLINE_EXCEEDED",
@@ -281,6 +351,159 @@
           }
         }
       ]
+    },
+    "TimerIntent": {
+      "$ref": "timer-intent.schema.json"
+    },
+    "InboxMessage": {
+      "$ref": "inbox-message.schema.json"
+    },
+    "EffectRecord": {
+      "type": "object",
+      "description": "Effect-ledger row read by guards: the EffectIntent fields plus dispatch status (TYPE_CATALOG EffectRecord, GUARD_PREDICATES.md section 3).",
+      "properties": {
+        "effect_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tenant_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capability_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capability_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "destination_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "effect_class": {
+          "enum": [
+            "none",
+            "read",
+            "write",
+            "dangerous"
+          ]
+        },
+        "data_class": {
+          "enum": [
+            "public_synthetic",
+            "public",
+            "internal",
+            "confidential",
+            "restricted"
+          ]
+        },
+        "status": {
+          "enum": [
+            "COMMITTED",
+            "CLAIMED",
+            "UNCERTAIN",
+            "CONFIRMED",
+            "CONFIRMED_ABSENT"
+          ]
+        },
+        "dispatch_stopped_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lease_expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "effect_id",
+        "actor_id",
+        "tenant_id",
+        "capability_id",
+        "capability_version",
+        "binding_id",
+        "binding_version",
+        "operation",
+        "destination_ref",
+        "policy_version",
+        "idempotency_key",
+        "input_digest",
+        "effect_class",
+        "data_class",
+        "status",
+        "dispatch_stopped_at",
+        "lease_expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "CommitmentUsage": {
+      "type": "object",
+      "description": "Cumulative usage of one commitment, aggregated from the ledger and never model-reported (TYPE_CATALOG CommitmentUsage).",
+      "properties": {
+        "requests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tool_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cost_usd": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]+(\\.[0-9]+)?$",
+          "description": "Decimal string; null when pricing is unknown."
+        }
+      },
+      "required": [
+        "requests",
+        "tool_calls",
+        "output_tokens",
+        "cost_usd"
+      ],
+      "additionalProperties": false
     }
   },
   "oneOf": [

@@ -12,7 +12,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "secma-control-table/2"
+      "const": "quati-control-table/2"
     },
     "initial": {
       "type": "string",
@@ -76,15 +76,19 @@
               "classified",
               "confirmed_delivered",
               "confirmed_no_effect",
+              "confirmed_no_effect_exhausted",
               "deadline",
               "dispatch",
               "feedback",
+              "goal_revision",
               "insufficient",
               "known_effects",
               "no_effects",
               "partial",
               "progress",
               "response_lost",
+              "resume_acceptance",
+              "resume_cancellation",
               "resume_delivery",
               "resume_execution",
               "resume_reconciliation",
@@ -113,6 +117,7 @@
           },
           "guard": {
             "enum": [
+              "acceptance_block_resolved_authorized",
               "all_effects_confirmed_absent_and_dispatch_stopped",
               "all_effects_reconciled_and_dispatch_stopped",
               "any_effect_unknown",
@@ -133,6 +138,7 @@
               "dispatch_may_have_occurred",
               "execution_block_resolved_authorized_budget",
               "ledger_acceptance_committed",
+              "provider_proves_no_effect",
               "provider_proves_no_effect_and_retry_budget",
               "under_reinvestigation_budget",
               "under_transition_budget",
@@ -158,6 +164,7 @@
               "record_progress",
               "record_receipt",
               "request_more_evidence",
+              "resume_acceptance",
               "resume_delivery",
               "resume_execution",
               "schedule_reconciliation",

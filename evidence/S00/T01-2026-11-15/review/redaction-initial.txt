@@ -1,0 +1,26 @@
+/home/clebeson/dev/agentswarm/.venv/lib/python3.13/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_m26_redaction_preserves_structural_status_enum ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-77/test_m26_redaction_preserves_s0')
+
+    def test_m26_redaction_preserves_structural_status_enum(tmp_path):
+        """A synthetic key value matching an enum must not rewrite the public envelope."""
+        diagnostic = run_cli(tmp_path / 'config', 'doctor', '--json',
+                             extra_env={'SECMA_API_KEY_ENV': 'REVIEW_SECRET_REF',
+                                        'REVIEW_SECRET_REF': 'SUCCEEDED'})
+        assert diagnostic.returncode == 0
+>       assert json.loads(diagnostic.stdout)['status'] == 'SUCCEEDED'
+E       AssertionError: assert '[REDACTED]' == 'SUCCEEDED'
+E         
+E         - SUCCEEDED
+E         + [REDACTED]
+
+tests/unit/test_s00_t01_review.py:93: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_t01_review.py::test_m26_redaction_preserves_structural_status_enum
+1 failed, 12 deselected in 0.12s

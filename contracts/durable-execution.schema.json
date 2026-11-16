@@ -23,10 +23,10 @@
     "engine": {
       "type": "string",
       "enum": [
-        "dbos",
-        "temporal",
+        "ledger",
         "mock"
-      ]
+      ],
+      "description": "Additional engines (for example dbos, absurd, temporal) require an adapter ADR and the RFC-003 conformance suite before being added."
     },
     "workflow_type": {
       "type": "string",

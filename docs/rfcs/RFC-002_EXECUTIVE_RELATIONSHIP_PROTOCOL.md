@@ -1,4 +1,7 @@
 # RFC-002 — Executive Relationship Intelligence Protocol
+
+**Status:** Accepted for implementation (specification v8.1, 2026-11-15). Normative where referenced by a PRD, contract or work package.
+
 **Decision:** Proposed. **Owners:** M03–M10.
 
 A human-facing assistant is responsible for the *relationship between requester and commitment*, not just the immediate answer. At each inbound turn, timed supervision event or async executor result, the ERI proposes a typed `InteractionDecision` using the current context and policy: `ANSWER`, `RECEIPT`, `START_SAFE_WORK`, `ASK`, `WAIT`, `UPDATE`, `OFFER_PARTIAL`, `ESCALATE`, `DELIVER`. A trusted reducer applies state/legal gates; the LLM cannot directly mark a task done.

@@ -1,5 +1,5 @@
 {
-  "schema_version": "secma-context/1",
+  "schema_version": "quati-context/2",
   "request_id": "req-example",
   "trace_id": "trace-example",
   "actor_id": "actor-A",
@@ -7,5 +7,13 @@
   "channel": "cli",
   "authenticated_origin_ref": "os-process-example",
   "policy_version": "policy-1",
-  "deadline_at": "2026-11-15T18:00:00Z"
+  "deadline_at": "2026-11-15T18:00:00Z",
+  "principal_kind": "HUMAN",
+  "session_id": "sess-example",
+  "token_jti": "jti-example",
+  "space_ids": [
+    "space-personal-A"
+  ],
+  "act": null,
+  "profile": "LOCAL"
 }

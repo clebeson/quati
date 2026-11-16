@@ -1,0 +1,978 @@
+{
+  "case_id": "SOC-01",
+  "cli_log": [
+    {
+      "argv": [
+        "init",
+        "--json"
+      ],
+      "elapsed_s": 0.16,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "models",
+        "probe",
+        "--json"
+      ],
+      "elapsed_s": 10.438,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "capabilities",
+        "install-fixture",
+        "calendar-read",
+        "--json",
+        "--enable-fixture"
+      ],
+      "elapsed_s": 0.183,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "capabilities",
+        "install-fixture",
+        "mail-search",
+        "--json",
+        "--enable-fixture"
+      ],
+      "elapsed_s": 0.181,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "ask",
+        "Hi, how are you?",
+        "--json",
+        "--synthetic-evidence"
+      ],
+      "elapsed_s": 4.103,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "ask",
+        "Hey there! Hope your day is going well.",
+        "--json",
+        "--synthetic-evidence"
+      ],
+      "elapsed_s": 7.827,
+      "exit": 4,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "ask",
+        "Good morning! Urgent: just wanted to say hi.",
+        "--json",
+        "--synthetic-evidence"
+      ],
+      "elapsed_s": 6.896,
+      "exit": 4,
+      "stderr_tail": ""
+    }
+  ],
+  "l3_runs": 3,
+  "pass": false,
+  "results": [
+    {
+      "checks": {
+        "exit_0": true,
+        "no_capability_executed": true,
+        "no_commitment": true,
+        "no_tool_calls": true
+      },
+      "pass": true,
+      "receipt": {
+        "classification_sha256": "c327b55ffda91764fc88a82413b2499274c831e6adec399abfe341ed4a14618d",
+        "continuations": [],
+        "cost_usd": 0.0004774600000000001,
+        "digests": {
+          "behavior_build_digest": "7bbf8b5166e67b76b3b9a8f58f48052bb3696eb7251a80f7a87f39b400d25762",
+          "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+          "behavior_prompt_hash": "e66e02c198301d5e5a07b0b5e06384cd76f2230e1fed3b54a4d05225d75ec013",
+          "catalog_digest": "20faec77758c7179f7cbf5055d8293d6e377489d2de2a6c1d1b0e9a8fda2918e",
+          "classification_prompt_hash": "a9ecd89bea6c4f2bf1d2a38b4e87dcafdd5fe8488c43dbee46c6d0b9871a6eb1",
+          "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+          "effective_prompt_hash": "ebf9ad203cd3f3fc4bdbe79a914228118be00c1d0f7bdfc8e836a27b516d1184",
+          "envelope_hash": "48d8091dafc82927bf3ba5e26c6476a519d3c8dd382536887e4012a9d8b1ce13",
+          "envelope_stable_hash": "37a8e04b743f3a786fe8b0628d81a8590be732cb53000dbc33c41d39728890ae",
+          "feature_report_sha256": "ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163",
+          "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+          "policy_ref": "trusted_policy/default@a89e0f8827cfeb4507bee05680bd301cac76eb5c7769eb335f2c88e91e411e10",
+          "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+          "tool_schema_digest": "779a4c6e751864810aaed3e9b16c6b3e517d8133c114a21c6312f51595171969"
+        },
+        "effective_limits": {
+          "call_timeout_cap_s": 60,
+          "deadline_s": 180,
+          "max_output_tokens": 2048
+        },
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+          "measured_at": "2026-11-16T07:22:14.295940+00:00",
+          "observed_model_id": "claude-haiku-5-5",
+          "reason": null,
+          "report_ref": "sha256:ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163:/tmp/secma-eval-s7uuch3b/SOC-01/data/receipts/fb9ada0fc406450a82b43cd4c55d2cb9.json",
+          "structured_output": "SUPPORTED",
+          "supported": [
+            "structured_output",
+            "timeout",
+            "tools"
+          ],
+          "tools": "SUPPORTED",
+          "transport": "claude_cli"
+        },
+        "final_text_sha256": null,
+        "kind": "ask_receipt",
+        "limits": {
+          "deadline_cli_s": 180,
+          "deadline_s": 30,
+          "feature_report_max_age_s": 86400,
+          "max_continuations": 1,
+          "max_escalations": 0,
+          "max_loop_repairs": 2,
+          "max_output_tokens": 2048,
+          "max_provider_requests": 8,
+          "max_structured_repairs": 2,
+          "max_tool_calls": 6
+        },
+        "outcome": {
+          "executed_capabilities": [],
+          "reason": null,
+          "result_kind": "GREETING",
+          "status": "SUCCEEDED"
+        },
+        "output_hash": "4c811a5c45e34bd4521d87342025f49dd238cf490f9cff8cf25c3e47ff19cc36",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "554a26dc8f1f596ae68fa852337d0c80517c0e169dc16cf8d7dfca2cbd5da278",
+        "proof_tier": null,
+        "provider": {
+          "configured_model": "haiku",
+          "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+          "observed_model_ids": [
+            "claude-haiku-5-5"
+          ],
+          "provider_id": "claude_cli",
+          "transport": "claude_cli"
+        },
+        "provider_used": true,
+        "request_hash": "b54e9cae52b7cb12d621e0f388fc72cd3a3bf70cc721e5934f52fa8d2b78d3ec",
+        "request_id": "request-ef2af790887e47deb29c87a4bac894b6",
+        "scope": "S00_T04_ASK",
+        "status": "SUCCEEDED",
+        "synthetic_evidence": {
+          "catalog": [
+            {
+              "capability_id": "fixtures.calendar-read",
+              "capability_version": "1.0.0",
+              "lifecycle": "ENABLED",
+              "package_sha256": "bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b"
+            },
+            {
+              "capability_id": "fixtures.mail-search",
+              "capability_version": "1.0.0",
+              "lifecycle": "ENABLED",
+              "package_sha256": "c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112"
+            }
+          ],
+          "classification": {
+            "complexity": "trivial",
+            "confidence": 0.98,
+            "intent": "social",
+            "next_action": "respond",
+            "reason_code": "social_greeting",
+            "risk": "none",
+            "safe_work_allowed": false,
+            "uncertainty": "low",
+            "work_needed": false
+          },
+          "classification_attempts": 1,
+          "classification_mode": "native_json_schema",
+          "classification_repairs": 0,
+          "continuations": [],
+          "digests": {
+            "behavior_build_digest": "7bbf8b5166e67b76b3b9a8f58f48052bb3696eb7251a80f7a87f39b400d25762",
+            "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+            "behavior_prompt_hash": "e66e02c198301d5e5a07b0b5e06384cd76f2230e1fed3b54a4d05225d75ec013",
+            "catalog_digest": "20faec77758c7179f7cbf5055d8293d6e377489d2de2a6c1d1b0e9a8fda2918e",
+            "classification_prompt_hash": "a9ecd89bea6c4f2bf1d2a38b4e87dcafdd5fe8488c43dbee46c6d0b9871a6eb1",
+            "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+            "effective_prompt_hash": "ebf9ad203cd3f3fc4bdbe79a914228118be00c1d0f7bdfc8e836a27b516d1184",
+            "envelope_hash": "48d8091dafc82927bf3ba5e26c6476a519d3c8dd382536887e4012a9d8b1ce13",
+            "envelope_stable_hash": "37a8e04b743f3a786fe8b0628d81a8590be732cb53000dbc33c41d39728890ae",
+            "feature_report_sha256": "ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163",
+            "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+            "policy_ref": "trusted_policy/default@a89e0f8827cfeb4507bee05680bd301cac76eb5c7769eb335f2c88e91e411e10",
+            "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+            "tool_schema_digest": "779a4c6e751864810aaed3e9b16c6b3e517d8133c114a21c6312f51595171969"
+          },
+          "effective_limits": {
+            "call_timeout_cap_s": 60,
+            "deadline_s": 180,
+            "max_output_tokens": 2048
+          },
+          "feature_report_ref": "sha256:ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163:/tmp/secma-eval-s7uuch3b/SOC-01/data/receipts/fb9ada0fc406450a82b43cd4c55d2cb9.json",
+          "final_model_text": null,
+          "final_model_text_sha256": null,
+          "limits": {
+            "deadline_cli_s": 180,
+            "deadline_s": 30,
+            "feature_report_max_age_s": 86400,
+            "max_continuations": 1,
+            "max_escalations": 0,
+            "max_loop_repairs": 2,
+            "max_output_tokens": 2048,
+            "max_provider_requests": 8,
+            "max_structured_repairs": 2,
+            "max_tool_calls": 6
+          },
+          "model_calls": [
+            {
+              "elapsed_s": 3.907743,
+              "ended_at": "2026-11-16T07:22:18.760432+00:00",
+              "index": 1,
+              "model_id": "claude-haiku-5-5",
+              "outcome": "OK",
+              "purpose": "classify",
+              "started_at": "2026-11-16T07:22:14.852689+00:00",
+              "stop_reason": "end",
+              "tool_call_names": [],
+              "usage": {
+                "cost_usd": 0.0004774600000000001,
+                "input_tokens": 2190,
+                "output_tokens": 378
+              }
+            }
+          ],
+          "model_visible": {
+            "classification_prompt_sha256": "a9ecd89bea6c4f2bf1d2a38b4e87dcafdd5fe8488c43dbee46c6d0b9871a6eb1",
+            "system_and_tools_sha256": "ebf9ad203cd3f3fc4bdbe79a914228118be00c1d0f7bdfc8e836a27b516d1184",
+            "system_prompt_sha256": "2007edd6f2e67ad383e02390b1b8d61b35407bfbbcd6408bd232c9f001c8ed46",
+            "tool_names": [
+              "secma_search",
+              "secma_describe",
+              "secma_invoke",
+              "secma_status"
+            ],
+            "tools_sha256": "779a4c6e751864810aaed3e9b16c6b3e517d8133c114a21c6312f51595171969"
+          },
+          "outcome": {
+            "executed_capabilities": [],
+            "reason": null,
+            "result_kind": "GREETING",
+            "status": "SUCCEEDED"
+          },
+          "provider": {
+            "configured_model": "haiku",
+            "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+            "observed_model_ids": [
+              "claude-haiku-5-5"
+            ],
+            "provider_id": "claude_cli",
+            "transport": "claude_cli"
+          },
+          "request_text": "Hi, how are you?",
+          "schema": "secma-ask-synthetic-evidence/1",
+          "trajectory": [],
+          "usage": {
+            "cost_usd": 0.0004774600000000001,
+            "input_tokens": 2190,
+            "model_requests": 1,
+            "output_tokens": 378
+          }
+        },
+        "timestamp": "2026-11-16T07:22:18.762570+00:00",
+        "timing": {
+          "ask_elapsed_s": 3.909209,
+          "model_calls": [
+            {
+              "elapsed_s": 3.907743,
+              "index": 1,
+              "purpose": "classify"
+            }
+          ],
+          "model_elapsed_s": 3.907743
+        },
+        "trace_id": "28a8baf8ebf341db915adffdc0352d24",
+        "trajectory": [],
+        "usage": {
+          "cost_usd": 0.0004774600000000001,
+          "input_tokens": 2190,
+          "model_requests": 1,
+          "output_tokens": 378
+        }
+      },
+      "response": {
+        "data": {
+          "classification": {
+            "complexity": "trivial",
+            "intent": "social",
+            "next_action": "respond",
+            "risk": "none",
+            "safe_work_allowed": false,
+            "uncertainty": "low",
+            "work_needed": false
+          },
+          "classification_sha256": "c327b55ffda91764fc88a82413b2499274c831e6adec399abfe341ed4a14618d",
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "SUPPORTED",
+          "launched": false,
+          "provider_used": true,
+          "reason": null,
+          "received": true,
+          "request_id": "request-ef2af790887e47deb29c87a4bac894b6",
+          "result_kind": "GREETING",
+          "result_status": "RESPONDED",
+          "scope": "S00_T04_ASK",
+          "text": "Hello!",
+          "tool_calls": [],
+          "trace_id": "28a8baf8ebf341db915adffdc0352d24",
+          "usage": {
+            "cost_usd": 0.0004774600000000001,
+            "input_tokens": 2190,
+            "model_requests": 1,
+            "output_tokens": 378
+          }
+        },
+        "error": null,
+        "evidence_refs": [
+          "sha256:498abdd77bf43e0ad295e8aff857ee825fe564f57b9fffb1f69c9f8a67f0c572:/tmp/secma-eval-s7uuch3b/SOC-01/data/receipts/dffa2bea7b0c450d969e4868324f5d1a.json"
+        ],
+        "next_action": null,
+        "status": "SUCCEEDED",
+        "uncertainties": []
+      },
+      "text": "Hi, how are you?",
+      "tier_claim": "L3"
+    },
+    {
+      "checks": {
+        "exit_0": false,
+        "no_capability_executed": true,
+        "no_commitment": true,
+        "no_tool_calls": true
+      },
+      "pass": false,
+      "receipt": {
+        "classification_sha256": "942bf773797d97678fac26a1a7f6e7b915d9bd1ab4705fd2522c3da60e0e5a02",
+        "continuations": [],
+        "cost_usd": 0.0008707,
+        "digests": {
+          "behavior_build_digest": "7bbf8b5166e67b76b3b9a8f58f48052bb3696eb7251a80f7a87f39b400d25762",
+          "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+          "behavior_prompt_hash": "e66e02c198301d5e5a07b0b5e06384cd76f2230e1fed3b54a4d05225d75ec013",
+          "catalog_digest": "20faec77758c7179f7cbf5055d8293d6e377489d2de2a6c1d1b0e9a8fda2918e",
+          "classification_prompt_hash": "a9ecd89bea6c4f2bf1d2a38b4e87dcafdd5fe8488c43dbee46c6d0b9871a6eb1",
+          "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+          "effective_prompt_hash": "ebf9ad203cd3f3fc4bdbe79a914228118be00c1d0f7bdfc8e836a27b516d1184",
+          "envelope_hash": "6ed22b63746df49ff41ba39229a4c1e2fb32b6a0b3272dc12ac202937905f167",
+          "envelope_stable_hash": "37a8e04b743f3a786fe8b0628d81a8590be732cb53000dbc33c41d39728890ae",
+          "feature_report_sha256": "ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163",
+          "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+          "policy_ref": "trusted_policy/default@a89e0f8827cfeb4507bee05680bd301cac76eb5c7769eb335f2c88e91e411e10",
+          "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+          "tool_schema_digest": "779a4c6e751864810aaed3e9b16c6b3e517d8133c114a21c6312f51595171969"
+        },
+        "effective_limits": {
+          "call_timeout_cap_s": 60,
+          "deadline_s": 180,
+          "max_output_tokens": 2048
+        },
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+          "measured_at": "2026-11-16T07:22:14.295940+00:00",
+          "observed_model_id": "claude-haiku-5-5",
+          "reason": null,
+          "report_ref": "sha256:ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163:/tmp/secma-eval-s7uuch3b/SOC-01/data/receipts/fb9ada0fc406450a82b43cd4c55d2cb9.json",
+          "structured_output": "SUPPORTED",
+          "supported": [
+            "structured_output",
+            "timeout",
+            "tools"
+          ],
+          "tools": "SUPPORTED",
+          "transport": "claude_cli"
+        },
+        "final_text_sha256": "a62498340b3797d2ba34e0a2c47aac991060ef9b93ddfc6c7cdc3a757cb22d5d",
+        "kind": "ask_receipt",
+        "limits": {
+          "deadline_cli_s": 180,
+          "deadline_s": 30,
+          "feature_report_max_age_s": 86400,
+          "max_continuations": 1,
+          "max_escalations": 0,
+          "max_loop_repairs": 2,
+          "max_output_tokens": 2048,
+          "max_provider_requests": 8,
+          "max_structured_repairs": 2,
+          "max_tool_calls": 6
+        },
+        "outcome": {
+          "executed_capabilities": [],
+          "reason": "NO_VERIFIED_EXECUTION",
+          "result_kind": "BLOCKED",
+          "status": "BLOCKED"
+        },
+        "output_hash": "913d4a4f9616533ef6acddaa7d83a5a9d4a40567a5c837adebd1ecace02854fc",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "554a26dc8f1f596ae68fa852337d0c80517c0e169dc16cf8d7dfca2cbd5da278",
+        "proof_tier": null,
+        "provider": {
+          "configured_model": "haiku",
+          "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+          "observed_model_ids": [
+            "claude-haiku-5-5"
+          ],
+          "provider_id": "claude_cli",
+          "transport": "claude_cli"
+        },
+        "provider_used": true,
+        "request_hash": "d49b93ccf2668e745e11b14bc8521395ef813774b99424fabf0ef12b3b93eb60",
+        "request_id": "request-eb934ea85a4041aab86de7086e09daa5",
+        "scope": "S00_T04_ASK",
+        "status": "BLOCKED",
+        "synthetic_evidence": {
+          "catalog": [
+            {
+              "capability_id": "fixtures.calendar-read",
+              "capability_version": "1.0.0",
+              "lifecycle": "ENABLED",
+              "package_sha256": "bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b"
+            },
+            {
+              "capability_id": "fixtures.mail-search",
+              "capability_version": "1.0.0",
+              "lifecycle": "ENABLED",
+              "package_sha256": "c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112"
+            }
+          ],
+          "classification": {
+            "complexity": "trivial",
+            "confidence": 0.98,
+            "intent": "social",
+            "next_action": "respond",
+            "reason_code": "social_greeting_no_task",
+            "risk": "none",
+            "safe_work_allowed": false,
+            "uncertainty": "low",
+            "work_needed": false
+          },
+          "classification_attempts": 1,
+          "classification_mode": "native_json_schema",
+          "classification_repairs": 0,
+          "continuations": [],
+          "digests": {
+            "behavior_build_digest": "7bbf8b5166e67b76b3b9a8f58f48052bb3696eb7251a80f7a87f39b400d25762",
+            "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+            "behavior_prompt_hash": "e66e02c198301d5e5a07b0b5e06384cd76f2230e1fed3b54a4d05225d75ec013",
+            "catalog_digest": "20faec77758c7179f7cbf5055d8293d6e377489d2de2a6c1d1b0e9a8fda2918e",
+            "classification_prompt_hash": "a9ecd89bea6c4f2bf1d2a38b4e87dcafdd5fe8488c43dbee46c6d0b9871a6eb1",
+            "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+            "effective_prompt_hash": "ebf9ad203cd3f3fc4bdbe79a914228118be00c1d0f7bdfc8e836a27b516d1184",
+            "envelope_hash": "6ed22b63746df49ff41ba39229a4c1e2fb32b6a0b3272dc12ac202937905f167",
+            "envelope_stable_hash": "37a8e04b743f3a786fe8b0628d81a8590be732cb53000dbc33c41d39728890ae",
+            "feature_report_sha256": "ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163",
+            "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+            "policy_ref": "trusted_policy/default@a89e0f8827cfeb4507bee05680bd301cac76eb5c7769eb335f2c88e91e411e10",
+            "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+            "tool_schema_digest": "779a4c6e751864810aaed3e9b16c6b3e517d8133c114a21c6312f51595171969"
+          },
+          "effective_limits": {
+            "call_timeout_cap_s": 60,
+            "deadline_s": 180,
+            "max_output_tokens": 2048
+          },
+          "feature_report_ref": "sha256:ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163:/tmp/secma-eval-s7uuch3b/SOC-01/data/receipts/fb9ada0fc406450a82b43cd4c55d2cb9.json",
+          "final_model_text": "Hello, thanks for asking, my day is going well. How can I help you today?",
+          "final_model_text_sha256": "a62498340b3797d2ba34e0a2c47aac991060ef9b93ddfc6c7cdc3a757cb22d5d",
+          "limits": {
+            "deadline_cli_s": 180,
+            "deadline_s": 30,
+            "feature_report_max_age_s": 86400,
+            "max_continuations": 1,
+            "max_escalations": 0,
+            "max_loop_repairs": 2,
+            "max_output_tokens": 2048,
+            "max_provider_requests": 8,
+            "max_structured_repairs": 2,
+            "max_tool_calls": 6
+          },
+          "model_calls": [
+            {
+              "elapsed_s": 4.198387,
+              "ended_at": "2026-11-16T07:22:23.160420+00:00",
+              "index": 1,
+              "model_id": "claude-haiku-5-5",
+              "outcome": "OK",
+              "purpose": "classify",
+              "started_at": "2026-11-16T07:22:18.962033+00:00",
+              "stop_reason": "end",
+              "tool_call_names": [],
+              "usage": {
+                "cost_usd": 0.00033911,
+                "input_tokens": 2197,
+                "output_tokens": 393
+              }
+            },
+            {
+              "elapsed_s": 3.423742,
+              "ended_at": "2026-11-16T07:22:26.584241+00:00",
+              "index": 2,
+              "model_id": "claude-haiku-5-5",
+              "outcome": "OK",
+              "purpose": "loop",
+              "started_at": "2026-11-16T07:22:23.160499+00:00",
+              "stop_reason": "end",
+              "tool_call_names": [],
+              "usage": {
+                "cost_usd": 0.00053159,
+                "input_tokens": 2717,
+                "output_tokens": 193
+              }
+            }
+          ],
+          "model_visible": {
+            "classification_prompt_sha256": "a9ecd89bea6c4f2bf1d2a38b4e87dcafdd5fe8488c43dbee46c6d0b9871a6eb1",
+            "system_and_tools_sha256": "ebf9ad203cd3f3fc4bdbe79a914228118be00c1d0f7bdfc8e836a27b516d1184",
+            "system_prompt_sha256": "2007edd6f2e67ad383e02390b1b8d61b35407bfbbcd6408bd232c9f001c8ed46",
+            "tool_names": [
+              "secma_search",
+              "secma_describe",
+              "secma_invoke",
+              "secma_status"
+            ],
+            "tools_sha256": "779a4c6e751864810aaed3e9b16c6b3e517d8133c114a21c6312f51595171969"
+          },
+          "outcome": {
+            "executed_capabilities": [],
+            "reason": "NO_VERIFIED_EXECUTION",
+            "result_kind": "BLOCKED",
+            "status": "BLOCKED"
+          },
+          "provider": {
+            "configured_model": "haiku",
+            "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+            "observed_model_ids": [
+              "claude-haiku-5-5"
+            ],
+            "provider_id": "claude_cli",
+            "transport": "claude_cli"
+          },
+          "request_text": "Hey there! Hope your day is going well.",
+          "schema": "secma-ask-synthetic-evidence/1",
+          "trajectory": [],
+          "usage": {
+            "cost_usd": 0.0008707,
+            "input_tokens": 4914,
+            "model_requests": 2,
+            "output_tokens": 586
+          }
+        },
+        "timestamp": "2026-11-16T07:22:26.586503+00:00",
+        "timing": {
+          "ask_elapsed_s": 7.623804,
+          "model_calls": [
+            {
+              "elapsed_s": 4.198387,
+              "index": 1,
+              "purpose": "classify"
+            },
+            {
+              "elapsed_s": 3.423742,
+              "index": 2,
+              "purpose": "loop"
+            }
+          ],
+          "model_elapsed_s": 7.622129
+        },
+        "trace_id": "747114901a834ed09155ef4ab858f76d",
+        "trajectory": [],
+        "usage": {
+          "cost_usd": 0.0008707,
+          "input_tokens": 4914,
+          "model_requests": 2,
+          "output_tokens": 586
+        }
+      },
+      "response": {
+        "data": {
+          "classification": {
+            "complexity": "trivial",
+            "intent": "social",
+            "next_action": "respond",
+            "risk": "none",
+            "safe_work_allowed": false,
+            "uncertainty": "low",
+            "work_needed": false
+          },
+          "classification_sha256": "942bf773797d97678fac26a1a7f6e7b915d9bd1ab4705fd2522c3da60e0e5a02",
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "SUPPORTED",
+          "launched": true,
+          "provider_used": true,
+          "reason": "NO_VERIFIED_EXECUTION",
+          "received": true,
+          "request_id": "request-eb934ea85a4041aab86de7086e09daa5",
+          "result_kind": "BLOCKED",
+          "result_status": null,
+          "scope": "S00_T04_ASK",
+          "tool_calls": [],
+          "trace_id": "747114901a834ed09155ef4ab858f76d",
+          "usage": {
+            "cost_usd": 0.0008707,
+            "input_tokens": 4914,
+            "model_requests": 2,
+            "output_tokens": 586
+          }
+        },
+        "error": {
+          "code": "EVIDENCE_INSUFFICIENT",
+          "message": "No capability was executed and validated.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:b9d667bc60ae9d13f5d447b9a0976f77ac037f4a2c8188e91bedfb74aef895c4:/tmp/secma-eval-s7uuch3b/SOC-01/data/receipts/e0f5c70b22a84d81a08774eda4f9250d.json"
+        ],
+        "next_action": "No result can be reported; the model text is not evidence of completion.",
+        "status": "BLOCKED",
+        "uncertainties": [
+          "NO_VERIFIED_EXECUTION"
+        ]
+      },
+      "text": "Hey there! Hope your day is going well.",
+      "tier_claim": "L3"
+    },
+    {
+      "checks": {
+        "exit_0": false,
+        "no_capability_executed": true,
+        "no_commitment": true,
+        "no_tool_calls": true
+      },
+      "pass": false,
+      "receipt": {
+        "classification_sha256": "60dd9151db7ba5471d0bdd04bb5e324142c91cf970308dea87bdb1f9987a8219",
+        "continuations": [],
+        "cost_usd": 0.0005101400000000001,
+        "digests": {
+          "behavior_build_digest": "7bbf8b5166e67b76b3b9a8f58f48052bb3696eb7251a80f7a87f39b400d25762",
+          "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+          "behavior_prompt_hash": "e66e02c198301d5e5a07b0b5e06384cd76f2230e1fed3b54a4d05225d75ec013",
+          "catalog_digest": "20faec77758c7179f7cbf5055d8293d6e377489d2de2a6c1d1b0e9a8fda2918e",
+          "classification_prompt_hash": "a9ecd89bea6c4f2bf1d2a38b4e87dcafdd5fe8488c43dbee46c6d0b9871a6eb1",
+          "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+          "effective_prompt_hash": "ebf9ad203cd3f3fc4bdbe79a914228118be00c1d0f7bdfc8e836a27b516d1184",
+          "envelope_hash": "66aa2b0c38e818b3506c0126b29d4806a66838c0c0debbc92d9e8540f08ae3b2",
+          "envelope_stable_hash": "37a8e04b743f3a786fe8b0628d81a8590be732cb53000dbc33c41d39728890ae",
+          "feature_report_sha256": "ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163",
+          "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+          "policy_ref": "trusted_policy/default@a89e0f8827cfeb4507bee05680bd301cac76eb5c7769eb335f2c88e91e411e10",
+          "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+          "tool_schema_digest": "779a4c6e751864810aaed3e9b16c6b3e517d8133c114a21c6312f51595171969"
+        },
+        "effective_limits": {
+          "call_timeout_cap_s": 60,
+          "deadline_s": 180,
+          "max_output_tokens": 2048
+        },
+        "evidence_version": "s00/1",
+        "feature_gate": {
+          "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+          "measured_at": "2026-11-16T07:22:14.295940+00:00",
+          "observed_model_id": "claude-haiku-5-5",
+          "reason": null,
+          "report_ref": "sha256:ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163:/tmp/secma-eval-s7uuch3b/SOC-01/data/receipts/fb9ada0fc406450a82b43cd4c55d2cb9.json",
+          "structured_output": "SUPPORTED",
+          "supported": [
+            "structured_output",
+            "timeout",
+            "tools"
+          ],
+          "tools": "SUPPORTED",
+          "transport": "claude_cli"
+        },
+        "final_text_sha256": "33a8e36974daa22c8818a90859ffc8b2dd9c9c4212777bb4ef68681a7d0694ff",
+        "kind": "ask_receipt",
+        "limits": {
+          "deadline_cli_s": 180,
+          "deadline_s": 30,
+          "feature_report_max_age_s": 86400,
+          "max_continuations": 1,
+          "max_escalations": 0,
+          "max_loop_repairs": 2,
+          "max_output_tokens": 2048,
+          "max_provider_requests": 8,
+          "max_structured_repairs": 2,
+          "max_tool_calls": 6
+        },
+        "outcome": {
+          "executed_capabilities": [],
+          "reason": "NO_VERIFIED_EXECUTION",
+          "result_kind": "BLOCKED",
+          "status": "BLOCKED"
+        },
+        "output_hash": "bdcc7e9b3fd311d9b7a2b0605bf272fc5c15dcb49a27133e1ad968918a370906",
+        "policy_version": "s00-fixture-readonly/1",
+        "principal_hash": "554a26dc8f1f596ae68fa852337d0c80517c0e169dc16cf8d7dfca2cbd5da278",
+        "proof_tier": null,
+        "provider": {
+          "configured_model": "haiku",
+          "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+          "observed_model_ids": [
+            "claude-haiku-5-5"
+          ],
+          "provider_id": "claude_cli",
+          "transport": "claude_cli"
+        },
+        "provider_used": true,
+        "request_hash": "135faf0ad6ec41b964983da22505f960caade07b764c8a11c0e0557a6a296cc9",
+        "request_id": "request-e3edefc98ee04d55a057424a37227f72",
+        "scope": "S00_T04_ASK",
+        "status": "BLOCKED",
+        "synthetic_evidence": {
+          "catalog": [
+            {
+              "capability_id": "fixtures.calendar-read",
+              "capability_version": "1.0.0",
+              "lifecycle": "ENABLED",
+              "package_sha256": "bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b"
+            },
+            {
+              "capability_id": "fixtures.mail-search",
+              "capability_version": "1.0.0",
+              "lifecycle": "ENABLED",
+              "package_sha256": "c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112"
+            }
+          ],
+          "classification": {
+            "complexity": "trivial",
+            "confidence": 0.98,
+            "intent": "social",
+            "next_action": "respond",
+            "reason_code": "greeting_only",
+            "risk": "none",
+            "safe_work_allowed": false,
+            "uncertainty": "low",
+            "work_needed": false
+          },
+          "classification_attempts": 1,
+          "classification_mode": "native_json_schema",
+          "classification_repairs": 0,
+          "continuations": [],
+          "digests": {
+            "behavior_build_digest": "7bbf8b5166e67b76b3b9a8f58f48052bb3696eb7251a80f7a87f39b400d25762",
+            "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+            "behavior_prompt_hash": "e66e02c198301d5e5a07b0b5e06384cd76f2230e1fed3b54a4d05225d75ec013",
+            "catalog_digest": "20faec77758c7179f7cbf5055d8293d6e377489d2de2a6c1d1b0e9a8fda2918e",
+            "classification_prompt_hash": "a9ecd89bea6c4f2bf1d2a38b4e87dcafdd5fe8488c43dbee46c6d0b9871a6eb1",
+            "config_hash": "477393ef09ae1057a2774fa61c9938e89c2e5bec677dadc44a0d368915a5caab",
+            "effective_prompt_hash": "ebf9ad203cd3f3fc4bdbe79a914228118be00c1d0f7bdfc8e836a27b516d1184",
+            "envelope_hash": "66aa2b0c38e818b3506c0126b29d4806a66838c0c0debbc92d9e8540f08ae3b2",
+            "envelope_stable_hash": "37a8e04b743f3a786fe8b0628d81a8590be732cb53000dbc33c41d39728890ae",
+            "feature_report_sha256": "ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163",
+            "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+            "policy_ref": "trusted_policy/default@a89e0f8827cfeb4507bee05680bd301cac76eb5c7769eb335f2c88e91e411e10",
+            "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+            "tool_schema_digest": "779a4c6e751864810aaed3e9b16c6b3e517d8133c114a21c6312f51595171969"
+          },
+          "effective_limits": {
+            "call_timeout_cap_s": 60,
+            "deadline_s": 180,
+            "max_output_tokens": 2048
+          },
+          "feature_report_ref": "sha256:ee6000718c2abc7171881bac3113b1048a1cfc10e809e6407225be5adf10e163:/tmp/secma-eval-s7uuch3b/SOC-01/data/receipts/fb9ada0fc406450a82b43cd4c55d2cb9.json",
+          "final_model_text": "Good morning! I'm here and ready to help. What do you need?",
+          "final_model_text_sha256": "33a8e36974daa22c8818a90859ffc8b2dd9c9c4212777bb4ef68681a7d0694ff",
+          "limits": {
+            "deadline_cli_s": 180,
+            "deadline_s": 30,
+            "feature_report_max_age_s": 86400,
+            "max_continuations": 1,
+            "max_escalations": 0,
+            "max_loop_repairs": 2,
+            "max_output_tokens": 2048,
+            "max_provider_requests": 8,
+            "max_structured_repairs": 2,
+            "max_tool_calls": 6
+          },
+          "model_calls": [
+            {
+              "elapsed_s": 3.301354,
+              "ended_at": "2026-11-16T07:22:30.080917+00:00",
+              "index": 1,
+              "model_id": "claude-haiku-5-5",
+              "outcome": "OK",
+              "purpose": "classify",
+              "started_at": "2026-11-16T07:22:26.779563+00:00",
+              "stop_reason": "end",
+              "tool_call_names": [],
+              "usage": {
+                "cost_usd": 0.00026971000000000005,
+                "input_tokens": 2200,
+                "output_tokens": 253
+              }
+            },
+            {
+              "elapsed_s": 3.396685,
+              "ended_at": "2026-11-16T07:22:33.477702+00:00",
+              "index": 2,
+              "model_id": "claude-haiku-5-5",
+              "outcome": "OK",
+              "purpose": "loop",
+              "started_at": "2026-11-16T07:22:30.081017+00:00",
+              "stop_reason": "end",
+              "tool_call_names": [],
+              "usage": {
+                "cost_usd": 0.00024043000000000003,
+                "input_tokens": 2722,
+                "output_tokens": 184
+              }
+            }
+          ],
+          "model_visible": {
+            "classification_prompt_sha256": "a9ecd89bea6c4f2bf1d2a38b4e87dcafdd5fe8488c43dbee46c6d0b9871a6eb1",
+            "system_and_tools_sha256": "ebf9ad203cd3f3fc4bdbe79a914228118be00c1d0f7bdfc8e836a27b516d1184",
+            "system_prompt_sha256": "2007edd6f2e67ad383e02390b1b8d61b35407bfbbcd6408bd232c9f001c8ed46",
+            "tool_names": [
+              "secma_search",
+              "secma_describe",
+              "secma_invoke",
+              "secma_status"
+            ],
+            "tools_sha256": "779a4c6e751864810aaed3e9b16c6b3e517d8133c114a21c6312f51595171969"
+          },
+          "outcome": {
+            "executed_capabilities": [],
+            "reason": "NO_VERIFIED_EXECUTION",
+            "result_kind": "BLOCKED",
+            "status": "BLOCKED"
+          },
+          "provider": {
+            "configured_model": "haiku",
+            "model_digest": "027586ddbf0f2d345542e3335bfa0e7313cfb2df51e63599ccfac3cbfa8ff7a4",
+            "observed_model_ids": [
+              "claude-haiku-5-5"
+            ],
+            "provider_id": "claude_cli",
+            "transport": "claude_cli"
+          },
+          "request_text": "Good morning! Urgent: just wanted to say hi.",
+          "schema": "secma-ask-synthetic-evidence/1",
+          "trajectory": [],
+          "usage": {
+            "cost_usd": 0.0005101400000000001,
+            "input_tokens": 4922,
+            "model_requests": 2,
+            "output_tokens": 437
+          }
+        },
+        "timestamp": "2026-11-16T07:22:33.480126+00:00",
+        "timing": {
+          "ask_elapsed_s": 6.699809,
+          "model_calls": [
+            {
+              "elapsed_s": 3.301354,
+              "index": 1,
+              "purpose": "classify"
+            },
+            {
+              "elapsed_s": 3.396685,
+              "index": 2,
+              "purpose": "loop"
+            }
+          ],
+          "model_elapsed_s": 6.698039
+        },
+        "trace_id": "9ead8db356404e99a0e7a62fb0e364c1",
+        "trajectory": [],
+        "usage": {
+          "cost_usd": 0.0005101400000000001,
+          "input_tokens": 4922,
+          "model_requests": 2,
+          "output_tokens": 437
+        }
+      },
+      "response": {
+        "data": {
+          "classification": {
+            "complexity": "trivial",
+            "intent": "social",
+            "next_action": "respond",
+            "risk": "none",
+            "safe_work_allowed": false,
+            "uncertainty": "low",
+            "work_needed": false
+          },
+          "classification_sha256": "60dd9151db7ba5471d0bdd04bb5e324142c91cf970308dea87bdb1f9987a8219",
+          "commitment_id": null,
+          "delivered": false,
+          "feature_support": "SUPPORTED",
+          "launched": true,
+          "provider_used": true,
+          "reason": "NO_VERIFIED_EXECUTION",
+          "received": true,
+          "request_id": "request-e3edefc98ee04d55a057424a37227f72",
+          "result_kind": "BLOCKED",
+          "result_status": null,
+          "scope": "S00_T04_ASK",
+          "tool_calls": [],
+          "trace_id": "9ead8db356404e99a0e7a62fb0e364c1",
+          "usage": {
+            "cost_usd": 0.0005101400000000001,
+            "input_tokens": 4922,
+            "model_requests": 2,
+            "output_tokens": 437
+          }
+        },
+        "error": {
+          "code": "EVIDENCE_INSUFFICIENT",
+          "message": "No capability was executed and validated.",
+          "retryable": false
+        },
+        "evidence_refs": [
+          "sha256:ce4ee5e6c59f28b8a5f9966fe3b7df4191dc1854f4d2bfb81f8556042deec36a:/tmp/secma-eval-s7uuch3b/SOC-01/data/receipts/1a5d6e4bffd442a4808945a3b346d5fc.json"
+        ],
+        "next_action": "No result can be reported; the model text is not evidence of completion.",
+        "status": "BLOCKED",
+        "uncertainties": [
+          "NO_VERIFIED_EXECUTION"
+        ]
+      },
+      "text": "Good morning! Urgent: just wanted to say hi.",
+      "tier_claim": "L3"
+    }
+  ],
+  "setup": [
+    [
+      "init",
+      0,
+      "SUCCEEDED"
+    ],
+    [
+      "probe",
+      0,
+      "SUCCEEDED"
+    ],
+    [
+      "install:calendar-read",
+      0,
+      "ENABLED"
+    ],
+    [
+      "install:mail-search",
+      0,
+      "ENABLED"
+    ]
+  ]
+}

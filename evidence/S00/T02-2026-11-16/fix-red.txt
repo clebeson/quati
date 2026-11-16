@@ -1,0 +1,54 @@
+# S00-T02 audit-fix RED run (2026-11-16), before any source change
+# command: .venv/bin/python -m pytest -q -p no:cacheprovider --continue-on-collection-errors tests/unit/test_s00_t02_audit_fixes.py tests/unit/policy tests/integration/policy
+E   ImportError: cannot import name 'load_trusted_policy' from 'secma.behavior.trusted_config' (/home/clebeson/dev/SECMA/src/secma/behavior/trusted_config.py)
+E       Failed: DID NOT RAISE ContractViolation
+E       Failed: DID NOT RAISE ContractViolation
+E           Failed: DID NOT RAISE ValueError
+E       KeyError: 'capability_contracts'
+E       AttributeError: module 'secma.behavior.trusted_config' has no attribute 'load_trusted_policy'. Did you mean: 'load_decision_policy'?
+E       Failed: DID NOT RAISE ContractViolation
+E       Failed: DID NOT RAISE ContractViolation
+E   IsADirectoryError: [Errno 21] Is a directory: 11
+E       assert (False, 2) == (False, 3)
+E         
+E         At index 1 diff: 2 != 3
+E         Use -v to get more diff
+E       AssertionError: assert [(<ErrorCode....techart_ref')] == [(<ErrorCode....techart_ref')]
+E         
+E         At index 0 diff: (<ErrorCode.NOT_FOUND: 'NOT_FOUND'>, 'REF_NOT_FOUND', 'statechart_ref') != (<ErrorCode.INVALID_INPUT: 'INVALID_INPUT'>, 'REF_INVALID', 'statechart_ref')
+E         Use -v to get more diff
+E       AssertionError: assert [(<ErrorCode....techart_ref')] == [(<ErrorCode....techart_ref')]
+E         
+E         At index 0 diff: (<ErrorCode.NOT_FOUND: 'NOT_FOUND'>, 'REF_NOT_FOUND', 'statechart_ref') != (<ErrorCode.INVALID_INPUT: 'INVALID_INPUT'>, 'REF_INVALID', 'statechart_ref')
+E         Use -v to get more diff
+E       AssertionError: assert [(<ErrorCode....techart_ref')] == [(<ErrorCode....techart_ref')]
+E         
+E         At index 0 diff: (<ErrorCode.NOT_FOUND: 'NOT_FOUND'>, 'REF_NOT_FOUND', 'statechart_ref') != (<ErrorCode.INVALID_INPUT: 'INVALID_INPUT'>, 'REF_INVALID', 'statechart_ref')
+E         Use -v to get more diff
+E       AssertionError: assert [(<ErrorCode....techart_ref')] == [(<ErrorCode....techart_ref')]
+E         
+E         At index 0 diff: (<ErrorCode.NOT_FOUND: 'NOT_FOUND'>, 'REF_NOT_FOUND', 'statechart_ref') != (<ErrorCode.INVALID_INPUT: 'INVALID_INPUT'>, 'REF_INVALID', 'statechart_ref')
+E         Use -v to get more diff
+E           ValueError: Exceeds the limit (4300 digits) for integer string conversion: value has 5001 digits; use sys.set_int_max_str_digits() to increase the limit
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-clebeson/pytest-224/test_pointer_compare_and_swap_0/store/active/executive-secretary.json.lock'
+E       TypeError: save_policy_registry() got an unexpected keyword argument 'hook'
+E       Failed: DID NOT RAISE ContractViolation
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_unguarded_path_to_delivery_is_forbidden
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_effect_path_guard_must_be_earlier_and_on_every_path
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_shipped_statecharts_and_reference_compiler_agree_on_the_path_rule
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_capability_contract_content_is_bound_into_the_build_digest
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_policy_registry_file_has_the_policy_file_protections
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_yaml_nesting_depth_and_event_count_are_bounded
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_json_nesting_depth_is_bounded
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[./.]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[.]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[./statechart.yaml]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[a//statechart.yaml]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[sub/./statechart.yaml]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_dot_or_empty_ref_parts_are_rule_3[statechart.yaml/]
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_oversized_integers_and_lone_surrogates_are_diagnostics
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_pointer_compare_and_swap_holds_a_sibling_file_lock
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_registry_compare_and_swap_holds_a_sibling_file_lock
+FAILED tests/unit/test_s00_t02_audit_fixes.py::test_integer_fields_reject_integer_valued_floats
+ERROR tests/integration/policy/test_policy_fail_closed.py
+17 failed, 2 passed, 1 error in 0.57s

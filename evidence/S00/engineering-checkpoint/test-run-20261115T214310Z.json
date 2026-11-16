@@ -1,0 +1,25 @@
+{
+  "record_type": "engineering_checkpoint_test_run",
+  "scope": "local temporary filesystem fixtures only; canonical state was not written",
+  "timestamp_utc": "2026-11-15T21:43:10.132388Z",
+  "command": "python3 -m pytest tests/unit/test_execution_checkpoint.py -q",
+  "result": {
+    "exit_code": 0,
+    "summary": "10 passed"
+  },
+  "red_runs": [
+    {
+      "summary": "4 failed because the checkpoint CLI entrypoint did not yet exist"
+    },
+    {
+      "summary": "4 newly added tests exposed missing SPECIFICATION_ONLY guard, active_work metadata flags, current state hash verification, and unexplained revision gap rejection"
+    }
+  ],
+  "python": "3.13.7",
+  "platform": "Linux-6.17.0-41-generic-x86_64-with-glibc2.42",
+  "source_sha256": {
+    "scripts/checkpoint_execution.py": "33b7660001fd749c6b9578a6ceca4e8a600e534604835574ac8fa2e4db5050eb",
+    "tests/unit/test_execution_checkpoint.py": "ff570fb252e7a7fe9e856fe9864b16681f27e70c5c1879dc018e56409313e644"
+  },
+  "proof_tier": "local deterministic filesystem CLI tests; no provider or external integration evidence"
+}

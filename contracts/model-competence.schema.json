@@ -6,6 +6,7 @@
   "required": [
     "model_id",
     "provider_id",
+    "config_hash",
     "prompt_hash",
     "test_suite_hash",
     "samples",
@@ -21,6 +22,11 @@
     "provider_id": {
       "type": "string",
       "minLength": 1
+    },
+    "config_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Digest of the model configuration the record was measured with (M31-FR-02)."
     },
     "prompt_hash": {
       "type": "string",
@@ -74,6 +80,61 @@
             "null"
           ],
           "minimum": 0
+        },
+        "per_metric": {
+          "type": "object",
+          "description": "Per-metric sample size, pass count and Wilson 95% lower bound (M31, MOD-01).",
+          "properties": {
+            "routing_accuracy": {
+              "type": "object",
+              "required": [
+                "n",
+                "passes",
+                "wilson_low_95"
+              ],
+              "properties": {
+                "n": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "passes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "wilson_low_95": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "additionalProperties": false
+            },
+            "safe_abstention_accuracy": {
+              "type": "object",
+              "required": [
+                "n",
+                "passes",
+                "wilson_low_95"
+              ],
+              "properties": {
+                "n": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "passes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "wilson_low_95": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -85,6 +146,17 @@
         "EVALUATED",
         "DISABLED"
       ]
+    },
+    "confusion_matrix": {
+      "type": "object",
+      "description": "Routing confusion counts: expected label -> predicted label -> count (M31, MOD-01).",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
     }
   },
   "allOf": [
@@ -105,8 +177,17 @@
             "required": [
               "routing_accuracy",
               "safe_abstention_accuracy",
-              "median_latency_ms"
-            ]
+              "median_latency_ms",
+              "per_metric"
+            ],
+            "properties": {
+              "per_metric": {
+                "required": [
+                  "routing_accuracy",
+                  "safe_abstention_accuracy"
+                ]
+              }
+            }
           },
           "features": {
             "required": [
@@ -115,8 +196,124 @@
               "streaming"
             ]
           }
+        },
+        "required": [
+          "confusion_matrix"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "FeatureAttestation": {
+      "enum": [
+        "attested",
+        "measured",
+        "unknown"
+      ]
+    },
+    "RoutingPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Operator configuration for model routing (RFC-015 §10). Thresholds are Wilson 95% lower bounds from a recorded eval, never point estimates.",
+      "required": [
+        "schema_version",
+        "default_profile",
+        "max_shortlist_k",
+        "escalation_order",
+        "escalate_on"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "routing-policy/1.0"
+        },
+        "default_profile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "max_shortlist_k": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 32
+          },
+          "description": "profile id -> K; missing profile uses 8"
+        },
+        "risk_role_map": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "propertyNames": {
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ]
+          }
+        },
+        "escalation_order": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "empty disables escalation (MVP default)"
+        },
+        "escalate_on": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "SCHEMA_INVALID_OUTPUT",
+              "NONE_FITS_WITH_CANDIDATES",
+              "ABSTAIN",
+              "POLICY_HIGH_RISK",
+              "RETRY_EXHAUSTED"
+            ]
+          }
+        },
+        "min_selection_accuracy": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_abstention_accuracy": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "cost_cap_per_commitment": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]+(\\.[0-9]{1,6})?$",
+          "description": "decimal USD string; null means no cap configured (unknown pricing cannot prove a cap)"
+        },
+        "region_allow": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ModelProfileFeatures": {
+      "type": "object",
+      "properties": {
+        "tool_choice_supported": {
+          "$ref": "#/$defs/FeatureAttestation"
+        },
+        "parallel_tool_calls_supported": {
+          "$ref": "#/$defs/FeatureAttestation"
         }
       }
     }
-  ]
+  }
 }

@@ -990,8 +990,6 @@
         "work_package_id",
         "phase",
         "owner",
-        "lease_token",
-        "lease_expires_at",
         "input_snapshot_ref",
         "completed_steps",
         "next_action",
@@ -1017,19 +1015,6 @@
         },
         "owner": {
           "type": "string"
-        },
-        "lease_token": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "lease_expires_at": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
         },
         "input_snapshot_ref": {
           "type": "string"

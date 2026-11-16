@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "SCS capability manifest",
+  "title": "SCS capability manifest (sidecar, RFC-015)",
   "type": "object",
   "required": [
     "schema_version",
@@ -16,29 +16,32 @@
     "effects",
     "requires_approval",
     "dependencies",
-    "lifecycle",
-    "assurance",
     "evaluation"
   ],
   "properties": {
     "schema_version": {
-      "const": "scs/1.0"
+      "const": "scs/1.1"
     },
     "id": {
       "type": "string",
-      "pattern": "^[a-z][a-z0-9_.-]+$"
+      "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9_-]*)+$",
+      "maxLength": 128,
+      "description": "Namespaced id: <namespace>.<name>[.<sub>]; at least one dot."
     },
     "version": {
       "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
     },
     "name": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "maxLength": 64
     },
     "description": {
       "type": "string",
-      "minLength": 40
+      "minLength": 40,
+      "maxLength": 1024,
+      "description": "Routing description; untrusted data when shown to a model."
     },
     "intents": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -69,10 +72,36 @@
       "additionalProperties": false
     },
     "input_schema": {
-      "type": "object"
+      "type": "object",
+      "required": [
+        "type",
+        "properties"
+      ],
+      "properties": {
+        "type": {
+          "const": "object"
+        },
+        "properties": {
+          "type": "object"
+        }
+      },
+      "description": "JSON Schema 2020-12 for an object; must declare properties (tool-schema interoperability). Only local $ref allowed."
     },
     "output_schema": {
-      "type": "object"
+      "type": "object",
+      "required": [
+        "type",
+        "properties"
+      ],
+      "properties": {
+        "type": {
+          "const": "object"
+        },
+        "properties": {
+          "type": "object"
+        }
+      },
+      "description": "JSON Schema 2020-12 for an object; must declare properties (tool-schema interoperability). Only local $ref allowed."
     },
     "outcomes": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -120,29 +149,6 @@
         "minLength": 1
       }
     },
-    "lifecycle": {
-      "type": "string",
-      "enum": [
-        "draft",
-        "validated",
-        "staged",
-        "enabled",
-        "deprecated",
-        "disabled"
-      ]
-    },
-    "assurance": {
-      "type": "string",
-      "enum": [
-        "DRAFT",
-        "C0",
-        "C1",
-        "C2",
-        "C3",
-        "C4",
-        "C5"
-      ]
-    },
     "evaluation": {
       "type": "array",
       "minItems": 1,
@@ -150,6 +156,126 @@
         "type": "string",
         "minLength": 1
       }
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "input"
+        ],
+        "properties": {
+          "input": {
+            "type": "object"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Optional valid example inputs."
+    },
+    "compatibility": {
+      "type": "object",
+      "properties": {
+        "quati": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Version range, e.g. >=8.1,<9"
+        },
+        "requires_models": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "tool_calling",
+              "structured_output",
+              "vision"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "additionalProperties": false
+    },
+    "destinations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true,
+      "description": "Declared effect destinations (e.g. email:external, fs:state_dir). Required non-empty when effects is write or dangerous."
+    },
+    "data_class_ceiling": {
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "INTERNAL",
+        "CONFIDENTIAL",
+        "RESTRICTED"
+      ]
+    },
+    "outcome_verification": {
+      "type": "object",
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "read_after_write",
+            "evidence_check"
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "secret_slots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "purpose"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          },
+          "secret_ref_kind": {
+            "type": "string",
+            "enum": [
+              "keyring",
+              "env",
+              "file",
+              "vault"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Credential slots only; never values."
+    },
+    "skill_ref": {
+      "type": "string",
+      "pattern": "^SKILL\\.md$",
+      "description": "Present when the package directory contains an Agent Skills SKILL.md."
     }
   },
   "additionalProperties": false,
@@ -179,26 +305,39 @@
     {
       "if": {
         "properties": {
-          "lifecycle": {
-            "const": "enabled"
+          "effects": {
+            "enum": [
+              "write",
+              "dangerous"
+            ]
           }
         },
         "required": [
-          "lifecycle"
+          "effects"
         ]
       },
       "then": {
+        "required": [
+          "destinations",
+          "outcome_verification"
+        ],
         "properties": {
-          "assurance": {
-            "enum": [
-              "C2",
-              "C3",
-              "C4",
-              "C5"
-            ]
+          "destinations": {
+            "minItems": 1
+          },
+          "outcome_verification": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "read_after_write",
+                  "evidence_check"
+                ]
+              }
+            }
           }
         }
       }
     }
-  ]
+  ],
+  "description": "Author-supplied capability definition. Lifecycle, assurance and enablement are registry-owned (contracts/capability-registry-record.schema.json) and MUST NOT appear here."
 }

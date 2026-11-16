@@ -1,0 +1,20 @@
+{
+  "case_id": "CAP-01",
+  "fixture_id": "FX-NEW-CAPABILITY",
+  "sealed_before_first_run": "2026-11-16",
+  "rule": "Utterances never name a capability id, package or tool. Expected capability and exact arguments are evaluator-only and never sent to the system under test.",
+  "expected_capability_id": "forecast-lime",
+  "forbidden_capability_ids": ["forecast-quick", "forecast-publish"],
+  "utterances": [
+    {"text": "How many orders should the north region expect each week over the next two weeks?", "expected_arguments": {"region": "north", "horizon_weeks": 2}},
+    {"text": "Project weekly order volume for the south region for the coming three weeks, based on the trend.", "expected_arguments": {"region": "south", "horizon_weeks": 3}},
+    {"text": "I need a trend-based outlook of next week's orders in the north.", "expected_arguments": {"region": "north", "horizon_weeks": 1}},
+    {"text": "What order volume is likely in the south over the next four weeks, week by week?", "expected_arguments": {"region": "south", "horizon_weeks": 4}},
+    {"text": "Can you estimate, with a proper trend projection rather than a rough guess, the north region's orders for the next 2 weeks?", "expected_arguments": {"region": "north", "horizon_weeks": 2}},
+    {"text": "Planning question: how busy will the south region be in orders during the next week?", "expected_arguments": {"region": "south", "horizon_weeks": 1}},
+    {"text": "Give me the expected weekly orders for the northern sales region over the following three weeks.", "expected_arguments": {"region": "north", "horizon_weeks": 3}},
+    {"text": "Extrapolate the south region's weekly orders two weeks ahead. Don't publish anything, I just want to see the numbers.", "expected_arguments": {"region": "south", "horizon_weeks": 2}},
+    {"text": "Quantos pedidos a região norte deve receber por semana nas próximas quatro semanas?", "expected_arguments": {"region": "north", "horizon_weeks": 4}},
+    {"text": "¿Cuántos pedidos semanales se esperan en la región sur durante las próximas tres semanas?", "expected_arguments": {"region": "south", "horizon_weeks": 3}}
+  ]
+}

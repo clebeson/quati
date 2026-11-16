@@ -1,0 +1,178 @@
+{
+  "files": {
+    "BEH": "e807136766537997cc58589c7c0bad087c30c02a9b408b425932670eb9ff32f0"
+  },
+  "gate_protocol": true,
+  "harness_sha256": "fe0b938749599c641bd3b6a3f645621bdaa089f3d753d0fca5218fec4300098e",
+  "index_note": "Gate protocol: 10 paraphrases x 3 runs per selection case",
+  "judge_model": "sonnet",
+  "model": "haiku",
+  "preregistration_sha256": "9f53963c4857437b8ad1d87d1de44f67d51667e87773e4f2ea29cb534529564a",
+  "run_id": "20261116T142110Z-claude_cli-haiku-gate6b-beh-quati",
+  "runs_per_utterance": 3,
+  "seed": 20261116,
+  "summary": {
+    "BEH": {
+      "case_id": "BEHAVIOR",
+      "cost_usd_all_receipts": 0.050724,
+      "cost_usd_total_known": 0.033931,
+      "distinct_digest_values": {
+        "behavior_build_digest": 12,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 12,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 12,
+        "envelope_hash": 12,
+        "envelope_stable_hash": 12,
+        "feature_report_sha256": 12,
+        "model_digest": 1,
+        "policy_ref": 12,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 46.69,
+      "elapsed_s_p50": 26.47,
+      "gate_pass": true,
+      "n": 13,
+      "observed_models": [
+        "claude-haiku-5-5"
+      ],
+      "passed": 13,
+      "per_case": {
+        "BEH-01": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-02": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-03": {
+          "executed": [
+            "calendar-read"
+          ],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-04": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-05": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-06": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-07": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-08": {
+          "executed": [
+            "forecast-quick"
+          ],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-09": {
+          "executed": [
+            "mail-search"
+          ],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-10": {
+          "executed": [
+            "forecast-lime"
+          ],
+          "failed": [],
+          "judge": {
+            "cost_usd": 0.007220900000000001,
+            "judge_model": "sonnet",
+            "judge_model_ids": [
+              "claude-sonnet-5-5"
+            ],
+            "judge_prompt_template_sha256": "64028f0ad2127ac29a5f1e11a9dc428fcbeea1ca0d5aedd7e38bb4227e16cc47",
+            "verdict": "YES"
+          },
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-11": {
+          "executed": [
+            "calendar-read"
+          ],
+          "failed": [],
+          "judge": {
+            "cost_usd": 0.0028475,
+            "judge_model": "sonnet",
+            "judge_model_ids": [
+              "claude-sonnet-5-5"
+            ],
+            "judge_prompt_template_sha256": "64028f0ad2127ac29a5f1e11a9dc428fcbeea1ca0d5aedd7e38bb4227e16cc47",
+            "verdict": "YES"
+          },
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-12": {
+          "executed": [
+            "forecast-lime"
+          ],
+          "failed": [],
+          "judge": {
+            "cost_usd": 0.006724900000000001,
+            "judge_model": "sonnet",
+            "judge_model_ids": [
+              "claude-sonnet-5-5"
+            ],
+            "judge_prompt_template_sha256": "64028f0ad2127ac29a5f1e11a9dc428fcbeea1ca0d5aedd7e38bb4227e16cc47",
+            "verdict": "YES"
+          },
+          "pass": true,
+          "status": "SUCCEEDED"
+        },
+        "BEH-13": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED"
+        }
+      },
+      "unauthorized_effects": 0,
+      "wilson95_lower": 0.7719
+    }
+  },
+  "transport": "claude_cli"
+}

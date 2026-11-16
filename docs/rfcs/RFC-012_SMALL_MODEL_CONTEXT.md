@@ -1,6 +1,8 @@
 # RFC-012 — Context Engineering, Weak-Model Routing and Decision Quality
 
-**Problem:** A large context window does not imply deep reasoning, reliable tool choice or sustained goal tracking. SECMA must remain helpful on inexpensive models without pretending they match high-capability models on scientific investigations.
+**Status:** Accepted for implementation (specification v8.1, 2026-11-15). Normative where referenced by a PRD, contract or work package.
+
+**Problem:** A large context window does not imply deep reasoning, reliable tool choice or sustained goal tracking. Quati must remain helpful on inexpensive models without pretending they match high-capability models on scientific investigations.
 
 ## Two-stage classification
 Trusted fast preflight handles explicit greeting and local command shortcuts only when high confidence and no hidden side-effect intent. Otherwise a small tool-capable model returns a typed `RequestClassification`: intention family, risk/effect, expected complexity, missing critical info, candidate domain, provisional depth, whether safe work can start, and confidence/abstain. Policy then decides allowed actions. `DEEP_ANALYSIS`, high uncertainty, sensitive work or repeated failures trigger a stronger approved model or a bounded clarification.

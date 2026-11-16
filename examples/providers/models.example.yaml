@@ -1,16 +1,50 @@
 # No real API keys, model IDs or provider eligibility are asserted here.
+# `transport` names a registered Provider subclass (docs/prds/M17.md). One provider is active per run in S00.
+# CLI transports hold no key: the vendor executable authenticates itself and Quati never reads its sign-in files.
 providers:
+  - id: claude-default
+    transport: anthropic
+    secret_ref: env:ANTHROPIC_API_KEY
+    model_id: claude-haiku-5-5
+    allowed_data_classes: [public_synthetic, public]
+    probe_required: [tools, structured_output]
+    max_usd_per_run: 0.50
+    status: NOT_PROBED
+  - id: claude-cli
+    transport: claude_cli
+    model_id: haiku
+    allowed_data_classes: [public_synthetic, public]
+    probe_required: [tools, structured_output]
+    max_usd_per_run: 0.50
+    status: NOT_PROBED
   - id: openrouter-test
     transport: openai_compatible
     base_url: https://openrouter.ai/api/v1
     secret_ref: env:OPENROUTER_API_KEY
     model_id: REPLACE_WITH_TOOL_CAPABLE_MODEL
-    allowed_data_classes: [public, internal_synthetic]
+    allowed_data_classes: [public_synthetic, public]
     probe_required: [tools, structured_output]
     max_usd_per_run: 0.50
     status: NOT_PROBED
+  - id: openai-api
+    transport: openai
+    secret_ref: env:OPENAI_API_KEY
+    model_id: REPLACE_WITH_TOOL_CAPABLE_MODEL
+    allowed_data_classes: [public_synthetic, public]
+    probe_required: [tools, structured_output]
+    status: NOT_PROBED
+  - id: codex-cli
+    transport: codex_cli
+    allowed_data_classes: [public_synthetic, public]
+    probe_required: [tools, structured_output]
+    status: NOT_PROBED
+  - id: gemini-cli
+    transport: gemini_cli
+    allowed_data_classes: [public_synthetic, public]
+    probe_required: [tools, structured_output]
+    status: NOT_PROBED
   - id: corporate-model
-    transport: corporate_compatible
+    transport: openai_compatible
     base_url: REPLACE_WITH_APPROVED_ENDPOINT
     secret_ref: corporate-vault:approved-model
     model_id: REPLACE_WITH_APPROVED_MODEL

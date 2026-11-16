@@ -65,7 +65,202 @@
         "string",
         "null"
       ]
+    },
+    "expected_revision": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Commitment revision the producer read (CAS precheck U4). Required whenever a control-event payload is present (GUARD_PREDICATES.md section 3)."
+    },
+    "payload": {
+      "$ref": "#/$defs/ControlEventPayload"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "dependentRequired": {
+    "payload": [
+      "expected_revision"
+    ]
+  },
+  "$defs": {
+    "ControlEventPayload": {
+      "description": "Typed payload of a v2 control event, one shape per event group (GUARD_PREDICATES.md section 3.1). The event name is event_type.",
+      "oneOf": [
+        {
+          "title": "blocking_question",
+          "type": "object",
+          "required": [
+            "missing_fields",
+            "candidate_scores",
+            "question_ref"
+          ],
+          "properties": {
+            "missing_fields": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "candidate_scores": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "question_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "feedback",
+          "type": "object",
+          "required": [
+            "goal_revision_seen",
+            "new_goal",
+            "answered_question_ref"
+          ],
+          "properties": {
+            "goal_revision_seen": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "new_goal": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "answered_question_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "goal_revision",
+          "type": "object",
+          "required": [
+            "goal_revision_seen",
+            "new_goal"
+          ],
+          "properties": {
+            "goal_revision_seen": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "new_goal": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "dispatch",
+          "type": "object",
+          "required": [
+            "effect_id"
+          ],
+          "properties": {
+            "effect_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "acknowledged, confirmed_delivered, confirmed_no_effect, confirmed_no_effect_exhausted",
+          "type": "object",
+          "required": [
+            "attempt_id"
+          ],
+          "properties": {
+            "attempt_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "resume_execution, resume_delivery, resume_reconciliation, resume_cancellation, resume_acceptance",
+          "type": "object",
+          "required": [
+            "resolves_block_reason",
+            "new_deadline_at"
+          ],
+          "properties": {
+            "resolves_block_reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "new_deadline_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "candidate",
+          "type": "object",
+          "required": [
+            "candidate_ref",
+            "evidence_refs"
+          ],
+          "properties": {
+            "candidate_ref": {
+              "type": "object",
+              "description": "ScopedRef (TYPE_CATALOG).",
+              "required": [
+                "id",
+                "version",
+                "tenant_id",
+                "sha256"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "version": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tenant_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "additionalProperties": false
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "all other events",
+          "type": "object",
+          "maxProperties": 0
+        }
+      ]
+    }
+  }
 }

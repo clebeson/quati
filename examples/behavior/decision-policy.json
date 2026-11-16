@@ -1,0 +1,132 @@
+{
+  "schema_version": "decision-policy/1",
+  "revision": 1,
+  "behavior_policy": {
+    "blocking_fields": [
+      "target_resource",
+      "destructive_or_external_effect_confirmation",
+      "recipient",
+      "deadline_if_stated_relative_and_unresolvable",
+      "authorization_scope"
+    ],
+    "max_open_questions": 1,
+    "max_reasks_per_field": 1,
+    "min_update_interval_s": {
+      "local": 60,
+      "channel": 300
+    },
+    "max_updates_per_hour": 6,
+    "default_next_contact_s": 900,
+    "urgent_deadline_s": 3600,
+    "reinvestigation_budget": 2,
+    "max_evidence_age_s": {
+      "default": 86400
+    },
+    "max_summary_chars": 1200,
+    "default_language": "en",
+    "max_delivery_attempts": 3
+  },
+  "routing_policy": {
+    "min_candidate_score": 0.5,
+    "ambiguity_margin": 0.15,
+    "small_model_max_complexity": "short",
+    "candidate_score_weights": {
+      "exact_id": 0.35,
+      "title_overlap": 0.25,
+      "time_window": 0.2,
+      "ownership": 0.1,
+      "recency": 0.1
+    },
+    "recency_horizon_s": 2592000,
+    "max_reference_candidates": 5
+  },
+  "discovery_policy": {
+    "max_depth": 4,
+    "max_documents": 100,
+    "max_total_bytes": 8388608,
+    "max_document_bytes": 1048576,
+    "max_seconds": 60,
+    "max_redirects": 3,
+    "min_pattern_documents": 3,
+    "min_pattern_support_ratio": 0.6,
+    "standard_sources": [],
+    "reuse_license_allowlist": [
+      "MIT",
+      "Apache-2.0",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "ISC",
+      "PSF-2.0"
+    ],
+    "reuse_max_release_age_days": 730
+  },
+  "specification_policy": {
+    "max_work_items": 20,
+    "max_work_items_per_requirement": 3,
+    "max_acceptance_tests_per_requirement": 3,
+    "max_open_decisions_reported": 10,
+    "max_draft_chars": 40000
+  },
+  "incident_policy": {
+    "min_hypotheses": 2,
+    "max_hypotheses": 5,
+    "min_corroborating_sources": 2,
+    "max_clock_skew_s": 120,
+    "max_timeline_events": 5000
+  },
+  "causal_policy": {
+    "min_stratum_n": 30,
+    "max_rows": 1000000,
+    "ci_level": 0.95,
+    "causal_lexicon": [
+      "causes",
+      "caused",
+      "drives",
+      "leads to",
+      "results in",
+      "effect of",
+      "impact of",
+      "because of",
+      "due to"
+    ]
+  },
+  "evolution_policy": {
+    "min_holdout_n": 30,
+    "max_safety_regressions": 0,
+    "monitor_window_runs": 50,
+    "regression_tolerance": 0.05,
+    "result_ttl_s": 604800
+  },
+  "lifecycle_policy": {
+    "egress_allowlist": [],
+    "resource_sample_interval_s": 5,
+    "resource_sample_duration_s": 60,
+    "sleep_gap_threshold_s": 30,
+    "heartbeat_interval_s": 30,
+    "max_queue_depth": 100,
+    "backup_retention": 7,
+    "bundle_license_allowlist": [
+      "MIT",
+      "Apache-2.0",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "ISC",
+      "PSF-2.0",
+      "MPL-2.0"
+    ]
+  },
+  "channel_policy": {
+    "signature_tolerance_s": 300,
+    "replay_retention_s": 86400,
+    "max_rate_limit_retries": 3,
+    "max_retry_after_s": 60,
+    "delivery_expiry_s": 86400,
+    "max_reconcile_attempts": 5
+  },
+  "context_policy": {
+    "max_recent_turns": 6,
+    "max_repairs": 2,
+    "max_escalations": 1,
+    "min_eval_n": 30
+  }
+}

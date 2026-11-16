@@ -1,4 +1,4 @@
-# PRD-000 — SECMA: Executive Cognitive Secretary
+# PRD-000 — Quati: Executive Cognitive Secretary
 
 **Version:** 8.0 proposed. **Status:** design only. **Audience:** implementers, auditors and product stakeholders. **Delivery shape:** headless CLI + durable worker, local-first.
 
@@ -6,7 +6,7 @@
 Existing AI agents can research, code, use tools or perform workflows but often fail to manage the human relationship across long-running requests. Users must remember what they asked, re-explain context, chase progress, resolve partial results and judge whether work is sufficient. Building more specialist agents is not a substitute for taking responsibility for the user outcome.
 
 ## Success definition
-SECMA behaves as a reliable professional secretary: it hears the actual request, discriminates greetings and questions from delegable work, clarifies selectively, starts reversible research without waiting unnecessarily, creates durable commitments, supervises multiple executors, updates the requester at useful moments, remembers prior work with evidence, audits results and delivers concise answers plus reproducible artifacts. It also serves machine requesters through typed contracts.
+Quati behaves as a reliable professional secretary: it hears the actual request, discriminates greetings and questions from delegable work, clarifies selectively, starts reversible research without waiting unnecessarily, creates durable commitments, supervises multiple executors, updates the requester at useful moments, remembers prior work with evidence, audits results and delivers concise answers plus reproducible artifacts. It also serves machine requesters through typed contracts.
 
 ## User personas
 - Individual professional: native CLI, own models and data, lightweight resource profile.
@@ -41,7 +41,7 @@ SECMA behaves as a reliable professional secretary: it hears the actual request,
 - K10: User-facing responses use the user's language or explicit preference; internal prompts, contracts, logs and documentation are English.
 
 ## Scope of initial product (S00–S02)
-**Included:** CLI, one actual model provider, social/simple/work classification, one real blind discovery of installable capability, safe work start, ERI relationship updates, durable ledger and DBOS worker, progress timing, outcome sufficiency and honest delivery; evidence collection, retry/rollback and basic auth/policy. **Excluded initially:** full enterprise SSO, dozens of harnesses, every brain, marketplace, production-scale HA, UI, autonomous prompt promotion, cross-tenant sharing, true external Slack/Google write integrations.
+**Included:** CLI, one actual model provider, social/simple/work classification, one real blind discovery of installable capability, safe work start, ERI relationship updates, durable ledger and ledger-driven worker (ADR-015), progress timing, outcome sufficiency and honest delivery; evidence collection, retry/rollback and basic auth/policy. **Excluded initially:** full enterprise SSO, dozens of harnesses, every brain, marketplace, production-scale HA, UI, autonomous prompt promotion, cross-tenant sharing, true external Slack/Google write integrations.
 
 ## Personalization contract
 Operator profile, interaction profile, execution profile and requester preference are distinct and versioned. The system MAY learn stylistic preferences based on repeated user corrections, with confidence and scope; it MUST offer inspect/correct/delete and MUST NOT silently alter safety policy. Configuration changes are proposed, compiled, simulated, evaluated and then atomically activated with rollback.
@@ -58,7 +58,7 @@ Small-model operation is a **target to demonstrate**, not an assertion. Personal
 - Model-dependent: evaluate independent blind holdouts and record model performance before enabling autonomous operation for that profile. Do not set ungrounded universal accuracy guarantees.
 
 ## Non-goals
-SECMA is not a humanoid simulation, universal AGI, alternate operating system, a new universal tool protocol, a mandatory container orchestrator, a secret-sharing superagent, a browser-first app or a replacement for the domain specialist engines it delegates to.
+Quati is not a humanoid simulation, universal AGI, alternate operating system, a new universal tool protocol, a mandatory container orchestrator, a secret-sharing superagent, a browser-first app or a replacement for the domain specialist engines it delegates to.
 
 ## Traceability
 All detailed product requirements are in `docs/prds/M01.md`–`M31.md` with stable FR/AT/RT identifiers and coverage in `docs/traceability/REQUIREMENTS.csv`. The implementation roadmap is normative and limits expansion despite the complete long-term vision.

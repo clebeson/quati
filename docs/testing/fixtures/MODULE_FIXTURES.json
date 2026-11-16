@@ -1,5 +1,5 @@
 {
-  "schema_version": "secma-fixture-recipes/1",
+  "schema_version": "quati-fixture-recipes/1",
   "recipes": [
     {
       "fixture_id": "FX-M01-BOUNDARY",

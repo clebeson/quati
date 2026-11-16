@@ -1,0 +1,18 @@
+{
+  "case_id": "CAP-02",
+  "fixture_id": "FX-CONFUSABLE-CAPS",
+  "sealed_before_first_run": "2026-11-16",
+  "rule": "Utterances never name a capability id, package or tool; the expected capability is held by the evaluator only.",
+  "utterances": [
+    "Find my next appointment.",
+    "What's the next meeting I have coming up?",
+    "When is my next scheduled appointment?",
+    "Can you check what I have next on my schedule?",
+    "I forgot what's coming up next for me. What's my next commitment on the agenda?",
+    "Tell me the time and title of my upcoming appointment.",
+    "Do I have anything booked soon? Give me the very next one.",
+    "Look up my next meeting, please, just tell me when it is.",
+    "Qual é o meu próximo compromisso na agenda?",
+    "¿Cuál es mi próxima cita?"
+  ]
+}
