@@ -1,0 +1,30 @@
+    def assert_rejected(tmp_path, result, state_path, before, fragment):
+        assert result.returncode == 2, result.stdout + result.stderr
+>       assert fragment in result.stderr
+E       AssertionError: assert 'Seal index' in 'usage: checkpoint_execution.py [-h] [--state STATE] [--ledger LEDGER]\n                               --expected-revi.../pytest-374/test_missing_seal_index_is_rej0 --gate S00-GATE-02=BLOCKED --gate-seal S00-GATE-02=S00-GATE-02-TESTS-001\n'
+E        +  where 'usage: checkpoint_execution.py [-h] [--state STATE] [--ledger LEDGER]\n                               --expected-revi.../pytest-374/test_missing_seal_index_is_rej0 --gate S00-GATE-02=BLOCKED --gate-seal S00-GATE-02=S00-GATE-02-TESTS-001\n' = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...pytest-374/test_missing_seal_index_is_rej0 --gate S00-GATE-02=BLOCKED --gate-seal S00-GATE-02=S00-GATE-02-TESTS-001\n').stderr
+
+tests/unit/test_execution_checkpoint_gates.py:116: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_gate_pass_records_exact_seal_refs_commit_and_journal_event
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_checkpoint_without_slice_options_keeps_the_event_shape
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_gate_pass_without_seals_is_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_gate_pass_with_only_tests_verified_is_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_gate_pass_without_a_slice_commit_is_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_seal_missing_from_index_is_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_changed_seal_record_is_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_seal_scope_must_cover_the_gate_or_its_slice
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_nonpassing_seal_cannot_support_a_pass_gate
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_seal_record_identity_must_match_the_index
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_seal_path_cannot_escape_the_seal_root
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_duplicate_seal_identity_in_index_is_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_unknown_gate_and_gates_of_two_slices_are_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_gate_of_a_later_slice_is_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_malformed_gate_arguments_are_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_slice_options_without_a_gate_or_slice_are_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_slice_option_must_agree_with_the_gates
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_unknown_blocker_resolution_is_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_nonpassing_status_needs_no_seal_and_keeps_existing_refs
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_pass_gate_already_sealed_does_not_duplicate_refs
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_missing_seal_index_is_rejected_only_when_a_seal_is_named
+21 failed in 0.93s

@@ -1,0 +1,6 @@
+command: .venv/bin/python -m pytest -q -p no:cacheprovider
+tree: commit 8a2ec40 plus checkpoint_execution.py gate patch and tests/unit/test_execution_checkpoint_gates.py
+........................................................................ [ 98%]
+..................                                                       [100%]
+945 passed, 9 skipped in 36.76s
+exit: 0

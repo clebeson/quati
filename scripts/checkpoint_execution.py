@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Record resumable active_work progress with revision CAS and a recoverable hash chain.
 
+The same journaled event may also carry one slice patch: gate statuses, per-gate
+seal references resolved from the seal index, the slice commit, evidence
+references and blockers. A gate becomes PASS only with indexed, hash-verified
+TESTS_VERIFIED and EVIDENCE_VERIFIED seal records whose scope covers the gate or
+its slice, and a recorded slice commit. This helper checks the seal locator, the
+record hash, identity, scope and verdict; full provenance validation remains in
+spec_tools/validate_readiness.py.
+
 The JSONL ledger is an engineering execution journal, not Quati's product ledger.
 This bounded POSIX advisory flock serializes only writers using this helper and
 the same state sidecar inode. Writers that do not take this lock are outside its
@@ -13,6 +21,7 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 import sys
 import tempfile
 import time
@@ -25,6 +34,11 @@ IMPLEMENTATION_PHASES = {"TDD_RED", "IMPLEMENT", "EDD"}
 WORK_MODES = {"SPECIFICATION_ONLY", "IMPLEMENTATION_AUTHORIZED"}
 DEFAULT_STATE = Path(__file__).resolve().parents[1] / "docs/implementation/implementation_state.json"
 DEFAULT_LEDGER = DEFAULT_STATE.with_name("execution_ledger.jsonl")
+DEFAULT_SEAL_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_SEAL_INDEX = DEFAULT_SEAL_ROOT / "governance/seals/index.json"
+GATE_STATUSES = {"NOT_RUN", "IN_PROGRESS", "PASS", "FAIL", "BLOCKED"}
+MANDATORY_GATE_SEAL_KINDS = {"TESTS_VERIFIED", "EVIDENCE_VERIFIED"}
+COMMIT_PATTERN = re.compile(r"^([a-f0-9]{40}|[a-f0-9]{64})$")
 LOCK_TIMEOUT_SECONDS = 10
 
 
@@ -51,6 +65,16 @@ def parser():
     result.add_argument("--pending-finding", action="append")
     result.add_argument("--resolve-finding", action="append")
     result.add_argument("--owned-file", action="append")
+    result.add_argument("--seal-index", type=Path, default=DEFAULT_SEAL_INDEX)
+    result.add_argument("--seal-root", type=Path, default=DEFAULT_SEAL_ROOT)
+    result.add_argument("--slice", dest="slice_id", help="Slice targeted by slice options when no --gate is given")
+    result.add_argument("--gate", action="append", default=[], metavar="GATE=STATUS")
+    result.add_argument("--gate-seal", action="append", default=[], metavar="GATE=SEAL_ID",
+                        help="Attach an indexed seal record to a gate; may be repeated")
+    result.add_argument("--slice-commit", help="Commit identifier of the tested tree for the slice")
+    result.add_argument("--slice-evidence-ref", action="append", default=[])
+    result.add_argument("--slice-blocker", action="append", default=[])
+    result.add_argument("--resolve-blocker", action="append", default=[])
     return result
 
 
@@ -298,7 +322,8 @@ def slice_index_for_task(work_package_id, slices):
     return matches[0]
 
 
-def validate_active_work_scope(state, patch):
+def slice_ceiling(state):
+    """Return (sorted slice names, index of the latest slice that may be worked on)."""
     slices = state.get("slices")
     if not isinstance(slices, dict) or not slices:
         raise ValueError("Canonical state must contain non-empty slice authority")
@@ -306,11 +331,6 @@ def validate_active_work_scope(state, patch):
     current_slice = state.get("current_slice")
     if current_slice not in slices:
         raise ValueError("Canonical current_slice must identify a configured slice")
-    active = state.get("active_work")
-    if not isinstance(active, dict):
-        raise ValueError("Canonical state must contain an active_work object")
-    task_id = patch.get("work_package_id", active.get("work_package_id", ""))
-    task_index = slice_index_for_task(task_id, names)
     earliest_incomplete = len(names)
     for index, name in enumerate(names):
         item = slices[name]
@@ -318,9 +338,177 @@ def validate_active_work_scope(state, patch):
         if item.get("status") != "PASS" or not gates or any(status != "PASS" for status in gates.values()):
             earliest_incomplete = index
             break
-    ceiling = min(names.index(current_slice), earliest_incomplete)
+    return names, min(names.index(current_slice), earliest_incomplete)
+
+
+def validate_active_work_scope(state, patch):
+    names, ceiling = slice_ceiling(state)
+    active = state.get("active_work")
+    if not isinstance(active, dict):
+        raise ValueError("Canonical state must contain an active_work object")
+    task_id = patch.get("work_package_id", active.get("work_package_id", ""))
+    task_index = slice_index_for_task(task_id, names)
     if task_index > ceiling:
         raise ValueError(f"active_work task slice {names[task_index]} is beyond current/earliest incomplete slice {names[ceiling]}")
+
+
+def split_pair(value, shape):
+    left, separator, right = value.partition("=")
+    if not separator or not left.strip() or not right.strip():
+        raise ValueError(f"Expected {shape}, found {value!r}")
+    return left.strip(), right.strip()
+
+
+def build_slice_request(slice_id, gates, gate_seals, commit, evidence_refs, blockers, resolve_blockers):
+    """Parse slice options into a request; return None when no slice option was given."""
+    request = {"gates": {}, "gate_seals": {}}
+    for value in gates:
+        gate, status = split_pair(value, "GATE=STATUS")
+        if status not in GATE_STATUSES:
+            raise ValueError(f"Unsupported gate status {status!r} for {gate}")
+        if gate in request["gates"]:
+            raise ValueError(f"Duplicate gate option: {gate}")
+        request["gates"][gate] = status
+    for value in gate_seals:
+        gate, seal_id = split_pair(value, "GATE=SEAL_ID")
+        seal_ids = request["gate_seals"].setdefault(gate, [])
+        if seal_id not in seal_ids:
+            seal_ids.append(seal_id)
+    for key, entries in (("evidence_refs", evidence_refs), ("blockers", blockers), ("resolve_blockers", resolve_blockers)):
+        if any(not isinstance(item, str) or not item.strip() for item in entries):
+            raise ValueError(f"Slice {key} entries must be non-empty strings")
+        if entries:
+            request[key] = list(entries)
+    if commit is not None:
+        if not COMMIT_PATTERN.match(commit):
+            raise ValueError("Slice commit must be a 40- or 64-character lowercase hexadecimal identifier")
+        request["commit"] = commit
+    if slice_id is not None:
+        request["slice_id"] = slice_id
+    has_options = bool(request["gates"] or request["gate_seals"] or len(request) > 2)
+    if not has_options:
+        return None
+    if not request["gates"] and not request["gate_seals"] and "slice_id" not in request:
+        raise ValueError("Slice options require --gate or --slice")
+    return request
+
+
+def target_slice(state, request):
+    names, ceiling = slice_ceiling(state)
+    slices = state["slices"]
+    requested = request.get("slice_id")
+    if requested is not None and requested not in slices:
+        raise ValueError(f"Unknown slice: {requested}")
+    owners = set() if requested is None else {requested}
+    for gate in [*request["gates"], *request["gate_seals"]]:
+        matches = [name for name in names if gate in slices[name].get("gates", {})]
+        if len(matches) != 1:
+            raise ValueError(f"Unknown gate: {gate}")
+        owners.add(matches[0])
+    if len(owners) != 1:
+        raise ValueError("Gate and slice options must identify one slice")
+    slice_id = owners.pop()
+    if names.index(slice_id) > ceiling:
+        raise ValueError(f"Slice patch targets {slice_id}, beyond current/earliest incomplete slice {names[ceiling]}")
+    return slice_id
+
+
+def read_seal_index(seal_index):
+    try:
+        index = json.loads(Path(seal_index).read_text(encoding="utf-8"))
+        records = index["records"]
+        by_id = {record["seal_id"]: record for record in records}
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise ValueError(f"Seal index is missing or unreadable: {seal_index}") from exc
+    if len(by_id) != len(records):
+        raise ValueError("Duplicate seal identity in seal index")
+    return by_id
+
+
+def resolve_seal(seal_id, gate, slice_id, by_id, seal_root):
+    """Return (state reference, verdict) for one indexed, hash-verified seal record."""
+    if seal_id not in by_id:
+        raise ValueError(f"Seal not in canonical index: {seal_id}")
+    indexed = by_id[seal_id]
+    root = Path(seal_root).resolve()
+    path = (root / str(indexed.get("path", ""))).resolve()
+    if not path.is_relative_to(root):
+        raise ValueError(f"Seal path escapes the seal root: {seal_id}")
+    if not path.is_file():
+        raise ValueError(f"Missing seal record: {seal_id}")
+    data = path.read_bytes()
+    if hashlib.sha256(data).hexdigest() != indexed.get("record_sha256"):
+        raise ValueError(f"Seal record changed: {seal_id}")
+    try:
+        record = json.loads(data.decode("utf-8"))
+        identity = (record["seal_id"], record["kind"])
+        scope_ids = list(record["scope_ids"])
+        verdict = record["verdict"]
+    except (ValueError, KeyError, TypeError) as exc:
+        raise ValueError(f"Seal record is not a valid seal: {seal_id}") from exc
+    if identity != (seal_id, indexed.get("kind")):
+        raise ValueError(f"Seal index and record disagree: {seal_id}")
+    scope_id = gate if gate in scope_ids else slice_id if slice_id in scope_ids else None
+    if scope_id is None:
+        raise ValueError(f"Seal scope does not cover {gate} or {slice_id}: {seal_id}")
+    reference = {"seal_id": seal_id, "path": indexed["path"], "record_sha256": indexed["record_sha256"],
+                 "kind": indexed["kind"], "scope_id": scope_id}
+    return reference, verdict
+
+
+def resolve_slice_patch(state, request, seal_index, seal_root):
+    """Validate a slice request against state and seals; return the patch recorded in the event."""
+    slice_id = target_slice(state, request)
+    item = state["slices"][slice_id]
+    patch = {"slice_id": slice_id}
+    if request["gates"]:
+        patch["gates"] = dict(request["gates"])
+    by_id = read_seal_index(seal_index) if request["gate_seals"] else {}
+    verdicts = {}
+    new_refs = {}
+    for gate, seal_ids in request["gate_seals"].items():
+        existing = {ref["seal_id"]: ref for ref in item.get("gate_seal_refs", {}).get(gate, [])}
+        for seal_id in seal_ids:
+            reference, verdict = resolve_seal(seal_id, gate, slice_id, by_id, seal_root)
+            verdicts[(gate, seal_id)] = verdict
+            if seal_id in existing:
+                if existing[seal_id] != reference:
+                    raise ValueError(f"Seal reference conflict for {gate}: {seal_id}")
+                continue
+            new_refs.setdefault(gate, []).append(reference)
+    if new_refs:
+        patch["gate_seal_refs"] = new_refs
+    for key in ("commit", "evidence_refs", "blockers", "resolve_blockers"):
+        if key in request:
+            patch[key] = request[key]
+    for blocker in patch.get("resolve_blockers", []):
+        if blocker not in item.get("blockers", []):
+            raise ValueError(f"Cannot resolve untracked blocker: {blocker}")
+    for gate, status in request["gates"].items():
+        if status != "PASS":
+            continue
+        if any(verdict != "PASS" for (seal_gate, _), verdict in verdicts.items() if seal_gate == gate):
+            raise ValueError(f"Nonpassing seal used for PASS gate {gate}")
+        references = [*item.get("gate_seal_refs", {}).get(gate, []), *new_refs.get(gate, [])]
+        if not MANDATORY_GATE_SEAL_KINDS <= {ref["kind"] for ref in references}:
+            raise ValueError(f"PASS gate {gate} requires TESTS_VERIFIED and EVIDENCE_VERIFIED seal references")
+        if not (patch.get("commit") or item.get("commit")):
+            raise ValueError(f"PASS gate {gate} requires a slice commit")
+    return patch
+
+
+def apply_slice_patch(state, patch):
+    item = state["slices"][patch["slice_id"]]
+    item["gates"].update(patch.get("gates", {}))
+    for gate, references in patch.get("gate_seal_refs", {}).items():
+        item.setdefault("gate_seal_refs", {}).setdefault(gate, []).extend(references)
+    if "commit" in patch:
+        item["commit"] = patch["commit"]
+    item.setdefault("evidence_refs", []).extend(patch.get("evidence_refs", []))
+    blockers = item.setdefault("blockers", [])
+    for blocker in patch.get("resolve_blockers", []):
+        blockers.remove(blocker)
+    blockers.extend(patch.get("blockers", []))
 
 
 def update_active_work(state, phase, next_action, steps, patch):
@@ -337,15 +525,21 @@ def update_active_work(state, phase, next_action, steps, patch):
     apply_active_work_patch(active, patch)
 
 
-def prepare_event(state, expected_revision, phase, next_action, steps, previous_hash, patch=None):
+def prepare_event(state, expected_revision, phase, next_action, steps, previous_hash, patch=None,
+                  slice_request=None, seal_index=DEFAULT_SEAL_INDEX, seal_root=DEFAULT_SEAL_ROOT):
     if state.get("revision") != expected_revision:
         raise ValueError(f"Revision conflict: expected {expected_revision}, found {state.get('revision')}")
     patch = patch or {}
     validate_phase_authority(state, phase)
     validate_active_work_scope(state, patch)
+    slice_patch = None
+    if slice_request is not None:
+        slice_patch = resolve_slice_patch(state, slice_request, seal_index, seal_root)
     before_hash = digest(state)
     updated = json.loads(json.dumps(state))
     update_active_work(updated, phase, next_action, steps, patch)
+    if slice_patch is not None:
+        apply_slice_patch(updated, slice_patch)
     timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     updated["revision"] = expected_revision + 1
     if "last_updated_at" in updated:
@@ -361,10 +555,13 @@ def prepare_event(state, expected_revision, phase, next_action, steps, previous_
         "active_work_patch": patch,
         "timestamp": timestamp,
     }
+    if slice_patch is not None:
+        event["slice_patch"] = slice_patch
     return {"event": event, "state_after": updated, "event_hash": digest(event)}
 
 
-def update(state_path, ledger_path, expected_revision, phase, next_action, steps, patch=None):
+def update(state_path, ledger_path, expected_revision, phase, next_action, steps, patch=None,
+           slice_request=None, seal_index=DEFAULT_SEAL_INDEX, seal_root=DEFAULT_SEAL_ROOT):
     with exclusive_lock(state_path):
         state, recovered = recover(state_path, ledger_path)
         if recovered:
@@ -373,7 +570,8 @@ def update(state_path, ledger_path, expected_revision, phase, next_action, steps
             raise ValueError(f"Revision conflict: expected {expected_revision}, found {state.get('revision')}")
         rows = read_ledger(ledger_path)
         previous_hash = rows[-1]["event_hash"] if rows else ""
-        prepared = prepare_event(state, expected_revision, phase, next_action, steps, previous_hash, patch)
+        prepared = prepare_event(state, expected_revision, phase, next_action, steps, previous_hash, patch,
+                                 slice_request, seal_index, seal_root)
         journal_dir = ledger_path.with_name("execution_journal")
         journal_dir.mkdir(parents=True, exist_ok=True)
         fsync_directory(journal_dir.parent)
@@ -407,7 +605,10 @@ def main(argv=None):
     if args.resolve_finding is not None:
         patch["resolve_findings"] = args.resolve_finding
     try:
-        revision = update(args.state, args.ledger, args.expected_revision, args.phase, args.next_action, args.step, patch)
+        slice_request = build_slice_request(args.slice_id, args.gate, args.gate_seal, args.slice_commit,
+                                            args.slice_evidence_ref, args.slice_blocker, args.resolve_blocker)
+        revision = update(args.state, args.ledger, args.expected_revision, args.phase, args.next_action, args.step,
+                          patch, slice_request, args.seal_index, args.seal_root)
     except OSError as exc:
         diagnostic = {
             "status": "CHECKPOINT_PENDING",
