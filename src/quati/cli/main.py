@@ -4,16 +4,19 @@ import sys
 
 import typer
 
-from quati.adapters import runtime_facts
-from quati.adapters.evidence import write_receipt
+from quati.adapters import private_fs, runtime_facts
+from quati.adapters.evidence import receipt_sink, receipts_directory
 from quati.adapters.feature_reports import FileFeatureReportStore
 from quati.adapters.local_identity import LocalIdentity
+from quati.adapters.trace_store import ReceiptReader
 from quati.application.behavior_commands import BehaviorCommands, active_package_status
 from quati.application.cli_service import CLIService, config_diagnostics, response
+from quati.application.identity import AccessDenied
 from quati.application.ports import ProviderConfig
+from quati.application.trace_commands import TraceCommands
 from quati.cli import composition, local_policy
 from quati.cli.chat import run_chat
-from quati.cli.rendering import failure, render
+from quati.cli.rendering import failure, render, settled_exit
 
 app = typer.Typer(no_args_is_help=False, add_completion=False, pretty_exceptions_enable=False,
                   help='Quati local CLI. This delivery supports init, doctor, config validate, ask, chat, '
@@ -32,10 +35,18 @@ app.add_typer(behavior, name='behavior')
 config = typer.Typer(no_args_is_help=True, add_completion=False,
                      help='Configuration checks (validate in S00; profile changes in slice S03).')
 app.add_typer(config, name='config')
-trace = typer.Typer(no_args_is_help=True, add_completion=False, help='Audit trace commands (slice S02).')
+trace = typer.Typer(no_args_is_help=True, add_completion=False, help='Audit trace commands (show and explain in S00; export and replay in slice S02).')
 app.add_typer(trace, name='trace')
 worker = typer.Typer(no_args_is_help=True, add_completion=False, help='Ledger worker commands (slice S02).')
 app.add_typer(worker, name='worker')
+# Command groups that other PRDs name (M02, M25, M13, M12, M11, M20, RFC-013): registered, not delivered yet.
+LATER_GROUPS = {'spaces': ('S02', 'Space and grant inspection', ('describe',)),
+                'policy': ('S02', 'Trusted policy changes', ('show', 'diff', 'edit', 'apply')),
+                'prefs': ('S03', 'Preferences', ('show', 'set', 'expire', 'history', 'rollback')),
+                'artifact': ('S03', 'Artifacts', ('register', 'show', 'revise', 'history')),
+                'memory': ('S03', 'Memory queries', ('search',)),
+                'brains': ('S04', 'Knowledge providers', ('reindex',)),
+                'grants': ('S05', 'Space grants of the SERVER profile', ('list',))}
 # An undelivered command accepts any arguments and options: its only answer is the typed UNSUPPORTED.
 ANY_ARGUMENTS = {'allow_extra_args': True, 'ignore_unknown_options': True}
 
@@ -45,9 +56,42 @@ def _config():
     return ProviderConfig.from_environment()
 
 
+class _Identity(LocalIdentity):
+    """The LOCAL identity, accepting only an installation record that carries every field S00 reads.
+
+    A signed record without one of them is a rejected credential (typed UNAUTHENTICATED; INVALID in
+    ``doctor``), never a ``KeyError`` in the middle of a command (LOG-0041 N10).
+    """
+
+    def _load(self):
+        record, key = super()._load()
+        if not runtime_facts.record_complete(record):
+            raise AccessDenied()
+        return record, key
+
+
+def _state(*names):
+    """LOG-0041 N1: the data directory and the named directories under it are private, or UnsafeStatePath.
+
+    Each directory is verified by the one function its writer uses, so a command and its store agree."""
+    for name in names:
+        receipts_directory() if name == 'receipts' else private_fs.state_directory(name)
+
+
+def _authorizer(identity):
+    """The registry enforcement point (AuthorizationPort decision + ``authz.decided``) for a non-registry command."""
+    def authorize(context, operation, action):
+        discovery = composition._parts(identity, context, clock=composition.system_clock, ids=composition.random_ids,
+                                       handlers=None)[2]
+        return discovery.authorize(context, operation, action)
+    return authorize
+
+
 def _service(config=None):
-    identity = LocalIdentity()
-    return CLIService(identity, config or _config(), write_receipt,
+    identity = _Identity()
+    return CLIService(identity, config or _config(), receipt_sink,
+                      authorize=_authorizer(identity), state_guard=_state,
+                      identity_inspector=lambda: runtime_facts.identity_state(identity.directory),
                       policy_loader=lambda tenant_id: local_policy.state(identity.directory, tenant_id),
                       policy_installer=lambda summary: local_policy.install(
                           identity.directory, summary['tenant_id'], summary['principal_id']),
@@ -58,14 +102,26 @@ def _service(config=None):
                       runtime_facts=lambda: runtime_facts.collect(identity.directory))
 
 
-def _commands():
-    return composition.capability_commands(LocalIdentity(), write_receipt)
+def _commands(*written):
+    """Capability commands for the authenticated operator; the directories the command uses are verified
+    before it reads or changes anything, so no registry change is committed without its receipt directory."""
+    commands = composition.capability_commands(_Identity(), receipt_sink)
+    commands.registry.store.prepare()
+    _state(*written)
+    return commands
+
+
+def _trace():
+    """Trace use case: authenticated context and the registry enforcement point of the capability commands."""
+    commands = _commands()
+    return TraceCommands(context=commands.context, authorize=commands.discovery.authorize,
+                         receipts=ReceiptReader(), audit_events=commands.registry.store.audit_events)
 
 
 def _emit(result):
     code, value = result
     typer.echo(render(value))
-    raise typer.Exit(code)
+    raise typer.Exit(settled_exit(code, value))
 
 
 def _undelivered(group, name, label, slice_id):
@@ -151,14 +207,39 @@ def deny(approval_request_id: str, reason: str = typer.Option(None, '--reason'),
 
 for _name in ('inbox', 'messages'):
     _undelivered(app, _name, _name, 'S02')
+for _name in ('server', 'login'):
+    _undelivered(app, _name, _name, 'S05')
+_undelivered(approvals, 'revoke', 'approvals revoke', 'S02')
+for _group, (_slice, _help, _names) in LATER_GROUPS.items():
+    _typer = typer.Typer(no_args_is_help=True, add_completion=False, help=f'{_help} (slice {_slice}).')
+    app.add_typer(_typer, name=_group)
+    for _name in _names:
+        _undelivered(_typer, _name, f'{_group} {_name}', _slice)
 for _name in ('run', 'tick', 'install', 'uninstall'):
     _undelivered(worker, _name, f'worker {_name}', 'S02')
-for _name in ('show', 'explain', 'export', 'replay'):
+for _name in ('export', 'replay'):
     _undelivered(trace, _name, f'trace {_name}', 'S02')
 for _name in ('diff', 'simulate', 'propose', 'apply', 'rollback'):
     _undelivered(config, _name, f'config {_name}', 'S03')
 for _name in ('propose', 'simulate', 'diff', 'promote', 'rollback'):
     _undelivered(behavior, _name, f'behavior {_name}', 'S03')
+
+
+@trace.command('show')
+def trace_show(identifier: str = typer.Argument(None), request: str = typer.Option(None, '--request'),
+               json_output: bool = typer.Option(False, '--json')):
+    """Show the recorded receipt and decisions of one request (REQUEST_ID or TRACE_ID); read-only."""
+    if (identifier is None) == (request is None):
+        _emit((2, response('DENIED', code='INVALID_INPUT',
+                           message='Give exactly one identifier: REQUEST_ID or TRACE_ID, or --request REQUEST_ID.',
+                           next_action='Use the request_id or trace_id printed by `quati ask --json`.')))
+    _emit(_trace().show(identifier if request is None else request))
+
+
+@trace.command('explain')
+def trace_explain(identifier: str, json_output: bool = typer.Option(False, '--json')):
+    """Explain the capability selection of one request from its recorded data; no model call."""
+    _emit(_trace().explain(identifier))
 
 
 @config.command('validate')
@@ -171,14 +252,14 @@ def config_validate(file: str = typer.Argument(None), json_output: bool = typer.
 def behavior_validate(package: str, root: str = typer.Option(None, '--root', help='Package root (default: .).'),
                       json_output: bool = typer.Option(False, '--json')):
     """Compile a behavior package and its statechart; print the deterministic receipt or the diagnostics."""
-    _emit(BehaviorCommands(LocalIdentity()).validate(package, root or os.getcwd()))
+    _emit(BehaviorCommands(_Identity()).validate(package, root or os.getcwd()))
 
 
 @behavior.command('render')
 def behavior_render(package: str, root: str = typer.Option(None, '--root', help='Package root (default: .).'),
                     json_output: bool = typer.Option(False, '--json')):
     """Compile a behavior package and print its English prompt preview with the build receipt."""
-    _emit(BehaviorCommands(LocalIdentity()).render(package, root or os.getcwd()))
+    _emit(BehaviorCommands(_Identity()).render(package, root or os.getcwd()))
 
 
 @models.command('probe')
@@ -192,14 +273,14 @@ def capabilities_install(path: str, fixture_handler: str = typer.Option(None, '-
                          enable_fixture: bool = typer.Option(False, '--enable-fixture'),
                          json_output: bool = typer.Option(False, '--json')):
     """Install a capability package; with a fixture handler and --enable-fixture it is activated."""
-    _emit(_commands().install(path, fixture_handler=fixture_handler, enable_fixture=enable_fixture))
+    _emit(_commands('receipts').install(path, fixture_handler=fixture_handler, enable_fixture=enable_fixture))
 
 
 @capabilities.command('install-fixture')
 def capabilities_install_fixture(name: str, enable_fixture: bool = typer.Option(False, '--enable-fixture'),
                                  json_output: bool = typer.Option(False, '--json')):
     """Install one built-in public synthetic fixture capability by name."""
-    _emit(_commands().install_fixture(name, enable_fixture=enable_fixture))
+    _emit(_commands('receipts', 'fixture_sources').install_fixture(name, enable_fixture=enable_fixture))
 
 
 @capabilities.command('list')
@@ -224,7 +305,7 @@ def capabilities_describe(capability_id: str, json_output: bool = typer.Option(F
 @capabilities.command('disable')
 def capabilities_disable(ref: str, json_output: bool = typer.Option(False, '--json')):
     """Disable an installed capability version (CAPABILITY_ID@VERSION)."""
-    _emit(_commands().disable(ref))
+    _emit(_commands('receipts').disable(ref))
 
 
 def main(argv=None):

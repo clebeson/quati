@@ -1,0 +1,1005 @@
+# RED evidence, S00 fix round 7 (LOG-0041: N1, N7, N10, N13, N15, N16, N17). Stage 1 of 2: private state directories.
+# Recorded before any src/ change of this task. git HEAD: 5225cb283730ad446f2cb8e8c6eec7291b0dad32 (working tree shared with other agents)
+# 2026-11-16T17:14:57Z
+$ .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_s00_fix6_cli_surface.py -k "n17 or n1_state or registry_store_refuses"
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+____ test_registry_store_refuses_an_unsafe_audit_log_for_reads_and_appends _____
+
+tmp_path = PosixPath('<tmp>/pytest-577/test_registry_store_refuses_an0')
+
+    def test_registry_store_refuses_an_unsafe_audit_log_for_reads_and_appends(tmp_path) -> None:
+        store = FileRegistryStore(tmp_path / 'state' / 'capabilities')
+        assert store.audit_events() == []
+        store.append_audit({'event': 'one'})
+        assert store.audit_events() == [{'event': 'one'}]
+        assert stat.S_IMODE((tmp_path / 'state').stat().st_mode) == 0o700
+        store.audit_path.chmod(0o666)
+        for operation in (store.audit_events, lambda: store.append_audit({'event': 'two'})):
+            with pytest.raises(Refusal) as refused:
+                operation()
+            assert (refused.value.status, refused.value.code, refused.value.reason) == (
+                'UNAVAILABLE', 'TEMPORARILY_UNAVAILABLE', 'audit_unavailable')
+            assert refused.value.__cause__ is None
+        store.audit_path.chmod(0o600)
+        assert store.audit_events() == [{'event': 'one'}]
+        # LOG-0041 N1: a state directory that is a symlink is refused before anything is created or written
+        # under its target (until fix round 7 the registry root was created below the link).
+        real = tmp_path / 'real'
+        real.mkdir(mode=0o755)
+        (tmp_path / 'alias').symlink_to(real, target_is_directory=True)
+>       with pytest.raises(Refusal) as refused:
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE Refusal
+
+tests/unit/test_s00_fix6_cli_surface.py:629: Failed
+_ test_n17_private_directory_decides_on_the_descriptor_and_never_changes_a_mode_by_path _
+
+tmp_path = PosixPath('<tmp>/pytest-577/test_n17_private_directory_dec0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74375c822190>
+
+    def test_n17_private_directory_decides_on_the_descriptor_and_never_changes_a_mode_by_path(tmp_path, monkeypatch) -> None:
+        """N17: the owner and mode checks and the tightening use one no-follow directory descriptor.
+    
+        A directory that is replaced by a symlink between the path check and the tightening (same-user
+        race, simulated deterministically inside ``lstat``) is refused and the link target keeps its mode.
+        """
+        real_chmod, real_lstat, real_fstat = os.chmod, os.lstat, os.fstat
+        loose, victim, target, closed = (tmp_path / name for name in ('loose', 'victim', 'swapped', 'closed'))
+        for directory in (loose, victim, target, closed):
+            directory.mkdir()
+            real_chmod(directory, 0o755)
+    
+        def by_path(*args, **kwargs):
+            raise AssertionError('a mode was changed by path')
+    
+        monkeypatch.setattr(private_fs.os, 'chmod', by_path)
+>       assert stat.S_IMODE(private_fs.private_directory(loose).stat().st_mode) == 0o700
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s00_fix6_cli_surface.py:652: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/quati/adapters/private_fs.py:43: in private_directory
+    os.chmod(path, DIRECTORY_MODE)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (PosixPath('<tmp>/pytest-577/test_n17_private_directory_dec0/loose'), 448)
+kwargs = {}
+
+    def by_path(*args, **kwargs):
+>       raise AssertionError('a mode was changed by path')
+E       AssertionError: a mode was changed by path
+
+tests/unit/test_s00_fix6_cli_surface.py:649: AssertionError
+_ test_n1_state_directory_verifies_the_whole_chain_and_creates_nothing_below_an_unsafe_component _
+
+tmp_path = PosixPath('<tmp>/pytest-577/test_n1_state_directory_verifi0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74375c822060>
+
+    def test_n1_state_directory_verifies_the_whole_chain_and_creates_nothing_below_an_unsafe_component(
+            tmp_path, monkeypatch) -> None:
+        """N1: the data directory and every Quati directory under it are real, owned and private, or refused."""
+        monkeypatch.setenv('QUATI_DATA_DIR', str(tmp_path / 'data'))
+>       assert private_fs.data_root() == tmp_path / 'data'
+               ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'quati.adapters.private_fs' has no attribute 'data_root'
+
+tests/unit/test_s00_fix6_cli_surface.py:693: AttributeError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_registry_store_refuses_an_unsafe_audit_log_for_reads_and_appends
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n17_private_directory_decides_on_the_descriptor_and_never_changes_a_mode_by_path
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n1_state_directory_verifies_the_whole_chain_and_creates_nothing_below_an_unsafe_component
+3 failed, 60 deselected in 0.29s
+
+# Stage 2 of 2: store chain, probe order, identity cause, CLI surface, public child-process tests.
+# Recorded before the src/ changes of stage 2 (private_fs.py from stage 1 is already in place). 2026-11-16T17:25:38Z
+# The tree is shared: the two test_f9_ask_and_doctor_* failures below come from another agent's concurrent ask-routing change, not from this task.
+$ .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_s00_fix6_cli_surface.py tests/integration/cli/test_s00_fix7_public_surface.py -rf --tb=line
+......FFFFFF....FF.....................................F..F....FFFFFFFFF [ 36%]
+FFFF..FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF..FFFFFFFFFFFFFFFFFFFFFFF [ 73%]
+FFFFFFFFFFFFFFFFFFFFFFF.F...FFFFFFFFFFFFFFFFFFFF..F                      [100%]
+=================================== FAILURES ===================================
+E   AssertionError: {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...bb97af5a95146929c2c6e58fb2a411e.json'], 'next_action': 'No capability result was produced; no work was accepted.', ...}
+    assert (5, 'UNAVAILA..._UNAVAILABLE') == (4, 'UNAVAILA..._UNAVAILABLE')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:205: AssertionError: {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...bb97af5a95146929c2c6e58fb2a411e.json'], 'next_action': 'No capability result was produced; no work was accepted.', ...}
+E   AssertionError: {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...930041b974a4975ab1d390dfe4f5706.json'], 'next_action': 'No capability result was produced; no work was accepted.', ...}
+    assert (5, 'UNAVAILA..._UNAVAILABLE') == (4, 'UNAVAILA..._UNAVAILABLE')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:205: AssertionError: {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...930041b974a4975ab1d390dfe4f5706.json'], 'next_action': 'No capability result was produced; no work was accepted.', ...}
+E   AssertionError: {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...b9ba10f073d44d3a42b7c97aa6ba8cf.json'], 'next_action': 'No capability result was produced; no work was accepted.', ...}
+    assert (5, 'UNAVAILA..._UNAVAILABLE') == (4, 'UNAVAILA..._UNAVAILABLE')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:205: AssertionError: {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...b9ba10f073d44d3a42b7c97aa6ba8cf.json'], 'next_action': 'No capability result was produced; no work was accepted.', ...}
+E   AssertionError: {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...9e18e954a8f458682bd19e24608774b.json'], 'next_action': 'No capability result was produced; no work was accepted.', ...}
+    assert (5, 'UNAVAILA..._UNAVAILABLE') == (4, 'UNAVAILA..._UNAVAILABLE')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:205: AssertionError: {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...9e18e954a8f458682bd19e24608774b.json'], 'next_action': 'No capability result was produced; no work was accepted.', ...}
+E   AssertionError: {'data': {'reason': 'audit_unavailable'}, 'error': {'code': 'TEMPORARILY_UNAVAILABLE', 'message': 'audit_unavailable', 'retryable': True}, 'evidence_refs': [], 'next_action': 'The capability is not available; nothing was changed.', ...}
+    assert (5, 'UNAVAILA..._UNAVAILABLE') == (4, 'UNAVAILA..._UNAVAILABLE')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:217: AssertionError: {'data': {'reason': 'audit_unavailable'}, 'error': {'code': 'TEMPORARILY_UNAVAILABLE', 'message': 'audit_unavailable', 'retryable': True}, 'evidence_refs': [], 'next_action': 'The capability is not available; nothing was changed.', ...}
+E   AssertionError: {'data': {'reason': 'audit_unavailable'}, 'error': {'code': 'TEMPORARILY_UNAVAILABLE', 'message': 'audit_unavailable', 'retryable': True}, 'evidence_refs': [], 'next_action': 'The capability is not available; nothing was changed.', ...}
+    assert (5, 'UNAVAILA..._UNAVAILABLE') == (4, 'UNAVAILA..._UNAVAILABLE')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:217: AssertionError: {'data': {'reason': 'audit_unavailable'}, 'error': {'code': 'TEMPORARILY_UNAVAILABLE', 'message': 'audit_unavailable', 'retryable': True}, 'evidence_refs': [], 'next_action': 'The capability is not available; nothing was changed.', ...}
+E   AssertionError: assert (2, 'BLOCKED') == (0, 'GREETING')
+      
+      At index 0 diff: 2 != 0
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:312: AssertionError: assert (2, 'BLOCKED') == (0, 'GREETING')
+E   AssertionError: assert (2, 'BLOCKED') == (0, 'GREETING')
+      
+      At index 0 diff: 2 != 0
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:312: AssertionError: assert (2, 'BLOCKED') == (0, 'GREETING')
+E   Failed: DID NOT RAISE Refusal
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:640: Failed: DID NOT RAISE Refusal
+E   AssertionError: assert (5, 'UNAVAILA...lable'}, None) == (4, 'UNAVAILA...lable'}, None)
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:760: AssertionError: assert (5, 'UNAVAILA...lable'}, None) == (4, 'UNAVAILA...lable'}, None)
+E   Failed: DID NOT RAISE UnsafeStatePath
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1001: Failed: DID NOT RAISE UnsafeStatePath
+E   json.decoder.JSONDecodeError: Unterminated string starting at: line 1 column 11 (char 10)
+/usr/lib/python3.13/json/decoder.py:361: json.decoder.JSONDecodeError: Unterminated string starting at: line 1 column 11 (char 10)
+E   OSError: Evidence directory cannot traverse symlinks
+<repo>/src/quati/adapters/evidence.py:40: OSError: Evidence directory cannot traverse symlinks
+E   assert [493, 448, 384] == [448, 448, 384]
+      
+      At index 0 diff: 493 != 448
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1100: assert [493, 448, 384] == [448, 448, 384]
+E   AttributeError: module 'quati.adapters.private_fs' has no attribute 'private_tree'
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1133: AttributeError: module 'quati.adapters.private_fs' has no attribute 'private_tree'
+E   TypeError: CLIService.__init__() got an unexpected keyword argument 'authorize'
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1211: TypeError: CLIService.__init__() got an unexpected keyword argument 'authorize'
+E   TypeError: CLIService.__init__() got an unexpected keyword argument 'authorize'
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1211: TypeError: CLIService.__init__() got an unexpected keyword argument 'authorize'
+E   TypeError: CLIService.__init__() got an unexpected keyword argument 'authorize'
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1211: TypeError: CLIService.__init__() got an unexpected keyword argument 'authorize'
+E   TypeError: CLIService.__init__() got an unexpected keyword argument 'authorize'
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1211: TypeError: CLIService.__init__() got an unexpected keyword argument 'authorize'
+E   AssertionError: assert (1, 'BLOCKED'...as accepted.') == (4, 'UNAVAILA...ILABLE', None)
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1267: AssertionError: assert (1, 'BLOCKED'...as accepted.') == (4, 'UNAVAILA...ILABLE', None)
+E   AssertionError: assert None == {'reason': 'receipt_not_written', 'operation_may_have_taken_effect': True}
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1292: AssertionError: assert None == {'reason': 'receipt_not_written', 'operation_may_have_taken_effect': True}
+E   AttributeError: module 'quati.adapters.runtime_facts' has no attribute 'identity_state'
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1315: AttributeError: module 'quati.adapters.runtime_facts' has no attribute 'identity_state'
+E   TypeError: CLIService.__init__() got an unexpected keyword argument 'identity_inspector'
+<repo>/tests/unit/test_s00_fix6_cli_surface.py:1386: TypeError: CLIService.__init__() got an unexpected keyword argument 'identity_inspector'
+E   AssertionError: assert [] == [('models_pro...ALLOW', 'OK')]
+      
+      Right contains one more item: ('models_probe', 'manage', 'ALLOW', 'OK')
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:194: AssertionError: assert [] == [('models_pro...ALLOW', 'OK')]
+E   AssertionError: assert [] == [('models_pro...ALLOW', 'OK')]
+      
+      Right contains one more item: ('models_probe', 'manage', 'ALLOW', 'OK')
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:194: AssertionError: assert [] == [('models_pro...ALLOW', 'OK')]
+E   AssertionError: {"data":{"feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:0c9296a668c8183b12491fce6e15b11c9b1c41560226c07b3c29cb22b7ec6e59:<tmp>/pytest-604/test_n7_a_principal_that_may_n0/data/receipts/8fba1e00c76d440dbd40fe0e8d0dd3e5.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:43.363580+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"scope":"M17_PROVIDER_PROBE","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}}},"error":null,"evidence_refs":["sha256:0c9296a668c8183b12491fce6e15b11c9b1c41560226c07b3c29cb22b7ec6e59:<tmp>/pytest-604/test_n7_a_principal_that_may_n0/data/receipts/8fba1e00c76d440dbd40fe0e8d0dd3e5.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'DENIED',...INSUFFICIENT')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:211: AssertionError: {"data":{"feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:0c9296a668c8183b12491fce6e15b11c9b1c41560226c07b3c29cb22b7ec6e59:<tmp>/pytest-604/test_n7_a_principal_that_may_n0/data/receipts/8fba1e00c76d440dbd40fe0e8d0dd3e5.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:43.363580+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"scope":"M17_PROVIDER_PROBE","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}}},"error":null,"evidence_refs":["sha256:0c9296a668c8183b12491fce6e15b11c9b1c41560226c07b3c29cb22b7ec6e59:<tmp>/pytest-604/test_n7_a_principal_that_may_n0/data/receipts/8fba1e00c76d440dbd40fe0e8d0dd3e5.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+E   AssertionError: {"data":{"feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:16697157f7c4eb5e0a906fc6bcc7cb0b7415f01d0a990ff0461e63bdf033a097:<tmp>/pytest-604/test_n7_a_principal_that_may_n1/data/receipts/91e30f046fe74f14915b2c653df3010b.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:43.738201+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"scope":"M17_PROVIDER_PROBE","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}}},"error":null,"evidence_refs":["sha256:16697157f7c4eb5e0a906fc6bcc7cb0b7415f01d0a990ff0461e63bdf033a097:<tmp>/pytest-604/test_n7_a_principal_that_may_n1/data/receipts/91e30f046fe74f14915b2c653df3010b.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'DENIED',..._SPACE_GRANT')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:211: AssertionError: {"data":{"feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:16697157f7c4eb5e0a906fc6bcc7cb0b7415f01d0a990ff0461e63bdf033a097:<tmp>/pytest-604/test_n7_a_principal_that_may_n1/data/receipts/91e30f046fe74f14915b2c653df3010b.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:43.738201+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"scope":"M17_PROVIDER_PROBE","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}}},"error":null,"evidence_refs":["sha256:16697157f7c4eb5e0a906fc6bcc7cb0b7415f01d0a990ff0461e63bdf033a097:<tmp>/pytest-604/test_n7_a_principal_that_may_n1/data/receipts/91e30f046fe74f14915b2c653df3010b.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+E   AssertionError: {"data":{"feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:850c49d605f7a4a7e6264a9318524d68778d954b4a99b083a7719e50a1e93cc2:<tmp>/pytest-604/test_n7_a_principal_that_may_n2/data/receipts/dea28540d02b4d1b9dffb6c624e8728a.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:44.087582+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"scope":"M17_PROVIDER_PROBE","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}}},"error":null,"evidence_refs":["sha256:850c49d605f7a4a7e6264a9318524d68778d954b4a99b083a7719e50a1e93cc2:<tmp>/pytest-604/test_n7_a_principal_that_may_n2/data/receipts/dea28540d02b4d1b9dffb6c624e8728a.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'DENIED',..._SPACE_GRANT')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:211: AssertionError: {"data":{"feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:850c49d605f7a4a7e6264a9318524d68778d954b4a99b083a7719e50a1e93cc2:<tmp>/pytest-604/test_n7_a_principal_that_may_n2/data/receipts/dea28540d02b4d1b9dffb6c624e8728a.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:44.087582+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"scope":"M17_PROVIDER_PROBE","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}}},"error":null,"evidence_refs":["sha256:850c49d605f7a4a7e6264a9318524d68778d954b4a99b083a7719e50a1e93cc2:<tmp>/pytest-604/test_n7_a_principal_that_may_n2/data/receipts/dea28540d02b4d1b9dffb6c624e8728a.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+E   AssertionError: {"data":{"behavior":{"behavior_hash":"7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8","build_digest":"2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426","diagnostics":[],"profile_ref":"examples/behavior/executive-secretary.yaml","prompt_hash":"b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d","statechart_hash":"3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43","status":"VALID"},"config_dir":"<tmp>/pytest-604/test_n7_a_principal_that_may_n3/config","config_valid":true,"durable_worker":"NOT_IMPLEMENTED","external_integrations":"NOT_VERIFIED_EXTERNAL","feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:27732c6477e473c116efff3a9929662a8bccd641954a69c4582738820f00dbcd:<tmp>/pytest-604/test_n7_a_principal_that_may_n3/data/receipts/2d42e4e90e6a4d04858484bd60379e34.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:44.479015+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"identity":{"authenticator":"local-os","initialized":true,"qualification":"POSIX_LOCAL_ONLY","secret_store":"owner_only_file","status":"AVAILABLE"},"listening_sockets":0,"live_calls_allowed":true,"os":"Linux","os_qualification":"QUALIFIED","policy":{"reason":null,"status":"AVAILABLE"},"profile":"LOCAL","provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"python_version":"3.13.7","scope":"S00_T01_LOCAL_CLI","sqlite_fts5":true,"sqlite_journal_mode":"NOT_VERIFIED","sqlite_journal_reason":"ledger_not_delivered","sqlite_ok":true,"sqlite_version":"3.46.1","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}},"warnings":[],"worker":{"reason":"worker_not_delivered","status":"NOT_APPLICABLE"}},"error":null,"evidence_refs":["sha256:27732c6477e473c116efff3a9929662a8bccd641954a69c4582738820f00dbcd:<tmp>/pytest-604/test_n7_a_principal_that_may_n3/data/receipts/2d42e4e90e6a4d04858484bd60379e34.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'DENIED',...INSUFFICIENT')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:211: AssertionError: {"data":{"behavior":{"behavior_hash":"7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8","build_digest":"2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426","diagnostics":[],"profile_ref":"examples/behavior/executive-secretary.yaml","prompt_hash":"b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d","statechart_hash":"3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43","status":"VALID"},"config_dir":"<tmp>/pytest-604/test_n7_a_principal_that_may_n3/config","config_valid":true,"durable_worker":"NOT_IMPLEMENTED","external_integrations":"NOT_VERIFIED_EXTERNAL","feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:27732c6477e473c116efff3a9929662a8bccd641954a69c4582738820f00dbcd:<tmp>/pytest-604/test_n7_a_principal_that_may_n3/data/receipts/2d42e4e90e6a4d04858484bd60379e34.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:44.479015+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"identity":{"authenticator":"local-os","initialized":true,"qualification":"POSIX_LOCAL_ONLY","secret_store":"owner_only_file","status":"AVAILABLE"},"listening_sockets":0,"live_calls_allowed":true,"os":"Linux","os_qualification":"QUALIFIED","policy":{"reason":null,"status":"AVAILABLE"},"profile":"LOCAL","provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"python_version":"3.13.7","scope":"S00_T01_LOCAL_CLI","sqlite_fts5":true,"sqlite_journal_mode":"NOT_VERIFIED","sqlite_journal_reason":"ledger_not_delivered","sqlite_ok":true,"sqlite_version":"3.46.1","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}},"warnings":[],"worker":{"reason":"worker_not_delivered","status":"NOT_APPLICABLE"}},"error":null,"evidence_refs":["sha256:27732c6477e473c116efff3a9929662a8bccd641954a69c4582738820f00dbcd:<tmp>/pytest-604/test_n7_a_principal_that_may_n3/data/receipts/2d42e4e90e6a4d04858484bd60379e34.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+E   AssertionError: {"data":{"behavior":{"behavior_hash":"7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8","build_digest":"2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426","diagnostics":[],"profile_ref":"examples/behavior/executive-secretary.yaml","prompt_hash":"b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d","statechart_hash":"3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43","status":"VALID"},"config_dir":"<tmp>/pytest-604/test_n7_a_principal_that_may_n4/config","config_valid":true,"durable_worker":"NOT_IMPLEMENTED","external_integrations":"NOT_VERIFIED_EXTERNAL","feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:a903e7ba586251fffdf8f23de8cf1144ed423375ce7f7a3f4885f6a833d629d7:<tmp>/pytest-604/test_n7_a_principal_that_may_n4/data/receipts/951b1fe3218a49e29daed491e35107fb.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:44.865674+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"identity":{"authenticator":"local-os","initialized":true,"qualification":"POSIX_LOCAL_ONLY","secret_store":"owner_only_file","status":"AVAILABLE"},"listening_sockets":0,"live_calls_allowed":true,"os":"Linux","os_qualification":"QUALIFIED","policy":{"reason":null,"status":"AVAILABLE"},"profile":"LOCAL","provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"python_version":"3.13.7","scope":"S00_T01_LOCAL_CLI","sqlite_fts5":true,"sqlite_journal_mode":"NOT_VERIFIED","sqlite_journal_reason":"ledger_not_delivered","sqlite_ok":true,"sqlite_version":"3.46.1","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}},"warnings":[],"worker":{"reason":"worker_not_delivered","status":"NOT_APPLICABLE"}},"error":null,"evidence_refs":["sha256:a903e7ba586251fffdf8f23de8cf1144ed423375ce7f7a3f4885f6a833d629d7:<tmp>/pytest-604/test_n7_a_principal_that_may_n4/data/receipts/951b1fe3218a49e29daed491e35107fb.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'DENIED',..._SPACE_GRANT')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:211: AssertionError: {"data":{"behavior":{"behavior_hash":"7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8","build_digest":"2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426","diagnostics":[],"profile_ref":"examples/behavior/executive-secretary.yaml","prompt_hash":"b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d","statechart_hash":"3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43","status":"VALID"},"config_dir":"<tmp>/pytest-604/test_n7_a_principal_that_may_n4/config","config_valid":true,"durable_worker":"NOT_IMPLEMENTED","external_integrations":"NOT_VERIFIED_EXTERNAL","feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:a903e7ba586251fffdf8f23de8cf1144ed423375ce7f7a3f4885f6a833d629d7:<tmp>/pytest-604/test_n7_a_principal_that_may_n4/data/receipts/951b1fe3218a49e29daed491e35107fb.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:44.865674+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"identity":{"authenticator":"local-os","initialized":true,"qualification":"POSIX_LOCAL_ONLY","secret_store":"owner_only_file","status":"AVAILABLE"},"listening_sockets":0,"live_calls_allowed":true,"os":"Linux","os_qualification":"QUALIFIED","policy":{"reason":null,"status":"AVAILABLE"},"profile":"LOCAL","provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"python_version":"3.13.7","scope":"S00_T01_LOCAL_CLI","sqlite_fts5":true,"sqlite_journal_mode":"NOT_VERIFIED","sqlite_journal_reason":"ledger_not_delivered","sqlite_ok":true,"sqlite_version":"3.46.1","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}},"warnings":[],"worker":{"reason":"worker_not_delivered","status":"NOT_APPLICABLE"}},"error":null,"evidence_refs":["sha256:a903e7ba586251fffdf8f23de8cf1144ed423375ce7f7a3f4885f6a833d629d7:<tmp>/pytest-604/test_n7_a_principal_that_may_n4/data/receipts/951b1fe3218a49e29daed491e35107fb.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+E   AssertionError: {"data":{"behavior":{"behavior_hash":"7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8","build_digest":"2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426","diagnostics":[],"profile_ref":"examples/behavior/executive-secretary.yaml","prompt_hash":"b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d","statechart_hash":"3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43","status":"VALID"},"config_dir":"<tmp>/pytest-604/test_n7_a_principal_that_may_n5/config","config_valid":true,"durable_worker":"NOT_IMPLEMENTED","external_integrations":"NOT_VERIFIED_EXTERNAL","feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:c8902a468d7c545e0256a22b226f74f1cdf9640d9c772c030180832ddd3a71d2:<tmp>/pytest-604/test_n7_a_principal_that_may_n5/data/receipts/dd7ceec82386451aa26eca5d4596fc65.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:45.301550+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"identity":{"authenticator":"local-os","initialized":true,"qualification":"POSIX_LOCAL_ONLY","secret_store":"owner_only_file","status":"AVAILABLE"},"listening_sockets":0,"live_calls_allowed":true,"os":"Linux","os_qualification":"QUALIFIED","policy":{"reason":null,"status":"AVAILABLE"},"profile":"LOCAL","provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"python_version":"3.13.7","scope":"S00_T01_LOCAL_CLI","sqlite_fts5":true,"sqlite_journal_mode":"NOT_VERIFIED","sqlite_journal_reason":"ledger_not_delivered","sqlite_ok":true,"sqlite_version":"3.46.1","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}},"warnings":[],"worker":{"reason":"worker_not_delivered","status":"NOT_APPLICABLE"}},"error":null,"evidence_refs":["sha256:c8902a468d7c545e0256a22b226f74f1cdf9640d9c772c030180832ddd3a71d2:<tmp>/pytest-604/test_n7_a_principal_that_may_n5/data/receipts/dd7ceec82386451aa26eca5d4596fc65.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'DENIED',..._SPACE_GRANT')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:211: AssertionError: {"data":{"behavior":{"behavior_hash":"7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8","build_digest":"2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426","diagnostics":[],"profile_ref":"examples/behavior/executive-secretary.yaml","prompt_hash":"b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d","statechart_hash":"3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43","status":"VALID"},"config_dir":"<tmp>/pytest-604/test_n7_a_principal_that_may_n5/config","config_valid":true,"durable_worker":"NOT_IMPLEMENTED","external_integrations":"NOT_VERIFIED_EXTERNAL","feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:c8902a468d7c545e0256a22b226f74f1cdf9640d9c772c030180832ddd3a71d2:<tmp>/pytest-604/test_n7_a_principal_that_may_n5/data/receipts/dd7ceec82386451aa26eca5d4596fc65.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:45.301550+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"identity":{"authenticator":"local-os","initialized":true,"qualification":"POSIX_LOCAL_ONLY","secret_store":"owner_only_file","status":"AVAILABLE"},"listening_sockets":0,"live_calls_allowed":true,"os":"Linux","os_qualification":"QUALIFIED","policy":{"reason":null,"status":"AVAILABLE"},"profile":"LOCAL","provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"python_version":"3.13.7","scope":"S00_T01_LOCAL_CLI","sqlite_fts5":true,"sqlite_journal_mode":"NOT_VERIFIED","sqlite_journal_reason":"ledger_not_delivered","sqlite_ok":true,"sqlite_version":"3.46.1","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}},"warnings":[],"worker":{"reason":"worker_not_delivered","status":"NOT_APPLICABLE"}},"error":null,"evidence_refs":["sha256:c8902a468d7c545e0256a22b226f74f1cdf9640d9c772c030180832ddd3a71d2:<tmp>/pytest-604/test_n7_a_principal_that_may_n5/data/receipts/dd7ceec82386451aa26eca5d4596fc65.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":{"feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:49ca2223b3c7834e6840698275c353881def6ab26ba4323acec7dbdff1b863e5:<tmp>/pytest-604/test_n7_a_probe_refuses_unusab2/data/receipts/82213ba46b0b4f35901cf68b1129b599.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:46.919893+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"scope":"M17_PROVIDER_PROBE","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}}},"error":null,"evidence_refs":["sha256:49ca2223b3c7834e6840698275c353881def6ab26ba4323acec7dbdff1b863e5:<tmp>/pytest-604/test_n7_a_probe_refuses_unusab2/data/receipts/82213ba46b0b4f35901cf68b1129b599.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":{"feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:49ca2223b3c7834e6840698275c353881def6ab26ba4323acec7dbdff1b863e5:<tmp>/pytest-604/test_n7_a_probe_refuses_unusab2/data/receipts/82213ba46b0b4f35901cf68b1129b599.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:46.919893+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"scope":"M17_PROVIDER_PROBE","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}}},"error":null,"evidence_refs":["sha256:49ca2223b3c7834e6840698275c353881def6ab26ba4323acec7dbdff1b863e5:<tmp>/pytest-604/test_n7_a_probe_refuses_unusab2/data/receipts/82213ba46b0b4f35901cf68b1129b599.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":{"behavior":{"behavior_hash":"7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8","build_digest":"2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426","diagnostics":[],"profile_ref":"examples/behavior/executive-secretary.yaml","prompt_hash":"b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d","statechart_hash":"3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43","status":"VALID"},"config_dir":"<tmp>/pytest-604/test_n7_a_probe_refuses_unusab8/config","config_valid":true,"durable_worker":"NOT_IMPLEMENTED","external_integrations":"NOT_VERIFIED_EXTERNAL","feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:63fe935ac5ae44911ab94e5d2dd7369cae26f78383cc37c225e75f548c3183ea:<tmp>/pytest-604/test_n7_a_probe_refuses_unusab8/data/receipts/f4cfa9bb8725406b949c3e390a2a2ce9.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:50.290379+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"identity":{"authenticator":"local-os","initialized":true,"qualification":"POSIX_LOCAL_ONLY","secret_store":"owner_only_file","status":"AVAILABLE"},"listening_sockets":0,"live_calls_allowed":true,"os":"Linux","os_qualification":"QUALIFIED","policy":{"reason":null,"status":"AVAILABLE"},"profile":"LOCAL","provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"python_version":"3.13.7","scope":"S00_T01_LOCAL_CLI","sqlite_fts5":true,"sqlite_journal_mode":"NOT_VERIFIED","sqlite_journal_reason":"ledger_not_delivered","sqlite_ok":true,"sqlite_version":"3.46.1","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}},"warnings":[],"worker":{"reason":"worker_not_delivered","status":"NOT_APPLICABLE"}},"error":null,"evidence_refs":["sha256:63fe935ac5ae44911ab94e5d2dd7369cae26f78383cc37c225e75f548c3183ea:<tmp>/pytest-604/test_n7_a_probe_refuses_unusab8/data/receipts/f4cfa9bb8725406b949c3e390a2a2ce9.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":{"behavior":{"behavior_hash":"7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8","build_digest":"2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426","diagnostics":[],"profile_ref":"examples/behavior/executive-secretary.yaml","prompt_hash":"b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d","statechart_hash":"3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43","status":"VALID"},"config_dir":"<tmp>/pytest-604/test_n7_a_probe_refuses_unusab8/config","config_valid":true,"durable_worker":"NOT_IMPLEMENTED","external_integrations":"NOT_VERIFIED_EXTERNAL","feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad1046055128","details":{},"evidence_refs":["sha256:63fe935ac5ae44911ab94e5d2dd7369cae26f78383cc37c225e75f548c3183ea:<tmp>/pytest-604/test_n7_a_probe_refuses_unusab8/data/receipts/f4cfa9bb8725406b949c3e390a2a2ce9.json"],"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_at":"2026-11-16T17:25:50.290379+00:00","metadata_attestations":{"pricing":"UNKNOWN","region":"UNKNOWN"},"model_identity_source":"observed","model_or_adapter_version":"fake-model-1","observations":{"concurrency":"CONCURRENCY_NOT_EXERCISED","streaming":"STREAMING_UNSUPPORTED","structured_output":"PROBE_PASSED","timeout":"PROBE_PASSED","tools":"PROBE_PASSED"},"observed_model_id":"fake-model-1","probe_profile":{"name":"ask","sha256":"572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"},"provider_id":"scripted_fake_t04","retried":{},"transport":"scripted_fake_t04"},"identity":{"authenticator":"local-os","initialized":true,"qualification":"POSIX_LOCAL_ONLY","secret_store":"owner_only_file","status":"AVAILABLE"},"listening_sockets":0,"live_calls_allowed":true,"os":"Linux","os_qualification":"QUALIFIED","policy":{"reason":null,"status":"AVAILABLE"},"profile":"LOCAL","provider":{"adapter_installed":true,"configured":true,"endpoint_host":null,"features":{"concurrency":"NOT_VERIFIED","streaming":"UNSUPPORTED","structured_output":"SUPPORTED","timeout":"SUPPORTED","tools":"SUPPORTED"},"measured_support":"SUPPORTED","missing":[],"model":"fake-model-1","pricing":"UNKNOWN","reasons":[],"region":"UNKNOWN","status":"PROBED","transport":"scripted_fake_t04"},"python_version":"3.13.7","scope":"S00_T01_LOCAL_CLI","sqlite_fts5":true,"sqlite_journal_mode":"NOT_VERIFIED","sqlite_journal_reason":"ledger_not_delivered","sqlite_ok":true,"sqlite_version":"3.46.1","verdicts":{"concurrency":{"attempts":1,"detail":null,"reason":"CONCURRENCY_NOT_EXERCISED","verdict":"NOT_VERIFIED"},"streaming":{"attempts":1,"detail":null,"reason":"STREAMING_UNSUPPORTED","verdict":"UNSUPPORTED"},"structured_output":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"timeout":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"},"tools":{"attempts":1,"detail":null,"reason":"PROBE_PASSED","verdict":"SUPPORTED"}},"warnings":[],"worker":{"reason":"worker_not_delivered","status":"NOT_APPLICABLE"}},"error":null,"evidence_refs":["sha256:63fe935ac5ae44911ab94e5d2dd7369cae26f78383cc37c225e75f548c3183ea:<tmp>/pytest-604/test_n7_a_probe_refuses_unusab8/data/receipts/f4cfa9bb8725406b949c3e390a2a2ce9.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":["streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)","concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","definition_ref":"fixtures.calendar-read@1.0.0","lifecycle":"ENABLED","package_sha256":"bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b","source":"fixture:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","definition_ref":"fixtures.calendar-read@1.0.0","lifecycle":"ENABLED","package_sha256":"bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b","source":"fixture:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","definition_ref":"fixtures.calendar-read@1.0.0","lifecycle":"ENABLED","package_sha256":"bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b","source":"fixture:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","definition_ref":"fixtures.calendar-read@1.0.0","lifecycle":"ENABLED","package_sha256":"bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b","source":"fixture:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"ENABLED","package_sha256":"c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112"},"error":null,"evidence_refs":["sha256:f89f57a6fd9d26d4307e07b6863db5dc17d4516e93da6efb55db40d1af35477c:<tmp>/pytest-604/test_n1_no_registry_change_is_2/data/receipts/2b392313f0a940b0abf0caaf4b1142ca.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"ENABLED","package_sha256":"c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112"},"error":null,"evidence_refs":["sha256:f89f57a6fd9d26d4307e07b6863db5dc17d4516e93da6efb55db40d1af35477c:<tmp>/pytest-604/test_n1_no_registry_change_is_2/data/receipts/2b392313f0a940b0abf0caaf4b1142ca.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA...e_dir_unsafe')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:165: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: assert 511 == 448
+     +  where 511 = <built-in function S_IMODE>(16895)
+     +    where <built-in function S_IMODE> = stat.S_IMODE
+     +    and   16895 = os.stat_result(st_mode=16895, st_ino=3606334, st_dev=46, st_nlink=3, st_uid=1000, st_gid=1000, st_size=60, st_atime=1794849968, st_mtime=1794849968, st_ctime=1794849968).st_mode
+     +      where os.stat_result(st_mode=16895, st_ino=3606334, st_dev=46, st_nlink=3, st_uid=1000, st_gid=1000, st_size=60, st_atime=1794849968, st_mtime=1794849968, st_ctime=1794849968) = stat()
+     +        where stat = (PosixPath('<tmp>/pytest-604/test_n13_everything_quati_crea0/data') / 'fixture_sources').stat
+     +          where PosixPath('<tmp>/pytest-604/test_n13_everything_quati_crea0/data') = <test_s00_fix7_public_surface.Profile object at 0x7d08b2ca54d0>.data
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:363: AssertionError: assert 511 == 448
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","definition_ref":"fixtures.calendar-read@1.0.0","lifecycle":"ENABLED","package_sha256":"bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b","source":"fixture:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","definition_ref":"fixtures.calendar-read@1.0.0","lifecycle":"ENABLED","package_sha256":"bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b","source":"fixture:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: {"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","definition_ref":"fixtures.calendar-read@1.0.0","lifecycle":"ENABLED","package_sha256":"bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b","source":"fixture:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","definition_ref":"fixtures.calendar-read@1.0.0","lifecycle":"ENABLED","package_sha256":"bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b","source":"fixture:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED'..._ERROR', None) == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 1 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"A local resource could not be read or saved.","retryable":false},"evidence_refs":[],"next_action":"Check local configuration and file permissions; no work was accepted.","status":"BLOCKED","uncertainties":[]}
+E   AssertionError: {"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"ENABLED","package_sha256":"c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112"},"error":null,"evidence_refs":["sha256:accdc063579403d5cbc6dc49cf5f9a0b67056089b495a0e26c73dd9b23e1b0b1:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab17/data/receipts/ffb0dd54840540a3924d1dd5c625436a.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"assurance":"C2","definition_ref":"fixtures.mail-search@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"ENABLED","package_sha256":"c009ca0b0781403d4e0d111ba996d5c115bb8b1d7f4f109074143bd619e47112"},"error":null,"evidence_refs":["sha256:accdc063579403d5cbc6dc49cf5f9a0b67056089b495a0e26c73dd9b23e1b0b1:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab17/data/receipts/ffb0dd54840540a3924d1dd5c625436a.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-2d35d5e38ff9494db4f285310edb9801","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"3b69a5c149234559b6f34e9f589db811","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:92fee8cb229f67cdece0e03687b6b28920c6da61cb3be9125e378f913b1219b3:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab18/data/receipts/1a14236d5fae432391de9e7d25ebc01e.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-2d35d5e38ff9494db4f285310edb9801","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"3b69a5c149234559b6f34e9f589db811","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:92fee8cb229f67cdece0e03687b6b28920c6da61cb3be9125e378f913b1219b3:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab18/data/receipts/1a14236d5fae432391de9e7d25ebc01e.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-8c992659e89343de951ff30cc5011fc9","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"9b7f8f489ba34257bcce0c31385ab6f7","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:295416dd2d59344a3cb3c93f5d65eb3778701b075e39610068f799f9ae2739ba:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab19/data/receipts/864c871e611244bc9ecd43ac22d9fce7.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-8c992659e89343de951ff30cc5011fc9","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"9b7f8f489ba34257bcce0c31385ab6f7","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:295416dd2d59344a3cb3c93f5d65eb3778701b075e39610068f799f9ae2739ba:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab19/data/receipts/864c871e611244bc9ecd43ac22d9fce7.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-a2b08c2e86be49728c2c7d68e2548596","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"2d792d0dd7c84fd8921a56fc155263c0","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:a7546155eee568b1d29fbbd33d73c580626c1d0c503dcc0f2f2c00c9d6ab4eff:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab20/data/receipts/9c798aaea64549da972f6c23336f02e1.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-a2b08c2e86be49728c2c7d68e2548596","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"2d792d0dd7c84fd8921a56fc155263c0","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:a7546155eee568b1d29fbbd33d73c580626c1d0c503dcc0f2f2c00c9d6ab4eff:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab20/data/receipts/9c798aaea64549da972f6c23336f02e1.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-62137636574646e2ab64fcf9896bf9a3","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"40b824b4e7c44b0a85bdf16fced72708","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:a8f6a94342062701e8ecc6e0a2b4032b34042600688d9df61a34e631d0fce6f6:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab21/data/receipts/0e9d86bfba4e43059a9355e5b95b58e1.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-62137636574646e2ab64fcf9896bf9a3","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"40b824b4e7c44b0a85bdf16fced72708","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:a8f6a94342062701e8ecc6e0a2b4032b34042600688d9df61a34e631d0fce6f6:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab21/data/receipts/0e9d86bfba4e43059a9355e5b95b58e1.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-e8bd831a8e2440ff9a260994a9810052","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"8bae938a211c4fc39f521d90a0b8f87d","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:f7375afadfe7fb5396ebe467504d4549dee09517ef5218eb6381f19dc4aebcc6:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab22/data/receipts/671f252abf0642bc91a8eeb1aebf7f33.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-e8bd831a8e2440ff9a260994a9810052","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"8bae938a211c4fc39f521d90a0b8f87d","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:f7375afadfe7fb5396ebe467504d4549dee09517ef5218eb6381f19dc4aebcc6:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab22/data/receipts/671f252abf0642bc91a8eeb1aebf7f33.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-2932e6c2038841048c7b6c5c21ab5be5","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"796b331d066a41e2a664fc4a9e9e9788","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:6721d15f9eac47ff970bfcdf32ed1d2bfda9d3ba2f4aa2181a860db29fc74925:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab23/data/receipts/d7acc961d5e3416dbfbbe35b44f27704.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-2932e6c2038841048c7b6c5c21ab5be5","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"796b331d066a41e2a664fc4a9e9e9788","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:6721d15f9eac47ff970bfcdf32ed1d2bfda9d3ba2f4aa2181a860db29fc74925:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab23/data/receipts/d7acc961d5e3416dbfbbe35b44f27704.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-9745cf31580e4752b6c96bd36c524528","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"e74186a3f1e543e78a75c4bac680c27a","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:9dada79e26e67a76c941123eb157cb9f22990f02811514cc552efb2c235095fd:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab24/data/receipts/8e8f03560c4342078c7ff713fa83c871.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-9745cf31580e4752b6c96bd36c524528","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"e74186a3f1e543e78a75c4bac680c27a","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:9dada79e26e67a76c941123eb157cb9f22990f02811514cc552efb2c235095fd:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab24/data/receipts/8e8f03560c4342078c7ff713fa83c871.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","fixture_results":[{"capability_id":"fixtures.calendar-read","capability_version":"1.0.0","execution_id":"execution-bb6196385b9346c3878ec6312f820d67","label":"FIXTURE_RESULT","outcome_verification":"VERIFIED","output":{"appointments":[{"end":"2026-11-17T15:00:00Z","location":"Room Atlas","start":"2026-11-17T14:00:00Z","title":"Quarterly planning meeting"}],"evidence_refs":["fixture-dataset:calendar-personal/v1"],"label":"FIXTURE_RESULT"}}],"launched":false,"outcome":"FIXTURE_RESULT","provider_used":true,"reason":null,"received":true,"request_id":"request-11240013554b407eb24ae08f5c92edc5","result_kind":"FIXTURE_RESULT","result_status":"FIXTURE_RESULT","scope":"S00_T04_ASK","text":"FIXTURE_RESULT from fixtures.calendar-read@1.0.0 (synthetic fixture data, not a real integration): {\"appointments\": [{\"end\": \"2026-11-17T15:00:00Z\", \"location\": \"Room Atlas\", \"start\": \"2026-11-17T14:00:00Z\", \"title\": \"Quarterly planning meeting\"}], \"evidence_refs\": [\"fixture-dataset:calendar-personal/v1\"], \"label\": \"FIXTURE_RESULT\"}","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":null,"handler_executed":false,"operation":"describe","reason":null,"status":"SUCCEEDED","step":2,"tool_name":"quati_describe"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":"execution-bb6196385b9346c3878ec6312f820d67","handler_executed":true,"operation":"invoke","reason":null,"status":"SUCCEEDED","step":3,"tool_name":"quati_invoke"}],"trace_id":"bc601f46296a48a9a8d2d06cc9281654","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":null,"evidence_refs":["sha256:3904ca7851e8933c34f32aca474d378c4c219b7b5ed20670c2b6df93c54cf798:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab25/data/receipts/1fa9a22fb2604d639da5ca5980d22641.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","fixture_results":[{"capability_id":"fixtures.calendar-read","capability_version":"1.0.0","execution_id":"execution-bb6196385b9346c3878ec6312f820d67","label":"FIXTURE_RESULT","outcome_verification":"VERIFIED","output":{"appointments":[{"end":"2026-11-17T15:00:00Z","location":"Room Atlas","start":"2026-11-17T14:00:00Z","title":"Quarterly planning meeting"}],"evidence_refs":["fixture-dataset:calendar-personal/v1"],"label":"FIXTURE_RESULT"}}],"launched":false,"outcome":"FIXTURE_RESULT","provider_used":true,"reason":null,"received":true,"request_id":"request-11240013554b407eb24ae08f5c92edc5","result_kind":"FIXTURE_RESULT","result_status":"FIXTURE_RESULT","scope":"S00_T04_ASK","text":"FIXTURE_RESULT from fixtures.calendar-read@1.0.0 (synthetic fixture data, not a real integration): {\"appointments\": [{\"end\": \"2026-11-17T15:00:00Z\", \"location\": \"Room Atlas\", \"start\": \"2026-11-17T14:00:00Z\", \"title\": \"Quarterly planning meeting\"}], \"evidence_refs\": [\"fixture-dataset:calendar-personal/v1\"], \"label\": \"FIXTURE_RESULT\"}","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":null,"handler_executed":false,"operation":"describe","reason":null,"status":"SUCCEEDED","step":2,"tool_name":"quati_describe"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":"execution-bb6196385b9346c3878ec6312f820d67","handler_executed":true,"operation":"invoke","reason":null,"status":"SUCCEEDED","step":3,"tool_name":"quati_invoke"}],"trace_id":"bc601f46296a48a9a8d2d06cc9281654","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":null,"evidence_refs":["sha256:3904ca7851e8933c34f32aca474d378c4c219b7b5ed20670c2b6df93c54cf798:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab25/data/receipts/1fa9a22fb2604d639da5ca5980d22641.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","fixture_results":[{"capability_id":"fixtures.calendar-read","capability_version":"1.0.0","execution_id":"execution-f81d0cd4cf324275a4768b39293ba466","label":"FIXTURE_RESULT","outcome_verification":"VERIFIED","output":{"appointments":[{"end":"2026-11-17T15:00:00Z","location":"Room Atlas","start":"2026-11-17T14:00:00Z","title":"Quarterly planning meeting"}],"evidence_refs":["fixture-dataset:calendar-personal/v1"],"label":"FIXTURE_RESULT"}}],"launched":false,"outcome":"FIXTURE_RESULT","provider_used":true,"reason":null,"received":true,"request_id":"request-f2b67388786a4543b93c22efb16f24e3","result_kind":"FIXTURE_RESULT","result_status":"FIXTURE_RESULT","scope":"S00_T04_ASK","text":"FIXTURE_RESULT from fixtures.calendar-read@1.0.0 (synthetic fixture data, not a real integration): {\"appointments\": [{\"end\": \"2026-11-17T15:00:00Z\", \"location\": \"Room Atlas\", \"start\": \"2026-11-17T14:00:00Z\", \"title\": \"Quarterly planning meeting\"}], \"evidence_refs\": [\"fixture-dataset:calendar-personal/v1\"], \"label\": \"FIXTURE_RESULT\"}","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":null,"handler_executed":false,"operation":"describe","reason":null,"status":"SUCCEEDED","step":2,"tool_name":"quati_describe"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":"execution-f81d0cd4cf324275a4768b39293ba466","handler_executed":true,"operation":"invoke","reason":null,"status":"SUCCEEDED","step":3,"tool_name":"quati_invoke"}],"trace_id":"942a5d4a46694508971dfda01332b224","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":null,"evidence_refs":["sha256:58ce632f7c66ee4e187572b8e90edd1afe88f3a706fa46ce122acec9142ccdff:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab26/data/receipts/54445c13a82f4307a50ee1235a56e1d1.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      
+    assert (0, 'SUCCEEDED', None, None) == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 0 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:403: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","fixture_results":[{"capability_id":"fixtures.calendar-read","capability_version":"1.0.0","execution_id":"execution-f81d0cd4cf324275a4768b39293ba466","label":"FIXTURE_RESULT","outcome_verification":"VERIFIED","output":{"appointments":[{"end":"2026-11-17T15:00:00Z","location":"Room Atlas","start":"2026-11-17T14:00:00Z","title":"Quarterly planning meeting"}],"evidence_refs":["fixture-dataset:calendar-personal/v1"],"label":"FIXTURE_RESULT"}}],"launched":false,"outcome":"FIXTURE_RESULT","provider_used":true,"reason":null,"received":true,"request_id":"request-f2b67388786a4543b93c22efb16f24e3","result_kind":"FIXTURE_RESULT","result_status":"FIXTURE_RESULT","scope":"S00_T04_ASK","text":"FIXTURE_RESULT from fixtures.calendar-read@1.0.0 (synthetic fixture data, not a real integration): {\"appointments\": [{\"end\": \"2026-11-17T15:00:00Z\", \"location\": \"Room Atlas\", \"start\": \"2026-11-17T14:00:00Z\", \"title\": \"Quarterly planning meeting\"}], \"evidence_refs\": [\"fixture-dataset:calendar-personal/v1\"], \"label\": \"FIXTURE_RESULT\"}","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":null,"status":"SUCCEEDED","step":1,"tool_name":"quati_search"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":null,"handler_executed":false,"operation":"describe","reason":null,"status":"SUCCEEDED","step":2,"tool_name":"quati_describe"},{"capability_ref":"fixtures.calendar-read@1.0.0","execution_id":"execution-f81d0cd4cf324275a4768b39293ba466","handler_executed":true,"operation":"invoke","reason":null,"status":"SUCCEEDED","step":3,"tool_name":"quati_invoke"}],"trace_id":"942a5d4a46694508971dfda01332b224","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":null,"evidence_refs":["sha256:58ce632f7c66ee4e187572b8e90edd1afe88f3a706fa46ce122acec9142ccdff:<tmp>/pytest-604/test_n13_an_unsafe_or_unreadab26/data/receipts/54445c13a82f4307a50ee1235a56e1d1.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:420: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:420: AssertionError: {"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+E   AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-417ceef6946e456dbc8cd58d4589cd09","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"ba30aefcb1df42fc9801c7440ad7d707","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:d4e650152689c7f6fb82c3be460793ed14f0132068ee4e05a4bdfc41b696bab5:<tmp>/pytest-604/test_n13_an_audit_log_that_is_2/data/receipts/baa62756b0b94f6186650431fcfd356a.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+      
+    assert (5, 'UNAVAILA..._unavailable') == (4, 'UNAVAILA..._unavailable')
+      
+      At index 0 diff: 5 != 4
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:420: AssertionError: {"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received":true,"request_id":"request-417ceef6946e456dbc8cd58d4589cd09","result_kind":"BLOCKED","result_status":null,"scope":"S00_T04_ASK","tool_calls":[{"capability_ref":null,"execution_id":null,"handler_executed":false,"operation":"search","reason":"audit_unavailable","status":"UNAVAILABLE","step":1,"tool_name":"quati_search"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"describe","reason":"audit_unavailable","status":"UNAVAILABLE","step":2,"tool_name":"quati_describe"},{"capability_ref":"sha256:ff06ac39d4f058707273567e3da336bf48828448bd524d438b63b1719f4322ee","execution_id":null,"handler_executed":false,"operation":"invoke","reason":"audit_unavailable","status":"UNAVAILABLE","step":3,"tool_name":"quati_invoke"}],"trace_id":"ba30aefcb1df42fc9801c7440ad7d707","usage":{"cost_usd":null,"input_tokens":null,"model_requests":5,"output_tokens":null}},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"The requested capability was not executed.","retryable":true},"evidence_refs":["sha256:d4e650152689c7f6fb82c3be460793ed14f0132068ee4e05a4bdfc41b696bab5:<tmp>/pytest-604/test_n13_an_audit_log_that_is_2/data/receipts/baa62756b0b94f6186650431fcfd356a.json"],"next_action":"No capability result was produced; no work was accepted.","status":"UNAVAILABLE","uncertainties":["audit_unavailable"]}
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"An unexpected internal error occurred.","retryable":false},"evidence_refs":[],"next_action":"Retry; if it persists, report the error class shown on stderr.","status":"BLOCKED","uncertainties":[]}
+      
+    assert (1, 'BLOCKED') == (0, 'SUCCEEDED')
+      
+      At index 0 diff: 1 != 0
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:497: AssertionError: {"data":null,"error":{"code":"INTERNAL_ERROR","message":"An unexpected internal error occurred.","retryable":false},"evidence_refs":[],"next_action":"Retry; if it persists, report the error class shown on stderr.","status":"BLOCKED","uncertainties":[]}
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:498: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:526: KeyError: 'reason'
+E   KeyError: 'reason'
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:526: KeyError: 'reason'
+E   AssertionError: assert ('PROBED', 'SUPPORTED') == ('NOT_PROBED', 'NOT_VERIFIED')
+      
+      At index 0 diff: 'PROBED' != 'NOT_PROBED'
+      Use -v to get more diff
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:602: AssertionError: assert ('PROBED', 'SUPPORTED') == ('NOT_PROBED', 'NOT_VERIFIED')
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+      
+    assert ((2, 'DENIED', 'INVALID_INPUT') == (4, 'UNAVAILA...'UNSUPPORTED')
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff)
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:734: AssertionError: {"data":null,"error":{"code":"INVALID_INPUT","message":"Invalid CLI arguments; use --help for syntax.","retryable":false},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}
+E   AssertionError: server
+    assert ' server ' in '                                                                                \n Usage: python -m quati [OPTIONS] C...2).                            │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\n'
+     +  where '                                                                                \n Usage: python -m quati [OPTIONS] C...2).                            │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\n' = <test_s00_fix7_public_surface.Run object at 0x7d08b2b0a0b0>.out
+<repo>/tests/integration/cli/test_s00_fix7_public_surface.py:745: AssertionError: server
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else[symlink]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else[dangling_symlink]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else[group_writable]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else[world_readable]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_a_registry_write_with_the_typed_reason[symlink]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_a_registry_write_with_the_typed_reason[group_writable]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f9_ask_and_doctor_name_the_invalid_statechart_path[guard: authorized_request, action: commit_receipt-guard: always, action: commit_receipt-expected0]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f9_ask_and_doctor_name_the_invalid_statechart_path[guard: safe_to_begin, action: start_work-guard: allow_anything, action: shell_exec-expected1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_registry_store_refuses_an_unsafe_audit_log_for_reads_and_appends
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_refusals_and_exit_codes_follow_the_m01_table
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n1_registry_store_verifies_its_directory_chain_before_every_operation
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n15_a_corrupted_audit_log_refuses_reads_and_appends_alike
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n1_receipt_writer_verifies_the_data_directory_chain_by_itself
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n7_feature_report_store_uses_only_a_private_real_directory
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n1_private_tree_tightens_a_tree_and_refuses_what_it_cannot_make_private
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n7_probe_authenticates_checks_storage_and_is_authorized_before_the_provider_call[probe]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n7_probe_authenticates_checks_storage_and_is_authorized_before_the_provider_call[doctor]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n7_a_probe_whose_result_cannot_be_stored_says_so_and_is_not_an_internal_error[sink-stored0]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n7_a_probe_whose_result_cannot_be_stored_says_so_and_is_not_an_internal_error[save-stored1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n1_failure_mapping_names_the_unsafe_component_and_a_missing_receipt_truthfully
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n1_a_receipt_that_cannot_be_written_after_a_change_is_reported_truthfully
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n10_identity_state_classifies_a_present_but_rejected_credential
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_n10_doctor_and_config_validate_report_the_identity_cause_from_the_inspector
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_an_authorized_probe_logs_its_decision_before_the_provider_call[argv0]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_an_authorized_probe_logs_its_decision_before_the_provider_call[argv1]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_principal_that_may_not_manage_the_registry_cannot_probe[argv0-MEMBER-ROLE_INSUFFICIENT]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_principal_that_may_not_manage_the_registry_cannot_probe[argv0-GUEST-NO_SPACE_GRANT]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_principal_that_may_not_manage_the_registry_cannot_probe[argv0-guest-NO_SPACE_GRANT]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_principal_that_may_not_manage_the_registry_cannot_probe[argv1-MEMBER-ROLE_INSUFFICIENT]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_principal_that_may_not_manage_the_registry_cannot_probe[argv1-GUEST-NO_SPACE_GRANT]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_principal_that_may_not_manage_the_registry_cannot_probe[argv1-guest-NO_SPACE_GRANT]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_symlink]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-receipts_symlink]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-feature_reports_symlink]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_foreign_path]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-receipts_foreign_inode]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-feature_reports_file]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv1-data_symlink]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv1-receipts_symlink]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv1-feature_reports_symlink]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv1-data_foreign_path]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv1-receipts_foreign_inode]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv1-feature_reports_file]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[list]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[install]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[disable]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[greeting]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[ask]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_data_directory_of_another_user_is_refused_and_nothing_is_committed[list-foreign_paths]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_data_directory_of_another_user_is_refused_and_nothing_is_committed[list-foreign_inodes]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_data_directory_of_another_user_is_refused_and_nothing_is_committed[install-foreign_paths]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_data_directory_of_another_user_is_refused_and_nothing_is_committed[install-foreign_inodes]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_data_directory_of_another_user_is_refused_and_nothing_is_committed[disable-foreign_paths]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_data_directory_of_another_user_is_refused_and_nothing_is_committed[disable-foreign_inodes]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_data_directory_of_another_user_is_refused_and_nothing_is_committed[greeting-foreign_paths]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_data_directory_of_another_user_is_refused_and_nothing_is_committed[greeting-foreign_inodes]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_data_directory_of_another_user_is_refused_and_nothing_is_committed[ask-foreign_paths]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_data_directory_of_another_user_is_refused_and_nothing_is_committed[ask-foreign_inodes]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_no_registry_change_is_committed_when_a_directory_it_needs_is_unusable[install-capabilities]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_no_registry_change_is_committed_when_a_directory_it_needs_is_unusable[install-receipts]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_no_registry_change_is_committed_when_a_directory_it_needs_is_unusable[install-fixture_sources]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_no_registry_change_is_committed_when_a_directory_it_needs_is_unusable[disable-capabilities]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_no_registry_change_is_committed_when_a_directory_it_needs_is_unusable[disable-receipts]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_init_refuses_an_unusable_data_directory_before_creating_an_identity
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_everything_quati_creates_under_a_zero_umask_is_owner_only
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-hard_link]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-directory]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-mode_644]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-mode_640]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-mode_604]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-mode_000]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-corrupt_line]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[list-not_an_object]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[install-hard_link]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[install-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[install-directory]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[install-mode_644]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[install-mode_640]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[install-mode_604]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[install-mode_000]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[install-corrupt_line]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[install-not_an_object]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[ask-hard_link]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[ask-foreign_owner]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[ask-directory]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[ask-mode_644]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[ask-mode_640]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[ask-mode_604]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[ask-mode_000]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[ask-corrupt_line]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_unsafe_or_unreadable_audit_log_refuses_reads_and_writes_alike[ask-not_an_object]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_audit_log_that_is_a_fifo_with_a_reader_receives_nothing[list]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_audit_log_that_is_a_fifo_with_a_reader_receives_nothing[install]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_audit_log_that_is_a_fifo_with_a_reader_receives_nothing[ask]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[record_mode]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[key_mode]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[directory_mode]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[record_symlink]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[directory_symlink]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[record_foreign_owner]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[record_corrupt]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[record_not_an_object]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[bad_signature]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[field_missing]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[field_wrong_type]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[key_missing]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[record_missing]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_an_absent_identity_stays_not_configured_with_the_init_route[nothing]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_an_absent_identity_stays_not_configured_with_the_init_route[empty_directory]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_the_doctor_report_is_measured_through_the_public_entry
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[server]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[server --port 8080]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[login]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[grants list space-1]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[spaces describe space-1]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[policy apply policy.json]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[policy apply policy.json --adopt]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[policy edit policy.json]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[approvals revoke apr-1]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[prefs show]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[prefs set tone brief]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[prefs expire tone]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[prefs history]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[prefs rollback 2]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[artifact register chart.json]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[artifact show art-1]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[artifact revise art-1 --change-file change.json]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[artifact history art-1]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[memory search --query-file query.json]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[brains reindex provider-1]
+FAILED tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_help_lists_the_commands_of_later_slices
+132 failed, 63 passed in 69.39s (0:01:09)

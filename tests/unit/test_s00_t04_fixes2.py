@@ -94,34 +94,38 @@ def test_r1_at_most_one_continuation_per_ask(tmp_path, monkeypatch):
 # Fix round 3 P1-C (root decision, recorded change): the texts below are not social vocabulary only, so a
 # CONVERSATION now also needs the model to keep making zero tool calls after the one NO_SEARCH_ON_WORK
 # continuation. Each script gained that first tool-free reply, and the request count moved from 2 to 3.
-def test_r2_social_classification_and_tool_free_loop_is_a_conversation(tmp_path, monkeypatch):
+# Fix round 7 (LOG-0041 D2 and N17; S00_RUNTIME_CONTRACT "Displayed text and social outcomes" rule 3): the
+# three tests below changed expectation and were renamed. Old: a social label on a text that opens with a
+# greeting ended CONVERSATION / SUCCEEDED exit 0 with the greeting template (and an empty model reply was
+# BLOCKED EMPTY_SOCIAL_REPLY). New: the text is not social-only by the table, so the label ends BLOCKED /
+# EVIDENCE_INSUFFICIENT / NO_VERIFIED_EXECUTION exit 4; the model text is never displayed and its content,
+# empty or not, changes nothing.
+def test_r2_social_classification_and_tool_free_loop_is_blocked_not_a_conversation(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("Hi!"),
                     final("  Hello,   thanks for asking!\n How can I help? "))
     code, value = harness.ask("Hey there! Hope your day is going well.")
     data = value["data"]
-    assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "CONVERSATION")
-    # Fix round 6 (audit F3; S00_RUNTIME_CONTRACT "Independent-review fail-closed refinement"; LOG-0039):
-    # was the model's text ("Hello, thanks for asking! How can I help?"); now the application-owned template.
-    assert data["text"] == "Hello!" and "thanks for asking" not in json.dumps(value)
-    assert data["text_source"] == "application_template"
-    assert value["uncertainties"] == ["MODEL_SOCIAL_REPLY"] and value["error"] is None
+    assert (code, value["status"], data["result_kind"]) == (4, "BLOCKED", "BLOCKED")
+    assert (value["error"]["code"], data["reason"]) == ("EVIDENCE_INSUFFICIENT", "NO_VERIFIED_EXECUTION")
+    assert "text" not in data and "text_source" not in data and "thanks for asking" not in json.dumps(value)
+    assert value["uncertainties"] == ["NO_VERIFIED_EXECUTION"]
+    assert value["next_action"] == ask_module.MODEL_ANSWER_NEXT_ACTION
     assert (data["commitment_id"], data["delivered"], data["tool_calls"]) == (None, False, [])
     assert len(model_requests(harness)) == 3                                   # P1-C: one continuation (was 2)
     assert receipt_of(value)["continuations"] == [{"after_step": 0, "reason": "NO_SEARCH_ON_WORK"}]
     assert harness.handlers.total_invocations() == 0
-    assert receipt_of(value)["outcome"]["result_kind"] == "CONVERSATION"
+    assert receipt_of(value)["outcome"]["result_kind"] == "BLOCKED"
 
 
-def test_r2_conversation_text_is_bounded_and_empty_text_is_typed(tmp_path, monkeypatch):
+def test_r2_model_text_is_never_displayed_and_an_empty_reply_is_not_a_failure_mode(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("Hi!"), final("word " * 200))
     code, value = harness.ask("Good morning! Urgent: just wanted to say hi.")
-    # Fix round 6 (audit F3; LOG-0039): was len(text) == 280 (the model's text cut to 280 characters); the
-    # model's text is no longer displayed at all, so there is nothing to bound: the template is the text.
-    assert value["data"]["result_kind"] == "CONVERSATION" and value["data"]["text"] == "Hello!"
-    assert "word word" not in json.dumps(value)
+    assert (code, value["data"]["result_kind"], value["data"]["reason"]) == (4, "BLOCKED", "NO_VERIFIED_EXECUTION")
+    assert "text" not in value["data"] and "word word" not in json.dumps(value)
     empty = ready(tmp_path / "e", monkeypatch, classified(SOCIAL), final("Hi!"), final("   "))
     code, value = empty.ask("Good morning! Urgent: just wanted to say hi.")
-    assert (value["status"], value["data"]["reason"]) == ("BLOCKED", "EMPTY_SOCIAL_REPLY")
+    assert (code, value["status"], value["error"]["code"], value["data"]["reason"]) == (
+        4, "BLOCKED", "EVIDENCE_INSUFFICIENT", "NO_VERIFIED_EXECUTION")
 
 
 def test_r2_both_signals_must_agree(tmp_path, monkeypatch):
@@ -135,9 +139,9 @@ def test_r2_both_signals_must_agree(tmp_path, monkeypatch):
     assert (value["status"], value["data"]["result_kind"]) == ("BLOCKED", "BLOCKED") and code == 4
 
 
-def test_r2_result_kinds_document_conversation():
-    assert "CONVERSATION" in ask_module.RESULT_KINDS
-    assert "``CONVERSATION``" in ask_module.__doc__
+def test_r2_result_kinds_have_no_conversation():
+    assert "CONVERSATION" not in ask_module.RESULT_KINDS
+    assert "CONVERSATION" not in ask_module.__doc__
 
 
 # --------------------------------------------------------------- R3 probe verdicts

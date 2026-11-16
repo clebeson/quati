@@ -1,0 +1,32 @@
+# Planned live command lines for the gate requalification (NOT executed by this agent; --estimate-only output below makes no provider call)
+
+## .venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --heldout --workers 4 --label gate7 --confirm-spend
+  BEH              probed profiles  13  asks with model  13  typical calls   94  ceiling  146
+  CAP-01           probed profiles  30  asks with model  30  typical calls  240  ceiling  330
+  CAP-01-HELDOUT   probed profiles  30  asks with model  30  typical calls  240  ceiling  330
+  CAP-02           probed profiles  30  asks with model  30  typical calls  240  ceiling  330
+  CAP-02-HELDOUT   probed profiles  30  asks with model  30  typical calls  240  ceiling  330
+  CAP-03           probed profiles   1  asks with model   1  typical calls    7  ceiling   11
+  CAP-05           probed profiles   0  asks with model   0  typical calls    0  ceiling    0
+  DOCTOR           probed profiles   1  asks with model   0  typical calls    3  ceiling    3
+  SOC-01           probed profiles  70  asks with model  62  typical calls  374  ceiling  706
+  WRITE-01         probed profiles  10  asks with model  10  typical calls   70  ceiling  110
+  TOTAL typical 1508 ceiling 2296 about US$ 0.597 (haiku rate; the sonnet judge of BEH is priced higher)
+
+## .venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --cases DOCTOR CAP-01 CAP-02 CAP-03 CAP-05 SOC-01 WRITE-01 --workers 4 --label gate7 --confirm-spend
+  CAP-01           probed profiles  30  asks with model  30  typical calls  240  ceiling  330
+  CAP-02           probed profiles  30  asks with model  30  typical calls  240  ceiling  330
+  CAP-03           probed profiles   1  asks with model   1  typical calls    7  ceiling   11
+  CAP-05           probed profiles   0  asks with model   0  typical calls    0  ceiling    0
+  DOCTOR           probed profiles   1  asks with model   0  typical calls    3  ceiling    3
+  SOC-01           probed profiles  70  asks with model  62  typical calls  374  ceiling  706
+  WRITE-01         probed profiles  10  asks with model  10  typical calls   70  ceiling  110
+  TOTAL typical 934 ceiling 1490 about US$ 0.37 (haiku rate; the sonnet judge of BEH is priced higher)
+
+## .venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --cases DOCTOR CAP-05 SOC-01 WRITE-01 --runs 1 --soc-runs 2 --write-runs 1 --workers 4 --label pilot7
+  CAP-05           probed profiles   0  asks with model   0  typical calls    0  ceiling    0
+  DOCTOR           probed profiles   1  asks with model   0  typical calls    3  ceiling    3
+  SOC-01           probed profiles  22  asks with model  14  typical calls  102  ceiling  178
+  WRITE-01         probed profiles   2  asks with model   2  typical calls   14  ceiling   22
+  TOTAL typical 119 ceiling 203 about US$ 0.047 (haiku rate; the sonnet judge of BEH is priced higher)
+

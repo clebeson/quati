@@ -124,7 +124,8 @@ def build(root: Path, *, clock: FakeClock | None = None, ids: SeededIds | None =
     registry = RegistryService(store, handlers, clock=clock, ids=ids)
     grant_port = StaticGrants(frozenset(grants))
     state = trusted_policy_state() if policy_state is None else policy_state
-    gate = LocalPolicyGate(lambda: state, clock=clock, ids=ids, runtime_profile="S00")
+    gate = LocalPolicyGate(lambda: state, clock=clock, ids=ids, directory=SyntheticDirectory(),
+                           runtime_profile="S00")      # fix round 7 (N17): the gate reads the role from the directory
     discovery = DiscoveryService(registry, Fts5CapabilityIndex(), handlers, policy_gate=gate, grants=grant_port,
                                  clock=clock, ids=ids, audit=audit,
                                  authorization=ScopeAuthorization(SyntheticDirectory(), clock))

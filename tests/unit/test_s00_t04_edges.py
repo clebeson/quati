@@ -28,19 +28,18 @@ def ready(tmp_path, monkeypatch, *items):
     return harness
 
 
-def test_social_text_without_an_opening_greeting_gets_no_english_default(tmp_path, monkeypatch):
-    """S00-T04 fix round P1-1 (replaces the earlier "defaults to English" expectation): with no template the
-    reply is never a fixed "Hello!".
-
-    Fix round 6 (audit F3; S00_RUNTIME_CONTRACT "Independent-review fail-closed refinement"; LOG-0039):
-    the expectation changed from the tool-free model reply ("I am well, thank you.") to the
-    application-owned no-action notice; no model-written text is displayed in S00."""
+def test_social_text_without_an_opening_greeting_gets_the_template_of_its_language(tmp_path, monkeypatch):
+    """Fix round 7 (LOG-0041 D1; S00_RUNTIME_CONTRACT "Displayed text and social outcomes", reply language):
+    a social-only text without a greeting gets the template of the language of its first phrase, with no
+    model call. Old (round 6): the application-owned no-action notice after one classification request, and
+    never "Hello!". New: the English pleasantry gets the English template, the German one the German
+    template; no model-written text is displayed, as before."""
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("I am well, thank you."))
     code, value = harness.ask("How are you doing today?")
-    assert (code, value["data"]["text"], value["data"]["result_kind"]) == (
-        0, ask_module.NO_ACTION_NOTICES["en"], "GREETING")
-    assert "I am well" not in json.dumps(value) and value["data"]["text"] != "Hello!"
-    assert ask_module.social_reply("How are you doing today?", {"hi": "Hello!"}) is None   # no greeting opens it
+    assert (code, value["data"]["text"], value["data"]["result_kind"]) == (0, "Hello!", "GREETING")
+    assert "I am well" not in json.dumps(value) and len(harness.script.items) == 2     # the model was not asked
+    code, value = harness.ask("Wie geht es dir?")
+    assert (code, value["data"]["text"]) == (0, "Hallo!")                              # never an English default
 
 
 def test_model_request_budget_counts_classification_repairs(tmp_path, monkeypatch):

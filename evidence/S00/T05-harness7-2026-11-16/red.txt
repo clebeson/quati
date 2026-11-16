@@ -1,0 +1,42 @@
+
+==================================== ERRORS ====================================
+____________ ERROR collecting tests/unit/test_eval_harness_soc01.py ____________
+ImportError while importing test module 'tests/unit/test_eval_harness_soc01.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_eval_harness_soc01.py:22: in <module>
+    import gate_harness as g  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'gate_harness'
+=========================== short test summary info ============================
+ERROR tests/unit/test_eval_harness_soc01.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.15s
+
+## Same new tests, grader file alone, against the harness at git HEAD (5225cb2)
+E       AttributeError: module 'live_harness' has no attribute 'apply_validity'
+E       AttributeError: module 'live_harness' has no attribute 'infra_error'
+E       AttributeError: module 'live_harness' has no attribute 'apply_validity'
+E           AttributeError: module 'live_harness' has no attribute 'setup_violations'
+E       AttributeError: module 'live_harness' has no attribute 'setup_violations'
+E       AttributeError: module 'live_harness' has no attribute 'setup_violations'
+E       AttributeError: module 'live_harness' has no attribute 'apply_validity'
+E       AttributeError: module 'live_harness' has no attribute 'trace_explain'
+E       AttributeError: module 'live_harness' has no attribute 'trace_explain'
+E       AttributeError: module 'live_harness' has no attribute 'apply_validity'
+E       AttributeError: <module 'live_harness' from 'tests/evals/live_harness.py'> has no attribute 'REDACTIONS'
+FAILED tests/unit/test_eval_harness_grader.py::test_outage_response_passes_a_behavior_case_vacuously_but_is_an_infra_error
+FAILED tests/unit/test_eval_harness_grader.py::test_infra_error_is_only_the_outage_codes
+FAILED tests/unit/test_eval_harness_grader.py::test_valid_run_keeps_its_grade_and_a_pass_is_counted
+FAILED tests/unit/test_eval_harness_grader.py::test_unexpected_write_distractor_install_is_invalid_setup_and_fails_the_case
+FAILED tests/unit/test_eval_harness_grader.py::test_failed_read_install_init_or_probe_is_a_setup_violation
+FAILED tests/unit/test_eval_harness_grader.py::test_staged_write_option_has_its_own_expected_setup_result
+FAILED tests/unit/test_eval_harness_grader.py::test_unparseable_stdout_is_never_a_pass
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_unsupported_is_a_failed_check_not_a_skip
+FAILED tests/unit/test_eval_harness_grader.py::test_trace_explain_must_name_the_selected_capability
+FAILED tests/unit/test_eval_harness_grader.py::test_failed_trace_observation_fails_the_case_without_changing_the_selection_grade
+FAILED tests/unit/test_eval_harness_grader.py::test_evidence_writer_replaces_local_directories
+11 failed, 9 passed in 0.06s

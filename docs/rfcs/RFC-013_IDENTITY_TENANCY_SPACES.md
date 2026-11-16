@@ -306,6 +306,12 @@ are normative for S00 and are repeated in `docs/prds/M02.md` "S00 decisions".
 - **Denial.** `DENIED` / `FORBIDDEN` with the reason code, exit 4; the LOCAL `next_action` names
   `quati spaces describe <space-id>` and states that the command is delivered in S02. The response
   is the same for an existing space, a forged space and no space.
+- **Policy role (LOG-0041 N17).** For effects (`invoke`), the policy gate (PolicyPort) takes the principal's tenant role from the same identity directory at every decision; it never assumes OWNER.
+  A HUMAN principal without a membership, a directory that cannot be read and every non-HUMAN principal have no tenant role.
+  Section 6 is a conjunction: a principal that passes the AuthorizationPort still needs the policy `ALLOW`.
+  The LOCAL default policy (RFC-014 §5.1) allows `none` and `read` effects to the tenant role OWNER only,
+  so an `invoke` by an ADMIN or MEMBER is `DENY` `default_deny` (DENIED / `FORBIDDEN`, `policy.decided` logged, no handler call)
+  until the policy names that role; a GUEST is denied earlier by the AuthorizationPort (`NO_SPACE_GRANT`).
 - **IDN-01.** "Repository" is the data directory; reading the credential is authentication itself.
   S00 has no structured request body: a forged `actor_id` arrives as `ask` text or a `chat` line.
   A receipt names the principal by `principal_hash` only.

@@ -48,8 +48,10 @@ def _config_dir(root: Path) -> Path:
 def _wired(root: Path, *, audit=None, profile: str = "S00", config: Path | None = None):
     harness = build(root)
     config = _config_dir(root) if config is None else config
+    # Fix round 7 (N17, setup only): the gate reads the tenant role from the directory (the harness's).
     gate = LocalPolicyGate.from_config_dir(config, tenant_id=TENANT, installation_uid=os.getuid(),
-                                           clock=harness.clock, ids=harness.ids, runtime_profile=profile)
+                                           clock=harness.clock, ids=harness.ids,
+                                           directory=harness.gate.directory, runtime_profile=profile)
     log: list[str] = []
     sink = audit or (lambda event: log.append(event["event"]))
     discovery = DiscoveryService(harness.registry, Fts5CapabilityIndex(), harness.handlers, policy_gate=gate,

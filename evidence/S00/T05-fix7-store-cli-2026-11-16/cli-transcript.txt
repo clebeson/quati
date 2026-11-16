@@ -1,0 +1,76 @@
+# CLI transcript, S00 fix round 7 (N1, N7, N10, N15). Scripted fake transport only; no provider, no network.
+# Paths under the temporary profile are shown as <profile>.
+$ quati init --json
+{"data":{"initialized":true,"policy":{"action":"INSTALLED","policy_version":"ea9607d0b74aa3a120bb585b425901df8fa5fa27bde5f7f88482b6a1ec1178c4","reason":null,"re
+exit=0
+$ quati capabilities install-fixture calendar-read --enable-fixture --json
+{"data":{"assurance":"C2","definition_ref":"fixtures.calendar-read@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"ENAB
+exit=0
+$ [runner scenario={}] quati models probe --json
+{"data":{"feature_report":{"aborted":null,"attempts":{"concurrency":1,"streaming":1,"structured_output":1,"timeout":1,"tools":1},"config_hash":"22821ead7686e3336196f4c3f975b18c319d45e4de661ec19c46ad10
+exit=0 spy=1 probe/handler lines
+
+## N1: data directory reported as owned by another uid (runner4 technique) -> nothing committed
+$ [runner scenario={"foreign_paths": ["<profile>/data"]}] quati capabilities list --json
+{"data":{"component":"data_dir","reason":"state_dir_unsafe"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"A Quati data directory is not a private directory of this user; nothing was read or changed.","retryable":false},"evidence_refs":[],"next_action":"Make the data directory and the Quati directories under it real directories owned by you (no symlink, mode 0700), then retry.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4 spy=0 probe/handler lines
+$ [runner scenario={"foreign_paths": ["<profile>/data"]}] quati capabilities install-fixture mail-search --enable-fixture --json
+{"data":{"component":"data_dir","reason":"state_dir_unsafe"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"A Quati data directory is not a private directory of this user; nothing was read or changed.","retryable":false},"evidence_refs":[],"next_action":"Make the data directory and the Quati directories under it real directories owned by you (no symlink, mode 0700), then retry.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4 spy=0 probe/handler lines
+$ [runner scenario={"foreign_paths": ["<profile>/data"]}] quati capabilities disable fixtures.calendar-read@1.0.0 --json
+{"data":{"component":"data_dir","reason":"state_dir_unsafe"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"A Quati data directory is not a private directory of this user; nothing was read or changed.","retryable":false},"evidence_refs":[],"next_action":"Make the data directory and the Quati directories under it real directories owned by you (no symlink, mode 0700), then retry.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4 spy=0 probe/handler lines
+$ [runner scenario={"foreign_paths": ["<profile>/data"]}] quati models probe --json
+{"data":{"component":"data_dir","reason":"state_dir_unsafe"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"A Quati data directory is not a private directory of this user; nothing was read or changed.","retryable":false},"evidence_refs":[],"next_action":"Make the data directory and the Quati directories under it real directories owned by you (no symlink, mode 0700), then retry.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4 spy=0 probe/handler lines
+$ quati capabilities list --json
+{"data":{"capabilities":[{"assurance":"C2","capability_id":"fixtures.calendar-read","capability_version":"1.0.0","definition_ref":"fixtures.calendar-read@1.0.0","lifecycle":"ENABLED","package_sha256":"bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b","source":"fixture:calendar-read"}]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+exit=0
+
+## N7: symlinked receipts and feature_reports directories refuse a probe before the provider call
+$ [runner scenario={}] quati models probe --json
+{"data":{"component":"receipts","reason":"state_dir_unsafe"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"A Quati data directory is not a private directory of this user; nothing was read or changed.","retryable":false},"evidence_refs":[],"next_action":"Make the data directory and the Quati directories under it real directories owned by you (no symlink, mode 0700), then retry.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4 spy=0 probe/handler lines
+$ [runner scenario={}] quati doctor --probe --json
+{"data":{"component":"feature_reports","reason":"state_dir_unsafe"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"A Quati data directory is not a private directory of this user; nothing was read or changed.","retryable":false},"evidence_refs":[],"next_action":"Make the data directory and the Quati directories under it real directories owned by you (no symlink, mode 0700), then retry.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4 spy=0 probe/handler lines
+files in the symlink target before/after: 1/1
+
+## N15: corrupted audit line -> reads and writes refuse alike, exit 4
+$ quati capabilities list --json
+{"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4
+$ quati capabilities install-fixture mail-search --enable-fixture --json
+{"data":{"reason":"audit_unavailable"},"error":{"code":"TEMPORARILY_UNAVAILABLE","message":"audit_unavailable","retryable":true},"evidence_refs":[],"next_action":"The capability is not available; nothing was changed.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4
+$ [runner scenario={"script": [["classify"], ["search", "next appointment calendar"], ["describe", "fixtures.calendar-read"], ["invoke", "fixtures.calendar-read", {"limit": 1}], ["final", "done"]]}] quati ask Find my next appointment --json
+{"data":{"classification":{"complexity":"short","intent":"context_lookup","next_action":"search_context","risk":"low","safe_work_allowed":true,"uncertainty":"low","work_needed":true},"classification_sha256":"1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3","commitment_id":null,"delivered":false,"feature_support":"SUPPORTED","launched":false,"provider_used":true,"reason":"audit_unavailable","received"
+exit=4 spy=0 probe/handler lines
+
+## N15: commands named by the specification
+$ quati server --json
+{"data":null,"error":{"code":"UNSUPPORTED","message":"The server command is delivered in slice S05 and is not available yet.","retryable":false},"evidence_refs":[],"next_action":"No work was read or changed; this command becomes available in slice S05.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4
+$ quati spaces describe space-1 --json
+{"data":null,"error":{"code":"UNSUPPORTED","message":"The spaces describe command is delivered in slice S02 and is not available yet.","retryable":false},"evidence_refs":[],"next_action":"No work was read or changed; this command becomes available in slice S02.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4
+$ quati policy apply policy.json --json
+{"data":null,"error":{"code":"UNSUPPORTED","message":"The policy apply command is delivered in slice S02 and is not available yet.","retryable":false},"evidence_refs":[],"next_action":"No work was read or changed; this command becomes available in slice S02.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4
+$ quati trace export t --out f --json
+{"data":null,"error":{"code":"UNSUPPORTED","message":"The trace export command is delivered in slice S02 and is not available yet.","retryable":false},"evidence_refs":[],"next_action":"No work was read or changed; this command becomes available in slice S02.","status":"UNAVAILABLE","uncertainties":[]}
+exit=4
+
+## N10: identity.json with mode 0644 (fresh profile)
+$ quati doctor --json   (fields identity, warnings, config_valid and next_action of the Response)
+{"config_dir": null, "config_valid": false, "identity": {"authenticator": "local-os", "detail": "identity_file_mode", "initialized": false, "qualification": "POSIX_LOCAL_ONLY", "reason": "credential_insecure", "secret_store": "owner_only_file", "status": "INVALID"}, "next_action": "Make the Quati configuration directory (mode 0700) and its credential files (mode 0600) real paths owned by you, not symlinks, then run `quati doctor` again; nothing was changed.", "warnings": ["identity_invalid:credential_insecure", "config_mode_too_open", "policy_unavailable:identity_unavailable", "provider_not_configured"]}
+exit=0
+$ quati config validate --json
+{"data":{"checks":[{"name":"identity","reasons":["credential_insecure","identity_file_mode"],"status":"INVALID"},{"name":"policy","reasons":["identity_unavailable"],"status":"NOT_CONFIGURED"},{"name":"provider","reasons":["API_KEY_MISSING","LIVE_NOT_ALLOWED"],"status":"NOT_CONFIGURED"},{"name":"behavior","reasons":[],"status":"OK"}],"config_dir":null,"valid":false},"error":{"code":"CONFIG_INVALID","message":"The local configuration is present but invalid.","retryable":false},"evidence_refs":[],"next_action":"Correct the checks reported INVALID in data.checks; nothing was changed. Run `quati doctor` for the identity cause.","status":"DENIED","uncertainties":["identity: INVALID (credential_insecure, identity_file_mode)","policy: NOT_CONFIGURED","provider: NOT_CONFIGURED"]}
+exit=2
+$ quati ask hello --json
+{"data":null,"error":{"code":"UNAUTHENTICATED","message":"Local identity or authorization could not be verified.","retryable":false},"evidence_refs":[],"next_action":"Run quati init or repair the owner-only local credential.","status":"DENIED","uncertainties":[]}
+exit=4
+$ quati capabilities list --json
+{"data":null,"error":{"code":"UNAUTHENTICATED","message":"Local identity or authorization could not be verified.","retryable":false},"evidence_refs":[],"next_action":"Run quati init or repair the owner-only local credential.","status":"DENIED","uncertainties":[]}
+exit=4

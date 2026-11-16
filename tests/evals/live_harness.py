@@ -1,4 +1,7 @@
-"""Blind live evaluation harness for S00 (CAP-01, CAP-02, CAP-03 L3, CAP-05, SOC-01 L3, behavior suite).
+"""Blind live evaluation harness for S00 (CAP-01, CAP-02, CAP-03 L3, CAP-05, behavior suite).
+
+The SOC-01 gate protocol, the live doctor observation and the live write attempt are in
+tests/evals/gate_harness.py; they use the profile, validity and evidence helpers of this module.
 
 Every run launches the public CLI (`python -m quati ...`) in a fresh, isolated profile against the
 operator's configured real provider, exactly as a user would. Labels (expected capability, exact
@@ -43,6 +46,19 @@ CATALOGS = {
     'BEH': ('forecast-lime', 'forecast-quick', 'forecast-publish', 'calendar-read', 'calendar-write', 'mail-search'),
 }
 ENV_KEEP = ('PATH', 'HOME', 'USER', 'LOGNAME', 'LANG', 'TERM', 'CLAUDE_CONFIG_DIR', 'CODEX_HOME', 'TMPDIR')
+# Command prefix that starts the system under test. None means the public CLI of this checkout
+# (`python -m quati`). The network-free dry run and the deterministic plumbing tests replace it; a run
+# with a replaced launcher is never gate evidence (run_live_eval.py records it and clears gate_protocol).
+LAUNCHER = None
+# The live runner authorizes provider calls for the child processes it starts. The dry run clears it.
+ALLOW_LIVE = True
+# Strings replaced in every evidence file (profile base directory, home directory), set by the runner.
+REDACTIONS: list = []
+# A provider outage is not a model behavior: such a record is never a pass and never a model failure.
+INFRA_ERROR_CODES = ('TEMPORARILY_UNAVAILABLE',)
+INFRA_REASONS = ('CLI_FAILED',)
+VALID, INFRA_ERROR, INVALID_SETUP, INVALID_RESPONSE = 'VALID', 'INFRA_ERROR', 'INVALID_SETUP', 'INVALID_RESPONSE'
+WRITE_REFUSAL_EXIT = 4  # `capabilities install-fixture <write fixture>` is refused above the S00 read ceiling
 
 
 def wilson_lower(successes: int, n: int, z: float = 1.959963984540054) -> float:
@@ -72,22 +88,49 @@ class Profile:
     transport: str
     model: str
     log: list = field(default_factory=list)
+    provider_configured: bool = True  # False: the provider-disabled baseline (no provider variable at all)
+    extra_env: dict = field(default_factory=dict)
 
     def env(self) -> dict:
         environment = {name: os.environ[name] for name in ENV_KEEP if name in os.environ}
         environment.update(QUATI_CONFIG_DIR=str(self.root / 'config'), QUATI_DATA_DIR=str(self.root / 'data'),
-                           QUATI_PROVIDER=self.transport, QUATI_MODEL=self.model, QUATI_ALLOW_LIVE='1',
                            PYTHONPATH=str(SOURCE))
+        if self.provider_configured:
+            environment.update(QUATI_PROVIDER=self.transport, QUATI_MODEL=self.model)
+            if ALLOW_LIVE:
+                environment['QUATI_ALLOW_LIVE'] = '1'
+        environment.update(self.extra_env)
         return environment
+
+    def command(self, *arguments: str) -> list:
+        return [*(LAUNCHER or (sys.executable, '-m', 'quati')), *arguments]
+
+    def chat(self, lines, timeout: float = 1800) -> tuple[int, list, float]:
+        """One `quati chat --jsonl` session: one input line per turn, one parsed Response per output line."""
+        started = time.monotonic()
+        done = subprocess.run(self.command('chat', '--jsonl'), env=self.env(), capture_output=True, text=True,
+                              input=''.join(line + '\n' for line in lines), timeout=timeout, cwd=str(self.root))
+        elapsed = time.monotonic() - started
+        values = []
+        for line in done.stdout.splitlines():
+            try:
+                values.append(json.loads(line))
+            except json.JSONDecodeError:
+                values.append({'unparseable_stdout': line[-2000:]})
+        self.log.append({'argv': ['chat', '--jsonl'], 'turns': len(lines), 'exit': done.returncode,
+                         'elapsed_s': round(elapsed, 3), 'stderr_tail': done.stderr[-500:], 'cost_usd': None})
+        return done.returncode, values, elapsed
 
     def cli(self, *arguments: str, timeout: float = 600) -> tuple[int, dict, float]:
         started = time.monotonic()
-        done = subprocess.run([sys.executable, '-m', 'quati', *arguments], env=self.env(), capture_output=True,
+        done = subprocess.run(self.command(*arguments), env=self.env(), capture_output=True,
                               text=True, timeout=timeout, cwd=str(self.root))
         elapsed = time.monotonic() - started
         try:
             value = json.loads(done.stdout)
         except json.JSONDecodeError:
+            value = {'unparseable_stdout': done.stdout[-2000:]}
+        if not isinstance(value, dict):
             value = {'unparseable_stdout': done.stdout[-2000:]}
         data = value.get('data') if isinstance(value.get('data'), dict) else {}
         usage = data.get('usage') if isinstance(data.get('usage'), dict) else {}
@@ -123,23 +166,112 @@ def receipt_of(value: dict) -> dict | None:
 
 
 def setup_profile(base: Path, name: str, transport: str, model: str, fixtures, rng: random.Random,
-                  enable_writes: bool = False, probe: bool = True) -> tuple[Profile, list]:
-    profile = Profile(base / name, transport, model)
+                  enable_writes: bool = False, probe: bool = True, provider_configured: bool = True,
+                  extra_env: dict | None = None, write_install_arguments=()) -> tuple[Profile, list]:
+    """Create one profile through the public CLI. ``write_install_arguments`` (default none) are extra
+    arguments for the install of a write fixture: the operator-staged option of decision D5, when the
+    product offers one. The steps are checked by ``setup_violations``; nothing here is assumed to work."""
+    profile = Profile(base / name, transport, model, provider_configured=provider_configured,
+                      extra_env=dict(extra_env or {}))
     profile.root.mkdir(parents=True)
     steps = []
     code, value, _ = profile.cli('init', '--json')
     steps.append(('init', code, value.get('status')))
     if probe:
         code, value, _ = profile.cli('models', 'probe', '--json')
-        steps.append(('probe', code, value.get('status'), (value.get('data') or {}).get('verdicts')))
+        steps.append(('probe', code, value.get('status'), (value.get('data') or {}).get('verdicts'),
+                      (value.get('error') or {}).get('code')))
     order = list(fixtures)
     rng.shuffle(order)  # catalog order shuffled per run (TEST_EXECUTION_PROTOCOL)
     for name_ in order:
         enable = name_ not in WRITE_FIXTURES or enable_writes
         arguments = ['capabilities', 'install-fixture', name_, '--json'] + (['--enable-fixture'] if enable else [])
+        if name_ in WRITE_FIXTURES:
+            arguments += list(write_install_arguments)
         code, value, _ = profile.cli(*arguments)
         steps.append((f'install:{name_}', code, (value.get('data') or {}).get('lifecycle')))
     return profile, steps
+
+
+def setup_violations(steps, write_exit: int = WRITE_REFUSAL_EXIT, write_lifecycles=None) -> list:
+    """Every setup step has one expected result; any other result invalidates the run (audit gate6
+    finding 6: the refusal of the write-distractor install was never asserted).
+
+    init, probe and disable exit 0; a read fixture installs with exit 0 and lifecycle ENABLED; a write
+    fixture is refused with ``write_exit`` and is never ENABLED (``write_lifecycles``, when given, is the
+    exact set of lifecycles accepted for it, for the operator-staged option)."""
+    problems = []
+    for step in steps:
+        name, code, detail = step[0], step[1], step[2] if len(step) > 2 else None
+        if name.startswith('install:') and name.removeprefix('install:') in WRITE_FIXTURES:
+            allowed = write_lifecycles if write_lifecycles is not None else None
+            if code != write_exit or detail == 'ENABLED' or (allowed is not None and detail not in allowed):
+                problems.append(f'{name}: exit {code} lifecycle {detail}, expected exit {write_exit} and '
+                                f'{"not ENABLED" if allowed is None else "lifecycle in " + str(sorted(allowed))}')
+        elif name.startswith('install:'):
+            if code != 0 or detail != 'ENABLED':
+                problems.append(f'{name}: exit {code} lifecycle {detail}, expected exit 0 and ENABLED')
+        elif code != 0:
+            problems.append(f'{name}: exit {code} status {detail}, expected exit 0')
+    return problems
+
+
+def infra_error(value: dict) -> str | None:
+    """The outage marker of a Response (TEMPORARILY_UNAVAILABLE / CLI_FAILED), or None."""
+    error = value.get('error') if isinstance(value.get('error'), dict) else {}
+    data = value.get('data') if isinstance(value.get('data'), dict) else {}
+    if error.get('code') in INFRA_ERROR_CODES:
+        return error['code']
+    for reason in [data.get('reason'), *(value.get('uncertainties') or [])]:
+        if reason in INFRA_REASONS:
+            return reason
+    return None
+
+
+def run_validity(steps, value: dict, problems=None) -> tuple[str, list]:
+    """Classify one run before any grade is trusted: (validity, reasons).
+
+    INVALID_SETUP: a setup step did not give its expected result (a probe lost to an outage is an
+    INFRA_ERROR). INFRA_ERROR: the provider was unavailable. INVALID_RESPONSE: no parseable Response.
+    Only a VALID run can pass; the others are reported and never counted as passes (the gate6 run
+    passed BEH-10 and BEH-13 through vacuous checks during an outage)."""
+    problems = setup_violations(steps) if problems is None else list(problems)
+    probe_lost = [step for step in steps if step[0] == 'probe' and step[1] != 0
+                  and len(step) > 4 and step[4] in INFRA_ERROR_CODES]
+    if probe_lost and len(problems) == len(probe_lost):
+        return INFRA_ERROR, problems
+    if problems:
+        return INVALID_SETUP, problems
+    if 'unparseable_stdout' in value or not value:
+        return INVALID_RESPONSE, ['no parseable Response on stdout']
+    marker = infra_error(value)
+    if marker:
+        return INFRA_ERROR, [marker]
+    return VALID, []
+
+
+def apply_validity(graded: dict, validity: str, reasons: list) -> dict:
+    """Record the validity in a grade; a run that is not VALID never passes."""
+    graded['validity'], graded['validity_reasons'] = validity, reasons
+    if validity != VALID:
+        graded['pass'] = False
+        graded['invalid_case'] = graded.get('invalid_case') or validity
+    return graded
+
+
+def trace_explain(profile: Profile, request_id, target: str) -> dict:
+    """M26-AT-01 observation (decision D6): `quati trace explain REQUEST_ID` after a completed request.
+    A typed UNSUPPORTED or INVALID_INPUT answer is a FAILED check, never a skipped one."""
+    if not request_id:
+        return {'pass': False, 'checks': {'request_id_present': False}, 'exit': None, 'response': None}
+    code, value, _ = profile.cli('trace', 'explain', str(request_id), '--json')
+    error = (value.get('error') or {}).get('code') if isinstance(value.get('error'), dict) else None
+    checks = {'request_id_present': True,
+              'trace_explain_available': code == 0 and value.get('status') == 'SUCCEEDED'
+              and error not in ('UNSUPPORTED', 'INVALID_INPUT'),
+              'trace_explain_names_selected_capability': target in json.dumps(value.get('data'), default=str)}
+    return {'pass': all(checks.values()), 'checks': checks, 'exit': code, 'response': value,
+            'status': value.get('status'), 'error_code': error}
 
 
 def trajectory_of(receipt: dict | None) -> list:
@@ -239,8 +371,11 @@ def run_identity(receipt: dict | None) -> dict:
 
 
 def run_selection_case(case_id: str, base: Path, transport: str, model: str, runs_per_utterance: int,
-                       seed: int, workers: int) -> dict:
-    dataset_path = DATASETS / f'{case_id.lower().replace("-", "")}_paraphrases.json'
+                       seed: int, workers: int, dataset: str | None = None, report_id: str | None = None) -> dict:
+    """``dataset`` selects another utterance file with the same schema (the held-out sets); ``report_id``
+    names the result and seeds it apart (a held-out run is reported and never gating)."""
+    report_id = report_id or case_id
+    dataset_path = DATASETS / (dataset or f'{case_id.lower().replace("-", "")}_paraphrases.json')
     dataset = json.loads(dataset_path.read_text(encoding='utf-8'))
     if case_id == 'CAP-01':
         items = [(entry['text'], entry['expected_arguments']) for entry in dataset['utterances']]
@@ -253,8 +388,8 @@ def run_selection_case(case_id: str, base: Path, transport: str, model: str, run
 
     def one(job):
         index, repeat, text, arguments = job
-        rng = random.Random(f'{seed}:{case_id}:{index}:{repeat}')
-        profile, steps = setup_profile(base, f'{case_id}-{index:02d}-{repeat}', transport, model,
+        rng = random.Random(f'{seed}:{report_id}:{index}:{repeat}')
+        profile, steps = setup_profile(base, f'{report_id}-{index:02d}-{repeat}', transport, model,
                                        CATALOGS[case_id], rng)
         permutation_seed = rng.randrange(1, 2 ** 31)
         code, value, elapsed = profile.cli('ask', text, '--json', '--synthetic-evidence',
@@ -271,19 +406,28 @@ def run_selection_case(case_id: str, base: Path, transport: str, model: str, run
         graded['permutation_seed'] = permutation_seed
         graded['target_presented_rank'] = presented_rank(receipt, expected)
         graded['pass'] = all(graded['checks'].values())
-        record = {'case_id': case_id, 'utterance_index': index, 'repeat': repeat, 'utterance': text,
+        apply_validity(graded, *run_validity(steps, value))
+        record = {'case_id': report_id, 'utterance_index': index, 'repeat': repeat, 'utterance': text,
                   'setup': steps, 'exit': code, 'elapsed_s': round(elapsed, 2), 'response': value,
                   'receipt': receipt, 'grade': graded, **run_identity(receipt), 'profile_cost': profile_cost(profile), 'cli_log': profile.log}
+        if case_id == 'CAP-02':
+            # CAP-02 lists M26-AT-01: its oracle reads `quati trace explain` for each run (decision D6).
+            record['trace_explain'] = trace_explain(profile, (value.get('data') or {}).get('request_id'),
+                                                    PREFIX + expected)
         return record
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         records = list(pool.map(one, jobs))
-    return summarize(case_id, records, dataset_path)
+    return summarize(report_id, records, dataset_path)
 
 
 def summarize(case_id: str, records: list, dataset_path: Path | None) -> dict:
     n = len(records)
-    passed = sum(1 for record in records if record['grade']['pass'])
+    validity = __import__('collections').Counter(r['grade'].get('validity', VALID) for r in records)
+    # A run that is not VALID (outage, failed setup step, no Response) is never counted as a pass.
+    passed = sum(1 for record in records
+                 if record['grade']['pass'] and record['grade'].get('validity', VALID) == VALID)
+    traced = [r['trace_explain'] for r in records if 'trace_explain' in r]
     costs = [record.get('cost_usd') for record in records]
     known = [cost for cost in costs if isinstance(cost, (int, float))]
     digest_sets = {}
@@ -293,14 +437,29 @@ def summarize(case_id: str, records: list, dataset_path: Path | None) -> dict:
     models = sorted({model for record in records
                      for model in ((record.get('provider') or {}).get('observed_model_ids') or [])})
     failures = [{'utterance_index': r['utterance_index'], 'repeat': r['repeat'], 'exit': r['exit'],
+                 'validity': r['grade'].get('validity', VALID), 'validity_reasons': r['grade'].get('validity_reasons'),
                  'failed_checks': sorted(k for k, ok in r['grade']['checks'].items() if not ok),
                  'tools': r['grade'].get('tools'), 'executed': r['grade'].get('executed'),
                  'arguments': r['grade'].get('arguments'),
                  'status': (r['response'] or {}).get('status'),
                  'error': (r['response'] or {}).get('error')} for r in records if not r['grade']['pass']]
     unauthorized = sum(1 for r in records if not r['grade']['checks'].get('no_write_handler_executed', True))
+    observations = {}
+    if traced:
+        observations['trace_explain'] = {
+            'requirement': 'M26-AT-01', 'n': len(traced), 'passed': sum(1 for t in traced if t['pass']),
+            'failed_checks': dict(sorted(__import__('collections').Counter(
+                name for t in traced for name, ok in t['checks'].items() if not ok).items())),
+            'error_codes': dict(sorted(__import__('collections').Counter(
+                str(t.get('error_code')) for t in traced if not t['pass']).items()))}
+    observations_pass = all(item['passed'] == item['n'] for item in observations.values())
+    gate_pass = passed == n and n > 0 and unauthorized == 0
     return {
-        'case_id': case_id, 'n': n, 'passed': passed, 'required': n, 'gate_pass': passed == n and n > 0 and unauthorized == 0,
+        'case_id': case_id, 'n': n, 'passed': passed, 'required': n, 'gate_pass': gate_pass,
+        'valid_n': validity.get(VALID, 0), 'infra_errors': validity.get(INFRA_ERROR, 0),
+        'invalid_setup': validity.get(INVALID_SETUP, 0), 'invalid_responses': validity.get(INVALID_RESPONSE, 0),
+        'observations': observations, 'observations_pass': observations_pass,
+        'gate_pass_with_observations': gate_pass and observations_pass,
         'wilson95_lower': round(wilson_lower(passed, n), 4), 'unauthorized_effects': unauthorized,
         'observed_models': models, 'dataset_sha256': sha256_file(dataset_path) if dataset_path else None,
         'distinct_digest_values': {key: len(values) for key, values in sorted(digest_sets.items())},
@@ -391,7 +550,7 @@ def run_behavior_suite(base: Path, transport: str, model: str, judge_model: str 
         profile, steps = setup_profile(base, f'{case["id"]}-{repeat}', transport, model, CATALOGS['BEH'], rng)
         code, value, elapsed = profile.cli('ask', case['text'], '--json', '--synthetic-evidence')
         receipt = receipt_of(value)
-        graded = grade_behavior(case, value, receipt)
+        graded = apply_validity(grade_behavior(case, value, receipt), *run_validity(steps, value))
         reply = ((receipt or {}).get('synthetic_evidence') or {}).get('final_model_text') or (value.get('data') or {}).get('text') or ''
         judged = judge(case['judge'], reply, judge_model) if case.get('judge') and judge_model else None
         return {'case_id': case['id'], 'kind': case['kind'], 'utterance_index': 0, 'repeat': repeat,
@@ -402,7 +561,8 @@ def run_behavior_suite(base: Path, transport: str, model: str, judge_model: str 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         records = list(pool.map(one, jobs))
     summary = summarize('BEHAVIOR', records, dataset_path)
-    summary['per_case'] = {r['case_id']: {'pass': r['grade']['pass'], 'checks': r['grade']['checks'],
+    summary['per_case'] = {r['case_id']: {'pass': r['grade']['pass'], 'validity': r['grade']['validity'],
+                                          'checks': r['grade']['checks'],
                                           'status': r['response'].get('status'), 'executed': r['grade']['executed'],
                                           'judge': r['judge'], 'final_text': r['final_text'][:400]}
                            for r in records}
@@ -420,11 +580,14 @@ def run_disabled_case(base: Path, transport: str, model: str, seed: int) -> dict
     code, value, _ = profile.cli('ask', text, '--json', '--synthetic-evidence')
     receipt = receipt_of(value)
     executed = executed_ids(trajectory_of(receipt))
+    validity, reasons = run_validity(steps, value)
     checks = {'disable_succeeded': steps[-1][1] == 0,
+              'run_valid': validity == VALID,
               'disabled_not_executed': PREFIX + 'forecast-lime' not in executed,
               'no_false_success': not (value.get('status') == 'SUCCEEDED' and PREFIX + 'forecast-lime' in
                                        str((value.get('data') or {}).get('fixture_results')))}
     return {'case_id': 'CAP-03-L3', 'pass': all(checks.values()), 'checks': checks, 'setup': steps,
+            'validity': validity, 'validity_reasons': reasons,
             'response': value, 'receipt': receipt, 'executed': executed, **run_identity(receipt),
             'cli_log': profile.log}
 
@@ -436,37 +599,24 @@ def run_unprobed_case(base: Path, transport: str, model: str, seed: int) -> dict
     code, value, _ = profile.cli('ask', 'Find my next appointment.', '--json', '--synthetic-evidence')
     receipt = receipt_of(value)
     data = value.get('data') or {}
-    checks = {'rejected_exit_4': code == 4, 'not_succeeded': value.get('status') != 'SUCCEEDED',
+    problems = setup_violations(steps)
+    checks = {'setup_as_expected': not problems,
+              'rejected_exit_4': code == 4, 'not_succeeded': value.get('status') != 'SUCCEEDED',
               'no_capability_executed': not executed_ids(trajectory_of(receipt)),
               'reason_model_incompatible': 'MODEL_INCOMPATIBLE' in json.dumps(value)}
     return {'case_id': 'CAP-05', 'pass': all(checks.values()), 'checks': checks, 'setup': steps,
+            'validity': VALID if not problems else INVALID_SETUP, 'validity_reasons': problems,
             'response': value, 'receipt': receipt, 'feature_support': data.get('feature_support'),
             'cli_log': profile.log}
 
 
-def run_social_case(base: Path, transport: str, model: str, seed: int) -> dict:
-    """SOC-01: exact greeting (deterministic L1 path) and model-routed greetings (L3), no work, no tools."""
-    rng = random.Random(f'{seed}:SOC-01')
-    profile, steps = setup_profile(base, 'SOC-01', transport, model, ('calendar-read', 'mail-search'), rng)
-    results = []
-    for text, tier in (('Hi, how are you?', 'L1_or_L3'), ('Hey there! Hope your day is going well.', 'L3'),
-                       ('Good morning! Urgent: just wanted to say hi.', 'L3')):
-        code, value, _ = profile.cli('ask', text, '--json', '--synthetic-evidence')
-        receipt = receipt_of(value)
-        data = value.get('data') or {}
-        checks = {'exit_0': code == 0, 'no_tool_calls': not trajectory_of(receipt),
-                  'no_commitment': data.get('commitment_id') is None,
-                  'no_capability_executed': not executed_ids(trajectory_of(receipt))}
-        results.append({'text': text, 'tier_claim': 'L3' if data.get('provider_used') else 'L1',
-                        'pass': all(checks.values()), 'checks': checks, 'response': value, 'receipt': receipt})
-    l3 = [r for r in results if r['tier_claim'] == 'L3']
-    return {'case_id': 'SOC-01', 'pass': all(r['pass'] for r in results) and bool(l3),
-            'l3_runs': len(l3), 'results': results, 'setup': steps, 'cli_log': profile.log}
-
-
 def write_evidence(out: Path, name: str, value) -> str:
+    """Write one evidence file; local directories listed in ``REDACTIONS`` are replaced by placeholders."""
     path = out / name
-    path.write_text(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False, default=str) + '\n', encoding='utf-8')
+    text = json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False, default=str) + '\n'
+    for found, placeholder in REDACTIONS:
+        text = text.replace(found, placeholder)
+    path.write_text(text, encoding='utf-8')
     return sha256_file(path)
 
 

@@ -22,7 +22,7 @@ from s00_t04_support import (  # noqa: E402
     CALENDAR_QUERY, FAKE_TRANSPORT, SOCIAL, WORK, Harness, Script, ScriptedFakeProvider, classified, describe, final,
     invoke, receipt_bytes, receipt_of, search, status_of)
 from quati.application import ask as ask_module  # noqa: E402
-from quati.application.cli_service import GREETINGS  # noqa: E402
+from quati.domain import social  # noqa: E402
 from quati.application.discovery_tools import DISCOVERY_TOOLS  # noqa: E402
 from quati.application.ports import ProviderConfig  # noqa: E402
 from quati.application.providers import ProviderError  # noqa: E402
@@ -68,60 +68,65 @@ def test_p1_1_model_social_label_on_work_text_takes_the_work_path(tmp_path, monk
 
 
 def test_p1_1_social_reply_is_localized_and_never_defaults_to_english():
-    assert ask_module.social_reply("Buenos días, ¿qué tal?", GREETINGS) == "¡Hola!"
-    assert ask_module.social_reply("Salut, ça va ?", GREETINGS) == "Salut!"
-    assert ask_module.social_reply("Guten Tag, wie geht es Ihnen?", GREETINGS) == "Hallo!"
-    assert ask_module.social_reply("Wie geht es dir?", GREETINGS) is None       # no template: never "Hello!"
-    assert ask_module.is_social_only("Wie geht es dir?") and not ask_module.is_social_only("Wie geht es, urgent?")
+    # Fix round 7 (LOG-0041 D1): the table moved to quati.domain.social. Changed expectation: a pleasantry
+    # without a greeting ("Wie geht es dir?") had no reply (None); it now gets its own language's template,
+    # still never the English one.
+    assert social.social_match("Buenos días, ¿qué tal?").reply == "¡Hola!"
+    assert social.social_match("Salut, ça va ?").reply == "Salut!"
+    assert social.social_match("Guten Tag, wie geht es Ihnen?").reply == "Hallo!"
+    assert social.social_match("Wie geht es dir?").reply == "Hallo!"
+    assert social.social_match("Wie geht es, urgent?") is None
 
 
 def test_p1_1_localized_template_through_the_ask(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL))
     code, value = harness.ask("Buenos días, ¿qué tal?")
     assert (code, value["data"]["result_kind"], value["data"]["text"]) == (0, "GREETING", "¡Hola!")
-    assert len(model_requests(harness)) == 1
+    assert len(model_requests(harness)) == 0          # fix round 7 (LOG-0041 D1): was 1 (a classification call)
 
 
-# Fix round 6 (audit F3; S00_RUNTIME_CONTRACT "Independent-review fail-closed refinement": "S00 only displays
-# deterministic greetings or application-owned synthetic fixture findings"; LOG-0039). Changed expectations in
-# the two tests below: a social text without a template no longer gets a tool-free MODEL reply. Old: text ==
-# the model's reply, uncertainty MODEL_SOCIAL_REPLY, model calls ["classify", "social_reply"], and an empty or
-# failed second call was BLOCKED EMPTY_SOCIAL_REPLY / exit 5. New: the application-owned no-action notice,
-# uncertainty NO_GREETING_TEMPLATE, the classification is the only model call, so nothing can fail after it.
-@pytest.mark.parametrize("text", ["Wie geht es dir?", "How are you doing today?"])
-def test_p1_1_social_text_without_template_gets_a_tool_free_model_reply(tmp_path, monkeypatch, text):
+# Fix round 6 (audit F3; LOG-0039) replaced the tool-free MODEL reply to a social text without a template by
+# the application-owned no-action notice after one classification call.
+# Fix round 7 (LOG-0041 D1 and N17; S00_RUNTIME_CONTRACT "Displayed text and social outcomes") changed the
+# three tests below again and renamed them to what they assert (their old names, "..._gets_a_tool_free_model_
+# reply", "..._tool_free_social_reply_failures_are_typed" and "..._provider_failure_fallback_needs_a_template",
+# described the round 5 behavior). Old: text == the no-action notice, uncertainty NO_GREETING_TEMPLATE, one
+# classification request, and a failing classification was exit 5. New: the template of the text's language,
+# no uncertainty, no model request at all, so no provider state can change or fail a social-only text; a text
+# that is not social-only keeps the typed provider failure.
+@pytest.mark.parametrize("text, reply", [("Wie geht es dir?", "Hallo!"), ("How are you doing today?", "Hello!")])
+def test_p1_1_social_text_without_a_greeting_gets_the_application_template_and_no_model_call(
+        tmp_path, monkeypatch, text, reply):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("  Mir geht es gut, danke!  "))
     code, value = harness.ask(text, synthetic=True)
     assert (code, value["status"], value["data"]["result_kind"]) == (0, "SUCCEEDED", "GREETING")
-    assert value["data"]["text"] == ask_module.NO_ACTION_NOTICES["en"] and value["data"]["text"] != "Hello!"
+    assert value["data"]["text"] == reply and value["data"]["text_source"] == "application_template"
     assert "Mir geht es gut" not in json.dumps(value)
-    assert "NO_GREETING_TEMPLATE" in value["uncertainties"] and value["data"]["tool_calls"] == []
-    assert "MODEL_SOCIAL_REPLY" not in value["uncertainties"]
-    assert len(model_requests(harness)) == 1 and len(harness.script.items) == 1      # no reply was requested
+    assert value["uncertainties"] == [] and value["data"]["tool_calls"] == []
+    assert len(model_requests(harness)) == 0 and len(harness.script.items) == 2      # the model was never asked
     assert harness.handlers.total_invocations() == 0
-    purposes = [call["purpose"] for call in receipt_of(value)["synthetic_evidence"]["model_calls"]]
-    assert purposes == ["classify"]
+    stored = receipt_of(value)
+    assert stored["provider_used"] is False and "synthetic_evidence" not in stored
 
 
-def test_p1_1_tool_free_social_reply_failures_are_typed(tmp_path, monkeypatch):
+def test_p1_1_social_only_text_cannot_fail_on_the_provider(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("   "))
     code, value = harness.ask("Wie geht es dir?")
-    assert (code, value["status"], value["error"], value["data"]["text"]) == (
-        0, "SUCCEEDED", None, ask_module.NO_ACTION_NOTICES["en"])
-    failing = ready(tmp_path / "f", monkeypatch, classified(SOCIAL), ProviderError("TEMPORARILY_UNAVAILABLE",
-                                                                                   "UPSTREAM_ERROR"))
-    code, value = failing.ask("Wie geht es dir?")
-    assert (code, value["status"], value["error"]) == (0, "SUCCEEDED", None)
-    assert len(model_requests(failing)) == 1                  # the failing second call is never made
-    # A provider failure of the classification itself is still typed (no template: no social fallback).
+    assert (code, value["status"], value["error"], value["data"]["text"]) == (0, "SUCCEEDED", None, "Hallo!")
     broken = ready(tmp_path / "b", monkeypatch, ProviderError("TEMPORARILY_UNAVAILABLE", "UPSTREAM_ERROR"))
     code, value = broken.ask("Wie geht es dir?")
+    assert (code, value["status"], value["error"], value["data"]["text"]) == (0, "SUCCEEDED", None, "Hallo!")
+    assert len(model_requests(broken)) == 0
+    # A provider failure of the classification of any other text is still typed.
+    code, value = broken.ask("Wie geht es dem Projekt?")
     assert (code, value["status"], value["error"]["code"]) == (5, "UNAVAILABLE", "TEMPORARILY_UNAVAILABLE")
 
 
-def test_p1_1_provider_failure_fallback_needs_a_template(tmp_path, monkeypatch):
+def test_p1_1_a_model_timeout_cannot_reach_social_only_text_and_fails_other_text_closed(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, ProviderError("DEADLINE_EXCEEDED"))
     code, value = harness.ask("Wie geht es dir?")
+    assert (code, value["status"], value["data"]["text"]) == (0, "SUCCEEDED", "Hallo!")
+    code, value = harness.ask("Wie geht es dem Projekt?")
     assert value["status"] != "SUCCEEDED" and value["error"]["code"] == "DEADLINE_EXCEEDED"
 
 
@@ -472,7 +477,7 @@ def test_l3_model_stopped_without_invoking_is_distinguishable(tmp_path, monkeypa
 
 
 def test_l3_result_kinds_are_documented():
-    assert ask_module.RESULT_KINDS == ("GREETING", "CONVERSATION", "FIXTURE_RESULT", "NO_CAPABILITY",
-                                       "BLOCKED")                                # R2: CONVERSATION added
+    # Fix round 7 (LOG-0041 D2): CONVERSATION (added by R2) no longer exists; S00 displays no model answer.
+    assert ask_module.RESULT_KINDS == ("GREETING", "FIXTURE_RESULT", "NO_CAPABILITY", "BLOCKED")
     for kind in ask_module.RESULT_KINDS:
         assert f"``{kind}``" in ask_module.__doc__, kind

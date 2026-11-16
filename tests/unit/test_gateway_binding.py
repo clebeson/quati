@@ -27,7 +27,12 @@ def test_reg_10(tmp_path: Path) -> None:
         arguments = {"capability_id": "read_file"} if tool_name == "quati_describe" else {
             "capability_id": "read_file", "input": {"path": "README.md"}}
         _text, step = execute_tool_call(turn, turn.context, ToolCall(tool_name, arguments))
-        assert (step["status"], step["result_code"], step["reason"]) == ("DENIED", "NOT_FOUND", "NOT_A_CAPABILITY_ID")
+        # Fix round 7 (LOG-0041 D4; M15 invoke guard order, "No existence oracle"): invoke of any id outside
+        # the turn's shortlist was NOT_FOUND / NOT_A_CAPABILITY_ID for an unknown name; it is now the single
+        # FORBIDDEN / NOT_IN_SHORTLIST. The registry lookup of describe is unchanged.
+        expected = ("DENIED", "NOT_FOUND", "NOT_A_CAPABILITY_ID") if tool_name == "quati_describe" else (
+            "DENIED", "FORBIDDEN", "NOT_IN_SHORTLIST")
+        assert (step["status"], step["result_code"], step["reason"]) == expected
     _text, step = execute_tool_call(turn, turn.context, ToolCall("read_file", {"path": "README.md"}))
     assert (step["status"], step["reason"], step["operation"]) == ("BLOCKED", "TOOL_CALL_MALFORMED", "invalid")
     # Negative: a manifest-bound capability is visible and callable within policy.

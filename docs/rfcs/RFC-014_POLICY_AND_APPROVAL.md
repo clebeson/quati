@@ -158,6 +158,11 @@ and a new evaluation is required (M25). This lifetime is separate from `approval
   operations that create no `EffectIntent` (capability search, describe, status and registry list);
   K6 is evaluated before the effect class, so the invocation of a `read` or `none` capability is
   also `DENY` `policy_unavailable` (M25-RT-01).
+- The tenant role of the decision context is read from the identity directory at every decision
+  (RFC-013 section 12.1, "Policy role"); it is never assumed. The default single-user policy
+  (`examples/policies/local-default.policy.json`) names the tenant role `OWNER` only, so a principal
+  with any other role, or with none, gets the default verdict `DENY` `default_deny` for every effect
+  other than `none`-class rules that name no role (LOG-0041 N17).
 - Edits go only through `quati policy edit` (opens `$EDITOR` on a temp copy) or
   `quati policy apply <file>`. Both validate, print a human diff against the active policy,
   require interactive confirmation (TTY, same guard as section 6.2), then atomically replace the

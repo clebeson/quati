@@ -3,7 +3,12 @@
 The same rule ``config/`` and ``receipts/`` follow: a state directory is a real directory (never a
 symlink) owned by the current user with mode 0700, and a state file is a regular, singly linked
 file owned by the current user with no group or other permission bit. A path that cannot be made
-or proven private raises ``OSError`` so the caller fails closed; nothing is written elsewhere.
+or proven private raises ``UnsafeStatePath`` (an ``OSError``) so the caller fails closed; nothing is
+written elsewhere.
+
+``state_directory`` is the one entry every store uses before it reads, locks, writes or appends:
+it verifies the data directory (``QUATI_DATA_DIR``) and each Quati directory under it, in order,
+so nothing is created or changed below a component that is a symlink or belongs to another user.
 """
 
 from __future__ import annotations
@@ -17,11 +22,47 @@ DIRECTORY_MODE = 0o700
 FILE_MODE = 0o600
 
 
+class UnsafeStatePath(PermissionError):
+    """A Quati state path that is not (and cannot be made) a private path of the current user."""
+
+
 def _refuse(path: Path, why: str) -> OSError:
-    return PermissionError(errno.EPERM, f"{why}: not a private Quati state path", str(path))
+    return UnsafeStatePath(errno.EPERM, f"{why}: not a private Quati state path", str(path))
 
 
-def private_directory(path: Path) -> Path:
+def data_root() -> Path:
+    """The data directory: ``QUATI_DATA_DIR`` or ``~/.quati``."""
+    return Path(os.environ.get("QUATI_DATA_DIR") or Path.home() / ".quati")
+
+
+def _verify(path: Path, tighten: bool) -> None:
+    """Refuse ``path`` unless it is a real directory of this user; decide on one no-follow descriptor.
+
+    The owner of the path as named is checked first, so a foreign path is never opened. The open
+    itself refuses a symlink and anything that is not a directory (``O_NOFOLLOW | O_DIRECTORY``);
+    owner and mode are then read from, and the mode is tightened on, the open descriptor, so a path
+    swapped after the first check cannot redirect the decision or the mode change (LOG-0041 N17).
+    """
+    if os.lstat(path).st_uid != os.getuid():
+        raise _refuse(path, "foreign owner")
+    try:
+        descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    except OSError:
+        raise _refuse(path, "symlink, non-directory or unreadable directory") from None
+    try:
+        info = os.fstat(descriptor)
+        if info.st_uid != os.getuid():
+            raise _refuse(path, "foreign owner")
+        mode = stat.S_IMODE(info.st_mode)
+        if tighten and mode != DIRECTORY_MODE:
+            os.fchmod(descriptor, DIRECTORY_MODE)
+        elif mode & 0o077:
+            raise _refuse(path, "group or other permission bits")
+    finally:
+        os.close(descriptor)
+
+
+def private_directory(path: Path, *, tighten: bool = True) -> Path:
     """Create ``path`` and its missing ancestors with mode 0700; tighten or refuse an existing one."""
     path = Path(path)
     missing = []
@@ -34,13 +75,48 @@ def private_directory(path: Path) -> Path:
             os.mkdir(directory, DIRECTORY_MODE)
         except FileExistsError:           # created concurrently by another Quati process; checked below
             pass
-    info = os.lstat(path)
-    if not stat.S_ISDIR(info.st_mode):
-        raise _refuse(path, "symlink or non-directory")
-    if info.st_uid != os.getuid():
-        raise _refuse(path, "foreign owner")
-    if stat.S_IMODE(info.st_mode) != DIRECTORY_MODE:
-        os.chmod(path, DIRECTORY_MODE)
+    _verify(path, tighten)
+    return path
+
+
+def state_directory(*parts: str, root: Path | None = None, create: bool = True, tighten: bool = True) -> Path | None:
+    """The verified private directory ``root/parts...`` (``root`` defaults to the data directory).
+
+    ``root`` and then each component are verified in order before the next one is touched: a real
+    directory, never a symlink (nor below a symlinked ancestor), owned by the current user, mode
+    0700. ``create`` makes missing components (a writer); without it a missing component returns
+    ``None`` and nothing is created (a reader). ``tighten`` removes wider permission bits of an owned
+    directory; without it they are refused and nothing is modified. Anything else raises
+    ``UnsafeStatePath``.
+    """
+    current = Path(root) if root is not None else data_root()
+    if any(ancestor.is_symlink() for ancestor in current.parents):
+        raise _refuse(current, "symlinked ancestor")
+    for part in (None, *parts):
+        current = current if part is None else current / part
+        if not create and not os.path.lexists(current):
+            return None
+        private_directory(current, tighten=tighten)
+    return current
+
+
+def private_tree(path: Path) -> Path:
+    """Make an existing tree owner-only (directories 0700, files 0600) without following any symlink.
+
+    For a tree written by code that uses the process umask (``data/fixture_sources``). A symlink, a
+    special file, an extra hard link or a foreign owner anywhere in it raises ``UnsafeStatePath``.
+    """
+    path = Path(path)
+    _verify(path, True)
+    for entry in sorted(path.iterdir()):
+        if entry.is_dir() and not entry.is_symlink():
+            private_tree(entry)
+        else:
+            try:
+                descriptor = os.open(entry, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            except OSError:
+                raise _refuse(entry, "symlink or unreadable file") from None
+            os.close(_checked(descriptor, entry, True))
     return path
 
 
@@ -88,4 +164,5 @@ def write_private(path: Path, data: bytes) -> None:
         handle.write(data)
 
 
-__all__ = ["DIRECTORY_MODE", "FILE_MODE", "open_private", "private_directory", "read_private", "write_private"]
+__all__ = ["DIRECTORY_MODE", "FILE_MODE", "UnsafeStatePath", "data_root", "open_private", "private_directory",
+           "private_tree", "read_private", "state_directory", "write_private"]

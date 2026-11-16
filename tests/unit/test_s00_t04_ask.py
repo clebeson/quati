@@ -68,26 +68,35 @@ def test_mixed_greeting_and_work_never_takes_the_greeting_path(tmp_path, monkeyp
 
 
 def test_model_social_classification_answers_deterministically_with_no_tools(tmp_path, monkeypatch):
-    """SOC-01 / M31-AT-01 contribution: no tool offered, no capability invoked, no commitment."""
+    """SOC-01 / M31-AT-01 contribution: no tool offered, no capability invoked, no commitment.
+
+    Fix round 7 (LOG-0041 D1; S00_RUNTIME_CONTRACT "Displayed text and social outcomes"): a social-only
+    text is answered before any model call. Old: one classification request, provider_used True. New:
+    zero model requests, provider_used False."""
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL))
     code, value = harness.ask("Bom dia, tudo bem com você?")
     assert code == 0 and value["status"] == "SUCCEEDED"
     assert (value["data"]["result_kind"], value["data"]["text"]) == ("GREETING", "Olá!")
     assert value["data"]["commitment_id"] is None and value["data"]["tool_calls"] == []
-    calls = harness.script.requests[harness.base:]
-    assert len(calls) == 1 and not calls[0].tools and calls[0].output_schema is not None
+    assert harness.script.requests[harness.base:] == []
     assert harness.handlers.total_invocations() == 0
-    assert value["data"]["provider_used"] is True
+    assert value["data"]["provider_used"] is False
 
 
 def test_social_fallback_on_model_timeout_creates_nothing(tmp_path, monkeypatch):
-    """SOC-01 fault: the model times out before answering a greeting; a deterministic reply returns."""
+    """SOC-01 fault: a model that would time out is never asked about a greeting; a deterministic reply returns.
+
+    Fix round 7 (LOG-0041 D1): the outcome of a social-only text is the same in every provider state.
+    Old: the greeting was a fallback after the failed classification (uncertainty
+    MODEL_UNAVAILABLE_SOCIAL_FALLBACK) and "Hi, urgent, how are you?" was exit 5 DEADLINE_EXCEEDED. New: both
+    are social-only by the table (urgency markers included), answered with no model call and no
+    uncertainty; a text that is not social-only still fails closed on the timeout."""
     harness = ready(tmp_path, monkeypatch, ProviderError("DEADLINE_EXCEEDED"))
-    code, value = harness.ask("Hi, how are you?")
-    assert code == 0 and value["data"]["result_kind"] == "GREETING" and value["data"]["text"] == "Hello!"
-    assert "MODEL_UNAVAILABLE_SOCIAL_FALLBACK" in value["uncertainties"]
-    urgent = ready(tmp_path / "u", monkeypatch, ProviderError("DEADLINE_EXCEEDED"))
-    code, value = urgent.ask("Hi, urgent, how are you?")
+    for text in ("Hi, how are you?", "Hi, urgent, how are you?"):
+        code, value = harness.ask(text)
+        assert code == 0 and value["data"]["result_kind"] == "GREETING" and value["data"]["text"] == "Hello!"
+        assert value["uncertainties"] == [] and harness.script.requests[harness.base:] == []
+    code, value = harness.ask("Hi, how are you? Find my next appointment")
     assert code == 5 and value["error"]["code"] == "DEADLINE_EXCEEDED"
     assert value["data"]["result_kind"] == "BLOCKED"
 
@@ -119,8 +128,9 @@ def test_cap_02_contribution_calendar_read_selected_and_labelled(tmp_path, monke
     assert [step["tool_name"] for step in data["tool_calls"]] == [
         "quati_search", "quati_describe", "quati_invoke", "quati_status"]
     assert harness.handlers.invocations() == {"calendar-read": 1}
+    # Fix round 7 (LOG-0041 D3; M01-FR-02 "S00 output always reports launched=false"): launched was True.
     assert (data["received"], data["launched"], data["delivered"], data["commitment_id"]) == (
-        True, True, False, None)
+        True, False, False, None)
 
 
 def test_cap_01_contribution_new_definition_discoverable_without_prompt_edit(tmp_path, monkeypatch):

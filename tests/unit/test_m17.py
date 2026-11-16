@@ -649,6 +649,150 @@ def test_m17_rt_02_ordinary_api_keys_are_still_accepted(value):
     assert provider.complete(ModelRequest(user())).text == 'ok'
 
 
+# S00 fix round 7 (re-audit finding N8): M17-RT-02 is a principle (one opaque vendor-issued token; never a
+# reference, a structured value or a sign-in session artifact) plus the M17 "Key value shape" table.
+# Every value is synthetic; the rejected shapes are the ones the re-audit found accepted (a3_keys.py).
+import base64  # noqa: E402
+
+N8_CANARY = 'CANARY7x9'
+N8_JWT = 'eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ4In0.c2ln' + N8_CANARY
+N8_SESSION_FILE = '{"OPENAI_API_KEY": null, "tokens": {"id_token": "%s", "refresh_token": "rt_%s"}}' % (N8_JWT, N8_CANARY)
+N8_REJECTED = {
+    # sign-in session artifacts
+    'JWE 5-part': 'eyJhbGciOiJkaXIifQ.' + N8_CANARY + '.aXY.Y2lwaGVy.dGFn',
+    'JWE 5-part, empty key segment': 'eyJhbGciOiJkaXIifQ..aXY.Y2lwaGVy' + N8_CANARY + '.dGFn',
+    'JWT 2-part unsigned': 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJ4In0' + N8_CANARY,
+    'JWT with empty signature': 'eyJ' + N8_CANARY + '.e30.',
+    'Bearer: prefix': 'Bearer:' + N8_JWT,
+    'bearer= prefix on an opaque token': 'bearer=' + N8_CANARY + 'opaque0123456789',
+    'Bearer: prefix on an opaque token': 'BEARER:' + N8_CANARY + 'opaque0123456789',
+    'sk-ant-sid01 session key': 'sk-ant-sid01-' + N8_CANARY + 'A' * 40,
+    'sessionKey= cookie': 'sessionKey=sk-ant-sid01-' + N8_CANARY + 'A' * 40,
+    'sessionKey= cookie, opaque value': 'sessionKey=' + N8_CANARY + 'opaque0123456789',
+    'next-auth cookie': '__Secure-next-auth.session-token=' + N8_JWT,
+    'next-auth cookie, opaque value': '__Secure-next-auth.session-token=' + N8_CANARY + 'opaque',
+    'cookie pair list': 'a=' + N8_CANARY + ';b=2',
+    'cookie with a trailing separator': N8_CANARY + 'opaque0123456789;',
+    'gho_ GitHub OAuth token': 'gho_' + N8_CANARY + 'A' * 30,
+    'ghu_ GitHub user token': 'ghu_' + N8_CANARY + 'A' * 30,
+    'Copilot session token': 'tid=' + N8_CANARY + ';exp=1799999999;sku=copilot_for_business',
+    'base64 of a JSON session file': base64.b64encode(N8_SESSION_FILE.encode()).decode(),
+    'base64url of a JSON document, no padding': base64.urlsafe_b64encode(
+        ('{"access_token":"%s"}' % N8_CANARY).encode()).decode().rstrip('='),
+    'base64 of a JSON array': base64.b64encode(('["%s", "session"]' % N8_CANARY).encode()).decode(),
+    'base64url of a JSON document that needs the url-safe alphabet': base64.urlsafe_b64encode(
+        ('{"k":"%s??>>~~"}' % N8_CANARY).encode()).decode(),
+    'AWS STS session token': 'IQoJb3JpZ2luX2VjE' + N8_CANARY + 'A' * 200,
+    'AWS STS session token (older FQoG form)': 'FQoGZXIvYXdzE' + N8_CANARY + 'A' * 200,
+    'AWS STS session token (older FwoG form)': 'FwoGZXIvYXdzE' + N8_CANARY + 'A' * 200,
+    'uppercase SESS-': 'SESS-' + N8_CANARY,
+    'mixed-case Sess-': 'Sess-' + N8_CANARY + 'A' * 30,
+    # references to something that is not the key itself
+    'relative path without extension': '.claude/.credentials' + N8_CANARY,
+    'relative path, hidden file': '.credentials' + N8_CANARY,
+    'relative path with a hidden component': 'config/.credentials' + N8_CANARY,
+    'Windows path': 'C:\\Users\\x\\.codex\\auth' + N8_CANARY,
+    'Windows path, forward slashes': 'C:/Users/x/auth' + N8_CANARY,
+    'Windows relative path': 'secrets\\auth' + N8_CANARY,
+    '@file reference': '@/home/x/auth' + N8_CANARY,
+    '@file reference, relative': '@auth' + N8_CANARY,
+    '$HOME path': '$HOME/.codex/auth' + N8_CANARY,
+    '${VAR} reference': '${OPENAI_API_KEY}',
+    '$VAR reference': '$OPENAI_API_KEY',
+    # the file: branch alone (re-audit N13: neither value ends in .json nor starts with a path prefix)
+    'file: reference without extension': 'file:synthetic-secret-ref' + N8_CANARY,
+    'FILE: reference, any case': 'FILE:credentials' + N8_CANARY,
+}
+# Positive control table (M17 "Accepted key shapes"): every ordinary vendor key shape of the re-audit.
+N8_ACCEPTED = {
+    'anthropic api03': 'sk-ant-api03-' + N8_CANARY + '-' + 'aB3_' * 22 + 'AA',
+    'openai sk-proj': 'sk-proj-' + N8_CANARY + 'aB3_-' * 20,
+    'openai legacy sk-': 'sk-' + N8_CANARY + 'a' * 39,
+    'google AIza': 'AIzaSy' + N8_CANARY + 'a' * 24,
+    'groq gsk_': 'gsk_' + N8_CANARY + 'a' * 47,
+    'xai': 'xai-' + N8_CANARY + 'a' * 70,
+    'hugging face hf_': 'hf_' + N8_CANARY + 'a' * 25,
+    'azure 32 hex': '0123456789abcdef0123456789abcdca',
+    'openrouter': 'sk-or-v1-' + N8_CANARY + '0' * 55,
+    'mistral 32': 'aB3dE' + N8_CANARY + 'x' * 18,
+    'perplexity': 'pplx-' + N8_CANARY + 'a' * 40,
+    'fireworks': 'fw_' + N8_CANARY + 'a' * 20,
+    'nvidia': 'nvapi-' + N8_CANARY + 'a_-' * 20,
+    'databricks': 'dapi' + N8_CANARY + '0' * 24,
+    'replicate': 'r8_' + N8_CANARY + 'a' * 28,
+    'github fine-grained PAT': 'github_pat_' + N8_CANARY + 'a' * 60,
+    'github classic PAT': 'ghp_' + N8_CANARY + 'a' * 27,
+    'base64 key with + / =': N8_CANARY + 'aB3+/x9Zq' * 8 + '==',
+    'base64 key, one padding character': N8_CANARY + 'aB3+/x9Zq' * 8 + 'A=',
+    'base64url key with padding': 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEF_-==',
+    'aws bedrock api key ABSK': 'ABSK' + N8_CANARY + 'aB3+/' * 20 + '=',
+    'deepseek': 'sk-' + N8_CANARY + '0' * 23,
+    'litellm sk-1234': 'sk-1234',
+    'eyJ-prefixed opaque key without dots': 'eyJ' + N8_CANARY + 'opaquekey',
+    'base64 key that decodes to digits (a JSON scalar, not a document)': base64.b64encode(b'1234567890123456').decode(),
+    'base64 key that decodes to a quoted word': base64.b64encode(b'"synthetic-key-0123"').decode(),
+    'key with a dot and no path separator': 'sk-' + N8_CANARY + '.v2.0123456789',
+    'key that only resembles a sign-in prefix': 'ghostwriter_' + N8_CANARY + 'sessile-ghu',
+}
+# Two ordinary shapes stay rejected by the pre-existing reference rows (stated in the M17 table).
+N8_STILL_REJECTED = {
+    'base64 key starting with /': '/' + N8_CANARY + 'aB3+x9Zq' * 8 + '=',
+    'key ending in .json': 'sk-' + N8_CANARY + '.json',
+}
+
+
+class N8Recording(Scripted):
+    calls = None
+
+    def _complete(self, request):
+        self.calls.append(request)
+        return ModelResponse(text='must not happen')
+
+
+@pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+    """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+    value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+    provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+    provider.calls = []
+    report = provider.diagnostics()
+    assert report['reasons'] == ['API_KEY_REF_INVALID']
+    dumped = json.dumps(report)
+    assert value not in dumped and N8_CANARY not in dumped and value[:12] not in dumped
+    with pytest.raises(ProviderError) as caught:
+        provider.complete(ModelRequest(user()))
+    assert (caught.value.code, caught.value.reason) == ('NOT_CONFIGURED', 'API_KEY_REF_INVALID')
+    assert N8_CANARY not in caught.value.message and N8_CANARY not in str(caught.value)
+    assert provider.probe()['aborted'] == 'NOT_CONFIGURED'
+    assert provider.calls == []
+
+
+@pytest.mark.parametrize('label', list(N8_ACCEPTED))
+def test_m17_rt_02_vendor_api_key_shapes_are_accepted(label):
+    """Positive control table: an ordinary vendor API key is configured, usable and never echoed."""
+    value = N8_ACCEPTED[label]
+    provider = Scripted(environ={'SYNTHETIC_KEY': value}, script=[ModelResponse(text='ok')])
+    report = provider.diagnostics()
+    assert (report['reasons'], report['configured']) == ([], True)
+    assert value not in json.dumps(report)
+    assert providers.key_value_issue(value) is None
+    assert provider.complete(ModelRequest(user())).text == 'ok'
+
+
+def test_m17_rt_02_hint_names_the_class_of_the_rejected_value_only():
+    """The operator hint is one of three fixed sentences chosen by class; it never depends on the value."""
+    hints = {label: providers.key_value_issue(value) for label, value in {**N8_REJECTED, **N8_STILL_REJECTED}.items()}
+    assert set(hints.values()) == {'QUATI_API_KEY_ENV: a file path is not an API key',
+                                   'QUATI_API_KEY_ENV: a variable reference is not an API key',
+                                   'QUATI_API_KEY_ENV: a sign-in session file or token is not an API key'}
+    assert hints['${VAR} reference'] == hints['$VAR reference'] == hints['$HOME path'] == (
+        'QUATI_API_KEY_ENV: a variable reference is not an API key')
+    assert hints['Windows path'] == hints['@file reference'] == hints['file: reference without extension'] == (
+        'QUATI_API_KEY_ENV: a file path is not an API key')
+    assert hints['JWE 5-part'] == hints['Copilot session token'] == hints['base64 of a JSON session file'] == (
+        'QUATI_API_KEY_ENV: a sign-in session file or token is not an API key')
+
+
 def test_cli_transports_take_no_key_and_no_endpoint():
     for transport in ('claude_cli', 'codex_cli', 'gemini_cli'):
         provider = create_provider(ProviderConfig(base_url='not-a-url', api_key_env='BAD-NAME', allow_live=True,
@@ -682,7 +826,9 @@ def service_for(report_or_error, cfg=None):
         stored.append(record)
         return {'sha256': 'ab' * 32, 'path': '/receipts/x.json'}
 
-    service = CLIService(Identity(), cfg or ProviderConfig(allow_live=True, transport='claude_cli'), sink, Fixed)
+    # Fix round 7 (LOG-0041 N7): a probe needs an authorization port; this unit harness allows (setup only).
+    service = CLIService(Identity(), cfg or ProviderConfig(allow_live=True, transport='claude_cli'), sink, Fixed,
+                         authorize=lambda context, operation, action: None)
     return service, stored
 
 

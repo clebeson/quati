@@ -50,17 +50,17 @@ def test_p1_c_audit_repro_needs_the_continuation_and_never_implies_work(tmp_path
     # (a) the social label did not suppress the continuation for non-social-only text
     assert model_requests(harness)[2].messages[-1].content == ask_module.SEARCH_CONTINUATION_TEXT
     assert receipt_of(value)["continuations"] == [{"after_step": 0, "reason": "NO_SEARCH_ON_WORK"}]
-    # (c) deterministic no-work data, a labelled model text and the system notice
-    assert data["result_kind"] == "CONVERSATION"
-    # Fix round 6 (audit F3; S00_RUNTIME_CONTRACT "Independent-review fail-closed refinement"; LOG-0039): was
-    # text_source "model_social_reply" with the model's CLAIM as text; now only application-owned text.
-    assert (data["work_performed"], data["actions_taken"], data["text_source"]) == (False, [], "application_template")
-    assert data["text"] == "Hello!" and CLAIM not in json.dumps(value)
-    assert data["system_notice"] == ask_module.NO_ACTION_NOTICES["en"]
-    assert data["display_lines"] == [data["text"], data["system_notice"]]
+    # (c) Fix round 7 (LOG-0041 D2, audit N3; S00_RUNTIME_CONTRACT "Displayed text and social outcomes" rule 3).
+    # Old: CONVERSATION / SUCCEEDED exit 0 with "Hello!" and the no-action notice (a destructive request
+    # dropped and reported as success to a script). New: BLOCKED / NO_VERIFIED_EXECUTION exit 4, nothing
+    # displayed but the application's own refusal.
+    assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+    assert (data["result_kind"], data["reason"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION")
+    assert not {"text", "text_source", "system_notice", "display_lines", "work_performed"} & set(data)
+    assert CLAIM not in json.dumps(value) and value["next_action"] == ask_module.MODEL_ANSWER_NEXT_ACTION
     assert (data["commitment_id"], data["delivered"], data["tool_calls"]) == (None, False, [])
-    assert "fixture_results" not in data and data["result_status"] == "RESPONDED"
-    assert "MODEL_SOCIAL_REPLY" in value["uncertainties"] and harness.handlers.total_invocations() == 0
+    assert "fixture_results" not in data and data["result_status"] is None
+    assert value["uncertainties"] == ["NO_VERIFIED_EXECUTION"] and harness.handlers.total_invocations() == 0
 
 
 def test_p1_c_repro_without_a_second_reply_is_not_a_conversation(tmp_path, monkeypatch):
@@ -76,13 +76,13 @@ def test_p1_c_conversation_requires_next_action_respond(tmp_path, monkeypatch):
     code, value = harness.ask("Hello, please schedule the audit meeting")
     assert (code, value["status"], value["data"]["result_kind"]) == (4, "BLOCKED", "BLOCKED")
     assert value["data"]["reason"] == "NO_VERIFIED_EXECUTION" and CLAIM not in json.dumps(value)
-    # Fix round 6 (audit F2, SOC-01; LOG-0039). Old expectation: social-only text with a non-respond label
-    # reached the tool loop (result_kind BLOCKED, 2 model requests). New: a greeting-only text never reaches
-    # the loop whatever the label says; it gets the deterministic greeting after the single classification.
+    # Fix round 6 (audit F2, SOC-01; LOG-0039): a greeting-only text never reaches the loop whatever the label.
+    # Fix round 7 (LOG-0041 D1). Old: the deterministic greeting came after the single classification
+    # (1 model request, uncertainty MODEL_LABEL_NOT_SOCIAL). New: the model is not asked at all.
     only = ready(tmp_path / "s", monkeypatch, classified(label), final("Hi!"))
     code, value = only.ask("Hi there, how are you?")
     assert (value["data"]["result_kind"], value["data"]["text"]) == ("GREETING", "Hello!")
-    assert len(model_requests(only)) == 1 and "MODEL_LABEL_NOT_SOCIAL" in value["uncertainties"]
+    assert len(model_requests(only)) == 0 and value["uncertainties"] == []
 
 
 def test_p1_c_a_tool_call_after_the_continuation_ends_the_conversation_path(tmp_path, monkeypatch):
@@ -91,22 +91,22 @@ def test_p1_c_a_tool_call_after_the_continuation_ends_the_conversation_path(tmp_
     assert value["data"]["result_kind"] == "BLOCKED" and value["status"] == "BLOCKED"
 
 
-def test_p1_c_notice_follows_the_greeting_language_and_falls_back_to_english(tmp_path, monkeypatch):
+def test_p1_c_social_label_on_text_outside_the_table_is_blocked_in_any_language(tmp_path, monkeypatch):
+    # Fix round 7 (LOG-0041 D2; renamed from "..._notice_follows_the_greeting_language_and_falls_back_to_
+    # english"). Old: a Portuguese text that opens with a greeting was a CONVERSATION with the Portuguese
+    # no-action notice. New: it is not social-only by the table, so the social label ends BLOCKED like the
+    # Finnish text below (unchanged since round 6); the notices no longer exist.
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("Oi!"), final("Tudo ótimo, obrigado!"))
     code, value = harness.ask("Bom dia! Espero que a família esteja ótima.")
-    assert value["data"]["result_kind"] == "CONVERSATION"
-    assert value["data"]["system_notice"] == ask_module.NO_ACTION_NOTICES["pt"]
-    # Fix round 6 (audit F3; LOG-0039). Old expectation: a text with no greeting template was still a
-    # CONVERSATION whose notice fell back to English. New: a social label on a text that opens with no
-    # recognized greeting is not a social outcome; it is BLOCKED like any loop without a verified execution.
+    assert (code, value["status"], value["data"]["result_kind"], value["data"]["reason"]) == (
+        4, "BLOCKED", "BLOCKED", "NO_VERIFIED_EXECUTION")
+    assert "system_notice" not in value["data"] and "obrigado" not in json.dumps(value)
     other = ready(tmp_path / "f", monkeypatch, classified(SOCIAL), final("x"), final("Kiitos!"))
     code, value = other.ask("Hyvää huomenta! Mitä kuuluu?")
     assert (code, value["status"], value["data"]["result_kind"], value["data"]["reason"]) == (
         4, "BLOCKED", "BLOCKED", "NO_VERIFIED_EXECUTION")
     assert "system_notice" not in value["data"] and "Kiitos" not in json.dumps(value)
-    assert set(ask_module.NO_ACTION_NOTICES) == {"en", "pt", "es", "fr", "de", "it"}
-    for language in set(ask_module.GREETING_LANGUAGES.values()):
-        assert language in ask_module.NO_ACTION_NOTICES
+    assert not hasattr(ask_module, "NO_ACTION_NOTICES") and not hasattr(ask_module, "GREETING_LANGUAGES")
 
 
 # --------------------------------------------------------------- P2-E code digest

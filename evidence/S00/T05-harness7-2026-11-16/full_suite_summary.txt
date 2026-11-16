@@ -1,0 +1,15 @@
+      1         Old: the greeting was a fallback after the failed classification (uncertainty
+      1 46 failed, 1508 passed, 10 skipped in 324.84s (0:05:24)
+      3 FAILED tests/integration/test_approval_injection.py
+      1 FAILED tests/test_spec_readiness.py
+      1 FAILED tests/unit/test_gateway_binding.py
+     17 FAILED tests/unit/test_s00_fix6_authz_ask.py
+      2 FAILED tests/unit/test_s00_fix6_cli_surface.py
+      1 FAILED tests/unit/test_s00_t01.py
+      1 FAILED tests/unit/test_s00_t03_registry.py
+      3 FAILED tests/unit/test_s00_t04_ask.py
+      1 FAILED tests/unit/test_s00_t04_edges.py
+      7 FAILED tests/unit/test_s00_t04_fixes.py
+      3 FAILED tests/unit/test_s00_t04_fixes2.py
+      3 FAILED tests/unit/test_s00_t04_fixes3.py
+      3 FAILED tests/unit/test_s00_t04_fixes4.py

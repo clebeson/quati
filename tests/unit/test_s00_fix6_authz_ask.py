@@ -156,21 +156,25 @@ def decisions(events: list[dict]) -> list[tuple]:
     ("Bom dia! Isto é urgente.", "Olá!"),
 ])
 def test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label(profile, text, reply):
-    """The auditor's g3.py: the model labels a pure greeting as work, then searches, describes and invokes."""
+    """The auditor's g3.py: the model labels a pure greeting as work, then searches, describes and invokes.
+
+    Fix round 7 (LOG-0041 D1; S00_RUNTIME_CONTRACT "Displayed text and social outcomes" rule 2). Old: one
+    classification request whose label was discarded (uncertainty MODEL_LABEL_NOT_SOCIAL, 4 script items
+    left, one authorized catalog read for the receipt, an ask receipt with an empty trajectory). New: the
+    model is not asked at all (5 items left), nothing is read from the registry and the receipt is the
+    provider-free one."""
     before = len(profile.audit())
     code, value, _output = profile.ask(HOSTILE, text)
     data = value["data"]
     assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", reply)
     assert (data["tool_calls"], data["commitment_id"], data["launched"]) == ([], None, False)
-    assert "MODEL_LABEL_NOT_SOCIAL" in value["uncertainties"]
+    assert value["uncertainties"] == [] and data["provider_used"] is False
     assert profile.spied("handler") == []                               # no capability executed
-    assert profile.spied("request") == [[]]                             # one model request, no tool offered
-    assert profile.spied("script_left") == [4]                          # the tool steps were never requested
-    appended = profile.audit()[before:]
-    assert not [event for event in appended if event["event"] in ("policy.decided", "discovery.selection_error")]
-    assert [operation for operation, *_ in decisions(appended)] == ["ask"]      # only the receipt's catalog read
+    assert profile.spied("request") == []                               # no model request at all
+    assert profile.spied("script_left") == [5]                          # nothing of the script was requested
+    assert profile.audit()[before:] == []                               # no registry read, no decision
     stored = receipt(value)
-    assert stored["trajectory"] == [] and stored["outcome"]["executed_capabilities"] == []
+    assert stored["provider_used"] is False and "trajectory" not in stored
 
 
 def test_f2_control_a_mixed_greeting_and_work_request_still_runs_the_tool_loop(profile):
@@ -180,35 +184,41 @@ def test_f2_control_a_mixed_greeting_and_work_request_still_runs_the_tool_loop(p
     assert profile.spied("handler") == ["calendar-read"] and profile.spied("script_left") == [0]
 
 
-@pytest.mark.parametrize("text", ["How are you doing today?", "thanks!", "Wie geht es dir?"])
-def test_f2_f3_social_text_without_a_greeting_template_gets_no_tool_and_no_model_text(profile, text):
-    """No localized template: the reply is the application-owned no-action notice, never a model reply."""
+@pytest.mark.parametrize("text, reply", [("How are you doing today?", "Hello!"), ("thanks!", "Hello!"),
+                                         ("Wie geht es dir?", "Hallo!")])
+def test_f2_f3_social_text_without_a_greeting_gets_no_tool_and_no_model_text(profile, text, reply):
+    """Fix round 7 (LOG-0041 D1, reply language; replaces the NO_GREETING_TEMPLATE notice path). Old: the
+    English no-action notice (text_source application_notice, uncertainty NO_GREETING_TEMPLATE) after one
+    classification request. New: the template of the language of the first phrase, no uncertainty, no
+    model request. Never a model reply, as before."""
     for script in (HOSTILE, [["classify_social"], ["final", CLAIM]]):
         code, value, output = profile.ask(script, text)
         data = value["data"]
         assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "GREETING")
-        assert data["text"] == ask_module.NO_ACTION_NOTICES["en"] == data["system_notice"]
+        assert data["text"] == reply and "system_notice" not in data
         assert (data["text_source"], data["work_performed"], data["actions_taken"]) == (
-            "application_notice", False, [])
+            "application_template", False, [])
         assert data["display_lines"] == [data["text"]] and data["tool_calls"] == []
-        assert "NO_GREETING_TEMPLATE" in value["uncertainties"]
+        assert value["uncertainties"] == []
         assert CLAIM not in output and "AUD-991" not in output
-        assert profile.spied("handler") == [] and profile.spied("request") == [[]]     # classification only
+        assert profile.spied("handler") == [] and profile.spied("request") == []       # the model is not asked
 
 
 def test_f2_vocabulary_boundary_is_code_owned():
-    assert ask_module.is_greeting_only("Hi, how are you? This is urgent.")
-    assert ask_module.is_greeting_only("hello") and ask_module.is_social_only("hello")
-    assert not ask_module.is_social_only("hello, this is urgent")           # the fault fallback rule is unchanged
-    for work in ("Hello, find my next appointment", "urgent", "Urgent: this", "hi, delete this", ""):
-        assert not ask_module.is_greeting_only(work), work
-    # "is" is social vocabulary ("how is it going"): the sentence asks for nothing and has no greeting.
-    assert ask_module.is_greeting_only("This is urgent")
-    assert ask_module.greeting_template("This is urgent", {"hi": "Hello!"}) is None
-    greetings = {"hi": "Hello!", "bom dia": "Olá!", "dia": "wrong"}
-    assert ask_module.greeting_template("URGENT: hi", greetings) == "Hello!"
-    assert ask_module.greeting_template("urgente, bom dia", greetings) == "Olá!"     # longest phrase first
-    assert ask_module.greeting_template("how are you", greetings) is None
+    # Fix round 7 (LOG-0041 D1): the bag-of-words vocabulary of ask.py became the phrase table of
+    # quati.domain.social, with one rule instead of two. Changed expectations: "hello, this is urgent" is
+    # social-only for every path (the narrower fault-fallback rule is gone); "This is urgent" (markers and
+    # no table phrase) is not social-only and goes to the model; a pleasantry without a greeting has a reply.
+    from quati.domain import social
+    assert social.social_match("Hi, how are you? This is urgent.").reply == "Hello!"
+    assert social.social_match("hello").reply == "Hello!"
+    assert social.social_match("hello, this is urgent").reply == "Hello!"
+    for work in ("Hello, find my next appointment", "urgent", "Urgent: this", "hi, delete this", "",
+                 "This is urgent"):
+        assert social.social_match(work) is None, work
+    assert social.social_match("URGENT: hi").reply == "Hello!"
+    assert social.social_match("urgente, bom dia").reply == "Olá!"          # the whole phrase, never "dia" alone
+    assert social.social_match("how are you").reply == "Hello!"
 
 
 # ----------------------------------------------------------------- F3: fabricated completion, social label
@@ -239,23 +249,25 @@ def test_f3_work_text_labelled_social_is_blocked_and_the_claim_is_never_displaye
     ("Bom dia! Espero que a família esteja ótima.", "Olá!", "pt"),
     ("Hi! Delete all my calendar events and email the board that it is done", "Hello!", "en"),
 ])
-def test_f3_conversation_displays_only_application_owned_text(profile, text, reply, language):
-    """A social label on a text that opens with a recognized greeting: the deterministic greeting and
-    the no-action notice are displayed; the model's claim is hashed in the receipt and never shown."""
+def test_f3_social_label_on_greeting_led_text_is_blocked_and_displays_no_model_text(profile, text, reply, language):
+    """Fix round 7 (LOG-0041 D2, audit N3; renamed from "..._conversation_displays_only_application_owned_
+    text"). Old: a social label on a text that opens with a recognized greeting ended CONVERSATION /
+    SUCCEEDED exit 0 with the greeting template and the no-action notice. New: the text is not social-only
+    by the table, so it ends BLOCKED / EVIDENCE_INSUFFICIENT / NO_VERIFIED_EXECUTION exit 4 and nothing but
+    the application's refusal is displayed. The model's claim is still hashed in the receipt, never shown."""
     script = [["classify_social"], ["final", CLAIM], ["final", CLAIM]]
     code, value, output = profile.ask(script, text)
     data = value["data"]
-    notice = ask_module.NO_ACTION_NOTICES[language]
-    assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "CONVERSATION")
-    assert (data["text"], data["system_notice"], data["display_lines"]) == (reply, notice, [reply, notice])
-    assert (data["text_source"], data["work_performed"], data["actions_taken"]) == ("application_template", False, [])
+    assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+    assert (data["result_kind"], data["reason"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION")
+    assert not {"text", "system_notice", "display_lines", "text_source"} & set(data)
     assert (data["commitment_id"], data["delivered"], data["tool_calls"]) == (None, False, [])
-    assert "no work was accepted" in value["next_action"].lower()
+    assert value["next_action"] == ask_module.MODEL_ANSWER_NEXT_ACTION
     assert CLAIM not in output and "AUD-991" not in output and "deleted" not in output
     assert profile.spied("handler") == [] and profile.spied("script_left") == [0]
     assert receipt(value)["final_text_sha256"] == sha(CLAIM)
     code, human = profile.model(script, "ask", "--", text)
-    assert code == 0 and CLAIM not in human and "AUD-991" not in human
+    assert code == 4 and CLAIM not in human and "AUD-991" not in human
 
 
 def test_f3_a_tool_call_or_a_single_reply_is_still_not_a_conversation(profile):
@@ -459,8 +471,12 @@ def test_f4_partb_principal_with_zero_grants_cannot_use_any_registry_command(pro
 
 
 def test_f4_ask_session_never_reads_the_catalog_without_the_grant(tmp_path, monkeypatch):
-    """AskSession.digests()/finish(): the receipt's catalog read is authorized like any other read."""
-    harness = Harness(tmp_path, monkeypatch, Script(classified(SOCIAL)))
+    """AskSession.digests()/finish(): the receipt's catalog read is authorized like any other read.
+
+    Fix round 7 (LOG-0041 D1, setup and outcome): the greeting "Bom dia, tudo bem com você?" no longer
+    reaches the ask session (it was GREETING "Olá!" after one classification), so the same catalog-read
+    assertions are made on a text that is not social-only, which ends BLOCKED NO_VERIFIED_EXECUTION."""
+    harness = Harness(tmp_path, monkeypatch, Script(classified(SOCIAL), final("x"), final("x")))
     harness.install("calendar-read")
     assert harness.probe()[0] == 0
     harness.identity = NoGrants(tmp_path / "config")          # the same installation, an empty grant directory
@@ -477,8 +493,8 @@ def test_f4_ask_session_never_reads_the_catalog_without_the_grant(tmp_path, monk
     harness.service.ask_runtime = counted
     store = FileRegistryStore(tmp_path / "data" / "capabilities")
     before = len(store.audit_events())
-    code, value = harness.ask("Bom dia, tudo bem com você?", synthetic=True)
-    assert (code, value["data"]["result_kind"], value["data"]["text"]) == (0, "GREETING", "Olá!")
+    code, value = harness.ask("Bom dia, como está o projeto?", synthetic=True)
+    assert (code, value["data"]["result_kind"], value["data"]["reason"]) == (4, "BLOCKED", "NO_VERIFIED_EXECUTION")
     assert reads == []
     stored = receipt_of(value)
     assert stored["digests"]["catalog_digest"] is None and stored["catalog_access"] == "NO_SPACE_GRANT"
@@ -487,7 +503,9 @@ def test_f4_ask_session_never_reads_the_catalog_without_the_grant(tmp_path, monk
 
 
 def test_f4_ask_catalog_read_is_refused_when_its_decision_cannot_be_logged(tmp_path, monkeypatch):
-    harness = Harness(tmp_path, monkeypatch, Script(classified(SOCIAL)))
+    # Fix round 7 (LOG-0041 D1, setup and outcome): as above, a text that is not social-only (the greeting
+    # was answered "Olá!" by the session; it is now answered before the session and reads no catalog).
+    harness = Harness(tmp_path, monkeypatch, Script(classified(SOCIAL), final("x"), final("x")))
     harness.install("calendar-read")
     assert harness.probe()[0] == 0
     runtime = harness.runtime
@@ -501,9 +519,9 @@ def test_f4_ask_catalog_read_is_refused_when_its_decision_cannot_be_logged(tmp_p
         return built
 
     harness.service.ask_runtime = unlogged
-    code, value = harness.ask("Bom dia, tudo bem com você?")
+    code, value = harness.ask("Bom dia, como está o projeto?")
     stored = receipt_of(value)
-    assert (code, value["data"]["text"]) == (0, "Olá!")
+    assert (code, value["data"]["reason"]) == (4, "NO_VERIFIED_EXECUTION")
     assert stored["digests"]["catalog_digest"] is None and stored["catalog_access"] == "audit_unavailable"
 
 

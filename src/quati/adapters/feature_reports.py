@@ -12,6 +12,7 @@ import os
 import re
 from pathlib import Path
 
+from quati.adapters.private_fs import read_private, state_directory
 from quati.behavior.fsutil import atomic_write
 
 _HASH = re.compile(r"[0-9a-f]{64}")
@@ -34,7 +35,8 @@ class FileFeatureReportStore:
         path = self._path(report.get("config_hash"))
         if path is None:
             return
-        self.root.mkdir(parents=True, mode=0o700, exist_ok=True)
+        # N7: a real owner-only directory chain or UnsafeStatePath; the pointer never follows a symlink.
+        state_directory(self.root.name, root=self.root.parent)
         pointer = {"config_hash": report["config_hash"], "transport": report["transport"],
                    "measured_at": report["measured_at"], "receipt_path": receipt["path"],
                    "receipt_sha256": receipt["sha256"]}
@@ -44,9 +46,13 @@ class FileFeatureReportStore:
         """The stored report and its reference, or None when absent, unreadable or altered."""
         path = self._path(config_hash)
         try:
-            pointer = json.loads(path.read_bytes())
+            # A reader modifies nothing: a missing, symlinked, foreign or permissive store is "not measured".
+            if path is None or state_directory(self.root.name, root=self.root.parent, create=False,
+                                               tighten=False) is None:
+                return None
+            pointer = json.loads(read_private(path) or b"")
             raw = Path(pointer["receipt_path"]).read_bytes()
-        except (AttributeError, OSError, ValueError, KeyError, TypeError):
+        except (OSError, ValueError, KeyError, TypeError):
             return None
         from hashlib import sha256
         if sha256(raw).hexdigest() != pointer.get("receipt_sha256"):

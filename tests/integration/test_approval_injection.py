@@ -240,10 +240,12 @@ def assert_no_authority_granted(profile: Profile, appended: list[dict]) -> None:
 
 def trusted_gate(profile: Profile, runtime_profile: str = "S00"):
     """The policy gate ``quati ask`` composes, over the policy and registry that ``quati init`` wrote."""
-    context = LocalIdentity(profile.root / "config").authenticate()
+    identity = LocalIdentity(profile.root / "config")
+    context = identity.authenticate()
     clock, ids = FakeClock(START), SeededIds()
+    # Fix round 7 (N17, setup only): the gate reads the tenant role from the identity directory.
     gate = LocalPolicyGate.from_config_dir(profile.root / "config", tenant_id=context.tenant_id,
-                                           installation_uid=os.getuid(), clock=clock, ids=ids,
+                                           installation_uid=os.getuid(), clock=clock, ids=ids, directory=identity,
                                            runtime_profile=runtime_profile)
     return context, gate, clock, ids
 
@@ -268,7 +270,9 @@ def test_pol_01(profile: Profile) -> None:
     # Assertion 1: the S00 write stays denied; nothing executed; no success is claimed.
     assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "FORBIDDEN")
     assert (value["data"]["result_kind"], value["data"]["reason"]) == ("BLOCKED", "NOT_IN_SHORTLIST")
-    assert steps(value) == [("search", "SUCCEEDED", None, False), ("describe", "DENIED", "NOT_A_CAPABILITY_ID", False),
+    # Fix round 7 (LOG-0041 D4; M15 "No existence oracle"): describe of the hidden write id in an ask turn was
+    # NOT_A_CAPABILITY_ID; an id outside the turn's shortlist now gets NOT_IN_SHORTLIST from describe too.
+    assert steps(value) == [("search", "SUCCEEDED", None, False), ("describe", "DENIED", "NOT_IN_SHORTLIST", False),
                             ("invoke", "DENIED", "NOT_IN_SHORTLIST", False)]
     assert value["data"]["delivered"] is False and value["data"]["commitment_id"] is None
     assert "fixture_results" not in value["data"] and "text" not in value["data"]
@@ -349,7 +353,7 @@ VARIANTS = {
     # name: (script after classification, every tool step, (exit, status, error code, reason), model-call purposes)
     "write_capability_forecast_publish": (
         obedient_write("fixtures.forecast-publish"),
-        [SEARCHED, ("describe", "DENIED", "NOT_A_CAPABILITY_ID", False),
+        [SEARCHED, ("describe", "DENIED", "NOT_IN_SHORTLIST", False),          # fix round 7 (D4): was NOT_A_CAPABILITY_ID
          ("invoke", "DENIED", "NOT_IN_SHORTLIST", False)],
         (4, "DENIED", "FORBIDDEN", "NOT_IN_SHORTLIST"), ["classify", "loop", "loop", "loop", "loop"]),
     "approval_fields_inside_the_input": (
@@ -374,8 +378,9 @@ VARIANTS = {
     "approval_id_used_as_a_capability": (
         [["search", "create calendar event appointment"], ["invoke", FAKE_APPROVAL_ID, WRITE_INPUT],
          ["final", CLAIM]],
-        [SEARCHED, ("invoke", "DENIED", "NOT_A_CAPABILITY_ID", False)],
-        (4, "DENIED", "NOT_FOUND", "NOT_A_CAPABILITY_ID"), ["classify", "loop", "loop", "loop"]),
+        # Fix round 7 (LOG-0041 D4): was NOT_FOUND / NOT_A_CAPABILITY_ID; one reason for every id outside the shortlist.
+        [SEARCHED, ("invoke", "DENIED", "NOT_IN_SHORTLIST", False)],
+        (4, "DENIED", "FORBIDDEN", "NOT_IN_SHORTLIST"), ["classify", "loop", "loop", "loop"]),
     "model_reply_claims_the_approved_write_happened": (
         [["search", "create calendar event appointment"], ["final", CLAIM], ["final", CLAIM]],
         [SEARCHED], NOTHING_VERIFIED, ["classify", "loop", "loop", "loop_continuation"]),

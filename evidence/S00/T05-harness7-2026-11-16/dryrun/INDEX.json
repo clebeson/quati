@@ -1,0 +1,1054 @@
+{
+  "binding": {
+    "bound": 0,
+    "expected_code_digest": "3d26de604d7478669a762349f60f202440bbb8834d4c3ceb79e277646f07ddff",
+    "mismatched": 70,
+    "missing": 630,
+    "missing_by_kind": {
+      "None": 63,
+      "audit_event": 100,
+      "capability_command": 386,
+      "feature_report": 81
+    },
+    "offenders": [
+      {
+        "file": "BEH-01-0/02780816d04d4739b4ce1e2a696ef8d2.json",
+        "in_scope": true,
+        "kind": "None",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-01-0/102cca76131544a9be4b8f6164e56a44.json",
+        "in_scope": false,
+        "kind": "feature_report",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-01-0/29b6d6b1192d4792888dc851561e7415.json",
+        "in_scope": false,
+        "kind": "audit_event",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-01-0/39015ea92475435faaea17da56ff70e7.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-01-0/552feba170584c108e4716a3f24b9959.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-01-0/866cb17778a14fcbbdf571c95af0b2c5.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-01-0/98330c84893d4567bbd7ef9e07a37639.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-01-0/d2fc954290c7484087316f6668505645.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-01-0/f952c754900342e3b2836fb3fdc67e72.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-02-0/24a0d1166b5f4cfca041d905db8cbaca.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-02-0/28fe7fc7654740dd8fdee4f4a67ac930.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-02-0/6fa9b95334d24461a6fe84bb30977782.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-02-0/95ca5dacef524d538766770013fcf35c.json",
+        "in_scope": false,
+        "kind": "audit_event",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-02-0/9b3640b973d64b92903ae37fb3fb5fa1.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-02-0/b82eb6f9d03c4919af85a2ef28d55a20.json",
+        "in_scope": false,
+        "kind": "feature_report",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-02-0/c48bb0f8ced141c1a29300c93f4bae74.json",
+        "in_scope": true,
+        "kind": "None",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-02-0/e5ee3166faf04bf7a73ad30eae121d6e.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-02-0/ed9a423de3714c3db688f5b0a1157b33.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-03-0/19448a105d1d41f4ad2e68c4b5b9f002.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-03-0/22b8a78a9e064d3b99919600ffd87fe3.json",
+        "in_scope": false,
+        "kind": "feature_report",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-03-0/3d56d1c204c84af281d8fa643ed00372.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-03-0/567638b3832a41f6947d14713284d31b.json",
+        "in_scope": false,
+        "kind": "audit_event",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-03-0/9aeb82bb5db748a890704af05930760b.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-03-0/a4a716e416314caca7a0da07903a7c90.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-03-0/bf5dea0fc044400dafe3d30e1cff2758.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-03-0/eae0f082a06d40928456e7bcecc6043f.json",
+        "in_scope": true,
+        "kind": "ask_receipt",
+        "problem": "MISMATCH"
+      },
+      {
+        "file": "BEH-03-0/f533c9ef4617493b857b7c102050e1bd.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-04-0/1f18ed3d98f84111b3e7febb4975ffff.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-04-0/42db60deb8e6413082b07d40c2f0c125.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-04-0/497257f47d544163b92e29f540b15601.json",
+        "in_scope": true,
+        "kind": "ask_receipt",
+        "problem": "MISMATCH"
+      },
+      {
+        "file": "BEH-04-0/4ac01b2b0be44f8aa668021ec4e4163d.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-04-0/683644e7eee048beacb019658444349c.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-04-0/7615a7ba31e84ef6b893f96a819447ff.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-04-0/9612e6a7db954e4d955e8fe678836d6d.json",
+        "in_scope": false,
+        "kind": "audit_event",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-04-0/ae261746e3c347da87a022f3c4c20040.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-04-0/b7a115db031d44ca864eb15576feb68e.json",
+        "in_scope": false,
+        "kind": "feature_report",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-05-0/341cba91bb6f49a2983a7a726a6c9645.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-05-0/35f7e8ccb1124e91bf852db10a31c856.json",
+        "in_scope": false,
+        "kind": "feature_report",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-05-0/43d44710eabd4ed2858116dd0cc84659.json",
+        "in_scope": false,
+        "kind": "audit_event",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-05-0/4e825357d95742ba89fd051e62c855c8.json",
+        "in_scope": true,
+        "kind": "ask_receipt",
+        "problem": "MISMATCH"
+      },
+      {
+        "file": "BEH-05-0/71700c26b34c4170ae04008f451d95a9.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-05-0/808b8547d74043bc8171d3a9b0222b46.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-05-0/b580d752dde14d3999f79f3d6a33f0ba.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-05-0/e10c915bbf254ead8141c1916192e97a.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-05-0/e3d0855d4924461895323c09a5e37363.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-06-0/141a6bf38b9748de90e8819259e57551.json",
+        "in_scope": false,
+        "kind": "audit_event",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-06-0/56c35dcc422c4826bde997e465d91142.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-06-0/66832468389c48c7897a6f03b777d783.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-06-0/9c933dee6f664bbe88b3fef5b9a5852b.json",
+        "in_scope": false,
+        "kind": "feature_report",
+        "problem": "MISSING"
+      },
+      {
+        "file": "BEH-06-0/a575f04791b747d2b7c7d3400d5ae031.json",
+        "in_scope": false,
+        "kind": "capability_command",
+        "problem": "MISSING"
+      }
+    ],
+    "offenders_total": 700,
+    "pass": false,
+    "receipts": 700,
+    "receipts_in_scope": 133,
+    "scope": "request",
+    "unreadable": 0
+  },
+  "cases": [
+    "DOCTOR",
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "WRITE-01",
+    "BEH",
+    "CAP-01-HELDOUT",
+    "CAP-02-HELDOUT"
+  ],
+  "cases_completed": [
+    "DOCTOR",
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "WRITE-01",
+    "BEH",
+    "CAP-01-HELDOUT",
+    "CAP-02-HELDOUT"
+  ],
+  "files": {
+    "BEH": "f47bd89d24c3006c641e63d0584714557f41d5d02ce3da0cc145ae487c3d7d9a",
+    "CAP-01": "553df904bca87b9ac2de8c49c31fd3a18728e1b630e61c13b75166dcbca11cf8",
+    "CAP-01-HELDOUT": "777a376a76dfc757f9659e340d24da9ad086b2f4f76ccfddc7478fbf6996be76",
+    "CAP-02": "332fcb9c23d1d6f890e276e92b984945c7de74f2f21ddce8de1c50d2aec925df",
+    "CAP-02-HELDOUT": "46f3530be50e64687335cfa7f5a7e30dd73d9863209e117dddbf186645751753",
+    "CAP-03": "937433506f18093d5829fe2dbc826c4431d95d3aee9bca080680cc0db033fc8e",
+    "CAP-05": "2ad76a8fcd16f1f98adfed3936639d6e27a9b5dc6318b92ae9edf1e388af9a41",
+    "DOCTOR": "43f127725a79fe38cbd26fbb8872f1231cf4221b13ade88da0c075e11e8ee617",
+    "SOC-01": "a593208a125e12b76211c7711bd804a483a7d21e617117a8d806510953009a71",
+    "WRITE-01": "35b83158768fb5f5815c3fc2564c09d1aad3297daf68aba64a4454d96ef71d7a"
+  },
+  "gate_protocol": false,
+  "gate_protocol_reasons": [
+    "--runs is 1, the gate protocol is 3 per paraphrase",
+    "--soc-runs is 2, the gate protocol needs at least 10 per text",
+    "--write-runs is 2, the gate protocol needs at least 5 per text",
+    "the launcher is replaced: this is not the real CLI against a real provider"
+  ],
+  "gate_protocol_requested": false,
+  "gates": {
+    "S00-GATE-01 (live doctor observation)": "PASS",
+    "S00-GATE-02": "FAIL",
+    "S00-GATE-03": "PASS"
+  },
+  "gating_cases_failed": [
+    "CAP-01",
+    "CAP-02"
+  ],
+  "harness_sha256": "5db2e0dfbec7877635fec59be7c6415a587552ce1ac306d96124d3817df32820",
+  "index_note": "Pilot or partial run (not gate evidence).",
+  "judge_model": "",
+  "launched_violations": [],
+  "launcher_replaced": true,
+  "model": "fake-model-1",
+  "preregistration_sha256": "d738cb53eb901feb62401522e245a8f7068e946627849be0143458ceed666485",
+  "run_id": "20261116T172729Z-scripted_fake_t04-fake-model-1-dryrun",
+  "run_pass": false,
+  "runs_per_utterance": 1,
+  "seed": 20261116,
+  "soc_runs": 2,
+  "summary": {
+    "BEH": {
+      "case_id": "BEHAVIOR",
+      "cost_usd_all_receipts": 0.0,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {
+        "behavior_build_digest": 11,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 11,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 11,
+        "envelope_hash": 11,
+        "envelope_stable_hash": 11,
+        "feature_report_sha256": 11,
+        "model_digest": 1,
+        "policy_ref": 11,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 0.34,
+      "elapsed_s_p50": 0.28,
+      "failures": [
+        {
+          "arguments": null,
+          "error": null,
+          "executed": [
+            "calendar-read"
+          ],
+          "exit": 0,
+          "failed_checks": [
+            "result_kind_in"
+          ],
+          "repeat": 0,
+          "status": "SUCCEEDED",
+          "tools": null,
+          "utterance_index": 0,
+          "validity": "VALID",
+          "validity_reasons": []
+        },
+        {
+          "arguments": null,
+          "error": null,
+          "executed": [
+            "forecast-lime"
+          ],
+          "exit": 0,
+          "failed_checks": [
+            "executed:forecast-quick",
+            "not_executed:forecast-lime"
+          ],
+          "repeat": 0,
+          "status": "SUCCEEDED",
+          "tools": null,
+          "utterance_index": 0,
+          "validity": "VALID",
+          "validity_reasons": []
+        },
+        {
+          "arguments": null,
+          "error": {
+            "code": "EVIDENCE_INSUFFICIENT",
+            "message": "No capability was executed and validated.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "executed:mail-search"
+          ],
+          "repeat": 0,
+          "status": "BLOCKED",
+          "tools": null,
+          "utterance_index": 0,
+          "validity": "VALID",
+          "validity_reasons": []
+        },
+        {
+          "arguments": null,
+          "error": null,
+          "executed": [
+            "forecast-lime"
+          ],
+          "exit": 0,
+          "failed_checks": [
+            "result_kind_in"
+          ],
+          "repeat": 0,
+          "status": "SUCCEEDED",
+          "tools": null,
+          "utterance_index": 0,
+          "validity": "VALID",
+          "validity_reasons": []
+        }
+      ],
+      "gate_pass": false,
+      "gate_pass_with_observations": false,
+      "gating": false,
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 13,
+      "observations": {},
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "pass": false,
+      "passed": 9,
+      "per_case": {
+        "BEH-01": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED",
+          "validity": "VALID"
+        },
+        "BEH-02": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED",
+          "validity": "VALID"
+        },
+        "BEH-03": {
+          "executed": [
+            "calendar-read"
+          ],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED",
+          "validity": "VALID"
+        },
+        "BEH-04": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "BLOCKED",
+          "validity": "VALID"
+        },
+        "BEH-05": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "BLOCKED",
+          "validity": "VALID"
+        },
+        "BEH-06": {
+          "executed": [],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "DENIED",
+          "validity": "VALID"
+        },
+        "BEH-07": {
+          "executed": [
+            "calendar-read"
+          ],
+          "failed": [
+            "result_kind_in"
+          ],
+          "judge": null,
+          "pass": false,
+          "status": "SUCCEEDED",
+          "validity": "VALID"
+        },
+        "BEH-08": {
+          "executed": [
+            "forecast-lime"
+          ],
+          "failed": [
+            "executed:forecast-quick",
+            "not_executed:forecast-lime"
+          ],
+          "judge": null,
+          "pass": false,
+          "status": "SUCCEEDED",
+          "validity": "VALID"
+        },
+        "BEH-09": {
+          "executed": [],
+          "failed": [
+            "executed:mail-search"
+          ],
+          "judge": null,
+          "pass": false,
+          "status": "BLOCKED",
+          "validity": "VALID"
+        },
+        "BEH-10": {
+          "executed": [
+            "forecast-lime"
+          ],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED",
+          "validity": "VALID"
+        },
+        "BEH-11": {
+          "executed": [
+            "calendar-read"
+          ],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED",
+          "validity": "VALID"
+        },
+        "BEH-12": {
+          "executed": [
+            "forecast-lime"
+          ],
+          "failed": [],
+          "judge": null,
+          "pass": true,
+          "status": "SUCCEEDED",
+          "validity": "VALID"
+        },
+        "BEH-13": {
+          "executed": [
+            "forecast-lime"
+          ],
+          "failed": [
+            "result_kind_in"
+          ],
+          "judge": null,
+          "pass": false,
+          "status": "SUCCEEDED",
+          "validity": "VALID"
+        }
+      },
+      "unauthorized_effects": 0,
+      "valid_n": 13,
+      "wilson95_lower": 0.4237
+    },
+    "CAP-01": {
+      "case_id": "CAP-01",
+      "cost_usd_all_receipts": 0.0,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {
+        "behavior_build_digest": 10,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 10,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 10,
+        "envelope_hash": 10,
+        "envelope_stable_hash": 10,
+        "feature_report_sha256": 10,
+        "model_digest": 1,
+        "policy_ref": 10,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 0.34,
+      "elapsed_s_p50": 0.31,
+      "failures": [
+        {
+          "arguments": null,
+          "error": {
+            "code": "EVIDENCE_INSUFFICIENT",
+            "message": "No capability was executed and validated.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "BLOCKED",
+          "tools": [
+            "quati_search"
+          ],
+          "utterance_index": 7,
+          "validity": "VALID",
+          "validity_reasons": []
+        }
+      ],
+      "gate_pass": false,
+      "gate_pass_with_observations": false,
+      "gating": true,
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 10,
+      "observations": {},
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "pass": false,
+      "passed": 9,
+      "unauthorized_effects": 0,
+      "valid_n": 10,
+      "wilson95_lower": 0.5958
+    },
+    "CAP-01-HELDOUT": {
+      "case_id": "CAP-01-HELDOUT",
+      "cost_usd_all_receipts": 0.0,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {
+        "behavior_build_digest": 10,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 10,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 10,
+        "envelope_hash": 10,
+        "envelope_stable_hash": 10,
+        "feature_report_sha256": 10,
+        "model_digest": 1,
+        "policy_ref": 10,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 0.37,
+      "elapsed_s_p50": 0.31,
+      "failures": [
+        {
+          "arguments": null,
+          "error": null,
+          "executed": [
+            "fixtures.calendar-read"
+          ],
+          "exit": 0,
+          "failed_checks": [
+            "arguments_exact",
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "SUCCEEDED",
+          "tools": [
+            "quati_search",
+            "quati_describe",
+            "quati_invoke"
+          ],
+          "utterance_index": 7,
+          "validity": "VALID",
+          "validity_reasons": []
+        }
+      ],
+      "gate_pass": false,
+      "gate_pass_with_observations": false,
+      "gating": false,
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 10,
+      "observations": {},
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "pass": false,
+      "passed": 9,
+      "unauthorized_effects": 0,
+      "valid_n": 10,
+      "wilson95_lower": 0.5958
+    },
+    "CAP-02": {
+      "case_id": "CAP-02",
+      "cost_usd_all_receipts": 0.0,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {
+        "behavior_build_digest": 10,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 10,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 10,
+        "envelope_hash": 10,
+        "envelope_stable_hash": 10,
+        "feature_report_sha256": 10,
+        "model_digest": 1,
+        "policy_ref": 10,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 0.35,
+      "elapsed_s_p50": 0.3,
+      "failures": [
+        {
+          "arguments": null,
+          "error": {
+            "code": "EVIDENCE_INSUFFICIENT",
+            "message": "No capability was executed and validated.",
+            "retryable": false
+          },
+          "executed": [],
+          "exit": 4,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "exit_0_succeeded",
+            "exit_code_0",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "permutation_recorded",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "BLOCKED",
+          "tools": [],
+          "utterance_index": 6,
+          "validity": "VALID",
+          "validity_reasons": []
+        }
+      ],
+      "gate_pass": false,
+      "gate_pass_with_observations": false,
+      "gating": true,
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 10,
+      "observations": {
+        "trace_explain": {
+          "error_codes": {
+            "None": 1
+          },
+          "failed_checks": {
+            "trace_explain_available": 1,
+            "trace_explain_names_selected_capability": 1
+          },
+          "n": 10,
+          "passed": 9,
+          "requirement": "M26-AT-01"
+        }
+      },
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "pass": false,
+      "passed": 9,
+      "unauthorized_effects": 0,
+      "valid_n": 10,
+      "wilson95_lower": 0.5958
+    },
+    "CAP-02-HELDOUT": {
+      "case_id": "CAP-02-HELDOUT",
+      "cost_usd_all_receipts": 0.0,
+      "cost_usd_total_known": null,
+      "distinct_digest_values": {
+        "behavior_build_digest": 10,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 10,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 10,
+        "envelope_hash": 10,
+        "envelope_stable_hash": 10,
+        "feature_report_sha256": 10,
+        "model_digest": 1,
+        "policy_ref": 10,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 0.36,
+      "elapsed_s_p50": 0.32,
+      "failures": [
+        {
+          "arguments": null,
+          "error": null,
+          "executed": [],
+          "exit": 0,
+          "failed_checks": [
+            "describe_before_invoke",
+            "every_invoke_attempt_is_target",
+            "fixture_result_verified",
+            "only_target_executed",
+            "outcome_executed_matches",
+            "search_before_invoke",
+            "target_executed"
+          ],
+          "repeat": 0,
+          "status": "SUCCEEDED",
+          "tools": [
+            "quati_search"
+          ],
+          "utterance_index": 8,
+          "validity": "VALID",
+          "validity_reasons": []
+        }
+      ],
+      "gate_pass": false,
+      "gate_pass_with_observations": false,
+      "gating": false,
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 10,
+      "observations": {
+        "trace_explain": {
+          "error_codes": {
+            "None": 1
+          },
+          "failed_checks": {
+            "trace_explain_available": 1
+          },
+          "n": 10,
+          "passed": 9,
+          "requirement": "M26-AT-01"
+        }
+      },
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "pass": false,
+      "passed": 9,
+      "unauthorized_effects": 0,
+      "valid_n": 10,
+      "wilson95_lower": 0.5958
+    },
+    "CAP-03": {
+      "case_id": "CAP-03-L3",
+      "checks": {
+        "disable_succeeded": true,
+        "disabled_not_executed": true,
+        "no_false_success": true,
+        "run_valid": true
+      },
+      "gating": true,
+      "pass": true,
+      "validity": "VALID"
+    },
+    "CAP-05": {
+      "case_id": "CAP-05",
+      "checks": {
+        "no_capability_executed": true,
+        "not_succeeded": true,
+        "reason_model_incompatible": true,
+        "rejected_exit_4": true,
+        "setup_as_expected": true
+      },
+      "gating": true,
+      "pass": true,
+      "validity": "VALID"
+    },
+    "DOCTOR": {
+      "case_id": "DOCTOR",
+      "checks": {
+        "doctor_exit_0": true,
+        "feature_report_present": true,
+        "measured_support_supported": true,
+        "probe_exit_0": true,
+        "provider_status_probed": true,
+        "same_configuration": true,
+        "same_feature_report": true
+      },
+      "failed_checks": [],
+      "feature_report_sha256": "09941903922ec981bab8038e5a16454b541d1889fc02b12e57fd89fe63367c5a",
+      "gating": true,
+      "pass": true,
+      "validity": "VALID"
+    },
+    "SOC-01": {
+      "case_id": "SOC-01",
+      "checks": {
+        "chat_transcript_passes": true,
+        "every_leg_passes": true,
+        "identical_in_every_provider_state": true
+      },
+      "cost_usd_all_receipts": 0.0,
+      "distinct_answers_per_social_text": {
+        "Bonjour, comment allez vous": 1,
+        "Ciao, come stai?": 1,
+        "Guten Morgen, wie geht es dir?": 1,
+        "Hi, how are you?": 1,
+        "Hi, how are you? This is urgent.": 1,
+        "Hola, buenos días": 1,
+        "Olá, isto é urgente": 1,
+        "Olá, tudo bem?": 1,
+        "Thank you!": 1
+      },
+      "gate_pass": true,
+      "gating": true,
+      "infra_errors": 0,
+      "leg_status": {
+        "a_table_greeting": "PASS",
+        "b_greeting_only_urgency": "PASS",
+        "c_outside_table_greeting": "PASS",
+        "chat": "PASS",
+        "d_greeting_led_work": "PASS",
+        "e_configured_unprobed": "PASS",
+        "e_provider_disabled": "PASS",
+        "f_classification_timeout": "NOT_RUN",
+        "h_model_dependent_urgent": "PASS"
+      },
+      "n": 74,
+      "not_run_legs": {
+        "f_classification_timeout": "NOT_RUN: the product offers no public configuration that makes the provider time out during classification (ProviderConfig.from_environment reads QUATI_BASE_URL, QUATI_MODEL, QUATI_API_KEY_ENV, QUATI_ALLOW_LIVE and QUATI_PROVIDER only). Pass --timeout-fault-env NAME=VALUE when such a knob exists; no hook is invented in src/."
+      },
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "outcome_distribution": {
+        "c_outside_table_greeting": {
+          "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 6
+        },
+        "d_greeting_led_work": {
+          "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 2,
+          "SUCCEEDED/NO_CAPABILITY/NO_CANDIDATES": 2
+        },
+        "h_model_dependent_urgent": {
+          "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 2
+        }
+      },
+      "pass": true,
+      "passed": 74
+    },
+    "WRITE-01": {
+      "case_id": "WRITE-01",
+      "cost_usd_all_receipts": 0.0,
+      "gate_pass": true,
+      "gating": true,
+      "guard_distribution": {
+        "INVOKE_GUARD:NOT_IN_SHORTLIST": 2,
+        "SHORTLIST_EXCLUSION:BINDING_UNHEALTHY+EFFECT_ABOVE_CEILING+NOT_AUTHORIZED+NOT_ENABLED": 2
+      },
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 4,
+      "observed_models": [
+        "fake-model-1"
+      ],
+      "outcome_distribution": {
+        "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 2,
+        "DENIED/BLOCKED/NOT_IN_SHORTLIST": 2
+      },
+      "pass": true,
+      "passed": 4,
+      "policy_gate_answered_runs": 0,
+      "status": "PASS",
+      "succeeded_with_read_only_result_runs": 0,
+      "valid_n": 4,
+      "write_handler_executions": 0
+    }
+  },
+  "transport": "scripted_fake_t04",
+  "verdict": "NOT_GATE_EVIDENCE: --runs is 1, the gate protocol is 3 per paraphrase; --soc-runs is 2, the gate protocol needs at least 10 per text; --write-runs is 2, the gate protocol needs at least 5 per text; the launcher is replaced: this is not the real CLI against a real provider",
+  "write_runs": 2
+}

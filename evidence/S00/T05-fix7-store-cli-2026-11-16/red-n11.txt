@@ -1,0 +1,659 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF..                                      [100%]
+=================================== FAILURES ===================================
+_____ test_show_returns_the_recorded_receipt_and_decisions_of_one_request ______
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+
+    def test_show_returns_the_recorded_receipt_and_decisions_of_one_request(recorded: Recorded) -> None:
+        """D6: status, result kind, digests, usage, tool trajectory, policy and authz decisions, evidence ref."""
+        request_id, trace_id = ids(recorded.work)
+        receipt = stored(recorded.work)
+        code, value = recorded.profile.quati("trace", "show", request_id, "--json")
+>       assert (code, value["status"], value["error"]) == (0, "SUCCEEDED", None)
+E       AssertionError: assert (4, 'UNAVAILA...able': False}) == (0, 'SUCCEEDED', None)
+E         
+E         At index 0 diff: 4 != 0
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:184: AssertionError
+______ test_show_by_trace_id_and_by_request_option_return_the_same_record ______
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+
+    def test_show_by_trace_id_and_by_request_option_return_the_same_record(recorded: Recorded) -> None:
+        request_id, trace_id = ids(recorded.work)
+        by_request = recorded.profile.raw("trace", "show", request_id, "--json")
+        assert recorded.profile.raw("trace", "show", trace_id, "--json") == by_request
+        assert recorded.profile.raw("trace", "show", "--request", request_id, "--json") == by_request
+>       assert by_request[0] == 0
+E       assert 4 == 0
+
+tests/integration/cli/test_trace_commands.py:226: AssertionError
+__________ test_show_of_a_greeting_has_no_trajectory_and_no_decision ___________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+
+    def test_show_of_a_greeting_has_no_trajectory_and_no_decision(recorded: Recorded) -> None:
+        request_id, trace_id = ids(recorded.greeting)
+        code, value = recorded.profile.quati("trace", "show", trace_id, "--json")
+>       assert (code, value["status"]) == (0, "SUCCEEDED")
+E       AssertionError: assert (4, 'UNAVAILABLE') == (0, 'SUCCEEDED')
+E         
+E         At index 0 diff: 4 != 0
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:232: AssertionError
+_______ test_trace_commands_are_read_only_and_log_one_authorization_each _______
+
+scratch = <test_trace_commands.Recorded object at 0x71f4503df250>
+
+    def test_trace_commands_are_read_only_and_log_one_authorization_each(scratch: Recorded) -> None:
+        """Nothing but one ``authz.decided`` line is written; no receipt, no provider, no handler."""
+        profile, request_id = scratch.profile, ids(scratch.work)[0]
+        for position, operation in enumerate(("show", "explain")):
+            before, events = profile.files(), profile.audit()
+>           assert profile.quati("trace", operation, request_id, "--json")[0] == 0
+E           assert 4 == 0
+
+tests/integration/cli/test_trace_commands.py:245: AssertionError
+_ test_explain_names_the_selected_capability_and_why_each_alternative_was_excluded _
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+
+    def test_explain_names_the_selected_capability_and_why_each_alternative_was_excluded(recorded: Recorded) -> None:
+        """M26-AT-01 / CAP-02 in the S00 form: built from the receipt and the audit log, no model call."""
+        request_id, trace_id = ids(recorded.synthetic)
+        receipt = stored(recorded.synthetic)
+        policy = [event for event in recorded.profile.audit()
+                  if event["event"] == "policy.decided" and event["request_id"] == request_id][0]
+        code, value = recorded.profile.quati("trace", "explain", request_id, "--json")
+>       assert (code, value["status"], value["error"]) == (0, "SUCCEEDED", None)
+E       AssertionError: assert (4, 'UNAVAILA...able': False}) == (0, 'SUCCEEDED', None)
+E         
+E         At index 0 diff: 4 != 0
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:261: AssertionError
+_ test_explain_without_a_recorded_catalog_says_that_unranked_candidates_are_unknown _
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+
+    def test_explain_without_a_recorded_catalog_says_that_unranked_candidates_are_unknown(recorded: Recorded) -> None:
+        """The default receipt holds only the catalog digest: the unranked decoy is not invented."""
+        code, value = recorded.profile.quati("trace", "explain", ids(recorded.work)[0], "--json")
+>       assert (code, value["status"]) == (0, "PARTIAL")
+E       AssertionError: assert (4, 'UNAVAILABLE') == (0, 'PARTIAL')
+E         
+E         At index 0 diff: 4 != 0
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:296: AssertionError
+__________________ test_explain_of_a_greeting_selects_nothing __________________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+
+    def test_explain_of_a_greeting_selects_nothing(recorded: Recorded) -> None:
+        code, value = recorded.profile.quati("trace", "explain", ids(recorded.greeting)[0], "--json")
+>       assert (code, value["status"]) == (0, "PARTIAL")
+E       AssertionError: assert (4, 'UNAVAILABLE') == (0, 'PARTIAL')
+E         
+E         At index 0 diff: 4 != 0
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:304: AssertionError
+_________ test_no_request_text_model_text_or_secret_is_displayed[show] _________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'show'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    def test_no_request_text_model_text_or_secret_is_displayed(recorded: Recorded, operation: str) -> None:
+        """S00 runtime contract: hashes only. The synthetic receipt FILE holds both texts; the output never does."""
+        raw = receipt_file(recorded.synthetic)[1].read_text(encoding="utf-8")
+        assert REQUEST_MARK in raw and MODEL_MARK in raw and ID_MARK in raw      # the markers really are on disk
+        for value in (recorded.work, recorded.synthetic, recorded.greeting):
+            for identifier in ids(value):
+                code, output = recorded.profile.raw("trace", operation, identifier, "--json")
+>               assert code == 0
+E               assert 4 == 0
+
+tests/integration/cli/test_trace_commands.py:319: AssertionError
+_______ test_no_request_text_model_text_or_secret_is_displayed[explain] ________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'explain'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    def test_no_request_text_model_text_or_secret_is_displayed(recorded: Recorded, operation: str) -> None:
+        """S00 runtime contract: hashes only. The synthetic receipt FILE holds both texts; the output never does."""
+        raw = receipt_file(recorded.synthetic)[1].read_text(encoding="utf-8")
+        assert REQUEST_MARK in raw and MODEL_MARK in raw and ID_MARK in raw      # the markers really are on disk
+        for value in (recorded.work, recorded.synthetic, recorded.greeting):
+            for identifier in ids(value):
+                code, output = recorded.profile.raw("trace", operation, identifier, "--json")
+>               assert code == 0
+E               assert 4 == 0
+
+tests/integration/cli/test_trace_commands.py:319: AssertionError
+_____________ test_output_is_byte_identical_across_processes[show] _____________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'show'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    def test_output_is_byte_identical_across_processes(recorded: Recorded, operation: str) -> None:
+        request_id = ids(recorded.synthetic)[0]
+        outputs = {recorded.profile.raw("trace", operation, request_id, "--json", extra=extra)
+                   for extra in ({"PYTHONHASHSEED": "0"}, {"PYTHONHASHSEED": "4242", "TZ": "Asia/Tokyo", "LC_ALL": "C"})}
+>       assert len(outputs) == 1 and next(iter(outputs))[0] == 0
+E       assert (1 == 1 and 4 == 0)
+E        +  where 1 = len({(4, '{"data":null,"error":{"code":"UNSUPPORTED","message":"The trace show command is delivered in slice S02 and is no...work was read or changed; this command becomes available in slice S02.","status":"UNAVAILABLE","uncertainties":[]}\n')})
+
+tests/integration/cli/test_trace_commands.py:329: AssertionError
+___________ test_output_is_byte_identical_across_processes[explain] ____________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'explain'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    def test_output_is_byte_identical_across_processes(recorded: Recorded, operation: str) -> None:
+        request_id = ids(recorded.synthetic)[0]
+        outputs = {recorded.profile.raw("trace", operation, request_id, "--json", extra=extra)
+                   for extra in ({"PYTHONHASHSEED": "0"}, {"PYTHONHASHSEED": "4242", "TZ": "Asia/Tokyo", "LC_ALL": "C"})}
+>       assert len(outputs) == 1 and next(iter(outputs))[0] == 0
+E       assert (1 == 1 and 4 == 0)
+E        +  where 1 = len({(4, '{"data":null,"error":{"code":"UNSUPPORTED","message":"The trace explain command is delivered in slice S02 and is...work was read or changed; this command becomes available in slice S02.","status":"UNAVAILABLE","uncertainties":[]}\n')})
+
+tests/integration/cli/test_trace_commands.py:329: AssertionError
+_ test_unknown_id_is_a_typed_not_found[request-00000000000000000000000000000000-show] _
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'show', identifier = 'request-00000000000000000000000000000000'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    @pytest.mark.parametrize("identifier", [UNKNOWN_REQUEST, UNKNOWN_TRACE, "c-1", "../receipts", "request-"])
+    def test_unknown_id_is_a_typed_not_found(recorded: Recorded, operation: str, identifier: str) -> None:
+        code, value = recorded.profile.quati("trace", operation, "--json", "--", identifier)
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "NOT_FOUND")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'NOT_FOUND')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:337: AssertionError
+_ test_unknown_id_is_a_typed_not_found[request-00000000000000000000000000000000-explain] _
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'explain', identifier = 'request-00000000000000000000000000000000'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    @pytest.mark.parametrize("identifier", [UNKNOWN_REQUEST, UNKNOWN_TRACE, "c-1", "../receipts", "request-"])
+    def test_unknown_id_is_a_typed_not_found(recorded: Recorded, operation: str, identifier: str) -> None:
+        code, value = recorded.profile.quati("trace", operation, "--json", "--", identifier)
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "NOT_FOUND")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'NOT_FOUND')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:337: AssertionError
+_ test_unknown_id_is_a_typed_not_found[ffffffffffffffffffffffffffffffff-show] __
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'show', identifier = 'ffffffffffffffffffffffffffffffff'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    @pytest.mark.parametrize("identifier", [UNKNOWN_REQUEST, UNKNOWN_TRACE, "c-1", "../receipts", "request-"])
+    def test_unknown_id_is_a_typed_not_found(recorded: Recorded, operation: str, identifier: str) -> None:
+        code, value = recorded.profile.quati("trace", operation, "--json", "--", identifier)
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "NOT_FOUND")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'NOT_FOUND')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:337: AssertionError
+_ test_unknown_id_is_a_typed_not_found[ffffffffffffffffffffffffffffffff-explain] _
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'explain', identifier = 'ffffffffffffffffffffffffffffffff'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    @pytest.mark.parametrize("identifier", [UNKNOWN_REQUEST, UNKNOWN_TRACE, "c-1", "../receipts", "request-"])
+    def test_unknown_id_is_a_typed_not_found(recorded: Recorded, operation: str, identifier: str) -> None:
+        code, value = recorded.profile.quati("trace", operation, "--json", "--", identifier)
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "NOT_FOUND")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'NOT_FOUND')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:337: AssertionError
+________________ test_unknown_id_is_a_typed_not_found[c-1-show] ________________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'show', identifier = 'c-1'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    @pytest.mark.parametrize("identifier", [UNKNOWN_REQUEST, UNKNOWN_TRACE, "c-1", "../receipts", "request-"])
+    def test_unknown_id_is_a_typed_not_found(recorded: Recorded, operation: str, identifier: str) -> None:
+        code, value = recorded.profile.quati("trace", operation, "--json", "--", identifier)
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "NOT_FOUND")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'NOT_FOUND')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:337: AssertionError
+______________ test_unknown_id_is_a_typed_not_found[c-1-explain] _______________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'explain', identifier = 'c-1'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    @pytest.mark.parametrize("identifier", [UNKNOWN_REQUEST, UNKNOWN_TRACE, "c-1", "../receipts", "request-"])
+    def test_unknown_id_is_a_typed_not_found(recorded: Recorded, operation: str, identifier: str) -> None:
+        code, value = recorded.profile.quati("trace", operation, "--json", "--", identifier)
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "NOT_FOUND")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'NOT_FOUND')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:337: AssertionError
+____________ test_unknown_id_is_a_typed_not_found[../receipts-show] ____________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'show', identifier = '../receipts'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    @pytest.mark.parametrize("identifier", [UNKNOWN_REQUEST, UNKNOWN_TRACE, "c-1", "../receipts", "request-"])
+    def test_unknown_id_is_a_typed_not_found(recorded: Recorded, operation: str, identifier: str) -> None:
+        code, value = recorded.profile.quati("trace", operation, "--json", "--", identifier)
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "NOT_FOUND")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'NOT_FOUND')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:337: AssertionError
+__________ test_unknown_id_is_a_typed_not_found[../receipts-explain] ___________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'explain', identifier = '../receipts'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    @pytest.mark.parametrize("identifier", [UNKNOWN_REQUEST, UNKNOWN_TRACE, "c-1", "../receipts", "request-"])
+    def test_unknown_id_is_a_typed_not_found(recorded: Recorded, operation: str, identifier: str) -> None:
+        code, value = recorded.profile.quati("trace", operation, "--json", "--", identifier)
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "NOT_FOUND")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'NOT_FOUND')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:337: AssertionError
+_____________ test_unknown_id_is_a_typed_not_found[request--show] ______________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'show', identifier = 'request-'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    @pytest.mark.parametrize("identifier", [UNKNOWN_REQUEST, UNKNOWN_TRACE, "c-1", "../receipts", "request-"])
+    def test_unknown_id_is_a_typed_not_found(recorded: Recorded, operation: str, identifier: str) -> None:
+        code, value = recorded.profile.quati("trace", operation, "--json", "--", identifier)
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "NOT_FOUND")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'NOT_FOUND')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:337: AssertionError
+____________ test_unknown_id_is_a_typed_not_found[request--explain] ____________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+operation = 'explain', identifier = 'request-'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    @pytest.mark.parametrize("identifier", [UNKNOWN_REQUEST, UNKNOWN_TRACE, "c-1", "../receipts", "request-"])
+    def test_unknown_id_is_a_typed_not_found(recorded: Recorded, operation: str, identifier: str) -> None:
+        code, value = recorded.profile.quati("trace", operation, "--json", "--", identifier)
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "NOT_FOUND")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'NOT_FOUND')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:337: AssertionError
+____________________ test_show_needs_exactly_one_identifier ____________________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+
+    def test_show_needs_exactly_one_identifier(recorded: Recorded) -> None:
+        for argv in (("trace", "show", "--json"),
+                     ("trace", "show", UNKNOWN_TRACE, "--request", UNKNOWN_REQUEST, "--json")):
+            code, value = recorded.profile.quati(*argv)
+>           assert (code, value["status"], value["error"]["code"]) == (2, "DENIED", "INVALID_INPUT")
+E           AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (2, 'DENIED', 'INVALID_INPUT')
+E             
+E             At index 0 diff: 4 != 2
+E             Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:345: AssertionError
+____ test_another_principals_record_is_the_same_not_found_as_an_unknown_id _____
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+tmp_path = PosixPath('/tmp/pytest-of-<user>/pytest-579/test_another_principals_record0')
+
+    def test_another_principals_record_is_the_same_not_found_as_an_unknown_id(recorded: Recorded, tmp_path: Path) -> None:
+        """M26-RT-02: a receipt of another LOCAL principal copied into this data directory is not visible."""
+        other = Profile(tmp_path / "other")
+        other.root.mkdir()
+        assert other.quati("init", "--json")[0] == 0
+        assert other.quati("ask", "--json", "--", "Hello")[0] == 0             # creates the receipts directory
+        source = receipt_file(recorded.work)[1]
+        target = other.data / "receipts" / source.name
+        target.write_bytes(source.read_bytes())
+        target.chmod(0o600)
+        answers = {other.raw("trace", operation, identifier, "--json")
+                   for operation in ("show",) for identifier in (ids(recorded.work)[0], UNKNOWN_REQUEST)}
+        assert len(answers) == 1
+        code, output = next(iter(answers))
+>       assert code == 4 and json.loads(output)["error"]["code"] == "NOT_FOUND"
+E       AssertionError: assert (4 == 4 and 'UNSUPPORTED' == 'NOT_FOUND'
+E         
+E         - NOT_FOUND
+E         + UNSUPPORTED)
+
+tests/integration/cli/test_trace_commands.py:362: AssertionError
+_______________ test_unauthenticated_caller_reads_nothing[show] ________________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+tmp_path = PosixPath('/tmp/pytest-of-<user>/pytest-579/test_unauthenticated_caller_re0')
+operation = 'show'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    def test_unauthenticated_caller_reads_nothing(recorded: Recorded, tmp_path: Path, operation: str) -> None:
+        """Authentication precedes every read: same answer for a known and an unknown id, nothing written."""
+        profile = recorded.profile
+        before = profile.files()
+        cases = [{"QUATI_CONFIG_DIR": str(tmp_path / "absent")}, {"QUATI_CAPABILITY_CONTEXT": "1"}]
+        for extra in cases:
+            answers = {profile.raw("trace", operation, identifier, "--json", extra=extra)
+                       for identifier in (ids(recorded.work)[0], UNKNOWN_REQUEST)}
+            assert len(answers) == 1
+            code, output = next(iter(answers))
+            value = json.loads(output)
+>           assert (code, value["status"], value["error"]["code"], value["data"]) == (4, "DENIED", "UNAUTHENTICATED", None)
+E           AssertionError: assert (4, 'UNAVAILA...PORTED', None) == (4, 'DENIED',...ICATED', None)
+E             
+E             At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E             Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:377: AssertionError
+______________ test_unauthenticated_caller_reads_nothing[explain] ______________
+
+recorded = <test_trace_commands.Recorded object at 0x71f45087b4d0>
+tmp_path = PosixPath('/tmp/pytest-of-<user>/pytest-579/test_unauthenticated_caller_re1')
+operation = 'explain'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    def test_unauthenticated_caller_reads_nothing(recorded: Recorded, tmp_path: Path, operation: str) -> None:
+        """Authentication precedes every read: same answer for a known and an unknown id, nothing written."""
+        profile = recorded.profile
+        before = profile.files()
+        cases = [{"QUATI_CONFIG_DIR": str(tmp_path / "absent")}, {"QUATI_CAPABILITY_CONTEXT": "1"}]
+        for extra in cases:
+            answers = {profile.raw("trace", operation, identifier, "--json", extra=extra)
+                       for identifier in (ids(recorded.work)[0], UNKNOWN_REQUEST)}
+            assert len(answers) == 1
+            code, output = next(iter(answers))
+            value = json.loads(output)
+>           assert (code, value["status"], value["error"]["code"], value["data"]) == (4, "DENIED", "UNAUTHENTICATED", None)
+E           AssertionError: assert (4, 'UNAVAILA...PORTED', None) == (4, 'DENIED',...ICATED', None)
+E             
+E             At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E             Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:377: AssertionError
+_ test_principal_without_a_grant_is_forbidden_before_any_receipt_is_read[show] _
+
+scratch = <test_trace_commands.Recorded object at 0x71f4503df250>
+operation = 'show'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    def test_principal_without_a_grant_is_forbidden_before_any_receipt_is_read(scratch: Recorded, operation: str) -> None:
+        """RFC-013 section 6: DENY is logged; the answer is the same for a known and an unknown id."""
+        profile = scratch.profile
+        resign(profile, tenant_role="GUEST")
+        events = profile.audit()
+        answers = [profile.quati("trace", operation, identifier, "--json")
+                   for identifier in (ids(scratch.work)[0], UNKNOWN_REQUEST)]
+        assert answers[0] == answers[1]
+        code, value = answers[0]
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "FORBIDDEN")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'FORBIDDEN')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:403: AssertionError
+_ test_principal_without_a_grant_is_forbidden_before_any_receipt_is_read[explain] _
+
+scratch = <test_trace_commands.Recorded object at 0x71f450346190>
+operation = 'explain'
+
+    @pytest.mark.parametrize("operation", ["show", "explain"])
+    def test_principal_without_a_grant_is_forbidden_before_any_receipt_is_read(scratch: Recorded, operation: str) -> None:
+        """RFC-013 section 6: DENY is logged; the answer is the same for a known and an unknown id."""
+        profile = scratch.profile
+        resign(profile, tenant_role="GUEST")
+        events = profile.audit()
+        answers = [profile.quati("trace", operation, identifier, "--json")
+                   for identifier in (ids(scratch.work)[0], UNKNOWN_REQUEST)]
+        assert answers[0] == answers[1]
+        code, value = answers[0]
+>       assert (code, value["status"], value["error"]["code"]) == (4, "DENIED", "FORBIDDEN")
+E       AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'FORBIDDEN')
+E         
+E         At index 1 diff: 'UNAVAILABLE' != 'DENIED'
+E         Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:403: AssertionError
+________________ test_symlinked_receipts_directory_fails_closed ________________
+
+scratch = <test_trace_commands.Recorded object at 0x71f4503468b0>
+tmp_path = PosixPath('/tmp/pytest-of-<user>/pytest-579/test_symlinked_receipts_direct0')
+
+    def test_symlinked_receipts_directory_fails_closed(scratch: Recorded, tmp_path: Path) -> None:
+        profile, request_id = scratch.profile, ids(scratch.work)[0]
+        moved = tmp_path / "elsewhere"
+        (profile.data / "receipts").rename(moved)
+        (profile.data / "receipts").symlink_to(moved, target_is_directory=True)
+        before = sorted(path.name for path in moved.iterdir())
+>       assert_store_unavailable(profile, request_id)
+
+tests/integration/cli/test_trace_commands.py:424: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+profile = <test_trace_commands.Profile object at 0x71f4503cc5f0>
+identifier = 'request-82fe960eb0c341a193148659566872f7'
+
+    def assert_store_unavailable(profile: Profile, identifier: str) -> None:
+        for operation in ("show", "explain"):
+            code, value = profile.quati("trace", operation, identifier, "--json")
+>           assert (code, value["status"], value["error"]["code"]) == (4, "UNAVAILABLE", "TEMPORARILY_UNAVAILABLE"), value
+E           AssertionError: {'data': None, 'error': {'code': 'UNSUPPORTED', 'message': 'The trace show command is delivered in slice S02 and is no..., 'evidence_refs': [], 'next_action': 'No work was read or changed; this command becomes available in slice S02.', ...}
+E           assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'UNAVAILA..._UNAVAILABLE')
+E             
+E             At index 2 diff: 'UNSUPPORTED' != 'TEMPORARILY_UNAVAILABLE'
+E             Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:414: AssertionError
+__________________ test_symlinked_data_directory_fails_closed __________________
+
+scratch = <test_trace_commands.Recorded object at 0x71f4503cd010>
+tmp_path = PosixPath('/tmp/pytest-of-<user>/pytest-579/test_symlinked_data_directory_0')
+
+    def test_symlinked_data_directory_fails_closed(scratch: Recorded, tmp_path: Path) -> None:
+        profile, request_id = scratch.profile, ids(scratch.work)[0]
+        moved = tmp_path / "elsewhere"
+        profile.data.rename(moved)
+        profile.data.symlink_to(moved, target_is_directory=True)
+        audit = (moved / "capabilities" / "audit.jsonl").read_bytes()
+>       assert_store_unavailable(profile, request_id)
+
+tests/integration/cli/test_trace_commands.py:434: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+profile = <test_trace_commands.Profile object at 0x71f45089f790>
+identifier = 'request-92effaf806cc42a58346f03922fa93fe'
+
+    def assert_store_unavailable(profile: Profile, identifier: str) -> None:
+        for operation in ("show", "explain"):
+            code, value = profile.quati("trace", operation, identifier, "--json")
+>           assert (code, value["status"], value["error"]["code"]) == (4, "UNAVAILABLE", "TEMPORARILY_UNAVAILABLE"), value
+E           AssertionError: {'data': None, 'error': {'code': 'UNSUPPORTED', 'message': 'The trace show command is delivered in slice S02 and is no..., 'evidence_refs': [], 'next_action': 'No work was read or changed; this command becomes available in slice S02.', ...}
+E           assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'UNAVAILA..._UNAVAILABLE')
+E             
+E             At index 2 diff: 'UNSUPPORTED' != 'TEMPORARILY_UNAVAILABLE'
+E             Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:414: AssertionError
+___________________ test_symlinked_receipt_file_fails_closed ___________________
+
+scratch = <test_trace_commands.Recorded object at 0x71f45089fdf0>
+tmp_path = PosixPath('/tmp/pytest-of-<user>/pytest-579/test_symlinked_receipt_file_fa0')
+
+    def test_symlinked_receipt_file_fails_closed(scratch: Recorded, tmp_path: Path) -> None:
+        profile, request_id = scratch.profile, ids(scratch.work)[0]
+        path = receipt_file(scratch.work)[1]
+        moved = tmp_path / "receipt.json"
+        path.rename(moved)
+        path.symlink_to(moved)
+>       assert_store_unavailable(profile, request_id)
+
+tests/integration/cli/test_trace_commands.py:444: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+profile = <test_trace_commands.Profile object at 0x71f45089fbd0>
+identifier = 'request-ab90ed9c3be048baa897d9751dd85689'
+
+    def assert_store_unavailable(profile: Profile, identifier: str) -> None:
+        for operation in ("show", "explain"):
+            code, value = profile.quati("trace", operation, identifier, "--json")
+>           assert (code, value["status"], value["error"]["code"]) == (4, "UNAVAILABLE", "TEMPORARILY_UNAVAILABLE"), value
+E           AssertionError: {'data': None, 'error': {'code': 'UNSUPPORTED', 'message': 'The trace show command is delivered in slice S02 and is no..., 'evidence_refs': [], 'next_action': 'No work was read or changed; this command becomes available in slice S02.', ...}
+E           assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'UNAVAILA..._UNAVAILABLE')
+E             
+E             At index 2 diff: 'UNSUPPORTED' != 'TEMPORARILY_UNAVAILABLE'
+E             Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:414: AssertionError
+____________________ test_corrupted_audit_log_fails_closed _____________________
+
+scratch = <test_trace_commands.Recorded object at 0x71f45089ff00>
+
+    def test_corrupted_audit_log_fails_closed(scratch: Recorded) -> None:
+        """M26: an unreadable decision log is ``audit_store_unavailable``; the receipt alone is not shown."""
+        profile, request_id = scratch.profile, ids(scratch.work)[0]
+        with open(profile.data / "capabilities" / "audit.jsonl", "ab") as log:
+            log.write(b"{not json\n")
+>       assert_store_unavailable(profile, request_id)
+
+tests/integration/cli/test_trace_commands.py:452: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+profile = <test_trace_commands.Profile object at 0x71f450335450>
+identifier = 'request-1b81d76a26e6496c8ecab44f1cc8e84e'
+
+    def assert_store_unavailable(profile: Profile, identifier: str) -> None:
+        for operation in ("show", "explain"):
+            code, value = profile.quati("trace", operation, identifier, "--json")
+>           assert (code, value["status"], value["error"]["code"]) == (4, "UNAVAILABLE", "TEMPORARILY_UNAVAILABLE"), value
+E           AssertionError: {'data': None, 'error': {'code': 'UNSUPPORTED', 'message': 'The trace show command is delivered in slice S02 and is no..., 'evidence_refs': [], 'next_action': 'No work was read or changed; this command becomes available in slice S02.', ...}
+E           assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'UNAVAILA..._UNAVAILABLE')
+E             
+E             At index 2 diff: 'UNSUPPORTED' != 'TEMPORARILY_UNAVAILABLE'
+E             Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:414: AssertionError
+_ test_forged_receipt_fields_are_never_displayed_and_the_digest_exposes_the_edit _
+
+scratch = <test_trace_commands.Recorded object at 0x71f450336450>
+
+    def test_forged_receipt_fields_are_never_displayed_and_the_digest_exposes_the_edit(scratch: Recorded) -> None:
+        """A hand-edited receipt cannot inject text: unknown fields are dropped, a non-token value in a
+        known field is withheld with an uncertainty, and the shown digest is the edited file's, no longer the one of the original evidence ref."""
+        profile, request_id = scratch.profile, ids(scratch.work)[0]
+        original, path = receipt_file(scratch.work)
+        record = json.loads(path.read_text(encoding="utf-8"))
+        record["forged_field"] = "FORGEDMARK-A approved by the board"
+        record["outcome"]["result_kind"] = "FORGEDMARK-B work completed and verified"
+        record["trajectory"][0]["tool_name"] = "FORGEDMARK-C"
+        record["trajectory"][0]["note"] = "FORGEDMARK-D"
+        record["digests"]["config_hash"] = "FORGEDMARK-E not a digest"
+        path.write_text(json.dumps(record), encoding="utf-8")
+        for operation in ("show", "explain"):
+            code, output = profile.raw("trace", operation, request_id, "--json")
+>           assert code == 0 and "FORGEDMARK" not in output
+E           assert (4 == 0)
+
+tests/integration/cli/test_trace_commands.py:470: AssertionError
+______________ test_two_receipts_claiming_one_request_are_refused ______________
+
+scratch = <test_trace_commands.Recorded object at 0x71f450336950>
+
+    def test_two_receipts_claiming_one_request_are_refused(scratch: Recorded) -> None:
+        """One request has one receipt: a second file claiming the same id makes the record ambiguous."""
+        profile, request_id = scratch.profile, ids(scratch.work)[0]
+        path = receipt_file(scratch.work)[1]
+        record = json.loads(path.read_text(encoding="utf-8"))
+        record["outcome"]["executed_capabilities"] = [f"{WRITE}@1.0.0"]
+        twin = path.with_name("f" * 32 + ".json")
+        twin.write_text(json.dumps(record), encoding="utf-8")
+        twin.chmod(0o600)
+        for operation in ("show", "explain"):
+            code, value = profile.quati("trace", operation, request_id, "--json")
+>           assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+E           AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'BLOCKED'...INSUFFICIENT')
+E             
+E             At index 1 diff: 'UNAVAILABLE' != 'BLOCKED'
+E             Use -v to get more diff
+
+tests/integration/cli/test_trace_commands.py:493: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/cli/test_trace_commands.py::test_show_returns_the_recorded_receipt_and_decisions_of_one_request
+FAILED tests/integration/cli/test_trace_commands.py::test_show_by_trace_id_and_by_request_option_return_the_same_record
+FAILED tests/integration/cli/test_trace_commands.py::test_show_of_a_greeting_has_no_trajectory_and_no_decision
+FAILED tests/integration/cli/test_trace_commands.py::test_trace_commands_are_read_only_and_log_one_authorization_each
+FAILED tests/integration/cli/test_trace_commands.py::test_explain_names_the_selected_capability_and_why_each_alternative_was_excluded
+FAILED tests/integration/cli/test_trace_commands.py::test_explain_without_a_recorded_catalog_says_that_unranked_candidates_are_unknown
+FAILED tests/integration/cli/test_trace_commands.py::test_explain_of_a_greeting_selects_nothing
+FAILED tests/integration/cli/test_trace_commands.py::test_no_request_text_model_text_or_secret_is_displayed[show]
+FAILED tests/integration/cli/test_trace_commands.py::test_no_request_text_model_text_or_secret_is_displayed[explain]
+FAILED tests/integration/cli/test_trace_commands.py::test_output_is_byte_identical_across_processes[show]
+FAILED tests/integration/cli/test_trace_commands.py::test_output_is_byte_identical_across_processes[explain]
+FAILED tests/integration/cli/test_trace_commands.py::test_unknown_id_is_a_typed_not_found[request-00000000000000000000000000000000-show]
+FAILED tests/integration/cli/test_trace_commands.py::test_unknown_id_is_a_typed_not_found[request-00000000000000000000000000000000-explain]
+FAILED tests/integration/cli/test_trace_commands.py::test_unknown_id_is_a_typed_not_found[ffffffffffffffffffffffffffffffff-show]
+FAILED tests/integration/cli/test_trace_commands.py::test_unknown_id_is_a_typed_not_found[ffffffffffffffffffffffffffffffff-explain]
+FAILED tests/integration/cli/test_trace_commands.py::test_unknown_id_is_a_typed_not_found[c-1-show]
+FAILED tests/integration/cli/test_trace_commands.py::test_unknown_id_is_a_typed_not_found[c-1-explain]
+FAILED tests/integration/cli/test_trace_commands.py::test_unknown_id_is_a_typed_not_found[../receipts-show]
+FAILED tests/integration/cli/test_trace_commands.py::test_unknown_id_is_a_typed_not_found[../receipts-explain]
+FAILED tests/integration/cli/test_trace_commands.py::test_unknown_id_is_a_typed_not_found[request--show]
+FAILED tests/integration/cli/test_trace_commands.py::test_unknown_id_is_a_typed_not_found[request--explain]
+FAILED tests/integration/cli/test_trace_commands.py::test_show_needs_exactly_one_identifier
+FAILED tests/integration/cli/test_trace_commands.py::test_another_principals_record_is_the_same_not_found_as_an_unknown_id
+FAILED tests/integration/cli/test_trace_commands.py::test_unauthenticated_caller_reads_nothing[show]
+FAILED tests/integration/cli/test_trace_commands.py::test_unauthenticated_caller_reads_nothing[explain]
+FAILED tests/integration/cli/test_trace_commands.py::test_principal_without_a_grant_is_forbidden_before_any_receipt_is_read[show]
+FAILED tests/integration/cli/test_trace_commands.py::test_principal_without_a_grant_is_forbidden_before_any_receipt_is_read[explain]
+FAILED tests/integration/cli/test_trace_commands.py::test_symlinked_receipts_directory_fails_closed
+FAILED tests/integration/cli/test_trace_commands.py::test_symlinked_data_directory_fails_closed
+FAILED tests/integration/cli/test_trace_commands.py::test_symlinked_receipt_file_fails_closed
+FAILED tests/integration/cli/test_trace_commands.py::test_corrupted_audit_log_fails_closed
+FAILED tests/integration/cli/test_trace_commands.py::test_forged_receipt_fields_are_never_displayed_and_the_digest_exposes_the_edit
+FAILED tests/integration/cli/test_trace_commands.py::test_two_receipts_claiming_one_request_are_refused
+33 failed, 2 passed in 22.70s

@@ -184,7 +184,10 @@ def test_receipt_filesystem_failure_does_not_claim_success(run_cli, tmp_path):
         receipts.rmdir()
     receipts.write_text('occupied path')
     failed, result = run_cli('ask', 'Hello.', '--json')
-    assert failed.returncode == 1  # M01 exit table: INTERNAL_ERROR is exit 1
-    assert_error(result, 'BLOCKED', 'INTERNAL_ERROR')
+    # Fix round 7 (LOG-0041 N1): an unusable receipts path is found before the request is handled and is the
+    # typed local-storage refusal (M01 exit 4); until then it was INTERNAL_ERROR, exit 1, after the fact.
+    assert failed.returncode == 4
+    assert_error(result, 'UNAVAILABLE', 'TEMPORARILY_UNAVAILABLE')
+    assert result['data'] == {'reason': 'state_dir_unsafe', 'component': 'receipts'}
     assert result['evidence_refs'] == []
     assert 'Traceback' not in failed.stderr

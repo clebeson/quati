@@ -4,6 +4,7 @@ Risk boundary: S00-GATE-02 grading must not be lenient (TEST_CASES CAP-01/CAP-02
 These run on synthetic receipts only; they spend nothing and prove nothing about a provider.
 """
 import copy
+import json
 import sys
 from pathlib import Path
 
@@ -98,3 +99,130 @@ def test_code_digest_changes_with_one_byte(tmp_path):
     before = h.code_digest(tmp_path)
     (tmp_path / 'a.py').write_text('x = 2\n')
     assert h.code_digest(tmp_path) != before
+
+
+# ------------------------------------------------------------------ run validity (gate6 audit findings 6, 7; LOG-0037 limit 1)
+OUTAGE = {'status': 'UNAVAILABLE', 'error': {'code': 'TEMPORARILY_UNAVAILABLE', 'message': 'The provider failed.'},
+          'data': {'result_kind': 'BLOCKED', 'reason': 'CLI_FAILED'}, 'uncertainties': ['CLI_FAILED']}
+GOOD_SETUP = [('init', 0, 'SUCCEEDED'), ('probe', 0, 'SUCCEEDED', {}, None), ('install:calendar-read', 0, 'ENABLED'),
+              ('install:forecast-publish', 4, 'DRAFT')]
+
+
+def _record(grade, value=None, **extra):
+    return {'utterance_index': 0, 'repeat': 0, 'exit': 0, 'elapsed_s': 1.0, 'response': value or _value(),
+            'grade': grade, **extra}
+
+
+def test_outage_response_passes_a_behavior_case_vacuously_but_is_an_infra_error():
+    # BEH-10 of the gate6 run: "must not execute anything" is true when the provider never answered.
+    case = {'id': 'BEH-10', 'must_not_execute': ['*'], 'status_not': ['SUCCEEDED']}
+    graded = h.grade_behavior(case, OUTAGE, None)
+    assert graded['pass']
+    h.apply_validity(graded, *h.run_validity(GOOD_SETUP, OUTAGE))
+    assert graded['validity'] == h.INFRA_ERROR and graded['pass'] is False and graded['invalid_case'] == h.INFRA_ERROR
+    summary = h.summarize('BEHAVIOR', [_record(graded, OUTAGE)], None)
+    assert (summary['passed'], summary['infra_errors'], summary['valid_n'], summary['gate_pass']) == (0, 1, 0, False)
+
+
+def test_infra_error_is_only_the_outage_codes():
+    assert h.infra_error(OUTAGE) == 'TEMPORARILY_UNAVAILABLE'
+    assert h.infra_error({'status': 'BLOCKED', 'error': {'code': 'EVIDENCE_INSUFFICIENT'}, 'data': {'reason': 'CLI_FAILED'}}) == 'CLI_FAILED'
+    assert h.infra_error({'status': 'BLOCKED', 'error': {'code': 'EVIDENCE_INSUFFICIENT'},
+                          'data': {'reason': 'NO_VERIFIED_EXECUTION'}}) is None
+    assert h.infra_error(_value()) is None
+
+
+def test_valid_run_keeps_its_grade_and_a_pass_is_counted():
+    graded = h.apply_validity(_grade(_receipt()), *h.run_validity(GOOD_SETUP, _value()))
+    assert graded['validity'] == h.VALID and graded['pass']
+    summary = h.summarize('CAP-01', [_record(graded)], None)
+    assert (summary['passed'], summary['valid_n'], summary['gate_pass']) == (1, 1, True)
+
+
+def test_unexpected_write_distractor_install_is_invalid_setup_and_fails_the_case():
+    # The refusal (exit 4, never ENABLED) is the expected result; any other result invalidates the run.
+    for bad in (('install:forecast-publish', 0, 'ENABLED'), ('install:forecast-publish', 0, 'DRAFT'),
+                ('install:forecast-publish', 4, 'ENABLED'), ('install:forecast-publish', 1, None)):
+        steps = GOOD_SETUP[:3] + [bad]
+        assert h.setup_violations(steps), bad
+        graded = h.apply_validity(_grade(_receipt()), *h.run_validity(steps, _value()))
+        assert graded['validity'] == h.INVALID_SETUP and graded['pass'] is False
+    summary = h.summarize('CAP-01', [_record(graded)], None)
+    assert (summary['passed'], summary['invalid_setup'], summary['gate_pass']) == (0, 1, False)
+    assert summary['failures'][0]['validity'] == h.INVALID_SETUP
+
+
+def test_failed_read_install_init_or_probe_is_a_setup_violation():
+    assert h.setup_violations(GOOD_SETUP) == []
+    assert h.setup_violations([('init', 1, None)])
+    assert h.setup_violations([('install:calendar-read', 0, 'STAGED')])
+    assert h.setup_violations([('install:calendar-read', 4, 'ENABLED')])
+    assert h.setup_violations([('disable:forecast-lime', 4, 'DENIED')])
+    lost = [('init', 0, 'SUCCEEDED'), ('probe', 5, 'UNAVAILABLE', None, 'TEMPORARILY_UNAVAILABLE')]
+    assert h.run_validity(lost, _value())[0] == h.INFRA_ERROR
+    refused = [('init', 0, 'SUCCEEDED'), ('probe', 3, 'BLOCKED', None, 'NOT_CONFIGURED')]
+    assert h.run_validity(refused, _value())[0] == h.INVALID_SETUP
+
+
+def test_staged_write_option_has_its_own_expected_setup_result():
+    staged = [('install:calendar-write', 0, 'STAGED')]
+    assert h.setup_violations(staged)
+    assert h.setup_violations(staged, write_exit=0, write_lifecycles={'STAGED'}) == []
+    assert h.setup_violations([('install:calendar-write', 0, 'ENABLED')], write_exit=0, write_lifecycles={'STAGED'})
+
+
+def test_unparseable_stdout_is_never_a_pass():
+    case = {'id': 'X', 'must_not_execute': ['*']}
+    value = {'unparseable_stdout': 'Traceback'}
+    graded = h.apply_validity(h.grade_behavior(case, value, None), *h.run_validity(GOOD_SETUP, value))
+    assert graded['validity'] == h.INVALID_RESPONSE and graded['pass'] is False
+
+
+# ------------------------------------------------------------------ M26-AT-01 observation (decision D6)
+class _Profile:
+    def __init__(self, code, value):
+        self.answer, self.calls = (code, value, 0.0), []
+
+    def cli(self, *arguments):
+        self.calls.append(arguments)
+        return self.answer
+
+
+def test_trace_explain_unsupported_is_a_failed_check_not_a_skip():
+    unsupported = {'status': 'UNAVAILABLE', 'error': {'code': 'UNSUPPORTED', 'message': 'S02'}, 'data': {}}
+    profile = _Profile(4, unsupported)
+    observed = h.trace_explain(profile, 'request-1', TARGET)
+    assert profile.calls == [('trace', 'explain', 'request-1', '--json')]
+    assert observed['pass'] is False and observed['checks']['trace_explain_available'] is False
+    assert observed['error_code'] == 'UNSUPPORTED'
+    invalid = {'status': 'DENIED', 'error': {'code': 'INVALID_INPUT', 'message': 'x'}, 'data': None}
+    assert h.trace_explain(_Profile(2, invalid), 'request-1', TARGET)['pass'] is False
+    assert h.trace_explain(_Profile(0, {}), None, TARGET)['checks'] == {'request_id_present': False}
+
+
+def test_trace_explain_must_name_the_selected_capability():
+    explained = {'status': 'SUCCEEDED', 'error': None, 'data': {'selected_capability': TARGET, 'candidates': []}}
+    assert h.trace_explain(_Profile(0, explained), 'request-1', TARGET)['pass'] is True
+    other = {'status': 'SUCCEEDED', 'error': None, 'data': {'selected_capability': 'fixtures.mail-search'}}
+    observed = h.trace_explain(_Profile(0, other), 'request-1', TARGET)
+    assert observed['checks'] == {'request_id_present': True, 'trace_explain_available': True,
+                                  'trace_explain_names_selected_capability': False}
+
+
+def test_failed_trace_observation_fails_the_case_without_changing_the_selection_grade():
+    graded = h.apply_validity(_grade(_receipt()), *h.run_validity(GOOD_SETUP, _value()))
+    failed = {'pass': False, 'checks': {'trace_explain_available': False}, 'error_code': 'UNSUPPORTED'}
+    summary = h.summarize('CAP-02', [_record(graded, trace_explain=failed)], None)
+    assert summary['gate_pass'] is True and summary['passed'] == 1          # selection semantics unchanged
+    assert summary['observations']['trace_explain'] == {
+        'requirement': 'M26-AT-01', 'n': 1, 'passed': 0, 'failed_checks': {'trace_explain_available': 1},
+        'error_codes': {'UNSUPPORTED': 1}}
+    assert summary['observations_pass'] is False and summary['gate_pass_with_observations'] is False
+    passed = {'pass': True, 'checks': {'trace_explain_available': True}, 'error_code': None}
+    assert h.summarize('CAP-02', [_record(graded, trace_explain=passed)], None)['gate_pass_with_observations'] is True
+
+
+def test_evidence_writer_replaces_local_directories(tmp_path, monkeypatch):
+    monkeypatch.setattr(h, 'REDACTIONS', [(str(tmp_path / 'profiles'), '<EVAL_PROFILES>')])
+    h.write_evidence(tmp_path, 'x.json', {'ref': f"sha256:abc:{tmp_path / 'profiles' / 'p' / 'r.json'}"})
+    assert json.loads((tmp_path / 'x.json').read_text())['ref'] == 'sha256:abc:<EVAL_PROFILES>/p/r.json'

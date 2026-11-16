@@ -1,9 +1,22 @@
 """Shared CLI rendering and failure mapping for one-shot commands and chat turns (M01 exit table)."""
-from quati.adapters.evidence import redact
+from pathlib import Path
+
+from quati.adapters.evidence import ReceiptNotWritten, redact
+from quati.adapters.private_fs import UnsafeStatePath, data_root
 from quati.application.cli_service import response
 from quati.application.identity import AccessDenied
 from quati.domain.canonical import canonical_bytes
 from quati.domain.capability_registry import Refusal
+
+
+# M01 exit table rows 4 and 5: UNAVAILABLE caused by the local stores (the audit log, the data
+# directory) is "not caused by a provider" and exits 4; only a model or tool provider failure exits 5.
+LOCAL_STORE_REASONS = ('audit_unavailable', 'audit_store_unavailable', 'state_dir_unsafe')
+
+
+def _local_store_failure(value):
+    data = value.get('data')
+    return isinstance(data, dict) and data.get('reason') in LOCAL_STORE_REASONS
 
 
 def exit_code(value):
@@ -18,8 +31,22 @@ def exit_code(value):
     if code == 'NOT_CONFIGURED':
         return 3
     if code in ('TEMPORARILY_UNAVAILABLE', 'DEADLINE_EXCEEDED', 'OUTPUT_INVALID'):
-        return 5
+        return 4 if _local_store_failure(value) else 5
     return 4
+
+
+def settled_exit(code, value):
+    """The process exit code of a use-case result: a local store failure reported as 5 exits 4 (M01 row 4)."""
+    return 4 if code == 5 and _local_store_failure(value) else code
+
+
+def _component(exc):
+    """The unsafe directory relative to the data directory (never an absolute path), or None outside it."""
+    try:
+        relative = Path(exc.filename).relative_to(data_root())
+    except (TypeError, ValueError):
+        return None
+    return relative.as_posix() if relative.parts else 'data_dir'
 
 
 def render(value):
@@ -32,6 +59,19 @@ def failure(exc):
     if isinstance(exc, AccessDenied):
         return 4, response('DENIED', code=exc.code, message='Local identity or authorization could not be verified.',
                            next_action='Run quati init or repair the owner-only local credential.'), None
+    if isinstance(exc, ReceiptNotWritten):  # after the use case acted: say what may have been committed
+        diagnostic = 'quati: the evidence receipt could not be written; the operation itself may have taken effect.'
+        return 1, response('BLOCKED', {'reason': 'receipt_not_written', 'operation_may_have_taken_effect': True},
+                           'INTERNAL_ERROR', 'The evidence receipt of this operation could not be written.',
+                           'The operation may already have taken effect: inspect the current state (for example '
+                           '`quati capabilities list`) before retrying, and check the data directory.'), diagnostic
+    if isinstance(exc, UnsafeStatePath):  # verified before any read or change (LOG-0041 N1)
+        value = response('UNAVAILABLE', {'reason': 'state_dir_unsafe', 'component': _component(exc)},
+                         'TEMPORARILY_UNAVAILABLE',
+                         'A Quati data directory is not a private directory of this user; nothing was read or changed.',
+                         'Make the data directory and the Quati directories under it real directories owned by '
+                         'you (no symlink, mode 0700), then retry.')
+        return exit_code(value), value, None
     if isinstance(exc, Refusal):  # a typed registry or store refusal (for example ``audit_unavailable``)
         value = response(exc.status, {'reason': exc.reason}, exc.code, exc.message,
                          'No work was accepted or changed; resolve the reported reason and retry.')

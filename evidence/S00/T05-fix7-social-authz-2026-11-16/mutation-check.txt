@@ -1,0 +1,149 @@
+# Mutation check of fix round 7 (LOG-0041 D1, D2, D3, D4 and the N17 role fix)
+# date: 2026-11-16T18:21:03Z
+# Scratch copies only (src/, tests/, contracts/, examples/, pyproject.toml of HEAD plus this task's files); the
+# repository was never mutated. Per mutant: one textual change in the copy, then
+#   pytest -x -q -p no:cacheprovider tests/unit/test_s00_fix7_social_authz.py   (PYTHONPATH and child processes = the copy)
+# KILLED = pytest exit 1 on the mutant while the unmutated copy is green.
+
+## First run (test file as first written, 116 tests): one survivor
+baseline (no mutant): pytest exit 0: 116 passed in 52.44s
+mutant D1-a: social-only text is answered only after the provider configuration check
+   file: src/quati/application/cli_service.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured] | 1 failed, 1 passed in 1.98s
+mutant D1-b: social-only text goes to the model (social_outcome never matches)
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured] | 1 failed, 1 passed in 1.97s
+mutant D1-c: bag of words instead of whole phrases
+   file: src/quati/domain/social.py
+   -> SURVIVED (pytest exit 0); 116 passed in 63.22s (0:01:03)
+mutant D1-d: markers alone are social
+   file: src/quati/domain/social.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[urgent] | 1 failed, 95 passed in 62.54s (0:01:02)
+mutant D1-e: the reply follows the first phrase, not the first greeting
+   file: src/quati/domain/social.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_is_data_with_unicode_aware_matching | 1 failed, 92 passed in 56.83s
+mutant D1-f: a language without a template gets no English fallback
+   file: src/quati/domain/social.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured] | 1 failed, 1 passed in 1.66s
+mutant D1-g: combining marks split words (Unicode-unaware tokenizer)
+   file: src/quati/domain/social.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_is_data_with_unicode_aware_matching | 1 failed, 92 passed in 48.85s
+mutant D1-h: the invalid behavior package is checked after the social answer
+   file: src/quati/application/cli_service.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_n6_invalid_behavior_package_wins_by_the_m01_precedence_in_every_provider_state | 1 failed, 54 passed in 20.52s
+mutant D1-i: the social answer carries a provider-state uncertainty
+   file: src/quati/application/cli_service.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured] | 1 failed, 1 passed in 1.56s
+mutant D2-a: a social label on a tool-free loop is SUCCEEDED again
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hey there! Hope your day is going well.-classify_social] | 1 failed, 55 passed in 29.35s
+mutant D2-b: only the social intent gets the D2 next_action (simple_answer forgotten)
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hey there! Hope your day is going well.-classify_simple] | 1 failed, 56 passed in 32.87s
+mutant D2-c: every unverified loop gets the D2 next_action
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_work_label_without_an_execution_keeps_the_generic_next_action | 1 failed, 71 passed in 38.42s
+mutant D2-d: an empty model reply is a provider failure again
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_an_empty_model_reply_has_no_failure_mode_of_its_own[] | 1 failed, 72 passed in 38.75s
+mutant D3: launched is true when the tool loop ran
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_mixed_greeting_and_work_labelled_work_continues_to_the_tool_loop | 1 failed, 70 passed in 33.92s
+mutant D4-a: invoke tells an unknown id from a known one (existence oracle)
+   file: src/quati/application/discovery.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is | 1 failed, 79 passed in 40.88s
+mutant D4-b: describe in an ask turn consults the registry for an id outside the shortlist
+   file: src/quati/application/discovery.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is | 1 failed, 79 passed in 40.31s
+mutant D4-c: free model text is written verbatim to the audit log
+   file: src/quati/application/discovery.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is | 1 failed, 79 passed in 42.21s
+mutant N17-a: the policy gate assumes OWNER for every HUMAN
+   file: src/quati/adapters/policy_gate.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_invoke_by_a_principal_that_is_not_the_owner_follows_the_policy_default_deny[MEMBER] | 1 failed, 81 passed in 53.83s
+mutant N17-b: an unreadable membership falls back to OWNER
+   file: src/quati/adapters/policy_gate.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_takes_the_tenant_role_from_the_directory[role5-HUMAN-DENY-default_deny] | 1 failed, 89 passed in 61.30s (0:01:01)
+mutant N17-c: the gate can be built without a directory
+   file: src/quati/adapters/policy_gate.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_has_no_directory_free_construction | 1 failed, 91 passed in 56.07s
+mutant N17-d: the composition root hands the gate a directory that always answers OWNER
+   file: src/quati/cli/composition.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_invoke_by_a_principal_that_is_not_the_owner_follows_the_policy_default_deny[MEMBER] | 1 failed, 81 passed in 51.76s
+20 of 21 mutants killed
+
+## The survivor showed a real gap in the tests (not in the code): no boundary case combined a table phrase with
+## loose words of other phrases. Five cases were added to test_d1_table_boundary_any_other_word_is_not_social_only
+## ("hello, how is it", "oi, que é isso?", "hi you", "thanks, good", "bom dia, como é isso"); rerun of that mutant:
+baseline (no mutant): pytest exit 0: 121 passed in 51.21s
+mutant D1-c: bag of words instead of whole phrases
+   file: src/quati/domain/social.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[hello, how is it] | 1 failed, 110 passed in 47.16s
+1 of 1 mutants killed
+
+## Final run of every mutant against the final test file (122 tests)
+baseline (no mutant): pytest exit 0: 122 passed in 46.72s
+mutant D1-a: social-only text is answered only after the provider configuration check
+   file: src/quati/application/cli_service.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured] | 1 failed, 1 passed in 1.61s
+mutant D1-b: social-only text goes to the model (social_outcome never matches)
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured] | 1 failed, 1 passed in 1.62s
+mutant D1-c: bag of words instead of whole phrases
+   file: src/quati/domain/social.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[hello, how is it] | 1 failed, 111 passed in 46.23s
+mutant D1-d: markers alone are social
+   file: src/quati/domain/social.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[urgent] | 1 failed, 96 passed in 47.46s
+mutant D1-e: the reply follows the first phrase, not the first greeting
+   file: src/quati/domain/social.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_is_data_with_unicode_aware_matching | 1 failed, 93 passed in 46.63s
+mutant D1-f: a language without a template gets no English fallback
+   file: src/quati/domain/social.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured] | 1 failed, 1 passed in 1.72s
+mutant D1-g: combining marks split words (Unicode-unaware tokenizer)
+   file: src/quati/domain/social.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_is_data_with_unicode_aware_matching | 1 failed, 93 passed in 48.79s
+mutant D1-h: the invalid behavior package is checked after the social answer
+   file: src/quati/application/cli_service.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_n6_invalid_behavior_package_wins_by_the_m01_precedence_in_every_provider_state | 1 failed, 54 passed in 21.88s
+mutant D1-i: the social answer carries a provider-state uncertainty
+   file: src/quati/application/cli_service.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured] | 1 failed, 1 passed in 1.68s
+mutant D2-a: a social label on a tool-free loop is SUCCEEDED again
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hey there! Hope your day is going well.-classify_social] | 1 failed, 56 passed in 30.36s
+mutant D2-b: only the social intent gets the D2 next_action (simple_answer forgotten)
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hey there! Hope your day is going well.-classify_simple] | 1 failed, 57 passed in 30.85s
+mutant D2-c: every unverified loop gets the D2 next_action
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_work_label_without_an_execution_keeps_the_generic_next_action | 1 failed, 72 passed in 35.71s
+mutant D2-d: an empty model reply is a provider failure again
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_an_empty_model_reply_has_no_failure_mode_of_its_own[] | 1 failed, 73 passed in 35.86s
+mutant D3: launched is true when the tool loop ran
+   file: src/quati/application/ask.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_mixed_greeting_and_work_labelled_work_continues_to_the_tool_loop | 1 failed, 71 passed in 35.26s
+mutant D4-a: invoke tells an unknown id from a known one (existence oracle)
+   file: src/quati/application/discovery.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is | 1 failed, 80 passed in 43.21s
+mutant D4-b: describe in an ask turn consults the registry for an id outside the shortlist
+   file: src/quati/application/discovery.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is | 1 failed, 80 passed in 41.52s
+mutant D4-c: free model text is written verbatim to the audit log
+   file: src/quati/application/discovery.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is | 1 failed, 80 passed in 42.73s
+mutant N17-a: the policy gate assumes OWNER for every HUMAN
+   file: src/quati/adapters/policy_gate.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_invoke_by_a_principal_that_is_not_the_owner_follows_the_policy_default_deny[MEMBER] | 1 failed, 82 passed in 44.72s
+mutant N17-b: an unreadable membership falls back to OWNER
+   file: src/quati/adapters/policy_gate.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_takes_the_tenant_role_from_the_directory[role5-HUMAN-DENY-default_deny] | 1 failed, 90 passed in 47.36s
+mutant N17-c: the gate can be built without a directory
+   file: src/quati/adapters/policy_gate.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_has_no_directory_free_construction | 1 failed, 92 passed in 47.06s
+mutant N17-d: the composition root hands the gate a directory that always answers OWNER
+   file: src/quati/cli/composition.py
+   -> KILLED; FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_invoke_by_a_principal_that_is_not_the_owner_follows_the_policy_default_deny[MEMBER] | 1 failed, 82 passed in 44.35s
+21 of 21 mutants killed

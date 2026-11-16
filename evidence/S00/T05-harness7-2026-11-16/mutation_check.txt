@@ -1,0 +1,25 @@
+# Mutation check of the new grading rules (scratch copy of tests/evals and the two test files; the repository is not modified).
+# The pilot-run test is deselected here because the scratch copy is not a git checkout (it asserts the recorded git HEAD).
+M01 KILLED live_harness.py: outage or invalid setup may pass -> test_outage_response_passes_a_behavior_case_vacuously_but_is_an_infra_error
+M02 KILLED live_harness.py: write-distractor install result not asserted -> test_unexpected_write_distractor_install_is_invalid_setup_and_fails_the_case
+M03 KILLED live_harness.py: outage code not recognized -> test_infra_error_is_only_the_outage_codes
+M04 KILLED live_harness.py: trace explain UNSUPPORTED accepted -> test_trace_explain_unsupported_is_a_failed_check_not_a_skip
+M05 KILLED live_harness.py: trace observation ignored -> test_failed_trace_observation_fails_the_case_without_changing_the_selection_grade
+M06 KILLED gate_harness.py: D1 launched not checked -> test_d1_each_rule_is_the_only_one_that_catches_its_violation[launched_false]
+M07 KILLED gate_harness.py: D1 provider use not checked -> test_d1_each_rule_is_the_only_one_that_catches_its_violation[provider_not_used]
+M08 KILLED gate_harness.py: D1 text source not checked -> test_d1_each_rule_is_the_only_one_that_catches_its_violation[text_source_application]
+M09 KILLED gate_harness.py: D1 handler record not checked -> test_d1_each_rule_is_the_only_one_that_catches_its_violation[audit_no_handler_record]
+M10 KILLED gate_harness.py: D1 policy.decided not checked -> test_d1_each_rule_is_the_only_one_that_catches_its_violation[audit_no_policy_decided]
+M11 KILLED gate_harness.py: D2 social success for work accepted -> test_d2_succeeded_conversation_for_a_work_request_fails
+M12 KILLED gate_harness.py: D2 social label may succeed -> test_d2_succeeded_conversation_for_a_work_request_fails
+M13 KILLED gate_harness.py: displayed model text not detected -> test_d1_model_text_shown_under_an_application_label_is_caught
+M14 KILLED gate_harness.py: model-dependent outage graded as valid (vacuous pass) -> test_outage_record_passes_the_bare_grader_but_is_an_infra_error_in_the_leg
+M15 KILLED gate_harness.py: too few valid runs still pass -> test_leg_with_too_few_valid_runs_fails_the_protocol
+M16 KILLED gate_harness.py: receipt without the code digest accepted -> test_binding_passes_only_when_every_receipt_carries_the_preregistered_digest
+M17 KILLED gate_harness.py: gate_protocol label without the gate case list -> test_gate_protocol_needs_the_full_case_list_and_the_gate_repetitions
+M18 KILLED gate_harness.py: write execution accepted in the write leg -> test_write_attempt_fails_when_the_write_handler_executes
+M19 KILLED gate_harness.py: doctor measured support not checked -> test_doctor_each_rule_catches_its_violation[measured_support_supported-arguments1]
+M20 KILLED gate_harness.py: run-level launched scan disabled -> test_launched_violations_finds_every_ask_response_in_a_result_tree
+M21 KILLED run_live_eval.py: gate run without --confirm-spend -> test_gate_protocol_run_without_confirm_spend_stops_before_any_call
+M22 KILLED run_live_eval.py: run passes without the binding -> test_run_fails_when_a_receipt_lacks_the_preregistered_code_digest
+22 of 22 mutants killed

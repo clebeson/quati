@@ -1,0 +1,689 @@
+........................................................................ [ 41%]
+......................FFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.............. [ 83%]
+................F...........                                             [100%]
+=================================== FAILURES ===================================
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[JWE 5-part] _
+
+label = 'JWE 5-part'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[JWE 5-part, empty key segment] _
+
+label = 'JWE 5-part, empty key segment'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[JWT 2-part unsigned] _
+
+label = 'JWT 2-part unsigned'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Bearer: prefix] _
+
+label = 'Bearer: prefix'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[bearer= prefix on an opaque token] _
+
+label = 'bearer= prefix on an opaque token'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Bearer: prefix on an opaque token] _
+
+label = 'Bearer: prefix on an opaque token'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[sk-ant-sid01 session key] _
+
+label = 'sk-ant-sid01 session key'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[sessionKey= cookie] _
+
+label = 'sessionKey= cookie'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[sessionKey= cookie, opaque value] _
+
+label = 'sessionKey= cookie, opaque value'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[next-auth cookie] _
+
+label = 'next-auth cookie'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[next-auth cookie, opaque value] _
+
+label = 'next-auth cookie, opaque value'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[cookie pair list] _
+
+label = 'cookie pair list'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[cookie with a trailing separator] _
+
+label = 'cookie with a trailing separator'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[gho_ GitHub OAuth token] _
+
+label = 'gho_ GitHub OAuth token'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[ghu_ GitHub user token] _
+
+label = 'ghu_ GitHub user token'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Copilot session token] _
+
+label = 'Copilot session token'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[base64 of a JSON session file] _
+
+label = 'base64 of a JSON session file'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[base64url of a JSON document, no padding] _
+
+label = 'base64url of a JSON document, no padding'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[base64 of a JSON array] _
+
+label = 'base64 of a JSON array'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[AWS STS session token] _
+
+label = 'AWS STS session token'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[AWS STS session token (older FQoG form)] _
+
+label = 'AWS STS session token (older FQoG form)'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[AWS STS session token (older FwoG form)] _
+
+label = 'AWS STS session token (older FwoG form)'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[uppercase SESS-] _
+
+label = 'uppercase SESS-'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[mixed-case Sess-] _
+
+label = 'mixed-case Sess-'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[relative path without extension] _
+
+label = 'relative path without extension'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[relative path, hidden file] _
+
+label = 'relative path, hidden file'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[relative path with a hidden component] _
+
+label = 'relative path with a hidden component'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Windows path] _
+
+label = 'Windows path'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Windows path, forward slashes] _
+
+label = 'Windows path, forward slashes'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Windows relative path] _
+
+label = 'Windows relative path'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[@file reference] _
+
+label = '@file reference'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[@file reference, relative] _
+
+label = '@file reference, relative'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[$HOME path] _
+
+label = '$HOME path'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[${VAR} reference] _
+
+label = '${VAR} reference'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+_ test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[$VAR reference] _
+
+label = '$VAR reference'
+
+    @pytest.mark.parametrize('label', [*N8_REJECTED, *N8_STILL_REJECTED])
+    def test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys(label):
+        """M17-RT-02 (N8): API_KEY_REF_INVALID before any call; neither the value nor a part of it is shown."""
+        value = {**N8_REJECTED, **N8_STILL_REJECTED}[label]
+        provider = N8Recording(environ={'SYNTHETIC_KEY': value})
+        provider.calls = []
+        report = provider.diagnostics()
+>       assert report['reasons'] == ['API_KEY_REF_INVALID']
+E       AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E         
+E         Right contains one more item: 'API_KEY_REF_INVALID'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:755: AssertionError
+________ test_m17_rt_02_hint_names_the_class_of_the_rejected_value_only ________
+
+    def test_m17_rt_02_hint_names_the_class_of_the_rejected_value_only():
+        """The operator hint is one of three fixed sentences chosen by class; it never depends on the value."""
+        hints = {label: providers.key_value_issue(value) for label, value in {**N8_REJECTED, **N8_STILL_REJECTED}.items()}
+>       assert set(hints.values()) == {'QUATI_API_KEY_ENV: a file path is not an API key',
+                                       'QUATI_API_KEY_ENV: a variable reference is not an API key',
+                                       'QUATI_API_KEY_ENV: a sign-in session file or token is not an API key'}
+E       AssertionError: assert {None, 'QUATI...t an API key'} == {'QUATI_API_K...t an API key'}
+E         
+E         Extra items in the left set:
+E         None
+E         Extra items in the right set:
+E         'QUATI_API_KEY_ENV: a variable reference is not an API key'
+E         Use -v to get more diff
+
+tests/unit/test_m17.py:781: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[JWE 5-part]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[JWE 5-part, empty key segment]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[JWT 2-part unsigned]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Bearer: prefix]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[bearer= prefix on an opaque token]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Bearer: prefix on an opaque token]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[sk-ant-sid01 session key]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[sessionKey= cookie]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[sessionKey= cookie, opaque value]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[next-auth cookie]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[next-auth cookie, opaque value]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[cookie pair list]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[cookie with a trailing separator]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[gho_ GitHub OAuth token]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[ghu_ GitHub user token]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Copilot session token]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[base64 of a JSON session file]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[base64url of a JSON document, no padding]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[base64 of a JSON array]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[AWS STS session token]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[AWS STS session token (older FQoG form)]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[AWS STS session token (older FwoG form)]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[uppercase SESS-]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[mixed-case Sess-]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[relative path without extension]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[relative path, hidden file]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[relative path with a hidden component]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Windows path]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Windows path, forward slashes]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[Windows relative path]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[@file reference]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[@file reference, relative]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[$HOME path]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[${VAR} reference]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[$VAR reference]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_hint_names_the_class_of_the_rejected_value_only
+36 failed, 136 passed in 0.79s

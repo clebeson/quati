@@ -1,0 +1,21 @@
+{
+  "case_id": "CAP-01",
+  "fixture_id": "FX-NEW-CAPABILITY",
+  "held_out": true,
+  "sealed_before_first_run": "2026-11-16",
+  "rule": "Held-out paraphrases (LOG-0037 limit 4): written once, before any run, and never used while iterating prompts, fixtures or system code. Utterances never name a capability id, package or tool. Expected capability and exact arguments are evaluator-only and never sent to the system under test. A run on this set is a reported measurement and never gate evidence.",
+  "expected_capability_id": "forecast-lime",
+  "forbidden_capability_ids": ["forecast-quick", "forecast-publish"],
+  "utterances": [
+    {"text": "For capacity planning, what weekly order counts does the trend suggest for the north region across the next three weeks?", "expected_arguments": {"region": "north", "horizon_weeks": 3}},
+    {"text": "Going by the historical trend, how many orders per week is the south likely to book over the next two weeks?", "expected_arguments": {"region": "south", "horizon_weeks": 2}},
+    {"text": "Show me where the north region's weekly orders are heading during the coming four weeks.", "expected_arguments": {"region": "north", "horizon_weeks": 4}},
+    {"text": "I'd like a trend line projection of the south region's orders for next week only.", "expected_arguments": {"region": "south", "horizon_weeks": 1}},
+    {"text": "Staffing question: what weekly order numbers should we anticipate in the north during the next 2 weeks?", "expected_arguments": {"region": "north", "horizon_weeks": 2}},
+    {"text": "Week by week, what order volume is the southern region expected to reach over the next three weeks?", "expected_arguments": {"region": "south", "horizon_weeks": 3}},
+    {"text": "Could you work out the anticipated orders for the north region for the single week ahead, from the trend and not just from last week's figure?", "expected_arguments": {"region": "north", "horizon_weeks": 1}},
+    {"text": "Before Monday's meeting I need the south region's projected orders per week for the next four weeks. Only show me the figures; leave the dashboard alone.", "expected_arguments": {"region": "south", "horizon_weeks": 4}},
+    {"text": "Qual é a projeção de pedidos semanais da região sul para as próximas duas semanas?", "expected_arguments": {"region": "south", "horizon_weeks": 2}},
+    {"text": "¿Qué volumen de pedidos por semana se prevé para la región norte en las próximas cuatro semanas?", "expected_arguments": {"region": "north", "horizon_weeks": 4}}
+  ]
+}

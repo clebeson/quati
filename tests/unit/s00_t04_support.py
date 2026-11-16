@@ -221,7 +221,10 @@ class Harness:
         identity = self.identity
         return CLIService(identity, self.config, write_receipt, provider_factory=self.factory,
                           policy_loader=lambda tenant_id: local_policy.state(identity.directory, tenant_id),
-                          feature_reports=self.reports, ask_runtime=self.runtime, clock=self.clock)
+                          feature_reports=self.reports, ask_runtime=self.runtime, clock=self.clock,
+                          # Fix round 7 (LOG-0041 N7): a probe passes the registry AuthorizationPort first.
+                          authorize=lambda context, operation, action: self.commands().discovery.authorize(
+                              context, operation, action))
 
     def commands(self):
         return composition.capability_commands(self.identity, write_receipt, clock=self.clock, ids=self.ids,

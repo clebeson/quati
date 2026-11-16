@@ -11,7 +11,7 @@ Scope: synchronous fixture-only discovery. No job, worker, durable acceptance, e
 - Local principal originates from the process identity adapter, never model arguments. The S00 catalog contains only public synthetic local fixtures. No tenant-private data is imported.
 - Capability discovery, description and invocation use `DiscoveryPort` and `RegistryPort` exactly as declared in `BOUNDARY_CONTRACTS.md`. Search returns at most five permitted candidates. Invocation validates enabled lifecycle, measured binding eligibility, local scope, effect, input and output schemas. Lifecycle and assurance are never self-declared by a definition (RFC-015 REG-01). Only explicitly registered fixture handlers execute; manifests cannot load code or grant permissions.
 - The model is reached only through `ModelPort` as declared in `BOUNDARY_CONTRACTS.md`. The application owns evidence and final status; a model completion is never passed through as verified work. Provider SDK types remain inside the adapter.
-- For nontrivial input, a typed classification precedes discovery. Invalid output has bounded retries. Classification is advisory; no classification can bypass invocation policy. Exact benign greetings can use a deterministic no-tool path. Mixed greetings and work do not match that path.
+- For nontrivial input, a typed classification precedes discovery. Invalid output has bounded retries. Classification is advisory; no classification can bypass invocation policy. Text that is social-only by the code-owned multilingual table ("Displayed text and social outcomes" below) is answered deterministically with no model call. Mixed greetings and work do not match that path.
 - A real tool probe must precede autonomous fixture invocation on each live run. `UNKNOWN` is not `SUPPORTED`. Doctor without an explicit probe reports configuration availability separately from measured support. Probe checks a nonce round-trip through an innocuous tool; other features stay `NOT_VERIFIED`.
 - Provider configuration uses `QUATI_BASE_URL`, `QUATI_MODEL`, `QUATI_API_KEY_ENV` naming an environment variable containing the token, and explicit `QUATI_ALLOW_LIVE=1`. Never infer authorization from unrelated session credentials. HTTPS only; reject URL credentials, query, fragment and redirects. No automatic fallback endpoint. Fixed request/tool/output/time limits bound each run. Configuring this is authorization for those bounded synthetic model calls, not any downstream external writes.
 - Evidence records structured operation IDs, hashes, timing, usage, sanitized result codes and provenance. Default evidence omits raw request, tool arguments and model text. Synthetic live evaluations may explicitly capture their synthetic arguments and outputs; secrets remain redacted. Unknown cost remains null, never zero.
@@ -46,45 +46,74 @@ The model's final text is hashed and can be inspected in synthetic evaluations; 
 is not authoritative proof of completed work. Diagnostics and transport share the
 same HTTPS endpoint validation, including port and whitespace checks.
 
-### Displayed text and social outcomes (normative for S00; audit findings F2 and F3, LOG-0039)
+### Displayed text and social outcomes (normative for S00; LOG-0039 F2 and F3, LOG-0041 D1 to D4)
 
-These rules are code-owned. The model's classification is advisory: it can withhold a social
-outcome, it can never create one, and it never selects the tool path for a greeting.
+These rules are code-owned. The model's classification is advisory: no label creates a social
+outcome, and no label skips the work path. They replace the round 6 rules (greeting-only bag of
+words, `CONVERSATION`, the no-action notice and `NO_GREETING_TEMPLATE`), which no longer exist.
 
 1. **Application-owned text only.** Every word `quati ask` and `quati chat` display is produced by
-   the application: a deterministic greeting template, the deterministic localized no-action
-   notice, a rendered `FIXTURE_RESULT`, or a fixed application message. Text written by the model
-   is never displayed, in any result kind. It is recorded as `final_text_sha256` in the receipt
-   (and in full only under `--synthetic-evidence`).
-2. **Greeting-only text.** A text is greeting-only when every word (Unicode `\w+`, casefolded) is
-   in the code-owned social vocabulary or in the code-owned urgency markers, and at least one word
-   is in the social vocabulary. The urgency markers are the words `urgent`, `urgently`, `urgente`,
-   `dringend` and the demonstrative or copula that carries them (`this`, `isto`, `isso`, `é`, `esto`,
-   `c`, `est`, `das`, `ist`, `è`, `questo`); they name no object and no action. A greeting-only text
-   never reaches the tool loop, whatever the model's label says: no tool is offered, no capability
-   can be invoked and no commitment is created (SOC-01 and its negative, "urgent" in a greeting-only
-   sentence). Its result is `GREETING` / `SUCCEEDED` with the localized template of the greeting it
-   contains (the opening greeting, else the first greeting in the text). When it contains no
-   recognized greeting the reply is the no-action notice alone, in English (no template names a
-   language), with uncertainty `NO_GREETING_TEMPLATE`. A label other than social / no work /
-   respond adds uncertainty `MODEL_LABEL_NOT_SOCIAL` and changes nothing else.
-3. **Conversation.** Any other text goes through the tool loop. A label `intent=social`,
-   `work_needed=false`, `next_action=respond` ends the turn as `CONVERSATION` / `SUCCEEDED` only
-   when all of these hold: (a) the text opens with a recognized greeting (a greeting template
-   matches its opening words); (b) the loop made zero tool calls; (c) the model still made zero
-   tool calls after the single `NO_SEARCH_ON_WORK` continuation. The displayed text is the greeting
-   template followed by the localized no-action notice (`display_lines`), with
-   `text_source=application_template`, `work_performed=false`, `actions_taken=[]`, no commitment,
-   and a `next_action` stating that no work was accepted.
-4. **Work labelled social fails closed.** A social or simple-answer label on a text that opens with
-   no recognized greeting is not a social outcome. The turn ends `BLOCKED` / `EVIDENCE_INSUFFICIENT`
-   reason `NO_VERIFIED_EXECUTION` (exit 4), exactly as a work label without a validated execution;
-   nothing the model wrote is displayed.
-5. **Fallbacks keep the narrower rule.** The deterministic fallback after a model timeout or
-   provider unavailability during classification, and the provider-free path, apply only to text
-   made of social vocabulary alone that opens with a recognized greeting (urgency markers excluded).
-6. A greeting in a language without a template is not recognized by code; its handling stays
-   model-dependent (tier L3) and, by rule 4, it cannot end as a `CONVERSATION`.
+   the application: a deterministic greeting template, a rendered `FIXTURE_RESULT`, or a fixed
+   application message. Text written by the model is never displayed, in any result kind, and no
+   outcome depends on it (an empty model reply has no failure mode of its own). It is recorded as
+   `final_text_sha256` in the receipt (and in full only under `--synthetic-evidence`).
+2. **Social-only text (D1).** The social table is data in `src/quati/domain/social.py`: per
+   language, the phrases of three kinds (greetings, pleasantries such as "how are you", thanks) and
+   an optional reply template. It covers at least English (including "good day", "howdy", "hiya",
+   "greetings", "yo"), Portuguese, Spanish, French, German (including "moin"), Italian, Dutch,
+   Turkish, Russian, Japanese, Chinese, Korean, Hindi and Arabic. The markers are the urgency words
+   `urgent`, `urgently`, `urgente`, `dringend` and the demonstrative or copula that carries them
+   (`this`, `is`, `it`, `isto`, `isso`, `é`, `esto`, `c`, `est`, `das`, `ist`, `è`, `questo`); they
+   name no object and no action.
+   - *Normalization.* Unicode NFKC, casefold, NFKC again; the casefold of the Turkish dotted capital
+     I is a plain `i`. A word is a maximal run of characters whose Unicode general category is a
+     letter (L), a mark (M) or a number (N); every other character separates words. Nothing is
+     stripped from the input; unaccented spellings are table entries.
+   - *Rule.* A text is social-only when its words, in order, can be cut completely into table
+     phrases and single marker words, with at least one table phrase. Matching is on whole
+     phrases, never on a bag of words: any other word, and markers alone, make the text not
+     social-only.
+   - *Outcome.* A social-only text is answered by the application before the provider
+     configuration, the feature report or the model is looked at: no model call, no tool, no
+     registry read, no commitment. The Response is `SUCCEEDED`, exit 0, with no uncertainty:
+     `result_kind = GREETING`, `result_status = RESPONDED`, `text` = the reply template,
+     `text_source = application_template`, `display_lines = [text]`, `work_performed = false`,
+     `actions_taken = []`, `provider_used = false`, `tool_calls = []`, `launched = false`. It is
+     identical (apart from the request and trace identifiers and the receipt reference) in every
+     provider state: no provider configured, configured but not probed, probed, model unavailable,
+     invalid classification. `quati chat` gives the same Response for the same line.
+   - *Reply language.* The reply is the template of the first greeting phrase in the text; a text
+     without a greeting gets the template of the language of its first phrase. A language without
+     a template (Dutch, Turkish, Russian, Japanese, Chinese, Korean, Hindi and Arabic in S00)
+     answers with the English template `Hello!`. A phrase listed by two languages belongs to the
+     first one in table order.
+   - *Precedence.* The only exception to "identical in every provider state" is the M01 exit-code
+     precedence: an active behavior package or statechart that does not compile is checked first
+     and gives `BLOCKED` / `CONFIG_INVALID`, reason `BEHAVIOR_PACKAGE_INVALID`, exit 2, for every
+     ask (social-only or not) in every provider state. Input validation (exit 2) and
+     authentication (exit 4, `UNAUTHENTICATED`) precede it as for every command.
+3. **Every other text goes to the model (D2).** It needs a configured provider with a current
+   measured FeatureReport (`NOT_CONFIGURED` exit 3 or `UNSUPPORTED` exit 4 otherwise), is
+   classified and enters the tool loop. A text that mixes a greeting with a request
+   ("Hi! What's my next appointment?") is not social-only and follows this rule. A classification
+   `intent` of `social` or `simple_answer` on such a text is not an outcome: if the turn ends with
+   no validated execution it is `BLOCKED` / `EVIDENCE_INSUFFICIENT`, reason
+   `NO_VERIFIED_EXECUTION`, exit 4, with the `next_action` "S00 displays no model-written answers
+   and no action was taken. Ask for work that an installed capability can do; the model text is
+   not evidence of completion." It is never `SUCCEEDED`. The single `NO_SEARCH_ON_WORK`
+   continuation is still issued whatever the label, and tool calls the model then makes are
+   handled as for any work request.
+4. **Greetings outside the table.** A greeting in a language or form the table does not list is
+   not recognized by code. It follows rule 3: its handling is model-dependent (tier L3, measured
+   live) and it cannot end `SUCCEEDED` without a validated execution.
+5. **`launched` (D3).** `data.launched` is `false` in every S00 ask and chat response, including
+   when the tool loop ran and a capability executed: S00 has no ledger, so no commitment and no
+   work item exists (M01-FR-02).
+6. **Ids outside the shortlist (D4).** In an ask turn, `quati_describe` and `quati_invoke` of an id
+   that this turn's searches did not return are refused with DENIED / `FORBIDDEN` /
+   `NOT_IN_SHORTLIST`, whether the id is unknown, malformed, hidden, disabled or enabled. The
+   registry is not consulted for it, so the reason cannot tell the model which ids exist
+   (`docs/prds/M15.md`, invoke guard order).
 
 ### Registry authorization (normative for S00; audit findings F4 and F5, LOG-0039)
 

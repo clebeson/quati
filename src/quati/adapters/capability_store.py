@@ -4,9 +4,15 @@ Layout under ``<state_dir>/capabilities/``: ``packages/<id>/<version>/`` immutab
 copies, ``registry.json`` (compare-and-swap ``revision``, temp + fsync + rename),
 ``capabilities.lock`` (lock_version 1) and ``audit.jsonl`` (append + fsync).
 
-Everything under the root is owner-only (directories 0700, files 0600). The audit log is opened
-without following a symlink and must be a private regular file; otherwise the append is refused
-with the typed reason ``audit_unavailable`` and nothing is written (K7, M26). Tamper-evident
+Everything under the root is owner-only (directories 0700, files 0600). Every operation first
+verifies the directory chain (the state directory, then the registry root: real directories of
+the current user, never a symlink) through ``private_fs.state_directory``, before any read, lock,
+write or audit append; an unsafe chain raises ``UnsafeStatePath`` and nothing is touched. A read
+creates nothing: an absent root is an empty registry.
+
+The audit log is opened without following a symlink and must be a private regular file whose
+every line is one JSON object; otherwise reads and appends alike are refused with the typed
+reason ``audit_unavailable`` and nothing is written (K7, M26; the M02 decision log). Tamper-evident
 chaining of the log is S02 ledger work, not provided here.
 """
 
@@ -21,7 +27,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable, Iterable, Iterator
 
-from quati.adapters.private_fs import open_private, private_directory, read_private, write_private
+from quati.adapters.private_fs import open_private, private_directory, read_private, state_directory, write_private
 from quati.behavior.fsutil import atomic_write
 from quati.behavior.manifest import PackageEntry, package_sha256, scan_package_dir
 from quati.domain.canonical import canonical_bytes
@@ -42,7 +48,17 @@ def empty_state() -> dict:
 
 def _audit_unavailable() -> Refusal:
     return Refusal("UNAVAILABLE", "TEMPORARILY_UNAVAILABLE", "audit_unavailable",
-                   "The audit log is not a private regular file; nothing was read or recorded.")
+                   "The audit log is not a private, readable log of JSON events; nothing was read or recorded.")
+
+
+def _events(raw: bytes) -> list[dict]:
+    """The events of complete audit lines; a torn, non-JSON or non-object line raises ``ValueError``."""
+    if raw and not raw.endswith(b"\n"):
+        raise ValueError("audit log ends inside a line")
+    events = [json.loads(line) for line in raw.splitlines() if line]
+    if not all(isinstance(event, dict) for event in events):
+        raise ValueError("audit line is not an object")
+    return events
 
 
 class FileRegistryStore:
@@ -50,14 +66,23 @@ class FileRegistryStore:
         self.root = Path(root)
         self.hook = hook
         self._lock_depth = 0
+        self._audit_verified = 0                        # validated prefix of the audit log (ends at a line boundary)
 
     # ------------------------------------------------------------------ registry.json
     @property
     def registry_path(self) -> Path:
         return self.root / "registry.json"
 
+    def _verified_root(self, *, create: bool) -> Path | None:
+        """The registry root after the chain check; ``None`` for a reader when nothing is stored yet."""
+        return state_directory(self.root.name, root=self.root.parent, create=create)
+
+    def prepare(self) -> None:
+        """Verify (creating what is missing) the directory chain before a command uses the registry."""
+        self._verified_root(create=True)
+
     def load(self) -> dict:
-        if not self.registry_path.exists():
+        if self._verified_root(create=False) is None or not self.registry_path.exists():
             return empty_state()
         return json.loads(self.registry_path.read_bytes())
 
@@ -71,7 +96,7 @@ class FileRegistryStore:
             finally:
                 self._lock_depth -= 1
             return
-        self._private_root()
+        self._verified_root(create=True)
         with os.fdopen(open_private(self.root / "registry.flock", os.O_RDWR, tighten=True), "a+b") as handle:
             fcntl.flock(handle, fcntl.LOCK_EX)
             self._lock_depth = 1
@@ -80,13 +105,6 @@ class FileRegistryStore:
             finally:
                 self._lock_depth = 0
                 fcntl.flock(handle, fcntl.LOCK_UN)
-
-    def _private_root(self) -> None:
-        """The state directory (when this user owns it) and the registry root are owner-only."""
-        parent = self.root.parent
-        if parent.is_dir() and not parent.is_symlink() and parent.stat().st_uid == os.getuid():
-            private_directory(parent)
-        private_directory(self.root)
 
     def transaction(self) -> Iterator[None]:
         """Hold the store lock across a whole load -> stage -> CAS commit -> publish sequence."""
@@ -118,7 +136,7 @@ class FileRegistryStore:
         """Write a content-addressed staging copy (``staging/<sha256>``); nothing is published yet."""
         entries = tuple(entries)
         sha = package_sha256(entries)
-        self._private_root()
+        self._verified_root(create=True)
         staging = self.root / "staging" / sha
         shutil.rmtree(staging, ignore_errors=True)
         private_directory(staging)
@@ -141,6 +159,7 @@ class FileRegistryStore:
     def read_package(self, capability_id: str, version: str) -> tuple[str, dict[str, bytes]] | None:
         """``(sha256, {path: bytes})`` from one scan of the stored package; ``None`` when unreadable."""
         try:
+            self._verified_root(create=False)
             entries = scan_package_dir(self.package_dir(capability_id, version))
         except Exception:  # noqa: BLE001 - an unreadable stored package is a digest mismatch
             return None
@@ -148,6 +167,7 @@ class FileRegistryStore:
 
     def package_digest(self, capability_id: str, version: str) -> str | None:
         try:
+            self._verified_root(create=False)
             return package_sha256(scan_package_dir(self.package_dir(capability_id, version)))
         except Exception:  # noqa: BLE001 - an unreadable stored package is a digest mismatch
             return None
@@ -158,7 +178,7 @@ class FileRegistryStore:
         return self.root / "capabilities.lock"
 
     def lock_entries(self) -> list[dict]:
-        if not self.lock_path.exists():
+        if self._verified_root(create=False) is None or not self.lock_path.exists():
             return []
         return json.loads(self.lock_path.read_bytes())["entries"]
 
@@ -181,25 +201,35 @@ class FileRegistryStore:
         return self.root / "audit.jsonl"
 
     def append_audit(self, event: dict) -> None:
-        """Append one event to the private audit log, or refuse with ``audit_unavailable`` (fail closed)."""
+        """Append one event to the private audit log, or refuse with ``audit_unavailable`` (fail closed).
+
+        The log must be readable as a decision log before it grows: what this instance has not yet
+        validated is parsed first, so an append never lands behind a torn or foreign line.
+        """
         line = canonical_bytes(event) + b"\n"
         try:
-            self._private_root()
+            self._verified_root(create=True)
+            raw = read_private(self.audit_path) or b""
+            if len(raw) < self._audit_verified:         # replaced by a shorter log: validate all of it
+                self._audit_verified = 0
+            _events(raw[self._audit_verified:])
             descriptor = open_private(self.audit_path, os.O_WRONLY | os.O_APPEND)
             with os.fdopen(descriptor, "ab") as handle:
                 handle.write(line)
                 handle.flush()
                 os.fsync(handle.fileno())
-        except OSError:
+            self._audit_verified = len(raw)             # a line boundary; a concurrent writer may follow it
+        except (OSError, ValueError):
             raise _audit_unavailable() from None
 
     def audit_events(self) -> list[dict]:
-        """Events of the private audit log; a symlinked or insecure log is ``audit_unavailable``, never read."""
+        """Events of the private audit log; an unsafe, torn or non-JSON log is ``audit_unavailable``, never read."""
         try:
-            raw = read_private(self.audit_path)
-        except OSError:
+            if self._verified_root(create=False) is None:
+                return []
+            return _events(read_private(self.audit_path) or b"")
+        except (OSError, ValueError):
             raise _audit_unavailable() from None
-        return [json.loads(line) for line in (raw or b"").splitlines() if line]
 
 
 __all__ = ["FileRegistryStore", "STORE_SCHEMA", "default_registry_root", "empty_state"]

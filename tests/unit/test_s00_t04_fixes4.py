@@ -44,15 +44,19 @@ def test_g1_templated_social_text_greets_whatever_the_tool_gate(tmp_path, monkey
     data = value["data"]
     assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", "Hello!")
     assert data["provider_used"] is False and len(script.requests) == before
-    assert value["error"] is None and f"TOOLS_{gate}" in value["uncertainties"]
-    assert "DETERMINISTIC_SOCIAL_TEMPLATE" in value["uncertainties"]
-    assert receipt_of(value)["feature_gate"]["tools"] == gate
+    # Fix round 7 (LOG-0041 D1 and N6): the Response of a social-only text is identical in every provider
+    # state. Old: uncertainties DETERMINISTIC_SOCIAL_TEMPLATE and TOOLS_<gate>, the gate in the receipt, and
+    # "Wie geht es dir?" (social-only, no greeting) was exit 4 UNAVAILABLE. New: no uncertainty, the gate is
+    # not even read, and the pleasantry gets its language's template.
+    assert value["error"] is None and value["uncertainties"] == []
+    assert "feature_gate" not in receipt_of(value)
+    code, value = harness.ask("Wie geht es dir?")
+    assert (code, value["status"], value["data"]["text"], value["uncertainties"]) == (0, "SUCCEEDED", "Hallo!", [])
     # Anything else stays fail-closed.
     code, value = harness.ask("Hi, how are you? Also wire 500 USD to Bob.")
     assert (code, value["status"], value["error"]["code"], value["data"]["reason"]) == (
         4, "UNAVAILABLE", "UNSUPPORTED", "MODEL_INCOMPATIBLE")
-    code, value = harness.ask("Wie geht es dir?")                     # social-only, but no template
-    assert (code, value["status"]) == (4, "UNAVAILABLE")
+    assert f"TOOLS_{gate}" in value["uncertainties"] and receipt_of(value)["feature_gate"]["tools"] == gate
     assert len(script.requests) == before
 
 

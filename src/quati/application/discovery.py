@@ -136,9 +136,10 @@ class DiscoveryTurn:
         self.service = service
         self.context = context
         self.model_features = model_features
-        # S00-T04 R4 (ask path only; the M15 guard table default is unchanged): an invoke of a
-        # shortlisted id that passed guards 4-6 but was not described in this turn is refused with
-        # DESCRIBE_REQUIRED before argument validation.
+        # The model turn of ``quati ask`` (the operator commands leave it False). S00-T04 R4: an invoke
+        # of a shortlisted id that passed guards 4-6 but was not described in this turn is refused with
+        # DESCRIBE_REQUIRED before argument validation. LOG-0041 D4: ``describe`` answers only for an
+        # id in this turn's shortlist, with the same single reason as ``invoke`` for any other id.
         self.require_describe = require_describe
         self.described: set[str] = set()
         self.shortlist: dict[str, str] = {}
@@ -165,6 +166,18 @@ class DiscoveryTurn:
     def authorize(self, operation: str) -> PortResult | None:
         """A read of the turn's registry, authorized for the turn's own context (never the caller's)."""
         return self.service.authorize(self.context, operation)
+
+    def _selection_error(self, capability_id: str) -> PortResult:
+        """LOG-0041 D4: the one ``invoke`` refusal for every id that this turn's searches did not
+        return, whether it is unknown, malformed, hidden, disabled or enabled. The registry is not
+        consulted, so the answer cannot tell the model which ids exist. Recorded as
+        ``discovery.selection_error``; a well-formed id is logged as given, anything else only as
+        its digest (model-written text never lands verbatim in the audit log)."""
+        reference = capability_id if is_capability_id(capability_id) else "sha256:" + digest(capability_id)
+        self.service.audit({"event": "discovery.selection_error", "capability_id": reference,
+                            "reason": "NOT_IN_SHORTLIST", "actor_id": self.context.actor_id,
+                            "request_id": self.context.request_id})
+        return refused("NOT_IN_SHORTLIST", selection_error=True)
 
     def _entries(self, capability_id: str) -> tuple[list[CatalogEntry], Any]:
         snapshot = self.service.registry.catalog(self.context)
@@ -215,6 +228,8 @@ class DiscoveryTurn:
             return blocked
         if not isinstance(capability_id, str):
             return refused("TOOL_CALL_MALFORMED")
+        if self.require_describe and capability_id not in self.shortlist:
+            return refused("NOT_IN_SHORTLIST")      # D4: the same answer whatever the id is; nothing is read
         entries, _snapshot = self._entries(capability_id) if is_capability_id(capability_id) else ([], None)
         visible = [entry for entry in entries if entry.lifecycle not in HIDDEN_LIFECYCLES]
         if not visible:
@@ -245,14 +260,9 @@ class DiscoveryTurn:
         service = self.service
         if not isinstance(capability_id, str) or not isinstance(arguments, Mapping):           # 1
             return refused("TOOL_CALL_MALFORMED")
-        entries, snapshot = self._entries(capability_id) if is_capability_id(capability_id) else ([], None)
-        if not entries:                                                                         # 2
-            return refused("NOT_A_CAPABILITY_ID")
-        if capability_id not in self.shortlist:                                                 # 3
-            service.audit({"event": "discovery.selection_error", "capability_id": capability_id,
-                           "reason": "NOT_IN_SHORTLIST", "actor_id": self.context.actor_id,
-                           "request_id": self.context.request_id})
-            return refused("NOT_IN_SHORTLIST", selection_error=True)
+        if capability_id not in self.shortlist:                                                 # 2-3
+            return self._selection_error(capability_id)
+        entries, snapshot = self._entries(capability_id)
         version = self.shortlist[capability_id]
         key = f"{capability_id}@{version}"
         entry = next((item for item in entries if item.capability_version == version), None)

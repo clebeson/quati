@@ -1,0 +1,17 @@
+T05 harness round 7 (2026-11-16): evidence of the harness work only. No live provider call was made.
+
+red.txt                      New grader tests run against the harness as committed at HEAD 5225cb2 (scratch copy).
+green.txt                    The same two test files against the changed harness.
+mutation_check.txt           22 single-point mutants of the new rules, each killed by a named test (script alongside).
+planned_live_commands.txt    Command lines for the root coordinator, with --estimate-only call counts (no call made).
+dryrun_strict_binding_preflight_stdout.txt
+                             Dry run with the default --binding-scope all: the free preflight stopped the run because
+                             the init, capability-command and provider-free greeting receipts of the tree at that
+                             moment carry no code digest.
+dryrun_stdout.txt, dryrun/   Plumbing dry run (--dry-run-scripted: public CLI + the scripted fake model of the unit
+                             tests, network-free; --binding-scope request --skip-binding-preflight; reduced
+                             repetitions). NOT_GATE_EVIDENCE. The scripted policy is a stand-in, so pass or fail of a
+                             model-dependent case here says nothing about a model. The binding check failed as it
+                             should: other agents changed src/ while the run was in progress, so the receipts carry a
+                             different code digest from the pre-registered one (70 mismatched), and the receipts that
+                             are not ask receipts carry none (630 missing).

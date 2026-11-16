@@ -15,7 +15,7 @@ from typing import Callable
 
 from quati.application.cli_service import response
 from quati.behavior.compiler import BehaviorCompiler, PromptArtifact
-from quati.domain.diagnostics import ContractViolation, ErrorCode, violation
+from quati.domain.diagnostics import ContractViolation
 
 HASHES = ("behavior_hash", "statechart_hash", "prompt_hash")
 INVALID_MESSAGE = "The behavior package or its statechart failed validation."
@@ -35,14 +35,17 @@ def rejection(exc: ContractViolation) -> dict:
 
 
 def package_ref(package: str, root: Path) -> str:
-    """``package`` as a reference inside ``root``: relative as given, absolute only when under ``root``."""
+    """``package`` as a reference inside ``root``: an absolute path under ``root`` becomes relative.
+
+    Anything else is returned as given: the compiler's own containment check is the single place that
+    rejects a reference outside the root (FORBIDDEN ``PATH_TRAVERSAL`` at ``profile_ref``, rule class 3).
+    """
     if not os.path.isabs(package):
         return package
     try:
         return Path(package).relative_to(Path(root).absolute()).as_posix()
     except ValueError:
-        raise violation(ErrorCode.FORBIDDEN, "PATH_TRAVERSAL", "profile_ref",
-                        "the package is outside the package root", 3) from None
+        return package
 
 
 def active_package_status(root: Path, profile_ref: str, model_role_ref: str | None = None) -> dict:

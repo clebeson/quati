@@ -3,10 +3,13 @@ from datetime import datetime, timezone
 from hashlib import sha256
 import json
 import os
-from pathlib import Path
 import uuid
 
-from quati.adapters.private_fs import private_directory
+from quati.adapters.private_fs import state_directory
+
+
+class ReceiptNotWritten(OSError):
+    """The evidence receipt of an operation could not be written; the operation itself may have run."""
 
 
 def redact(value):
@@ -34,12 +37,14 @@ def redact(value):
     return clean(value)
 
 
+def receipts_directory():
+    """The receipt directory after the chain check: the data directory and ``receipts/`` are real,
+    owner-only directories of this user, whatever the umask (or ``UnsafeStatePath``)."""
+    return state_directory('receipts')
+
+
 def write_receipt(value):
-    directory = Path(os.environ.get('QUATI_DATA_DIR', str(Path.home() / '.quati'))) / 'receipts'
-    if any(p.is_symlink() for p in [directory, *directory.parents]):
-        raise OSError('Evidence directory cannot traverse symlinks')
-    private_directory(directory.parent)  # the data directory itself is owner-only, whatever the umask
-    private_directory(directory)
+    directory = receipts_directory()
     record = redact({**value, 'timestamp':datetime.now(timezone.utc).isoformat(), 'evidence_version':'s00/1'})
     blob = json.dumps(record, indent=2, sort_keys=True).encode() + b'\n'
     path = directory / (uuid.uuid4().hex + '.json')
@@ -49,3 +54,11 @@ def write_receipt(value):
         f.flush()
         os.fsync(f.fileno())
     return {'path':str(path), 'sha256':sha256(blob).hexdigest()}
+
+
+def receipt_sink(value):
+    """The evidence sink of a use case that has already acted: a failure names the missing receipt only."""
+    try:
+        return write_receipt(value)
+    except OSError as exc:
+        raise ReceiptNotWritten() from exc

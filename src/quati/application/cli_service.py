@@ -3,7 +3,7 @@ import hashlib
 from datetime import datetime, timezone
 from typing import Callable, Protocol
 
-from quati.application.ask import ask_probe_profile, feature_gate, is_social_only, run_ask, social_reply
+from quati.application.ask import ask_probe_profile, feature_gate, run_ask, social_outcome
 from quati.application.identity import AccessDenied, RequestContext, canonical_bytes
 from quati.application.ports import ProviderConfig
 from quati.application.providers import (
@@ -18,20 +18,23 @@ PROBE_NEXT_ACTIONS = {
 # M01-FR-01: the slice that delivers each command group that is registered but not delivered yet.
 UNDELIVERED = {'status': 'S02', 'tell': 'S02', 'approvals': 'S02', 'approve': 'S02', 'deny': 'S02',
                'inbox': 'S02', 'messages': 'S02', 'worker': 'S02', 'trace': 'S02',
-               'config': 'S03', 'behavior': 'S03'}
+               'config': 'S03', 'behavior': 'S03',
+               # Commands that other PRDs, an M02 next_action or RFC-013 name (LOG-0041 N15): M25 policy and
+               # approvals (S02), M02 spaces (S02), M13 prefs, M12 artifact, M11 memory (S03), M20 brains (S04),
+               # RFC-013 SERVER profile: server, login, grants (S05).
+               'spaces': 'S02', 'policy': 'S02', 'prefs': 'S03', 'artifact': 'S03', 'memory': 'S03',
+               'brains': 'S04', 'server': 'S05', 'login': 'S05', 'grants': 'S05'}
+# M02 "Reason -> next_action" (LOCAL column) for a credential that is present but rejected: `quati doctor`.
+IDENTITY_NEXT_ACTIONS = {
+    'credential_insecure': ('Make the Quati configuration directory (mode 0700) and its credential files (mode 0600) '
+                            'real paths owned by you, not symlinks, then run `quati doctor` again; nothing was changed.'),
+    'credential_corrupt': ('The local credential is present but was rejected; restore the installation record and '
+                           'the device key from your backup, then run `quati doctor` again; nothing was changed.'),
+}
 # M17 configuration reasons that mean "present but invalid" (CONFIG_INVALID) rather than "absent".
 PROVIDER_INVALID_REASONS = ('TRANSPORT_UNKNOWN', 'ENDPOINT_INVALID', 'MODEL_INVALID', 'API_KEY_REF_INVALID')
 POLICY_ABSENT_CAUSES = ('missing', 'identity_unavailable')
 FEATURE_VERDICTS = ('SUPPORTED', 'UNSUPPORTED', 'NOT_VERIFIED')
-GREETINGS = {
-    'hello': 'Hello!', 'hi': 'Hello!', 'hey': 'Hello!',
-    'good morning': 'Hello!', 'good afternoon': 'Hello!', 'good evening': 'Hello!',
-    'oi': 'Olá!', 'olá': 'Olá!', 'bom dia': 'Olá!', 'boa tarde': 'Olá!', 'boa noite': 'Olá!',
-    'ola': 'Olá!', 'hola': '¡Hola!', 'buenos días': '¡Hola!', 'buenos dias': '¡Hola!', 'buenas tardes': '¡Hola!',
-    'buenas noches': '¡Hola!', 'bonjour': 'Bonjour!', 'bonsoir': 'Bonsoir!', 'salut': 'Salut!',
-    'hallo': 'Hallo!', 'guten tag': 'Hallo!', 'guten morgen': 'Hallo!', 'guten abend': 'Hallo!',
-    'ciao': 'Ciao!', 'buongiorno': 'Buongiorno!',
-}
 
 
 def response(status='SUCCEEDED', data=None, code=None, message=None, next_action=None, uncertainties=()):
@@ -56,9 +59,17 @@ MAX_TEXT_BYTES = 65536  # M01 cli.max_text_bytes: ask/tell TEXT and one chat inp
 class CLIService:
     def __init__(self, identity: IdentityPort, config: ProviderConfig, evidence_sink: Callable[[dict], dict],
                  provider_factory=create_provider, policy_loader=None, policy_installer=None,
-                 feature_reports=None, ask_runtime=None, clock=None, behavior_check=None, runtime_facts=None):
+                 feature_reports=None, ask_runtime=None, clock=None, behavior_check=None, runtime_facts=None,
+                 authorize=None, state_guard=None, identity_inspector=None):
         # feature_reports / ask_runtime default to None: the model path then stays closed (fail closed).
         # behavior_check() -> the active behavior package status; runtime_facts() -> measured host facts.
+        # authorize(context, operation, action) -> None or a denial with to_response(): the AuthorizationPort
+        # enforcement point of the tenant registry; None (not wired) refuses every probe (fail closed).
+        # state_guard(*names) raises unless those data directories are private directories of this user.
+        # identity_inspector() -> {present, cause, detail}: why an unaccepted credential is not accepted.
+        self.authorize = authorize
+        self.state_guard = state_guard
+        self.identity_inspector = identity_inspector
         self.behavior_check = behavior_check
         self.runtime_facts = runtime_facts
         self.feature_reports = feature_reports
@@ -73,6 +84,7 @@ class CLIService:
 
     def initialize(self):
         """Bootstrap identity, then (RFC-014 5.1) the LOCAL policy and its audited registry revision 1."""
+        self._require_state('receipts')  # the policy receipt must be writable before a credential is created
         summary = self.identity.initialize()
         if self.policy_installer is None:
             return 0, response(data=summary)
@@ -86,7 +98,7 @@ class CLIService:
     def doctor(self, probe=False):
         """M01 ``DoctorReport``: read-only, no provider call, usable with no identity (M01-AT-01)."""
         provider, context = config_diagnostics(self.config), self._lazy_context()
-        identity, policy, behavior = self.identity.diagnostics(), self._policy(context), self._behavior()
+        identity, policy, behavior = self._identity(), self._policy(context), self._behavior()
         facts = self._facts(context)
         checks = _config_checks(identity, policy, provider, behavior)
         provider['measured_support'] = 'NOT_VERIFIED'
@@ -101,8 +113,23 @@ class CLIService:
                 'policy': policy, 'behavior': behavior,
                 'warnings': _warnings(identity, policy, provider, behavior, facts)}
         if not probe:
-            return 0, response(data=data)
+            return 0, response(data=data, next_action=IDENTITY_NEXT_ACTIONS.get(identity.get('reason')))
         return self._probe(data)
+
+    def _require_state(self, *names):
+        """LOG-0041 N1: the named data directories are verified before anything is read, called or changed."""
+        if self.state_guard is not None:
+            self.state_guard(*names)
+
+    def _identity(self):
+        """The identity block: an unaccepted credential is NOT_CONFIGURED only when none exists (M02 reasons)."""
+        identity = dict(self.identity.diagnostics())
+        if identity.get('initialized') or self.identity_inspector is None:
+            return identity
+        state = self.identity_inspector()
+        identity.update(status='INVALID' if state['present'] else 'NOT_CONFIGURED',
+                        reason=state['cause'], detail=state['detail'])
+        return identity
 
     def _behavior(self):
         """The active behavior package as the injected compiler check reports it (path-specific diagnostics)."""
@@ -163,7 +190,7 @@ class CLIService:
         if file is not None:  # profile configuration files belong to ProfilePort (S03)
             return self.unsupported('config validate FILE')
         context = self._lazy_context()
-        identity, policy = self.identity.diagnostics(), self._policy(context)
+        identity, policy = self._identity(), self._policy(context)
         checks = _config_checks(identity, policy, config_diagnostics(self.config), self._behavior())
         facts = self._facts(context)
         invalid = [check for check in checks if check['status'] == 'INVALID']
@@ -172,8 +199,10 @@ class CLIService:
             f" ({', '.join(check['reasons'])})" if check['status'] == 'INVALID' else '')
             for check in checks if check['status'] != 'OK']
         if invalid:
+            repair = ' Run `quati doctor` for the identity cause.' if identity.get('status') == 'INVALID' else ''
             return 2, response('DENIED', data, 'CONFIG_INVALID', 'The local configuration is present but invalid.',
-                               'Correct the checks reported INVALID in data.checks; nothing was changed.', open_items)
+                               'Correct the checks reported INVALID in data.checks; nothing was changed.' + repair,
+                               open_items)
         if open_items:
             return 0, response('PARTIAL', data, uncertainties=open_items, next_action=(
                 'Nothing is invalid; complete the checks reported NOT_CONFIGURED (quati init, provider settings).'))
@@ -202,16 +231,39 @@ class CLIService:
                                'Configure the authorized Quati model endpoint and secret reference.', provider['missing'])
         # IDN-01 / M02 authorization order row 1: authenticate before any provider call or any write under
         # the data directory (receipt, feature report). AccessDenied propagates as the typed denial (exit 4).
-        self.identity.authenticate()
+        context = self.identity.authenticate()
+        # LOG-0041 N7: nothing is spent on a provider before the result can be stored and the caller may
+        # replace the report that gates `ask` (`manage` on the tenant registry, logged as authz.decided).
+        self._require_state('receipts', 'feature_reports')
+        denied = self._authorized(context, 'models_probe', 'manage')
+        if denied is not None:
+            return denied
         try:
             report = self.provider_factory(self.config).probe(ask_probe_profile())
         except ProviderError as exc:
             return 3, response('BLOCKED', data, exc.code, exc.message,
                                'Configure the authorized Quati model endpoint and secret reference.', [exc.reason])
-        receipt = self.evidence_sink({'kind': 'feature_report', **report})
-        if self.feature_reports is not None:
-            self.feature_reports.save(report, receipt)
-        reference = f"sha256:{receipt['sha256']}:{receipt['path']}"
+        stored, references = {'receipt': False, 'feature_report': False}, []
+        try:
+            receipt = self.evidence_sink({'kind': 'feature_report', **report})
+            stored['receipt'] = True
+            references.append(f"sha256:{receipt['sha256']}:{receipt['path']}")
+            if self.feature_reports is not None:
+                self.feature_reports.save(report, receipt)
+            stored['feature_report'] = True
+        except OSError:
+            # The directories were verified before the call, so this is a late failure (for example a full
+            # disk). The call was made: say so, and say that nothing gates `ask` (never INTERNAL_ERROR).
+            data.update(reason='feature_report_not_stored', provider_call_made=True, stored=stored,
+                        feature_report=report)
+            result = response('UNAVAILABLE', data, 'TEMPORARILY_UNAVAILABLE',
+                              'The provider answered the probe, but the measured report could not be stored.',
+                              'Check the free space and the permissions of the data directory, then probe again; '
+                              '`quati ask` keeps refusing this provider until a report is stored.',
+                              ['FEATURE_REPORT_NOT_STORED'])
+            result['evidence_refs'] = references
+            return 4, result
+        reference = references[0]
         report = {**report, 'evidence_refs': [reference]}
         data['feature_report'] = report
         provider['features'] = dict(report['features'])
@@ -251,6 +303,15 @@ class CLIService:
         result['evidence_refs'] = [reference]
         return code, result
 
+    def _authorized(self, context, operation, action):
+        """None when the AuthorizationPort allows and logged the action; otherwise the typed denial (exit 4)."""
+        if self.authorize is None:
+            return 4, response('DENIED', {'reason': 'AUTHORIZATION_UNAVAILABLE'}, 'FORBIDDEN',
+                               'No authorization port is available for this command.',
+                               'Nothing was called or changed; this command needs the registry authorization port.')
+        blocked = self.authorize(context, operation, action)
+        return None if blocked is None else (4, blocked.to_response())
+
     def ask(self, text, synthetic_evidence=False, eval_permutation_seed=None):
         if eval_permutation_seed is not None and not synthetic_evidence:
             # EVAL-PERM: an evaluator-only presentation option; never on a normal (non-synthetic) ask.
@@ -262,27 +323,29 @@ class CLIService:
                                message=f'Request must contain 1 to {MAX_TEXT_BYTES} UTF-8 bytes.',
                                next_action='Provide a nonempty request within the byte limit.')
         context = self.identity.authenticate()
-        greeting = GREETINGS.get(text.strip().rstrip('.! \t\r\n').casefold())
+        self._require_state('receipts')  # LOG-0041 N1: before any read, handler or receipt
         data = {'request_id': context.request_id, 'trace_id': context.trace_id, 'commitment_id': None,
                 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], 'usage': {'cost_usd': None},
                 'received': True, 'launched': False, 'delivered': False}
-        if greeting:
-            data.update(result_status='RESPONDED', result_kind='GREETING', text=greeting)
+        # M01 exit precedence (2 before 3, 4 and 5): an active behavior package that does not compile
+        # is CONFIG_INVALID for every ask, before the text or the provider state is looked at.
+        behavior = self._behavior()
+        if behavior['status'] == 'INVALID':
+            result = self._behavior_invalid(data, behavior['rule_class'], behavior['diagnostics'])
+            return self._record(text, context, 2, result)
+        # LOG-0041 D1: text that is social-only by the code-owned table is answered by the application
+        # here, before the provider configuration, the feature report or the model is looked at, so the
+        # outcome is the same in every provider state. Anything else stays fail closed.
+        social = social_outcome(text)
+        if social is not None:
+            data.update(social)
             return self._record(text, context, 0, response(data=data))
-        # G1: a social-only text with a template is answered without any model or tool, so neither the
-        # provider configuration nor the measured tool gate may block it. Anything else stays fail closed.
-        template = social_reply(text, GREETINGS) if is_social_only(text) else None
         data['result_kind'] = 'BLOCKED'
         if not config_diagnostics(self.config)['configured'] or self.feature_reports is None or self.ask_runtime is None:
-            if template is not None:
-                return self._template_greeting(text, context, data, template, ['PROVIDER_PATH_UNAVAILABLE'])
             code, result = self._work_unavailable(data)
             return self._record(text, context, code, result)
         provider = self.provider_factory(self.config)
         gate = feature_gate(self.feature_reports, provider, self.clock())
-        if gate['tools'] != 'SUPPORTED' and template is not None:
-            return self._template_greeting(text, context, data, template, [f"TOOLS_{gate['tools']}"],
-                                           extra={'feature_gate': gate})
         if gate['tools'] != 'SUPPORTED':
             # CAP-05 / M17-AT-01: UNKNOWN is never SUPPORTED; refuse before any model or binding call.
             data.update(reason='MODEL_INCOMPATIBLE', feature_support=gate['tools'])
@@ -296,22 +359,21 @@ class CLIService:
             runtime = self.ask_runtime(context)
         except ContractViolation as exc:
             # CMP-02 on the runtime path: the active behavior package or statechart does not compile.
-            data.update(reason='BEHAVIOR_PACKAGE_INVALID', rule_class=exc.rule_class,
-                        diagnostics=[item.to_json() for item in exc.diagnostics])
-            result = response('BLOCKED', data, 'CONFIG_INVALID',
-                              'The active behavior package or statechart failed validation.',
-                              'Correct the fields named in data.diagnostics (see `quati doctor`); no work was accepted.',
-                              [f'{item.code.value} {item.reason} at {item.path}' for item in exc.diagnostics])
+            result = self._behavior_invalid(data, exc.rule_class, [item.to_json() for item in exc.diagnostics])
             return self._record(text, context, 2, result, extra={'feature_gate': gate})
-        code, result, receipt = run_ask(text, context, provider=provider, runtime=runtime,
-                                        gate=gate, clock=self.clock, greetings=GREETINGS,
+        code, result, receipt = run_ask(text, context, provider=provider, runtime=runtime, gate=gate, clock=self.clock,
                                         synthetic=synthetic_evidence, eval_permutation_seed=eval_permutation_seed)
         return self._record(text, context, code, result, extra=receipt, proof_tier=None)
 
-    def _template_greeting(self, text, context, data, template, uncertainties, extra=None):
-        data.update(result_status='RESPONDED', result_kind='GREETING', text=template)
-        return self._record(text, context, 0, response(data=data, uncertainties=[
-            'DETERMINISTIC_SOCIAL_TEMPLATE', *uncertainties]), extra=extra)
+    @staticmethod
+    def _behavior_invalid(data, rule_class, diagnostics):
+        """``ask`` with an active behavior package that does not compile (M01 exit table, row 2)."""
+        data.update(result_kind='BLOCKED', reason='BEHAVIOR_PACKAGE_INVALID', rule_class=rule_class,
+                    diagnostics=diagnostics)
+        return response('BLOCKED', data, 'CONFIG_INVALID',
+                        'The active behavior package or statechart failed validation.',
+                        'Correct the fields named in data.diagnostics (see `quati doctor`); no work was accepted.',
+                        [f"{item['code']} {item['reason']} at {item['path']}" for item in diagnostics])
 
     @staticmethod
     def unsupported(command):
@@ -346,8 +408,12 @@ def _config_checks(identity, policy, provider, behavior):
     def check(name, status, reasons=()):
         return {'name': name, 'status': status, 'reasons': list(reasons)}
 
-    checks = [check('identity', 'OK') if identity.get('initialized')
-              else check('identity', 'NOT_CONFIGURED', ['identity_not_initialized'])]
+    if identity.get('initialized'):
+        checks = [check('identity', 'OK')]
+    elif identity.get('status') == 'INVALID':  # present but rejected (M02 reason and its detail)
+        checks = [check('identity', 'INVALID', [identity['reason'], identity['detail']])]
+    else:
+        checks = [check('identity', 'NOT_CONFIGURED', ['identity_not_initialized'])]
     if policy['status'] == 'AVAILABLE':
         checks.append(check('policy', 'OK'))
     else:
@@ -370,11 +436,15 @@ def _config_checks(identity, policy, provider, behavior):
 def _warnings(identity, policy, provider, behavior, facts):
     """M01 ``DoctorReport.warnings``: stable tags only, never file content or a secret."""
     warnings = []
-    if not identity.get('initialized'):
+    if identity.get('status') == 'INVALID':
+        warnings.append(f"identity_invalid:{identity['reason']}")
+        if str(identity['detail']).endswith('_mode'):
+            warnings.append('config_mode_too_open')
+    elif not identity.get('initialized'):
         warnings.append('identity_not_initialized')
     if policy['status'] != 'AVAILABLE':
         warnings.append(f"policy_unavailable:{policy['reason']}")
-        if 'wrong_mode' in str(policy['reason']):
+        if 'wrong_mode' in str(policy['reason']) and 'config_mode_too_open' not in warnings:
             warnings.append('config_mode_too_open')
     if not provider['configured']:
         warnings.append('provider_not_configured')

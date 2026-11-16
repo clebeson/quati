@@ -5,6 +5,7 @@ subclassing ``Provider``, implementing ``_complete`` and decorating the class wi
 ``@register``; callers never change. This module imports no vendor SDK.
 """
 from abc import ABC, abstractmethod
+import base64
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
@@ -43,12 +44,20 @@ _SCHEMA_VALUE = ('additionalProperties', 'items', 'contains', 'not', 'if', 'then
                  'unevaluatedItems', 'unevaluatedProperties', 'contentSchema')
 _SCHEMA_LIST = ('allOf', 'anyOf', 'oneOf', 'prefixItems')
 _SCHEMA_MAP = ('properties', 'patternProperties', '$defs', 'definitions', 'dependentSchemas')
-# M17-RT-02 "Key value shape": a sign-in session artifact is never an API key. The value is only
-# classified here; it is never logged, returned or placed in a hint.
+# M17-RT-02 "Key value shape": an API key is ONE opaque token a vendor issued for API access. A value
+# that refers to something else (a path, a file or variable reference), that has structure (several
+# tokens, a header, a cookie, a JSON document, plain or base64-encoded) or that is a sign-in session
+# artifact is never an API key. The value is only classified here; it is never logged, returned or
+# placed in a hint.
 _KEY_NOT_ONE_TOKEN = re.compile(r'[\s\x00-\x1f\x7f]')
-_KEY_SESSION_JWT = re.compile(r'eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*')
-_KEY_SESSION_PREFIX = re.compile(r'(?:sk-ant-o[ar]t[0-9]|sess-|rt_|ya29\.|1//)')
+_KEY_PATH = re.compile(r'(?:[/~.@]|[A-Za-z]:[\\/]|file:)|.*(?:\\|/\.)|.*\.json\Z', re.IGNORECASE | re.DOTALL)
+_KEY_STRUCTURED = re.compile(r'[{\[]|bearer[^A-Za-z0-9]|[A-Za-z_][A-Za-z0-9_.-]*=[^=]|.*;', re.IGNORECASE | re.DOTALL)
+_KEY_SESSION_JWT = re.compile(r'eyJ[A-Za-z0-9_-]*(?:\.[A-Za-z0-9_-]*){1,4}')
+_KEY_SESSION_PREFIX = re.compile(r'(?:sk-ant-(?:o[ar]t|sid)[0-9]|(?i:sess-)|rt_|ya29\.|1//|gh[ou]_'
+                                 r'|IQoJb3JpZ2lu|F[Qw]oGZXIvYXdz)')
+_KEY_BASE64 = re.compile(r'[A-Za-z0-9+/_-]{4,}={0,2}')
 _KEY_PATH_HINT = 'QUATI_API_KEY_ENV: a file path is not an API key'
+_KEY_VARIABLE_HINT = 'QUATI_API_KEY_ENV: a variable reference is not an API key'
 _KEY_SESSION_HINT = 'QUATI_API_KEY_ENV: a sign-in session file or token is not an API key'
 BUILTIN_ADAPTERS = 'quati.adapters.providers'
 ENTRY_POINT_GROUP = 'quati.providers'
@@ -168,12 +177,27 @@ class ProviderError(Exception):
         super().__init__(f'{self.code}:{self.reason}')
 
 
+def _encoded_json_document(value):
+    """True when ``value`` is the base64 or base64url encoding of a JSON object or array."""
+    if not _KEY_BASE64.fullmatch(value):
+        return False
+    body = value.rstrip('=').replace('-', '+').replace('_', '/')
+    try:
+        document = json.loads(base64.b64decode(body + '=' * (-len(body) % 4), validate=True))
+    except (ValueError, RecursionError):  # not base64, not UTF-8 or not JSON: an opaque token
+        return False
+    return isinstance(document, (dict, list))
+
+
 def key_value_issue(value):
-    """M17-RT-02: the operator hint when ``value`` is a file path or a sign-in session artifact, else None."""
-    if value.startswith(('/', '~', './', '../')) or value.endswith('.json') or value[:5].lower() == 'file:':
+    """M17-RT-02: the operator hint when ``value`` is a reference, a structured value or a sign-in
+    session artifact (the M17 "Key value shape" table), else None. The hint never contains the value."""
+    if value.startswith('$'):
+        return _KEY_VARIABLE_HINT
+    if _KEY_PATH.match(value):
         return _KEY_PATH_HINT
-    if (_KEY_NOT_ONE_TOKEN.search(value) or value.startswith(('{', '[')) or _KEY_SESSION_JWT.fullmatch(value)
-            or _KEY_SESSION_PREFIX.match(value)):
+    if (_KEY_NOT_ONE_TOKEN.search(value) or _KEY_STRUCTURED.match(value) or _KEY_SESSION_JWT.fullmatch(value)
+            or _KEY_SESSION_PREFIX.match(value) or _encoded_json_document(value)):
         return _KEY_SESSION_HINT
     return None
 

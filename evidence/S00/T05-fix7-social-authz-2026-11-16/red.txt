@@ -1,0 +1,2928 @@
+# RED run before any change to src/quati by this task (fix round 7: LOG-0041 D1-D4, N17)
+# date: 2026-11-16T17:18:52Z  head: 5225cb283730ad446f2cb8e8c6eec7291b0dad32
+# owned src files unchanged at this point (git diff --stat on owned paths follows; empty = unchanged):
+# command: .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_s00_fix7_social_authz.py
+.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF. [ 62%]
+FFFFFF.F.FF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                             [100%]
+=================================== FAILURES ===================================
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured] _
+
+state = 'no_provider_configured'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+>           assert stable(value)["data"] == social_data(reply), text
+E           AssertionError: hello
+E           assert {'commitment_...': False, ...} == {'commitment_...lls': [], ...}
+E             
+E             Omitting 11 identical items, use -vv to show
+E             Right contains 4 more items:
+E             {'actions_taken': [],
+E              'display_lines': ['Hello!'],
+E              'text_source': 'application_template',
+E              'work_performed': False}
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:261: AssertionError
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[configured_not_probed] _
+
+state = 'configured_not_probed'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[configured_not_probed]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+>           assert stable(value)["data"] == social_data(reply), text
+E           AssertionError: hello
+E           assert {'commitment_...': False, ...} == {'commitment_...lls': [], ...}
+E             
+E             Omitting 11 identical items, use -vv to show
+E             Right contains 4 more items:
+E             {'actions_taken': [],
+E              'display_lines': ['Hello!'],
+E              'text_source': 'application_template',
+E              'work_performed': False}
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:261: AssertionError
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_work_label] _
+
+state = 'probed_work_label'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_work_label]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+>           assert stable(value)["data"] == social_data(reply), text
+E           AssertionError: hello
+E           assert {'commitment_...': False, ...} == {'commitment_...lls': [], ...}
+E             
+E             Omitting 11 identical items, use -vv to show
+E             Right contains 4 more items:
+E             {'actions_taken': [],
+E              'display_lines': ['Hello!'],
+E              'text_source': 'application_template',
+E              'work_performed': False}
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:261: AssertionError
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_social_label] _
+
+state = 'probed_social_label'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_social_label]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+>           assert stable(value)["data"] == social_data(reply), text
+E           AssertionError: hello
+E           assert {'commitment_...': False, ...} == {'commitment_...lls': [], ...}
+E             
+E             Omitting 11 identical items, use -vv to show
+E             Right contains 4 more items:
+E             {'actions_taken': [],
+E              'display_lines': ['Hello!'],
+E              'text_source': 'application_template',
+E              'work_performed': False}
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:261: AssertionError
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_model_unavailable] _
+
+state = 'probed_model_unavailable'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_model_unavailable]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+>           assert stable(value)["data"] == social_data(reply), text
+E           AssertionError: hello
+E           assert {'commitment_...': False, ...} == {'commitment_...lls': [], ...}
+E             
+E             Omitting 11 identical items, use -vv to show
+E             Right contains 4 more items:
+E             {'actions_taken': [],
+E              'display_lines': ['Hello!'],
+E              'text_source': 'application_template',
+E              'work_performed': False}
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:261: AssertionError
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_invalid_classification] _
+
+state = 'probed_invalid_classification'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_invalid_classification]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+>           assert stable(value)["data"] == social_data(reply), text
+E           AssertionError: hello
+E           assert {'commitment_...': False, ...} == {'commitment_...lls': [], ...}
+E             
+E             Omitting 11 identical items, use -vv to show
+E             Right contains 4 more items:
+E             {'actions_taken': [],
+E              'display_lines': ['Hello!'],
+E              'text_source': 'application_template',
+E              'work_performed': False}
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:261: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-hello-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'hello', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...of-<USER>/pytest-583/probed0/profile/data/receipts/9511ac2bb57d4439aa7211d1ec06384a.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Hi, how are you?-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'Hi, how are you?', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/d0302539f427400d8a18cc76bf9692c4.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Good day-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'Good day', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/68b19d7ca94b4e04bb7cc97418bed404.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Howdy-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'Howdy', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/4bde8dc2d92c4273a9f44ffc8af5de5a.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Hiya!-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'Hiya!', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/9180cfe54d4c4d1a839ea38552142e31.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Greetings-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'Greetings', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/3b36604dcd4b4adaaec60a69ca3b7bef.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-yo-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'yo', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/63a4eacf01194feba4bf3e2d7cee012a.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-thanks-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'thanks', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'actions_taken': [], 'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 's...of-<USER>/pytest-583/probed0/profile/data/receipts/a611fe1f45f742e2a2497d93f51daec6.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'ac...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'actions_taken': [], 'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 's...lassification_sha256': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['NO_GREETING_TEMPLATE', 'MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-hello, this is urgent-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'hello, this is urgent', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/be0b64ad9c7c4c85a699902d5d88cb4d.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-URGENT: hi-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'URGENT: hi', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/faf8e2308fd3448ca560a23f8183eb5b.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Hi, how are you? This is urgent.-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'Hi, how are you? This is urgent.', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/5e838ac343dd4fd0875bf5b0e03d57ef.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-How are you doing today?-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'en', text = 'How are you doing today?', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'actions_taken': [], 'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 's...of-<USER>/pytest-583/probed0/profile/data/receipts/5f6564c7260a457a8d7b571a646e3ef1.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'ac...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'actions_taken': [], 'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 's...lassification_sha256': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['NO_GREETING_TEMPLATE', 'MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[pt-Ol\xe1, tudo bem?-Ol\xe1!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'pt', text = 'Olá, tudo bem?', reply = 'Olá!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/b054e700e4904f60b1b4d7d910549c7d.json'], 'next_action': None, ...}
+reply = 'Olá!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[pt-tudo bem?-Ol\xe1!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'pt', text = 'tudo bem?', reply = 'Olá!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'actions_taken': [], 'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 's...of-<USER>/pytest-583/probed0/profile/data/receipts/948ef31e4acd4d51aec1c66c2cfdcc73.json'], 'next_action': None, ...}
+reply = 'Olá!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'ac...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'actions_taken': [], 'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 's...lassification_sha256': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['NO_GREETING_TEMPLATE', 'MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[pt-Ol\xe1, isto \xe9 urgente-Ol\xe1!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'pt', text = 'Olá, isto é urgente', reply = 'Olá!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/332da6cb95724c6bb16d5fff57e2feb4.json'], 'next_action': None, ...}
+reply = 'Olá!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[pt-Bom dia!-Ol\xe1!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'pt', text = 'Bom dia!', reply = 'Olá!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...of-<USER>/pytest-583/probed0/profile/data/receipts/bb154138d7f14b918b4536542771f139.json'], 'next_action': None, ...}
+reply = 'Olá!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[pt-Obrigado!-Ol\xe1!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'pt', text = 'Obrigado!', reply = 'Olá!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/49dd1ef46634454bacbf92a56700c724.json'], 'next_action': None, ...}
+reply = 'Olá!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[es-\xa1Hola! \xbfQu\xe9 tal?-\xa1Hola!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'es', text = '¡Hola! ¿Qué tal?', reply = '¡Hola!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/140569b3059243e49cbf48ac64af23f1.json'], 'next_action': None, ...}
+reply = '¡Hola!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[es-Buenos d\xedas-\xa1Hola!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'es', text = 'Buenos días', reply = '¡Hola!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...of-<USER>/pytest-583/probed0/profile/data/receipts/69667ae289594d848673ebf7ab764f99.json'], 'next_action': None, ...}
+reply = '¡Hola!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[fr-Bonjour, \xe7a va ?-Bonjour!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'fr', text = 'Bonjour, ça va ?', reply = 'Bonjour!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/1570b0cce9214863991d30372cb0c39f.json'], 'next_action': None, ...}
+reply = 'Bonjour!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[fr-Salut-Salut!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'fr', text = 'Salut', reply = 'Salut!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...of-<USER>/pytest-583/probed0/profile/data/receipts/b592bc340374462a9334fcd3659f5592.json'], 'next_action': None, ...}
+reply = 'Salut!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[fr-Bonsoir-Bonsoir!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'fr', text = 'Bonsoir', reply = 'Bonsoir!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...of-<USER>/pytest-583/probed0/profile/data/receipts/48fdcc2289134241bcd56b2eb42d8d73.json'], 'next_action': None, ...}
+reply = 'Bonsoir!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[de-Moin-Hallo!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'de', text = 'Moin', reply = 'Hallo!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/015ca93005324a049393aae44ed07871.json'], 'next_action': None, ...}
+reply = 'Hallo!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[de-Guten Tag, wie geht es Ihnen?-Hallo!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'de', text = 'Guten Tag, wie geht es Ihnen?', reply = 'Hallo!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/3b31267f5bb940a5b6d3fb4d3e1d6296.json'], 'next_action': None, ...}
+reply = 'Hallo!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[de-das ist dringend, hallo-Hallo!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'de', text = 'das ist dringend, hallo', reply = 'Hallo!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/fc4b16e234d54fbd9834d62a7ec6af74.json'], 'next_action': None, ...}
+reply = 'Hallo!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[de-Wie geht es dir?-Hallo!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'de', text = 'Wie geht es dir?', reply = 'Hallo!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'actions_taken': [], 'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 's...of-<USER>/pytest-583/probed0/profile/data/receipts/4b7e63a202d54f09839b7419cb9f3af9.json'], 'next_action': None, ...}
+reply = 'Hallo!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'ac...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'actions_taken': [], 'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 's...lassification_sha256': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['NO_GREETING_TEMPLATE', 'MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[it-Ciao, come stai?-Ciao!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'it', text = 'Ciao, come stai?', reply = 'Ciao!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/45bd75f6bb514af5a98360bef90bd03c.json'], 'next_action': None, ...}
+reply = 'Ciao!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         {'uncertainties': ['MODEL_LABEL_NOT_SOCIAL']} != {'uncertainties': []}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[it-Buongiorno-Buongiorno!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'it', text = 'Buongiorno', reply = 'Buongiorno!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...of-<USER>/pytest-583/probed0/profile/data/receipts/dc80149483314f18a26658c5ac3f1632.json'], 'next_action': None, ...}
+reply = 'Buongiorno!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[nl-Goedemorgen-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'nl', text = 'Goedemorgen', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/c5884ecbad10479e9042bbe13009fa82.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[nl-Hoi, hoe gaat het?-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'nl', text = 'Hoi, hoe gaat het?', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/8c78daf49c014f07ab7de54eea75959e.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[tr-Merhaba!-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'tr', text = 'Merhaba!', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/9c229266a8ce43f49cddac6841614e91.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ru-\u041f\u0440\u0438\u0432\u0435\u0442, \u043a\u0430\u043a \u0434\u0435\u043b\u0430?-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'ru', text = 'Привет, как дела?', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/f38c59cca40043bd901c5bcf101bf9b3.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ru-\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'ru', text = 'Здравствуйте', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/d5dcebfd6b484b8daca2ad2b75cc6415.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ja-\u3053\u3093\u306b\u3061\u306f-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'ja', text = 'こんにちは', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/02c96d3c7e9342fcbeb249c57da97954.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ja-\u304a\u306f\u3088\u3046-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'ja', text = 'おはよう', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/0b1e24ef137e4c68921061d3b930c08e.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[zh-\u4f60\u597d-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'zh', text = '你好', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/c8ac281d1cde4480b199312b0c186640.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ko-\uc548\ub155\ud558\uc138\uc694-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'ko', text = '안녕하세요', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/731ff6dceae24add9e43d9ba1be4c0d4.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[hi-Namaste-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'hi', text = 'Namaste', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/e5b134f841e14fa69c290591fbec2b31.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[hi-\u0928\u092e\u0938\u094d\u0924\u0947-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'hi', text = 'नमस्ते', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/ca37e97700fd4e4bb11183de60119d06.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ar-\u0645\u0631\u062d\u0628\u0627-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'ar', text = 'مرحبا', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/c5b5a833ff374b9497f1fca6f83e35aa.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ar-\u0627\u0644\u0633\u0644\u0627\u0645 \u0639\u0644\u064a\u0643\u0645-Hello!] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+language = 'ar', text = 'السلام عليكم', reply = 'Hello!'
+
+    @pytest.mark.parametrize("language, text, reply", SAMPLES)
+    def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(probed, language, text, reply):
+        """The auditor's g3.py and a3_paths.py: a probed model that labels the greeting as work and then
+        searches, describes and invokes is never asked anything."""
+        before = len(probed.audit())
+        code, value, _output = probed.ask(HOSTILE, text)
+        assert code == 0
+>       assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...of-<USER>/pytest-583/probed0/profile/data/receipts/ccca7f4ac03b4d00b108250a82de6831.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'cl...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[no_provider_configured] _
+
+state = 'no_provider_configured'
+request = <FixtureRequest for <Function test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[no_provider_configured]>>
+
+    @pytest.mark.parametrize("state", [name for name in STATES if name != "probed_work_label"])
+    def test_d1_one_shot_ask_has_one_outcome_in_every_provider_state(state, request):
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        replies = {text: reply for _language, text, reply in SAMPLES} | {"Merhaba!": "Hello!"}
+        for text in ONE_SHOT:
+            before = len(workspace.audit())
+            code, value, _output = workspace.ask(script, text)
+            assert code == 0, (state, text)
+>           assert_social(value, replies[text])
+
+tests/unit/test_s00_fix7_social_authz.py:287: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...of-<USER>/pytest-583/probed0/profile/data/receipts/4a4bc48b69c7410e8f965932558b32b7.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[configured_not_probed] _
+
+state = 'configured_not_probed'
+request = <FixtureRequest for <Function test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[configured_not_probed]>>
+
+    @pytest.mark.parametrize("state", [name for name in STATES if name != "probed_work_label"])
+    def test_d1_one_shot_ask_has_one_outcome_in_every_provider_state(state, request):
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        replies = {text: reply for _language, text, reply in SAMPLES} | {"Merhaba!": "Hello!"}
+        for text in ONE_SHOT:
+            before = len(workspace.audit())
+            code, value, _output = workspace.ask(script, text)
+            assert code == 0, (state, text)
+>           assert_social(value, replies[text])
+
+tests/unit/test_s00_fix7_social_authz.py:287: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...-<USER>/pytest-583/unprobed0/profile/data/receipts/35e42acef60c40c6a56c4dbc2161bf81.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[probed_social_label] _
+
+state = 'probed_social_label'
+request = <FixtureRequest for <Function test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[probed_social_label]>>
+
+    @pytest.mark.parametrize("state", [name for name in STATES if name != "probed_work_label"])
+    def test_d1_one_shot_ask_has_one_outcome_in_every_provider_state(state, request):
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        replies = {text: reply for _language, text, reply in SAMPLES} | {"Merhaba!": "Hello!"}
+        for text in ONE_SHOT:
+            before = len(workspace.audit())
+            code, value, _output = workspace.ask(script, text)
+            assert code == 0, (state, text)
+>           assert_social(value, replies[text])
+
+tests/unit/test_s00_fix7_social_authz.py:287: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...of-<USER>/pytest-583/probed0/profile/data/receipts/b106e890d99844228fbe8ef77c5c7ffa.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[probed_model_unavailable] _
+
+state = 'probed_model_unavailable'
+request = <FixtureRequest for <Function test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[probed_model_unavailable]>>
+
+    @pytest.mark.parametrize("state", [name for name in STATES if name != "probed_work_label"])
+    def test_d1_one_shot_ask_has_one_outcome_in_every_provider_state(state, request):
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        replies = {text: reply for _language, text, reply in SAMPLES} | {"Merhaba!": "Hello!"}
+        for text in ONE_SHOT:
+            before = len(workspace.audit())
+            code, value, _output = workspace.ask(script, text)
+            assert code == 0, (state, text)
+>           assert_social(value, replies[text])
+
+tests/unit/test_s00_fix7_social_authz.py:287: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...of-<USER>/pytest-583/probed0/profile/data/receipts/12489e7df7e7498e8950b886bceba5d9.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_ test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[probed_invalid_classification] _
+
+state = 'probed_invalid_classification'
+request = <FixtureRequest for <Function test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[probed_invalid_classification]>>
+
+    @pytest.mark.parametrize("state", [name for name in STATES if name != "probed_work_label"])
+    def test_d1_one_shot_ask_has_one_outcome_in_every_provider_state(state, request):
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        replies = {text: reply for _language, text, reply in SAMPLES} | {"Merhaba!": "Hello!"}
+        for text in ONE_SHOT:
+            before = len(workspace.audit())
+            code, value, _output = workspace.ask(script, text)
+            assert code == 0, (state, text)
+>           assert_social(value, replies[text])
+
+tests/unit/test_s00_fix7_social_authz.py:287: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}, 'error': None, '...of-<USER>/pytest-583/probed0/profile/data/receipts/898bbcd21b5246ebbd5a6720cdf1a0a2.json'], 'next_action': None, ...}
+reply = 'Hello!'
+
+    def assert_social(value: dict, reply: str) -> None:
+>       assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+                                 "uncertainties": [], "next_action": None, "error": None}
+E       AssertionError: assert {'data': {'co...n': None, ...} == {'status': 'S...ies': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'data': {'commitment_id': None, 'delivered': False, 'launched': False, 'provider_used': False, ...}} != {'data': {'commitment_id': None, 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], ...}}
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:232: AssertionError
+_______________ test_d1_chat_jsonl_turn_equals_the_one_shot_ask ________________
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+
+    def test_d1_chat_jsonl_turn_equals_the_one_shot_ask(probed):
+        lines = ["Hi, how are you?", "Olá, isto é urgente", "こんにちは"]
+        _code, turns, _output = probed.chat(HOSTILE, lines)
+        for line, turn in zip(lines, turns):
+>           assert stable(turn) == stable(probed.ask(HOSTILE, line)[1])
+E           AssertionError: assert {'data': {'cl... retry.', ...} == {'data': {'cl...n': None, ...}
+E             
+E             Omitting 1 identical items, use -vv to show
+E             Differing items:
+E             {'status': 'BLOCKED'} != {'status': 'SUCCEEDED'}
+E             {'data': {'classification': None, 'classification_sha256': None, 'commitment_id': None, 'delivered': False, ...}} != {'data': {'classification': {'complexity': 'short', 'intent': 'context_lookup', 'next_action': 'search_context', 'risk...': '1f0330dbc715b024a834cad37734d0cdf14e813c9900a635d6813716b6b44fc3', 'commitment_id': None, 'delivered': False, ...}}
+E             {'next_action': 'No capability result was produced; check the provider and retry.'} != {'next_action': None}
+E             {'er...
+E             
+E             ...Full output truncated, use '-vv' to show
+
+tests/unit/test_s00_fix7_social_authz.py:295: AssertionError
+_ test_d1_n6_invalid_behavior_package_wins_by_the_m01_precedence_in_every_provider_state _
+
+broken_tree = (<test_s00_fix7_social_authz.Profile object at 0x7185c8101a90>, PosixPath('/tmp/pytest-of-<USER>/pytest-583/tree0/ex...ry}\n  - {source: READY_TO_DELIVER, event: provider_failed, target: BLOCKED, guard: always, action: record_blocker}\n')
+
+    def test_d1_n6_invalid_behavior_package_wins_by_the_m01_precedence_in_every_provider_state(broken_tree):
+        """M01 exit table: CONFIG_INVALID (exit 2) precedes NOT_CONFIGURED (3), UNSUPPORTED (4) and the
+        provider failures (5). The active behavior package is checked before the provider state is
+        looked at, so a greeting and a work request get the same answer with and without a provider."""
+        workspace, chart, valid = broken_tree
+        invalid = valid.replace("guard: authorized_request, action: commit_receipt", "guard: always, action: commit_receipt")
+        assert invalid != valid
+        chart.write_text(invalid, encoding="utf-8")
+        try:
+            for text in ("hello", "Hi, how are you?", "Find my next appointment"):
+                answers = []
+                for script in (None, HOSTILE, [], INVALID_CLASSIFICATION):
+                    code, value, _output = workspace.ask(script, text)
+>                   assert (code, value["status"], value["error"]["code"]) == (2, "BLOCKED", "CONFIG_INVALID"), (text, script)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^
+E                   TypeError: 'NoneType' object is not subscriptable
+
+tests/unit/test_s00_fix7_social_authz.py:323: TypeError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hey there! Hope your day is going well.-classify_social] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Hey there! Hope your day is going well.', label = 'classify_social'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+>       assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/unit/test_s00_fix7_social_authz.py:356: TypeError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hey there! Hope your day is going well.-classify_simple] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Hey there! Hope your day is going well.', label = 'classify_simple'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+        assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+>       assert (data["result_kind"], data["reason"], data["launched"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION", False)
+E       AssertionError: assert ('BLOCKED', '...CUTION', True) == ('BLOCKED', '...UTION', False)
+E         
+E         At index 2 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:357: AssertionError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hi! Delete all my calendar events and tell the board it is done-classify_social] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Hi! Delete all my calendar events and tell the board it is done'
+label = 'classify_social'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+>       assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/unit/test_s00_fix7_social_authz.py:356: TypeError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hi! Delete all my calendar events and tell the board it is done-classify_simple] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Hi! Delete all my calendar events and tell the board it is done'
+label = 'classify_simple'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+        assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+>       assert (data["result_kind"], data["reason"], data["launched"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION", False)
+E       AssertionError: assert ('BLOCKED', '...CUTION', True) == ('BLOCKED', '...UTION', False)
+E         
+E         At index 2 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:357: AssertionError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hello, investigate conversions-classify_social] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Hello, investigate conversions', label = 'classify_social'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+>       assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/unit/test_s00_fix7_social_authz.py:356: TypeError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hello, investigate conversions-classify_simple] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Hello, investigate conversions', label = 'classify_simple'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+        assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+>       assert (data["result_kind"], data["reason"], data["launched"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION", False)
+E       AssertionError: assert ('BLOCKED', '...CUTION', True) == ('BLOCKED', '...UTION', False)
+E         
+E         At index 2 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:357: AssertionError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Ol\xe1! Apague todos os eventos da minha agenda e avise a diretoria-classify_social] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Olá! Apague todos os eventos da minha agenda e avise a diretoria'
+label = 'classify_social'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+>       assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/unit/test_s00_fix7_social_authz.py:356: TypeError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Ol\xe1! Apague todos os eventos da minha agenda e avise a diretoria-classify_simple] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Olá! Apague todos os eventos da minha agenda e avise a diretoria'
+label = 'classify_simple'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+        assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+>       assert (data["result_kind"], data["reason"], data["launched"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION", False)
+E       AssertionError: assert ('BLOCKED', '...CUTION', True) == ('BLOCKED', '...UTION', False)
+E         
+E         At index 2 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:357: AssertionError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[What is the capital of France?-classify_social] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'What is the capital of France?', label = 'classify_social'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+        assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+>       assert (data["result_kind"], data["reason"], data["launched"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION", False)
+E       AssertionError: assert ('BLOCKED', '...CUTION', True) == ('BLOCKED', '...UTION', False)
+E         
+E         At index 2 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:357: AssertionError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[What is the capital of France?-classify_simple] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'What is the capital of France?', label = 'classify_simple'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+        assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+>       assert (data["result_kind"], data["reason"], data["launched"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION", False)
+E       AssertionError: assert ('BLOCKED', '...CUTION', True) == ('BLOCKED', '...UTION', False)
+E         
+E         At index 2 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:357: AssertionError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hyv\xe4\xe4 p\xe4iv\xe4\xe4-classify_social] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Hyvää päivää', label = 'classify_social'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+        assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+>       assert (data["result_kind"], data["reason"], data["launched"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION", False)
+E       AssertionError: assert ('BLOCKED', '...CUTION', True) == ('BLOCKED', '...UTION', False)
+E         
+E         At index 2 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:357: AssertionError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hyv\xe4\xe4 p\xe4iv\xe4\xe4-classify_simple] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Hyvää päivää', label = 'classify_simple'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+        assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+>       assert (data["result_kind"], data["reason"], data["launched"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION", False)
+E       AssertionError: assert ('BLOCKED', '...CUTION', True) == ('BLOCKED', '...UTION', False)
+E         
+E         At index 2 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:357: AssertionError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Sawubona-classify_social] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Sawubona', label = 'classify_social'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+        assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+>       assert (data["result_kind"], data["reason"], data["launched"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION", False)
+E       AssertionError: assert ('BLOCKED', '...CUTION', True) == ('BLOCKED', '...UTION', False)
+E         
+E         At index 2 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:357: AssertionError
+_ test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Sawubona-classify_simple] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+text = 'Sawubona', label = 'classify_simple'
+
+    @pytest.mark.parametrize("label", ["classify_social", "classify_simple"])
+    @pytest.mark.parametrize("text", [
+        "Hey there! Hope your day is going well.",                               # round 6 CONVERSATION phrase
+        "Hi! Delete all my calendar events and tell the board it is done",       # the auditor's a3_ask.py (N3)
+        "Hello, investigate conversions",                                        # M01-AT-02 negative
+        "Olá! Apague todos os eventos da minha agenda e avise a diretoria",
+        "What is the capital of France?",
+        "Hyvää päivää",                                                          # a greeting outside the table (N5)
+        "Sawubona",
+    ])
+    def test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded(probed, text, label):
+        script = [[label], ["final", CLAIM], ["final", CLAIM]]
+        before = len(probed.audit())
+        code, value, output = probed.ask(script, text)
+        data = value["data"]
+        assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+>       assert (data["result_kind"], data["reason"], data["launched"]) == ("BLOCKED", "NO_VERIFIED_EXECUTION", False)
+E       AssertionError: assert ('BLOCKED', '...CUTION', True) == ('BLOCKED', '...UTION', False)
+E         
+E         At index 2 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:357: AssertionError
+______ test_d2_human_rendering_and_chat_jsonl_agree_with_the_one_shot_ask ______
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+
+    def test_d2_human_rendering_and_chat_jsonl_agree_with_the_one_shot_ask(probed):
+        text = "Hi! Delete all my calendar events and tell the board it is done"
+        script = [["classify_social"], ["final", CLAIM], ["final", CLAIM]]
+        code, human = probed.model(script, "ask", "--", text)
+>       assert code == 4 and CLAIM not in human and "AUD-991" not in human
+E       assert (0 == 4)
+
+tests/unit/test_s00_fix7_social_authz.py:374: AssertionError
+___ test_d2_mixed_greeting_and_work_labelled_work_continues_to_the_tool_loop ___
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+
+    def test_d2_mixed_greeting_and_work_labelled_work_continues_to_the_tool_loop(probed):
+        code, value, _output = probed.ask(HOSTILE, "Hi! What's my next appointment?")
+        assert (code, value["status"], value["data"]["result_kind"]) == (0, "SUCCEEDED", "FIXTURE_RESULT")
+        assert steps(value) == [("search", "SUCCEEDED", None, False), ("describe", "SUCCEEDED", None, False),
+                                ("invoke", "SUCCEEDED", None, True)]
+        assert probed.spied("handler") == ["calendar-read"]
+>       assert value["data"]["launched"] is False                                # D3
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert True is False
+
+tests/unit/test_s00_fix7_social_authz.py:392: AssertionError
+________ test_n17_an_empty_model_reply_has_no_failure_mode_of_its_own[] ________
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+reply = ''
+
+    @pytest.mark.parametrize("reply", ["", "   "])
+    def test_n17_an_empty_model_reply_has_no_failure_mode_of_its_own(probed, reply):
+        """Round 6: an empty reply under a social label was exit 5 OUTPUT_INVALID EMPTY_SOCIAL_REPLY although
+        the reply is never displayed. No outcome depends on the model's reply text any more."""
+        script = [["classify_social"], ["final", reply], ["final", reply]]
+        code, value, output = probed.ask(script, "Hey there! Hope your day is going well.")
+>       assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+E       AssertionError: assert (5, 'BLOCKED'...TPUT_INVALID') == (4, 'BLOCKED'...INSUFFICIENT')
+E         
+E         At index 0 diff: 5 != 4
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:407: AssertionError
+______ test_n17_an_empty_model_reply_has_no_failure_mode_of_its_own[   ] _______
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+reply = '   '
+
+    @pytest.mark.parametrize("reply", ["", "   "])
+    def test_n17_an_empty_model_reply_has_no_failure_mode_of_its_own(probed, reply):
+        """Round 6: an empty reply under a social label was exit 5 OUTPUT_INVALID EMPTY_SOCIAL_REPLY although
+        the reply is never displayed. No outcome depends on the model's reply text any more."""
+        script = [["classify_social"], ["final", reply], ["final", reply]]
+        code, value, output = probed.ask(script, "Hey there! Hope your day is going well.")
+>       assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+E       AssertionError: assert (5, 'BLOCKED'...TPUT_INVALID') == (4, 'BLOCKED'...INSUFFICIENT')
+E         
+E         At index 0 diff: 5 != 4
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:407: AssertionError
+_ test_d3_launched_is_false_in_every_ask_and_chat_response[script0-Find my next appointment-FIXTURE_RESULT] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+script = [['classify'], ['search', 'next appointment calendar'], ['describe', 'fixtures.calendar-read'], ['invoke', 'fixtures.calendar-read', {'limit': 1}], ['final', 'done']]
+text = 'Find my next appointment', kind = 'FIXTURE_RESULT'
+
+    @pytest.mark.parametrize("script, text, kind", [
+        (HOSTILE, "Find my next appointment", "FIXTURE_RESULT"),
+        ([["classify"], ["search", "next appointment calendar"], ["invoke", "NONE_FITS", {}], ["final", "none"]],
+         "Find my next appointment", "NO_CAPABILITY"),
+        ([["classify"], ["final", CLAIM], ["final", CLAIM]], "Find my next appointment", "BLOCKED"),
+        ([["classify"], ["search", "next appointment calendar"], ["describe", CAPABILITY],
+          ["invoke", CAPABILITY, {"limit": "many"}], ["final", "x"]], "Find my next appointment", "BLOCKED"),
+        ([], "Find my next appointment", "BLOCKED"),
+    ])
+    def test_d3_launched_is_false_in_every_ask_and_chat_response(probed, script, text, kind):
+        """M01-FR-02: S00 has no ledger, so no commitment and no work item can exist."""
+        _code, value, _output = probed.ask(script, text)
+>       assert (value["data"]["result_kind"], value["data"]["launched"]) == (kind, False)
+E       AssertionError: assert ('FIXTURE_RESULT', True) == ('FIXTURE_RESULT', False)
+E         
+E         At index 1 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:426: AssertionError
+_ test_d3_launched_is_false_in_every_ask_and_chat_response[script1-Find my next appointment-NO_CAPABILITY] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+script = [['classify'], ['search', 'next appointment calendar'], ['invoke', 'NONE_FITS', {}], ['final', 'none']]
+text = 'Find my next appointment', kind = 'NO_CAPABILITY'
+
+    @pytest.mark.parametrize("script, text, kind", [
+        (HOSTILE, "Find my next appointment", "FIXTURE_RESULT"),
+        ([["classify"], ["search", "next appointment calendar"], ["invoke", "NONE_FITS", {}], ["final", "none"]],
+         "Find my next appointment", "NO_CAPABILITY"),
+        ([["classify"], ["final", CLAIM], ["final", CLAIM]], "Find my next appointment", "BLOCKED"),
+        ([["classify"], ["search", "next appointment calendar"], ["describe", CAPABILITY],
+          ["invoke", CAPABILITY, {"limit": "many"}], ["final", "x"]], "Find my next appointment", "BLOCKED"),
+        ([], "Find my next appointment", "BLOCKED"),
+    ])
+    def test_d3_launched_is_false_in_every_ask_and_chat_response(probed, script, text, kind):
+        """M01-FR-02: S00 has no ledger, so no commitment and no work item can exist."""
+        _code, value, _output = probed.ask(script, text)
+>       assert (value["data"]["result_kind"], value["data"]["launched"]) == (kind, False)
+E       AssertionError: assert ('NO_CAPABILITY', True) == ('NO_CAPABILITY', False)
+E         
+E         At index 1 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:426: AssertionError
+_ test_d3_launched_is_false_in_every_ask_and_chat_response[script2-Find my next appointment-BLOCKED] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+script = [['classify'], ['final', 'Done. All events were deleted and the board was notified. Verified by audit record AUD-991.'], ['final', 'Done. All events were deleted and the board was notified. Verified by audit record AUD-991.']]
+text = 'Find my next appointment', kind = 'BLOCKED'
+
+    @pytest.mark.parametrize("script, text, kind", [
+        (HOSTILE, "Find my next appointment", "FIXTURE_RESULT"),
+        ([["classify"], ["search", "next appointment calendar"], ["invoke", "NONE_FITS", {}], ["final", "none"]],
+         "Find my next appointment", "NO_CAPABILITY"),
+        ([["classify"], ["final", CLAIM], ["final", CLAIM]], "Find my next appointment", "BLOCKED"),
+        ([["classify"], ["search", "next appointment calendar"], ["describe", CAPABILITY],
+          ["invoke", CAPABILITY, {"limit": "many"}], ["final", "x"]], "Find my next appointment", "BLOCKED"),
+        ([], "Find my next appointment", "BLOCKED"),
+    ])
+    def test_d3_launched_is_false_in_every_ask_and_chat_response(probed, script, text, kind):
+        """M01-FR-02: S00 has no ledger, so no commitment and no work item can exist."""
+        _code, value, _output = probed.ask(script, text)
+>       assert (value["data"]["result_kind"], value["data"]["launched"]) == (kind, False)
+E       AssertionError: assert ('BLOCKED', True) == ('BLOCKED', False)
+E         
+E         At index 1 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:426: AssertionError
+_ test_d3_launched_is_false_in_every_ask_and_chat_response[script3-Find my next appointment-BLOCKED] _
+
+probed = <test_s00_fix7_social_authz.Profile object at 0x7185c7f8fa10>
+script = [['classify'], ['search', 'next appointment calendar'], ['describe', 'fixtures.calendar-read'], ['invoke', 'fixtures.calendar-read', {'limit': 'many'}], ['final', 'x']]
+text = 'Find my next appointment', kind = 'BLOCKED'
+
+    @pytest.mark.parametrize("script, text, kind", [
+        (HOSTILE, "Find my next appointment", "FIXTURE_RESULT"),
+        ([["classify"], ["search", "next appointment calendar"], ["invoke", "NONE_FITS", {}], ["final", "none"]],
+         "Find my next appointment", "NO_CAPABILITY"),
+        ([["classify"], ["final", CLAIM], ["final", CLAIM]], "Find my next appointment", "BLOCKED"),
+        ([["classify"], ["search", "next appointment calendar"], ["describe", CAPABILITY],
+          ["invoke", CAPABILITY, {"limit": "many"}], ["final", "x"]], "Find my next appointment", "BLOCKED"),
+        ([], "Find my next appointment", "BLOCKED"),
+    ])
+    def test_d3_launched_is_false_in_every_ask_and_chat_response(probed, script, text, kind):
+        """M01-FR-02: S00 has no ledger, so no commitment and no work item can exist."""
+        _code, value, _output = probed.ask(script, text)
+>       assert (value["data"]["result_kind"], value["data"]["launched"]) == (kind, False)
+E       AssertionError: assert ('BLOCKED', True) == ('BLOCKED', False)
+E         
+E         At index 1 diff: True != False
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:426: AssertionError
+_ test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is _
+
+catalog = <test_s00_fix7_social_authz.Profile object at 0x7185c7e2fce0>
+
+    def test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is(catalog):
+        """The auditor's a3_hidden.py: NOT_IN_SHORTLIST for a hidden id against NOT_A_CAPABILITY_ID for an
+        unknown one told the model which hidden ids exist."""
+        lifecycles = {item["capability_id"]: item["lifecycle"]
+                      for item in catalog.command("capabilities", "list", "--json")[1]["data"]["capabilities"]}
+        assert lifecycles == {CAPABILITY: "ENABLED", "fixtures.forecast-lime": "ENABLED",
+                              "fixtures.forecast-publish": "DRAFT", "fixtures.forecast-quick": "STAGED",
+                              "fixtures.mail-search": "DISABLED"}
+        seen = {}
+        for case, capability_id in OUTSIDE.items():
+            before = len(catalog.audit())
+            code, value, _output = catalog.ask(outside_script(capability_id), "Find my next appointment",
+                                               "--synthetic-evidence")
+            assert (code, value["status"], value["error"]["code"], value["data"]["reason"]) == (
+                4, "DENIED", "FORBIDDEN", "NOT_IN_SHORTLIST"), case
+>           assert steps(value) == [("search", "SUCCEEDED", None, False), ("describe", "DENIED", "NOT_IN_SHORTLIST", False),
+                                    ("invoke", "DENIED", "NOT_IN_SHORTLIST", False)], case
+E           AssertionError: disabled
+E           assert [('search', '...LIST', False)] == [('search', '...LIST', False)]
+E             
+E             At index 1 diff: ('describe', 'UNAVAILABLE', 'NOT_ENABLED', False) != ('describe', 'DENIED', 'NOT_IN_SHORTLIST', False)
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix7_social_authz.py:475: AssertionError
+_ test_n17_invoke_by_a_principal_that_is_not_the_owner_follows_the_policy_default_deny[MEMBER] _
+
+profile = <test_s00_fix7_social_authz.Profile object at 0x7185c80fd480>
+role = 'MEMBER'
+
+    @pytest.mark.parametrize("role", ["MEMBER", "ADMIN"])
+    def test_n17_invoke_by_a_principal_that_is_not_the_owner_follows_the_policy_default_deny(profile, role):
+        """RFC-013 section 12.1: a MEMBER or ADMIN holds the organization grant, so the registry reads pass
+        the AuthorizationPort. RFC-014: the LOCAL default policy allows read effects to the tenant role
+        OWNER only and denies everything else; the gate must see the principal's real role."""
+        record = resign(profile, tenant_role=role)
+        before = len(profile.audit())
+        code, value, _output = profile.ask(HOSTILE, "Find my next appointment")
+>       assert (code, value["status"], value["error"]["code"], value["data"]["reason"]) == (
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+            4, "DENIED", "FORBIDDEN", "default_deny")
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/unit/test_s00_fix7_social_authz.py:526: TypeError
+_ test_n17_invoke_by_a_principal_that_is_not_the_owner_follows_the_policy_default_deny[ADMIN] _
+
+profile = <test_s00_fix7_social_authz.Profile object at 0x7185c84ec950>
+role = 'ADMIN'
+
+    @pytest.mark.parametrize("role", ["MEMBER", "ADMIN"])
+    def test_n17_invoke_by_a_principal_that_is_not_the_owner_follows_the_policy_default_deny(profile, role):
+        """RFC-013 section 12.1: a MEMBER or ADMIN holds the organization grant, so the registry reads pass
+        the AuthorizationPort. RFC-014: the LOCAL default policy allows read effects to the tenant role
+        OWNER only and denies everything else; the gate must see the principal's real role."""
+        record = resign(profile, tenant_role=role)
+        before = len(profile.audit())
+        code, value, _output = profile.ask(HOSTILE, "Find my next appointment")
+>       assert (code, value["status"], value["error"]["code"], value["data"]["reason"]) == (
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+            4, "DENIED", "FORBIDDEN", "default_deny")
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/unit/test_s00_fix7_social_authz.py:526: TypeError
+_ test_n17_policy_gate_takes_the_tenant_role_from_the_directory[OWNER-HUMAN-ALLOW-read-own-spaces] _
+
+role = 'OWNER', kind = 'HUMAN', verdict = 'ALLOW', reason = 'read-own-spaces'
+
+    @pytest.mark.parametrize("role, kind, verdict, reason", [
+        ("OWNER", "HUMAN", "ALLOW", "read-own-spaces"),
+        ("ADMIN", "HUMAN", "DENY", "default_deny"),
+        ("MEMBER", "HUMAN", "DENY", "default_deny"),
+        ("GUEST", "HUMAN", "DENY", "default_deny"),
+        (None, "HUMAN", "DENY", "default_deny"),
+        (OSError("unreadable"), "HUMAN", "DENY", "default_deny"),       # an unreadable membership is no role
+        ("OWNER", "AGENT", "DENY", "default_deny"),                     # agents and services hold no tenant role
+    ])
+    def test_n17_policy_gate_takes_the_tenant_role_from_the_directory(role, kind, verdict, reason):
+        """L1 on the composed gate: the role is read from the directory at every decision."""
+        from quati.adapters.policy_gate import LocalPolicyGate
+        directory = Directory(role)
+        state = trusted_policy_state()
+>       gate = LocalPolicyGate(lambda: state, clock=FakeClock(), ids=SeededIds(), directory=directory)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: LocalPolicyGate.__init__() got an unexpected keyword argument 'directory'
+
+tests/unit/test_s00_fix7_social_authz.py:583: TypeError
+_ test_n17_policy_gate_takes_the_tenant_role_from_the_directory[ADMIN-HUMAN-DENY-default_deny] _
+
+role = 'ADMIN', kind = 'HUMAN', verdict = 'DENY', reason = 'default_deny'
+
+    @pytest.mark.parametrize("role, kind, verdict, reason", [
+        ("OWNER", "HUMAN", "ALLOW", "read-own-spaces"),
+        ("ADMIN", "HUMAN", "DENY", "default_deny"),
+        ("MEMBER", "HUMAN", "DENY", "default_deny"),
+        ("GUEST", "HUMAN", "DENY", "default_deny"),
+        (None, "HUMAN", "DENY", "default_deny"),
+        (OSError("unreadable"), "HUMAN", "DENY", "default_deny"),       # an unreadable membership is no role
+        ("OWNER", "AGENT", "DENY", "default_deny"),                     # agents and services hold no tenant role
+    ])
+    def test_n17_policy_gate_takes_the_tenant_role_from_the_directory(role, kind, verdict, reason):
+        """L1 on the composed gate: the role is read from the directory at every decision."""
+        from quati.adapters.policy_gate import LocalPolicyGate
+        directory = Directory(role)
+        state = trusted_policy_state()
+>       gate = LocalPolicyGate(lambda: state, clock=FakeClock(), ids=SeededIds(), directory=directory)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: LocalPolicyGate.__init__() got an unexpected keyword argument 'directory'
+
+tests/unit/test_s00_fix7_social_authz.py:583: TypeError
+_ test_n17_policy_gate_takes_the_tenant_role_from_the_directory[MEMBER-HUMAN-DENY-default_deny] _
+
+role = 'MEMBER', kind = 'HUMAN', verdict = 'DENY', reason = 'default_deny'
+
+    @pytest.mark.parametrize("role, kind, verdict, reason", [
+        ("OWNER", "HUMAN", "ALLOW", "read-own-spaces"),
+        ("ADMIN", "HUMAN", "DENY", "default_deny"),
+        ("MEMBER", "HUMAN", "DENY", "default_deny"),
+        ("GUEST", "HUMAN", "DENY", "default_deny"),
+        (None, "HUMAN", "DENY", "default_deny"),
+        (OSError("unreadable"), "HUMAN", "DENY", "default_deny"),       # an unreadable membership is no role
+        ("OWNER", "AGENT", "DENY", "default_deny"),                     # agents and services hold no tenant role
+    ])
+    def test_n17_policy_gate_takes_the_tenant_role_from_the_directory(role, kind, verdict, reason):
+        """L1 on the composed gate: the role is read from the directory at every decision."""
+        from quati.adapters.policy_gate import LocalPolicyGate
+        directory = Directory(role)
+        state = trusted_policy_state()
+>       gate = LocalPolicyGate(lambda: state, clock=FakeClock(), ids=SeededIds(), directory=directory)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: LocalPolicyGate.__init__() got an unexpected keyword argument 'directory'
+
+tests/unit/test_s00_fix7_social_authz.py:583: TypeError
+_ test_n17_policy_gate_takes_the_tenant_role_from_the_directory[GUEST-HUMAN-DENY-default_deny] _
+
+role = 'GUEST', kind = 'HUMAN', verdict = 'DENY', reason = 'default_deny'
+
+    @pytest.mark.parametrize("role, kind, verdict, reason", [
+        ("OWNER", "HUMAN", "ALLOW", "read-own-spaces"),
+        ("ADMIN", "HUMAN", "DENY", "default_deny"),
+        ("MEMBER", "HUMAN", "DENY", "default_deny"),
+        ("GUEST", "HUMAN", "DENY", "default_deny"),
+        (None, "HUMAN", "DENY", "default_deny"),
+        (OSError("unreadable"), "HUMAN", "DENY", "default_deny"),       # an unreadable membership is no role
+        ("OWNER", "AGENT", "DENY", "default_deny"),                     # agents and services hold no tenant role
+    ])
+    def test_n17_policy_gate_takes_the_tenant_role_from_the_directory(role, kind, verdict, reason):
+        """L1 on the composed gate: the role is read from the directory at every decision."""
+        from quati.adapters.policy_gate import LocalPolicyGate
+        directory = Directory(role)
+        state = trusted_policy_state()
+>       gate = LocalPolicyGate(lambda: state, clock=FakeClock(), ids=SeededIds(), directory=directory)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: LocalPolicyGate.__init__() got an unexpected keyword argument 'directory'
+
+tests/unit/test_s00_fix7_social_authz.py:583: TypeError
+_ test_n17_policy_gate_takes_the_tenant_role_from_the_directory[None-HUMAN-DENY-default_deny] _
+
+role = None, kind = 'HUMAN', verdict = 'DENY', reason = 'default_deny'
+
+    @pytest.mark.parametrize("role, kind, verdict, reason", [
+        ("OWNER", "HUMAN", "ALLOW", "read-own-spaces"),
+        ("ADMIN", "HUMAN", "DENY", "default_deny"),
+        ("MEMBER", "HUMAN", "DENY", "default_deny"),
+        ("GUEST", "HUMAN", "DENY", "default_deny"),
+        (None, "HUMAN", "DENY", "default_deny"),
+        (OSError("unreadable"), "HUMAN", "DENY", "default_deny"),       # an unreadable membership is no role
+        ("OWNER", "AGENT", "DENY", "default_deny"),                     # agents and services hold no tenant role
+    ])
+    def test_n17_policy_gate_takes_the_tenant_role_from_the_directory(role, kind, verdict, reason):
+        """L1 on the composed gate: the role is read from the directory at every decision."""
+        from quati.adapters.policy_gate import LocalPolicyGate
+        directory = Directory(role)
+        state = trusted_policy_state()
+>       gate = LocalPolicyGate(lambda: state, clock=FakeClock(), ids=SeededIds(), directory=directory)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: LocalPolicyGate.__init__() got an unexpected keyword argument 'directory'
+
+tests/unit/test_s00_fix7_social_authz.py:583: TypeError
+_ test_n17_policy_gate_takes_the_tenant_role_from_the_directory[role5-HUMAN-DENY-default_deny] _
+
+role = OSError('unreadable'), kind = 'HUMAN', verdict = 'DENY'
+reason = 'default_deny'
+
+    @pytest.mark.parametrize("role, kind, verdict, reason", [
+        ("OWNER", "HUMAN", "ALLOW", "read-own-spaces"),
+        ("ADMIN", "HUMAN", "DENY", "default_deny"),
+        ("MEMBER", "HUMAN", "DENY", "default_deny"),
+        ("GUEST", "HUMAN", "DENY", "default_deny"),
+        (None, "HUMAN", "DENY", "default_deny"),
+        (OSError("unreadable"), "HUMAN", "DENY", "default_deny"),       # an unreadable membership is no role
+        ("OWNER", "AGENT", "DENY", "default_deny"),                     # agents and services hold no tenant role
+    ])
+    def test_n17_policy_gate_takes_the_tenant_role_from_the_directory(role, kind, verdict, reason):
+        """L1 on the composed gate: the role is read from the directory at every decision."""
+        from quati.adapters.policy_gate import LocalPolicyGate
+        directory = Directory(role)
+        state = trusted_policy_state()
+>       gate = LocalPolicyGate(lambda: state, clock=FakeClock(), ids=SeededIds(), directory=directory)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: LocalPolicyGate.__init__() got an unexpected keyword argument 'directory'
+
+tests/unit/test_s00_fix7_social_authz.py:583: TypeError
+_ test_n17_policy_gate_takes_the_tenant_role_from_the_directory[OWNER-AGENT-DENY-default_deny] _
+
+role = 'OWNER', kind = 'AGENT', verdict = 'DENY', reason = 'default_deny'
+
+    @pytest.mark.parametrize("role, kind, verdict, reason", [
+        ("OWNER", "HUMAN", "ALLOW", "read-own-spaces"),
+        ("ADMIN", "HUMAN", "DENY", "default_deny"),
+        ("MEMBER", "HUMAN", "DENY", "default_deny"),
+        ("GUEST", "HUMAN", "DENY", "default_deny"),
+        (None, "HUMAN", "DENY", "default_deny"),
+        (OSError("unreadable"), "HUMAN", "DENY", "default_deny"),       # an unreadable membership is no role
+        ("OWNER", "AGENT", "DENY", "default_deny"),                     # agents and services hold no tenant role
+    ])
+    def test_n17_policy_gate_takes_the_tenant_role_from_the_directory(role, kind, verdict, reason):
+        """L1 on the composed gate: the role is read from the directory at every decision."""
+        from quati.adapters.policy_gate import LocalPolicyGate
+        directory = Directory(role)
+        state = trusted_policy_state()
+>       gate = LocalPolicyGate(lambda: state, clock=FakeClock(), ids=SeededIds(), directory=directory)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: LocalPolicyGate.__init__() got an unexpected keyword argument 'directory'
+
+tests/unit/test_s00_fix7_social_authz.py:583: TypeError
+___________ test_n17_policy_gate_has_no_directory_free_construction ____________
+
+    def test_n17_policy_gate_has_no_directory_free_construction():
+        from quati.adapters.policy_gate import LocalPolicyGate
+        state = trusted_policy_state()
+>       with pytest.raises(TypeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+tests/unit/test_s00_fix7_social_authz.py:593: Failed
+______________ test_d1_table_is_data_with_unicode_aware_matching _______________
+
+    def test_d1_table_is_data_with_unicode_aware_matching():
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:604: ImportError
+__________ test_d1_table_boundary_any_other_word_is_not_social_only[] __________
+
+text = ''
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+________ test_d1_table_boundary_any_other_word_is_not_social_only[!!!] _________
+
+text = '!!!'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+_______ test_d1_table_boundary_any_other_word_is_not_social_only[urgent] _______
+
+text = 'urgent'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+___ test_d1_table_boundary_any_other_word_is_not_social_only[This is urgent] ___
+
+text = 'This is urgent'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+____ test_d1_table_boundary_any_other_word_is_not_social_only[Urgent: this] ____
+
+text = 'Urgent: this'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+_ test_d1_table_boundary_any_other_word_is_not_social_only[Hello, find my next appointment] _
+
+text = 'Hello, find my next appointment'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+__ test_d1_table_boundary_any_other_word_is_not_social_only[hi, delete this] ___
+
+text = 'hi, delete this'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+_ test_d1_table_boundary_any_other_word_is_not_social_only[Hi! What's my next appointment?] _
+
+text = "Hi! What's my next appointment?"
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+_ test_d1_table_boundary_any_other_word_is_not_social_only[Thanks. Delete all my calendar events] _
+
+text = 'Thanks. Delete all my calendar events'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+_ test_d1_table_boundary_any_other_word_is_not_social_only[Hey there! Hope your day is going well.] _
+
+text = 'Hey there! Hope your day is going well.'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+___ test_d1_table_boundary_any_other_word_is_not_social_only[que \xe9 isso?] ___
+
+text = 'que é isso?'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+___ test_d1_table_boundary_any_other_word_is_not_social_only[como \xe9 isso] ___
+
+text = 'como é isso'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+_____ test_d1_table_boundary_any_other_word_is_not_social_only[how is it] ______
+
+text = 'how is it'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+____ test_d1_table_boundary_any_other_word_is_not_social_only[is it going] _____
+
+text = 'is it going'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+________ test_d1_table_boundary_any_other_word_is_not_social_only[good] ________
+
+text = 'good'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+________ test_d1_table_boundary_any_other_word_is_not_social_only[you] _________
+
+text = 'you'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+________ test_d1_table_boundary_any_other_word_is_not_social_only[how] _________
+
+text = 'how'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+______ test_d1_table_boundary_any_other_word_is_not_social_only[hello 5] _______
+
+text = 'hello 5'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+____ test_d1_table_boundary_any_other_word_is_not_social_only[hello_world] _____
+
+text = 'hello_world'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+_ test_d1_table_boundary_any_other_word_is_not_social_only[Hyv\xe4\xe4 p\xe4iv\xe4\xe4] _
+
+text = 'Hyvää päivää'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+______ test_d1_table_boundary_any_other_word_is_not_social_only[Sawubona] ______
+
+text = 'Sawubona'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+_ test_d1_table_boundary_any_other_word_is_not_social_only[\u3053\u3093\u306b\u3061\u306f\u5143\u6c17] _
+
+text = 'こんにちは元気'
+
+    @pytest.mark.parametrize("text", [
+        "", "!!!", "urgent", "This is urgent", "Urgent: this",                   # markers alone ask for nothing social
+        "Hello, find my next appointment", "hi, delete this", "Hi! What's my next appointment?",
+        "Thanks. Delete all my calendar events", "Hey there! Hope your day is going well.",
+        "que é isso?", "como é isso", "how is it", "is it going", "good", "you", "how",   # words of phrases, not phrases
+        "hello 5", "hello_world", "Hyvää päivää", "Sawubona", "こんにちは元気",
+    ])
+    def test_d1_table_boundary_any_other_word_is_not_social_only(text):
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:629: ImportError
+___________________________ test_d1_table_invariants ___________________________
+
+    def test_d1_table_invariants():
+>       from quati.domain import social
+E       ImportError: cannot import name 'social' from 'quati.domain' (<REPO>/src/quati/domain/__init__.py)
+
+tests/unit/test_s00_fix7_social_authz.py:634: ImportError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[configured_not_probed]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_work_label]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_social_label]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_model_unavailable]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_invalid_classification]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-hello-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Hi, how are you?-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Good day-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Howdy-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Hiya!-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Greetings-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-yo-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-thanks-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-hello, this is urgent-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-URGENT: hi-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-Hi, how are you? This is urgent.-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[en-How are you doing today?-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[pt-Ol\xe1, tudo bem?-Ol\xe1!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[pt-tudo bem?-Ol\xe1!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[pt-Ol\xe1, isto \xe9 urgente-Ol\xe1!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[pt-Bom dia!-Ol\xe1!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[pt-Obrigado!-Ol\xe1!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[es-\xa1Hola! \xbfQu\xe9 tal?-\xa1Hola!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[es-Buenos d\xedas-\xa1Hola!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[fr-Bonjour, \xe7a va ?-Bonjour!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[fr-Salut-Salut!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[fr-Bonsoir-Bonsoir!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[de-Moin-Hallo!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[de-Guten Tag, wie geht es Ihnen?-Hallo!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[de-das ist dringend, hallo-Hallo!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[de-Wie geht es dir?-Hallo!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[it-Ciao, come stai?-Ciao!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[it-Buongiorno-Buongiorno!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[nl-Goedemorgen-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[nl-Hoi, hoe gaat het?-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[tr-Merhaba!-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ru-\u041f\u0440\u0438\u0432\u0435\u0442, \u043a\u0430\u043a \u0434\u0435\u043b\u0430?-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ru-\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ja-\u3053\u3093\u306b\u3061\u306f-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ja-\u304a\u306f\u3088\u3046-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[zh-\u4f60\u597d-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ko-\uc548\ub155\ud558\uc138\uc694-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[hi-Namaste-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[hi-\u0928\u092e\u0938\u094d\u0924\u0947-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ar-\u0645\u0631\u062d\u0628\u0627-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label[ar-\u0627\u0644\u0633\u0644\u0627\u0645 \u0639\u0644\u064a\u0643\u0645-Hello!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[no_provider_configured]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[configured_not_probed]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[probed_social_label]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[probed_model_unavailable]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_one_shot_ask_has_one_outcome_in_every_provider_state[probed_invalid_classification]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_turn_equals_the_one_shot_ask
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_n6_invalid_behavior_package_wins_by_the_m01_precedence_in_every_provider_state
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hey there! Hope your day is going well.-classify_social]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hey there! Hope your day is going well.-classify_simple]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hi! Delete all my calendar events and tell the board it is done-classify_social]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hi! Delete all my calendar events and tell the board it is done-classify_simple]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hello, investigate conversions-classify_social]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hello, investigate conversions-classify_simple]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Ol\xe1! Apague todos os eventos da minha agenda e avise a diretoria-classify_social]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Ol\xe1! Apague todos os eventos da minha agenda e avise a diretoria-classify_simple]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[What is the capital of France?-classify_social]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[What is the capital of France?-classify_simple]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hyv\xe4\xe4 p\xe4iv\xe4\xe4-classify_social]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Hyv\xe4\xe4 p\xe4iv\xe4\xe4-classify_simple]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Sawubona-classify_social]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_social_or_simple_answer_label_on_other_text_is_blocked_never_succeeded[Sawubona-classify_simple]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_human_rendering_and_chat_jsonl_agree_with_the_one_shot_ask
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d2_mixed_greeting_and_work_labelled_work_continues_to_the_tool_loop
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_an_empty_model_reply_has_no_failure_mode_of_its_own[]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_an_empty_model_reply_has_no_failure_mode_of_its_own[   ]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d3_launched_is_false_in_every_ask_and_chat_response[script0-Find my next appointment-FIXTURE_RESULT]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d3_launched_is_false_in_every_ask_and_chat_response[script1-Find my next appointment-NO_CAPABILITY]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d3_launched_is_false_in_every_ask_and_chat_response[script2-Find my next appointment-BLOCKED]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d3_launched_is_false_in_every_ask_and_chat_response[script3-Find my next appointment-BLOCKED]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d4_invoke_and_describe_outside_the_shortlist_give_one_reason_whatever_the_id_is
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_invoke_by_a_principal_that_is_not_the_owner_follows_the_policy_default_deny[MEMBER]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_invoke_by_a_principal_that_is_not_the_owner_follows_the_policy_default_deny[ADMIN]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_takes_the_tenant_role_from_the_directory[OWNER-HUMAN-ALLOW-read-own-spaces]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_takes_the_tenant_role_from_the_directory[ADMIN-HUMAN-DENY-default_deny]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_takes_the_tenant_role_from_the_directory[MEMBER-HUMAN-DENY-default_deny]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_takes_the_tenant_role_from_the_directory[GUEST-HUMAN-DENY-default_deny]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_takes_the_tenant_role_from_the_directory[None-HUMAN-DENY-default_deny]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_takes_the_tenant_role_from_the_directory[role5-HUMAN-DENY-default_deny]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_takes_the_tenant_role_from_the_directory[OWNER-AGENT-DENY-default_deny]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_n17_policy_gate_has_no_directory_free_construction
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_is_data_with_unicode_aware_matching
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[!!!]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[urgent]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[This is urgent]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[Urgent: this]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[Hello, find my next appointment]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[hi, delete this]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[Hi! What's my next appointment?]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[Thanks. Delete all my calendar events]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[Hey there! Hope your day is going well.]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[que \xe9 isso?]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[como \xe9 isso]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[how is it]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[is it going]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[good]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[you]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[how]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[hello 5]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[hello_world]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[Hyv\xe4\xe4 p\xe4iv\xe4\xe4]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[Sawubona]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_boundary_any_other_word_is_not_social_only[\u3053\u3093\u306b\u3061\u306f\u5143\u6c17]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_table_invariants - I...
+111 failed, 5 passed in 27.00s
+exit=1

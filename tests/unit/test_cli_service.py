@@ -18,7 +18,8 @@ def service(tmp_path, monkeypatch):
     monkeypatch.setenv('QUATI_DATA_DIR', str(tmp_path / 'data'))
     identity = LocalIdentity(tmp_path / 'config')
     identity.initialize()
-    return CLIService(identity, ProviderConfig(), write_receipt)
+    # Fix round 7 (LOG-0041 N7): a probe needs an authorization port; this unit fixture allows (setup only).
+    return CLIService(identity, ProviderConfig(), write_receipt, authorize=lambda context, operation, action: None)
 
 
 @pytest.mark.parametrize(('utterance', 'answer'), [('olá!', 'Olá!'), ('good evening.', 'Hello!'), ('hola', '¡Hola!')])

@@ -1,0 +1,19 @@
+{
+  "case_id": "CAP-02",
+  "fixture_id": "FX-CONFUSABLE-CAPS",
+  "held_out": true,
+  "sealed_before_first_run": "2026-11-16",
+  "rule": "Held-out paraphrases (LOG-0037 limit 4): written once, before any run, and never used while iterating prompts, fixtures or system code. Utterances never name a capability id, package or tool; the expected capability is held by the evaluator only. A run on this set is a reported measurement and never gate evidence.",
+  "utterances": [
+    "What's the next thing on my calendar?",
+    "When do I next have to be somewhere? Check my agenda.",
+    "Remind me what my upcoming appointment is.",
+    "Is there a meeting coming up for me? I only need the nearest one.",
+    "Which appointment do I have first from now on?",
+    "Please look at my schedule and tell me the earliest upcoming entry.",
+    "I need to know when my next booked engagement starts.",
+    "What have I got next in my diary?",
+    "Quando é a minha próxima reunião marcada?",
+    "¿Qué tengo a continuación en mi agenda?"
+  ]
+}

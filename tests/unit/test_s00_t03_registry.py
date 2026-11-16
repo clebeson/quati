@@ -104,8 +104,11 @@ def test_m14_rt_02_id_is_not_name(tmp_path: Path) -> None:
     assert turn.describe(turn.context, "artifacts.chart-edit").status == "SUCCEEDED"
     for name in ("chart-skill", "chart-specialist-1", "read_file", "chart-edit", "artifacts.chart-edit@1.0.0"):
         turn = harness.turn()   # a fresh turn keeps each pair inside the per-turn tool budget
-        for result in (turn.describe(turn.context, name), turn.invoke(turn.context, name, {}, "key-" + name)):
-            assert (result.status, result.code, result.reason) == ("DENIED", "NOT_FOUND", "NOT_A_CAPABILITY_ID"), name
+        described, invoked = turn.describe(turn.context, name), turn.invoke(turn.context, name, {}, "key-" + name)
+        assert (described.status, described.code, described.reason) == ("DENIED", "NOT_FOUND", "NOT_A_CAPABILITY_ID"), name
+        # Fix round 7 (LOG-0041 D4; amended M14-RT-02 and M15 "No existence oracle"): invoke was NOT_FOUND /
+        # NOT_A_CAPABILITY_ID; a name outside the turn's shortlist now gets the one FORBIDDEN / NOT_IN_SHORTLIST.
+        assert (invoked.status, invoked.code, invoked.reason) == ("DENIED", "FORBIDDEN", "NOT_IN_SHORTLIST"), name
     assert harness.handlers.total_invocations() == 0
 
 

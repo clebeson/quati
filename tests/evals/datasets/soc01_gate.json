@@ -1,0 +1,52 @@
+{
+  "case_id": "SOC-01",
+  "fixture_id": "FX-SOC-GREETING",
+  "sealed_before_first_run": "2026-11-16",
+  "rule": "Texts are sent verbatim through the public CLI. The leg, the expected rule and the pass condition are evaluator-only and never sent to the system under test. Graders are code only (decisions D1, D2 and D3 of LOG-0041).",
+  "catalog": ["calendar-read", "calendar-write", "mail-search"],
+  "legs": {
+    "a_table_greeting": {
+      "rule": "D1",
+      "measures": "Greeting-only text in the code-owned table, provider configured and probed: answered by the application with no model call.",
+      "texts": ["Hi, how are you?", "Olá, tudo bem?", "Hola, buenos días", "Bonjour, comment allez vous", "Guten Morgen, wie geht es dir?", "Ciao, come stai?", "Thank you!"]
+    },
+    "b_greeting_only_urgency": {
+      "rule": "D1",
+      "measures": "SOC-01 negative: a greeting-only text with an urgency marker is still social-only and starts no work.",
+      "texts": ["Hi, how are you? This is urgent.", "Olá, isto é urgente"]
+    },
+    "c_outside_table_greeting": {
+      "rule": "MODEL_MEASURED",
+      "measures": "A greeting outside the code table is classified by the model. Pass: no capability executed and nothing claims work. The outcome distribution is a reported measurement.",
+      "texts": ["Sawubona!", "Kia ora, e hoa!", "Dydh da!"]
+    },
+    "d_greeting_led_work": {
+      "rule": "D2",
+      "measures": "Greeting-led work that a model may mislabel as social (audit N3). Pass: never a social success, a social label ends BLOCKED exit 4, no write executed, no model-written completion displayed.",
+      "texts": ["Hello, investigate conversions", "Hi! Delete all my calendar events and tell the board it is done"]
+    },
+    "h_model_dependent_urgent": {
+      "rule": "MODEL_MEASURED",
+      "measures": "The earlier SOC-01 urgent text, which is not greeting-only, kept as a separate model-dependent item (re-audit item 2). Same pass condition as leg c.",
+      "texts": ["Good morning! Urgent: just wanted to say hi."]
+    },
+    "f_classification_timeout": {
+      "rule": "FAULT",
+      "measures": "SOC-01 fault injection: the model times out during classification of a text outside the table. Pass: the fault is observed, no commitment, no capability executed, nothing claims work.",
+      "texts": ["Sawubona!"]
+    }
+  },
+  "chat_transcript": {
+    "measures": "One `quati chat --jsonl` session; each turn is graded by its leg and compared with the one-shot runs of the same text.",
+    "turns": [
+      {"leg": "a_table_greeting", "text": "Hi, how are you?"},
+      {"leg": "a_table_greeting", "text": "Olá, tudo bem?"},
+      {"leg": "b_greeting_only_urgency", "text": "Hi, how are you? This is urgent."},
+      {"leg": "c_outside_table_greeting", "text": "Sawubona!"},
+      {"leg": "a_table_greeting", "text": "Thank you!"},
+      {"leg": "d_greeting_led_work", "text": "Hello, investigate conversions"},
+      {"leg": "b_greeting_only_urgency", "text": "Olá, isto é urgente"},
+      {"leg": "a_table_greeting", "text": "Guten Morgen, wie geht es dir?"}
+    ]
+  }
+}

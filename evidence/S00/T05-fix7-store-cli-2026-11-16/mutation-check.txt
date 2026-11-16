@@ -1,0 +1,81 @@
+# Mutation check, S00 fix round 7 (LOG-0041 N13, N16). Scratch copies only; the repository was never mutated.
+# Harness: evidence/S00/T05-fix7-store-cli-2026-11-16/mutate.py (each mutant on its own copy of src, tests,
+# examples, contracts and pyproject.toml; child processes of the public tests import the mutated copy).
+# A baseline run of the same selection on an unmutated copy precedes the mutants of each run.
+
+## 1. Full selection, first failure stops (-x)
+# Selection: tests/unit/test_s00_fix6_cli_surface.py, tests/integration/cli/test_s00_fix7_public_surface.py,
+# tests/unit/test_m17.py, tests/integration/cli/test_behavior_commands.py, tests/integration/cli/test_trace_commands.py
+$ .venv/bin/python evidence/S00/T05-fix7-store-cli-2026-11-16/mutate.py <repo> <scratch>
+BASELINE: PASS    [420 passed in 185.15s (0:03:05)]
+S1 (forkT 11j) store: state directory not verified or tightened by the store: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_registry_store_refuses_an_unsafe_audit_log_for_reads_and_appends  [1 failed, 55 passed in 3.22s]
+S2 (forkT 18) receipt writer: data directory not verified or tightened: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n1_receipt_writer_verifies_the_data_directory_chain_by_itself  [1 failed, 65 passed in 3.25s]
+S3 (forkT 11d) _checked: no S_ISREG check: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n1_private_tree_tightens_a_tree_and_refuses_what_it_cannot_make_private  [1 failed, 67 passed in 3.24s]
+S4 (forkT 12g) key: file: branch off: KILLED  by tests/unit/test_m17.py::test_m17_rt_02_reference_structured_and_session_values_are_not_api_keys[file: reference without extension]  [1 failed, 328 passed in 140.95s (0:02:20)]
+S5 compiler: package reference outside the root accepted (single containment check off): KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_behavior_use_cases_resolve_the_package_inside_the_root  [1 failed, 62 passed in 3.30s]
+K1 (forkT 12f) key value appended to the LIVE_NOT_ALLOWED hint: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_f11_use_case_results_hold_no_key_value_before_the_output_redactor  [1 failed, 24 passed in 2.55s]
+G01 _verify: no owner check on the named path: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n7_a_probe_refuses_unusable_storage_before_spending_the_call[argv0-data_foreign_path]  [1 failed, 89 passed in 13.94s]
+G02 _verify: no owner check on the descriptor: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n17_private_directory_decides_on_the_descriptor_and_never_changes_a_mode_by_path  [1 failed, 56 passed in 3.17s]
+G03 _verify: O_DIRECTORY dropped (a regular file accepted as a state directory): KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_private_directory_creates_tightens_and_refuses  [1 failed, 53 passed in 3.22s]
+G04 _verify: no O_NOFOLLOW on the directory descriptor: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_f7_a_symlinked_registry_directory_is_refused  [1 failed, 12 passed in 1.70s]
+G05 _verify: a wider mode is never tightened: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_private_directory_creates_tightens_and_refuses  [1 failed, 53 passed in 3.27s]
+G06 state_directory: symlinked ancestors accepted: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n1_state_directory_verifies_the_whole_chain_and_creates_nothing_below_an_unsafe_component  [1 failed, 57 passed in 3.25s]
+G07 state_directory: only the last component is verified: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_registry_store_refuses_an_unsafe_audit_log_for_reads_and_appends  [1 failed, 55 passed in 3.38s]
+G08 main: capability commands run without the directory check: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[list]  [1 failed, 98 passed in 24.81s]
+G09 ask: no directory check after authentication: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[greeting]  [1 failed, 101 passed in 27.77s]
+G10 probe: no storage check before the provider call: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n7_probe_authenticates_checks_storage_and_is_authorized_before_the_provider_call[probe]  [1 failed, 68 passed in 3.51s]
+G11 probe: not authorized: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n7_probe_authenticates_checks_storage_and_is_authorized_before_the_provider_call[probe]  [1 failed, 68 passed in 3.44s]
+G12 probe: a missing authorization port allows: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n7_probe_authenticates_checks_storage_and_is_authorized_before_the_provider_call[probe]  [1 failed, 68 passed in 3.60s]
+G13 probe: authorized as read instead of manage: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n7_probe_authenticates_checks_storage_and_is_authorized_before_the_provider_call[probe]  [1 failed, 68 passed in 3.34s]
+G14 probe: a late storage failure propagates (INTERNAL_ERROR): KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n7_a_probe_whose_result_cannot_be_stored_says_so_and_is_not_an_internal_error[sink-stored0]  [1 failed, 70 passed in 3.74s]
+G15 init: no directory check before the credential is created: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_init_refuses_an_unusable_data_directory_before_creating_an_identity  [1 failed, 118 passed in 52.01s]
+G16 audit append: existing log not validated: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n15_a_corrupted_audit_log_refuses_reads_and_appends_alike  [1 failed, 64 passed in 3.28s]
+G17 audit log: a line that is not an object accepted: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n15_a_corrupted_audit_log_refuses_reads_and_appends_alike  [1 failed, 64 passed in 3.53s]
+G18 audit log: a torn last line accepted: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n15_a_corrupted_audit_log_refuses_reads_and_appends_alike  [1 failed, 64 passed in 3.33s]
+G19 audit read: corrupt log is an internal error again: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n15_a_corrupted_audit_log_refuses_reads_and_appends_alike  [1 failed, 64 passed in 3.52s]
+G20 exit code: a local store failure exits 5 again: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else[symlink]  [1 failed, 6 passed in 1.17s]
+G21 main: use-case exit code not settled: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else[symlink]  [1 failed, 6 passed in 1.19s]
+G22 identity: a record with a missing field is accepted: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n10_a_rejected_identity_is_reported_invalid_with_its_cause[field_missing]  [1 failed, 161 passed in 107.28s (0:01:47)]
+G23 identity: a rejected credential reported as absent: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n10_doctor_and_config_validate_report_the_identity_cause_from_the_inspector  [1 failed, 75 passed in 3.39s]
+G24 identity: insecure credential classified as corrupt: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n10_identity_state_classifies_a_present_but_rejected_credential  [1 failed, 74 passed in 3.49s]
+G25 feature reports: pointer written without the directory check: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n7_feature_report_store_uses_only_a_private_real_directory  [1 failed, 66 passed in 3.37s]
+G26 feature reports: pointer read through any directory: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n7_feature_report_store_uses_only_a_private_real_directory  [1 failed, 66 passed in 3.16s]
+G27 receipt failure after a change reported as "no work was accepted": KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n1_failure_mapping_names_the_unsafe_component_and_a_missing_receipt_truthfully  [1 failed, 72 passed in 3.29s]
+G28 unsafe directory reported as an internal error: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n1_failure_mapping_names_the_unsafe_component_and_a_missing_receipt_truthfully  [1 failed, 72 passed in 3.28s]
+G29 unsupported: spaces named S03: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[spaces describe space-1]  [1 failed, 176 passed in 127.13s (0:02:07)]
+G30 main: server not registered: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n15_a_command_the_specification_names_answers_unsupported_with_its_slice[server]  [1 failed, 172 passed in 125.90s (0:02:05)]
+G31 evidence: redact() returns its input: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_f11_canary_key_is_absent_from_receipts_reports_and_the_audit_log_of_a_probed_session  [1 failed, 25 passed in 3.11s]
+G32 private_tree: files keep their mode: KILLED  by tests/unit/test_s00_fix6_cli_surface.py::test_n1_private_tree_tightens_a_tree_and_refuses_what_it_cannot_make_private  [1 failed, 67 passed in 3.62s]
+
+## 2. The auditor's survivors and the leak mutant against the PUBLIC child-process tests only, all tests run
+$ MUTATE_ALL=1 MUTATE_TESTS=tests/integration/cli/test_s00_fix7_public_surface.py .venv/bin/python evidence/S00/T05-fix7-store-cli-2026-11-16/mutate.py <repo> <scratch> K1 S1 S2 S3
+BASELINE: PASS    [121 passed in 128.89s (0:02:08)]
+S1 (forkT 11j) store: state directory not verified or tightened by the store: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[list] (+3 more)  [4 failed, 117 passed in 128.16s (0:02:08)]
+S2 (forkT 18) receipt writer: data directory not verified or tightened: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n1_a_symlinked_data_directory_is_refused_before_any_read_or_write[greeting] (+7 more)  [8 failed, 113 passed in 127.70s (0:02:07)]
+S3 (forkT 11d) _checked: no S_ISREG check: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n13_an_audit_log_that_is_a_fifo_with_a_reader_receives_nothing[list] (+2 more)  [3 failed, 118 passed in 128.82s (0:02:08)]
+K1 (forkT 12f) key value appended to the LIVE_NOT_ALLOWED hint: KILLED  by tests/integration/cli/test_s00_fix7_public_surface.py::test_n16_a_configured_key_never_reaches_any_output_even_behind_the_redactor  [1 failed, 120 passed in 128.61s (0:02:08)]
+
+## 3. The six mutants that survived the independent re-audit (evidence/S00/GATES-REAUDIT-2026-11-16/audit-scripts/forkT/mutate.py)
+# forkT 11j (store keeps data/ at the umask mode)        -> S1: KILLED (unit and public; section 2: 4 public tests fail)
+# forkT 18  (receipt writer keeps data/ at the umask mode) -> S2: KILLED (unit and public; section 2: 8 public tests fail)
+# forkT 11d (no S_ISREG check)                            -> S3: KILLED (unit and public: the FIFO-with-a-reader tests)
+# forkT 12g (file: key branch off)                        -> S4: KILLED by a value that only the file: branch rejects
+# forkT 15b (package_ref outside the root)                -> was EQUIVALENT: package_ref duplicated the compiler's own
+#            containment check (same FORBIDDEN PATH_TRAVERSAL at profile_ref, rule class 3). The duplicate was removed
+#            from src/quati/application/behavior_commands.py; S5 mutates the single remaining check: KILLED.
+# forkT 03  (conversation_allowed without the greeting requirement, src/quati/application/ask.py) -> NOT RUN HERE:
+#            ask.py belongs to the agent that replaces that rule in this round (LOG-0041 D1/D2); see that agent's record.
+# The source strings of forkT/mutate.py no longer match the refactored code, so S1-S5 are the same faults re-expressed
+# on the current code. The auditor's own script was not re-run (its local paths are placeholders).
+
+## 4. The key canary (N16)
+# K1 is the auditor's leak mutant (key appended to the LIVE_NOT_ALLOWED hint). Section 2 shows that the public
+# child-process canary test_n16_a_configured_key_never_reaches_any_output_even_behind_the_redactor fails on it: the
+# output redactor hides the value, and the test fails on the redaction marker when the environment is the only source.
+# G31 (redact() returns its input) is killed by the stored-files canary.
+
+## 5. Mutants of the other two parts of this round, run by their authors on scratch copies (reported, not re-run here)
+# N8 key shapes (src/quati/application/providers.py): 24 single-point mutants of the key rule against the m17_rt_02
+#   tests, 24 killed (reference rules, structured rules, JWT segment counts, session prefixes, encoded JSON, hint class).
+# N11 trace commands: 14 mutants against tests/integration/cli/test_trace_commands.py, 13 killed; the survivor removes
+#   the identifier-shape check and is equivalent in outcome (an ill-shaped identifier can match no validated receipt).
