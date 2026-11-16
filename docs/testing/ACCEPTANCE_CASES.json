@@ -20,7 +20,7 @@
       "fixture_ids": [
         "FX-SOC-GREETING"
       ],
-      "given": "First run “Hi, how are you?” through provider-disabled baseline and record its S01 behavior. Separately run the same greeting through an approved real model route with tool-call tracing; the baseline is not evidence for L3. In S00 (LOG-0041 D1 and D2) a text that is social-only by the code-owned multilingual table, such as this greeting, is decided by that table and answered by the application template with no model call, identically in every provider state, so both trajectories give the same Response for it; the L3 leg therefore measures only texts outside the table (a greeting the table does not know, greeting-led work), which the model classifies.",
+      "given": "First run “Hi, how are you?” through provider-disabled baseline and record its S01 behavior. Separately run the same greeting through an approved real model route with tool-call tracing; the baseline is not evidence for L3. In S00 (LOG-0041 D1 and D2) a text that is social-only by the code-owned social table (English and Portuguese only in S00 by owner decision of 2026-11-16; other languages are deferred and not scheduled to a slice, so a greeting of another language is a text outside the table), such as this greeting, is decided by that table and answered by the application template with no model call, identically in every provider state, so both trajectories give the same Response for it; the L3 leg therefore measures only texts outside the table (a greeting the table does not know, greeting-led work), which the model classifies.",
       "steps": [
         "Provision FX-SOC-GREETING: provider disabled; authenticated user U1; empty job store; populate synthetic values exactly as stated in given.",
         "Run two separate trajectories: (a) provider-disabled baseline greeting through public CLI; (b) same greeting through the actual approved model route with tool tracing enabled. Compare job and capability records for both. S00: also run (b) for texts outside the code-owned table; only those reach the model.",
@@ -3097,14 +3097,14 @@
         "Provision FX-REG-08: Local capability registry in the S00 fixture state; no network. populate synthetic values exactly as stated in given.",
         "Run selection with an empty shortlist and with a NONE_FITS reply from a scripted model.",
         "Inspect the observable evidence: Response and invocation log. Check each assertion against the actual response, persisted records and decision trace.",
-        "Run the specified fault injection: Model timeout; same honest response. Capture recovery/status and verify the corresponding safety assertion."
+        "Run the specified fault injection: Model timeout after the search: the request ends as a typed provider failure (`DEADLINE_EXCEEDED`, exit 5), no capability is invoked and nothing claims work (LOG-0044 decision D7: no SUCCEEDED answer without a validated execution). Capture recovery/status and verify the corresponding safety assertion."
       ],
       "assertions": [
         "The response states no capability fits.",
         "No capability is invoked."
       ],
       "negative_case": "Negative: a non-empty shortlist with a fitting item selects it.",
-      "fault_case": "Model timeout; same honest response.",
+      "fault_case": "Model timeout after the search: the request ends as a typed provider failure (`DEADLINE_EXCEEDED`, exit 5), no capability is invoked and nothing claims work (LOG-0044 decision D7: no SUCCEEDED answer without a validated execution).",
       "evidence_required": "Registry rows, decision records, audit events and CLI transcript; deterministic model stubs are not provider proof.",
       "planned_test_path": "tests/unit/test_selection_none_fits.py::test_reg_08",
       "external_blocker": "Scripted model only; not evidence of real-model behavior.",

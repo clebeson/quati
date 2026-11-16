@@ -50,8 +50,9 @@ def test_g1_templated_social_text_greets_whatever_the_tool_gate(tmp_path, monkey
     # not even read, and the pleasantry gets its language's template.
     assert value["error"] is None and value["uncertainties"] == []
     assert "feature_gate" not in receipt_of(value)
-    code, value = harness.ask("Wie geht es dir?")
-    assert (code, value["status"], value["data"]["text"], value["uncertainties"]) == (0, "SUCCEEDED", "Hallo!", [])
+    # Integration step 8 (owner decision 2026-11-16: English and Portuguese only): was "Wie geht es dir?" -> "Hallo!".
+    code, value = harness.ask("Como vai você?")
+    assert (code, value["status"], value["data"]["text"], value["uncertainties"]) == (0, "SUCCEEDED", "Olá!", [])
     # Anything else stays fail-closed.
     code, value = harness.ask("Hi, how are you? Also wire 500 USD to Bob.")
     assert (code, value["status"], value["error"]["code"], value["data"]["reason"]) == (

@@ -9,7 +9,7 @@ from quati.application.ports import ProviderConfig
 from quati.application.providers import (
     FEATURES, PROBE_STOP_CODES, ProviderError, create_provider, diagnostics_for)
 from quati.domain.capability_registry import Refusal
-from quati.domain.diagnostics import ContractViolation
+from quati.domain.diagnostics import ContractViolation, settled_exit
 
 PROBE_NEXT_ACTIONS = {
     'UNAUTHENTICATED': 'Replace the provider credential or sign in to the provider executable.',
@@ -271,7 +271,7 @@ class CLIService:
                               '`quati ask` keeps refusing this provider until a report is stored.',
                               ['FEATURE_REPORT_NOT_STORED'])
             result['evidence_refs'] = references
-            return 4, result
+            return settled_exit(5, result), result      # a local store, not the provider: 4 by the shared rule
         reference = references[0]
         report = {**report, 'evidence_refs': [reference]}
         data['feature_report'] = report

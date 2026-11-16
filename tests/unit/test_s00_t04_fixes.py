@@ -71,17 +71,23 @@ def test_p1_1_social_reply_is_localized_and_never_defaults_to_english():
     # Fix round 7 (LOG-0041 D1): the table moved to quati.domain.social. Changed expectation: a pleasantry
     # without a greeting ("Wie geht es dir?") had no reply (None); it now gets its own language's template,
     # still never the English one.
-    assert social.social_match("Buenos días, ¿qué tal?").reply == "¡Hola!"
-    assert social.social_match("Salut, ça va ?").reply == "Salut!"
-    assert social.social_match("Guten Tag, wie geht es Ihnen?").reply == "Hallo!"
-    assert social.social_match("Wie geht es dir?").reply == "Hallo!"
+    # Integration step 8 (owner decision 2026-11-16: English and Portuguese only). Were: "Buenos días, ¿qué tal?" ->
+    # "¡Hola!", "Salut, ça va ?" -> "Salut!", "Guten Tag, wie geht es Ihnen?" -> "Hallo!", "Wie geht es dir?" ->
+    # "Hallo!". The localized reply is asserted on Portuguese; those four texts are not social.
+    assert social.social_match("Bom dia, tudo bem?").reply == "Olá!"
+    assert social.social_match("Boa tarde, como vai?").reply == "Olá!"
+    assert social.social_match("Tudo bem com você?").reply == "Olá!"
+    for text in ("Buenos días, ¿qué tal?", "Salut, ça va ?", "Guten Tag, wie geht es Ihnen?", "Wie geht es dir?"):
+        assert social.social_match(text) is None, text
     assert social.social_match("Wie geht es, urgent?") is None
+    assert social.social_match("Tudo bem, urgent?").reply == "Olá!" and social.social_match("Tudo, urgent?") is None
 
 
 def test_p1_1_localized_template_through_the_ask(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL))
-    code, value = harness.ask("Buenos días, ¿qué tal?")
-    assert (code, value["data"]["result_kind"], value["data"]["text"]) == (0, "GREETING", "¡Hola!")
+    # Integration step 8 (owner decision 2026-11-16: English and Portuguese only): was "Buenos días, ¿qué tal?" -> "¡Hola!".
+    code, value = harness.ask("Bom dia, tudo bem?")
+    assert (code, value["data"]["result_kind"], value["data"]["text"]) == (0, "GREETING", "Olá!")
     assert len(model_requests(harness)) == 0          # fix round 7 (LOG-0041 D1): was 1 (a classification call)
 
 
@@ -94,7 +100,10 @@ def test_p1_1_localized_template_through_the_ask(tmp_path, monkeypatch):
 # classification request, and a failing classification was exit 5. New: the template of the text's language,
 # no uncertainty, no model request at all, so no provider state can change or fail a social-only text; a text
 # that is not social-only keeps the typed provider failure.
-@pytest.mark.parametrize("text, reply", [("Wie geht es dir?", "Hallo!"), ("How are you doing today?", "Hello!")])
+# Integration step 8 (owner decision 2026-11-16: English and Portuguese only): the first case was
+# ("Wie geht es dir?", "Hallo!"); the three tests below use the Portuguese pleasantry "Tudo bem com você?" where
+# they used the German one, and the German work text "Wie geht es dem Projekt?" stays as the text that is not social.
+@pytest.mark.parametrize("text, reply", [("Tudo bem com você?", "Olá!"), ("How are you doing today?", "Hello!")])
 def test_p1_1_social_text_without_a_greeting_gets_the_application_template_and_no_model_call(
         tmp_path, monkeypatch, text, reply):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("  Mir geht es gut, danke!  "))
@@ -111,11 +120,11 @@ def test_p1_1_social_text_without_a_greeting_gets_the_application_template_and_n
 
 def test_p1_1_social_only_text_cannot_fail_on_the_provider(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("   "))
-    code, value = harness.ask("Wie geht es dir?")
-    assert (code, value["status"], value["error"], value["data"]["text"]) == (0, "SUCCEEDED", None, "Hallo!")
+    code, value = harness.ask("Tudo bem com você?")
+    assert (code, value["status"], value["error"], value["data"]["text"]) == (0, "SUCCEEDED", None, "Olá!")
     broken = ready(tmp_path / "b", monkeypatch, ProviderError("TEMPORARILY_UNAVAILABLE", "UPSTREAM_ERROR"))
-    code, value = broken.ask("Wie geht es dir?")
-    assert (code, value["status"], value["error"], value["data"]["text"]) == (0, "SUCCEEDED", None, "Hallo!")
+    code, value = broken.ask("Tudo bem com você?")
+    assert (code, value["status"], value["error"], value["data"]["text"]) == (0, "SUCCEEDED", None, "Olá!")
     assert len(model_requests(broken)) == 0
     # A provider failure of the classification of any other text is still typed.
     code, value = broken.ask("Wie geht es dem Projekt?")
@@ -124,8 +133,8 @@ def test_p1_1_social_only_text_cannot_fail_on_the_provider(tmp_path, monkeypatch
 
 def test_p1_1_a_model_timeout_cannot_reach_social_only_text_and_fails_other_text_closed(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, ProviderError("DEADLINE_EXCEEDED"))
-    code, value = harness.ask("Wie geht es dir?")
-    assert (code, value["status"], value["data"]["text"]) == (0, "SUCCEEDED", "Hallo!")
+    code, value = harness.ask("Tudo bem com você?")
+    assert (code, value["status"], value["data"]["text"]) == (0, "SUCCEEDED", "Olá!")
     code, value = harness.ask("Wie geht es dem Projekt?")
     assert value["status"] != "SUCCEEDED" and value["error"]["code"] == "DEADLINE_EXCEEDED"
 

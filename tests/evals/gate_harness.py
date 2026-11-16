@@ -49,8 +49,8 @@ ANSWER_LABELS = ('social', 'simple_answer')    # labels that ask for a model-wri
 NO_ATTEMPT, WRITE_EXECUTED = 'NO_WRITE_ATTEMPT_OBSERVED', 'WRITE_EXECUTED'
 # M01 exit table (docs/prds/M01.md, "Exit codes"): the exit code that belongs to a Response.
 EXIT_BY_ERROR_CODE = {'INTERNAL_ERROR': 1, 'INVALID_INPUT': 2, 'CONFIG_INVALID': 2, 'NOT_CONFIGURED': 3,
-                      'DEADLINE_EXCEEDED': 5, 'OUTPUT_INVALID': 5}
-LOCAL_STORE_REASONS = ('audit_unavailable', 'audit_store_unavailable', 'state_dir_unsafe')
+                      'TEMPORARILY_UNAVAILABLE': 5, 'DEADLINE_EXCEEDED': 5, 'OUTPUT_INVALID': 5}
+LOCAL_STORE_REASONS = h.LOCAL_STORE_REASONS     # the product's list (src/quati/domain/diagnostics.py), one copy
 GATE_SENTENCES_FILE = h.ROOT / 'docs' / 'implementation' / 'SLICES' / 'S00.md'
 ASSET_GROUPS = {'contracts': ('contracts', ('*.json',)),
                 'behavior_packages': ('examples/behavior', ('*.yaml', '*.json')),
@@ -218,8 +218,8 @@ def expected_exit(value: dict) -> int:
     if value.get('status') in ('SUCCEEDED', 'PARTIAL'):
         return 0
     code = _error(value).get('code')
-    if code == 'TEMPORARILY_UNAVAILABLE':
-        return 4 if _data(value).get('reason') in LOCAL_STORE_REASONS else 5
+    if EXIT_BY_ERROR_CODE.get(code) == 5 and _data(value).get('reason') in LOCAL_STORE_REASONS:
+        return 4                       # the product's shared rule: a local store is never a provider failure
     return EXIT_BY_ERROR_CODE.get(code, 4)
 
 
@@ -881,13 +881,19 @@ def git_state(root: Path = h.ROOT, allow_untracked=()) -> dict:
 
 
 def asset_root(source: Path = h.SOURCE, root: Path = h.ROOT) -> Path:
-    """Where the product of this checkout reads its contracts and examples from
-    (src/quati/behavior/contracts.py ``asset_root``): `src/quati/assets` when that directory exists, else
-    the repository root. Audit 3 finding X15: such a directory replaces the repository assets and the code
-    digest (``*.py`` only) does not change, so the asset bytes are pre-registered and a shadowing directory
-    refuses a gate-protocol run."""
-    packaged = Path(source) / 'quati' / 'assets'
-    return packaged if packaged.is_dir() else Path(root)
+    """Where the product reads its contracts and examples from, by the rule of the product itself
+    (src/quati/behavior/contracts.py ``asset_root``; LOG-0046 X15): the repository layout wins. When the
+    package is `<root>/src/quati` and `<root>` holds `pyproject.toml`, `contracts/` and `examples/`, the
+    root is used and an `assets` directory beside the package is ignored. Otherwise `src/quati/assets` is
+    used when it exists (the layout of an installed wheel), else the root.
+    tests/unit/test_eval_harness_soc01.py compares this function with the product's in every layout."""
+    source, root = Path(source), Path(root)
+    packaged = source / 'quati' / 'assets'
+    checkout = source.resolve().parent
+    if source.resolve().name == 'src' and (checkout / 'pyproject.toml').is_file() and all(
+            (checkout / name).is_dir() for name in ('contracts', 'examples')):
+        return root
+    return packaged if packaged.is_dir() else root
 
 
 def asset_digests(source: Path = h.SOURCE, root: Path = h.ROOT) -> dict:
@@ -903,6 +909,8 @@ def asset_digests(source: Path = h.SOURCE, root: Path = h.ROOT) -> dict:
                          'sha256': hashlib.sha256(json.dumps(entries, separators=(',', ':')).encode()).hexdigest()}
     template = base / POLICY_TEMPLATE
     return {'asset_root': 'src/quati/assets' if base != Path(root) else '<REPO>', 'shadowed': base != Path(root),
+            # A fact for the reviewer: an `assets` directory beside the package that the product does not load.
+            'packaged_assets_ignored': base == Path(root) and (Path(source) / 'quati' / 'assets').is_dir(),
             'groups': groups, 'files': dict(sorted(files.items())),
             'policy_template': {'path': POLICY_TEMPLATE,
                                 'sha256': h.sha256_file(template) if template.is_file() else None},
@@ -936,11 +944,12 @@ def doctor_identity(value: dict) -> dict | None:
 
 
 def product_asset_digest(identity: dict | None):
-    """The product's own asset digest, read defensively: the first `behavior` field whose name holds
-    `asset` and whose value is a string or an object. None when the product reports none."""
-    for name, value in sorted((identity or {}).items()):
-        if 'asset' in name.lower() and isinstance(value, (str, dict)) and value:
-            return {'field': f'behavior.{name}', 'value': value}
+    """The product's own asset digest: `data.behavior.asset_digest` of `quati doctor --json`, a SHA-256 in
+    lower-case hex (src/quati/application/behavior_commands.py; a receipt carries the same value as
+    `digests.asset_digest`). No other field and no other shape is taken for it; None when it is absent."""
+    value = (identity or {}).get('asset_digest')
+    if isinstance(value, str) and len(value) == 64 and not set(value) - set('0123456789abcdef'):
+        return {'field': 'behavior.asset_digest', 'value': value}
     return None
 
 
@@ -1035,7 +1044,8 @@ def preregistration(arguments, run_id: str, cases: list, runner_path: Path, vend
 def protocol_refusals(prereg: dict) -> list:
     """Why a gate-protocol run may not start (checked before any spend; a pilot records the same facts and
     is not refused): a dirty tree, shadowed or incomplete assets, no doctor identity to bind, a gate
-    sentence that cannot be read."""
+    sentence that cannot be read, a product that reports no asset digest, or one whose digest is not the
+    evaluator's own digest of the asset files."""
     git, assets, product = prereg['git'], prereg['assets'], prereg.get('product_doctor') or {}
     reasons = []
     if not git.get('clean_for_gate'):
@@ -1047,6 +1057,10 @@ def protocol_refusals(prereg: dict) -> list:
         reasons.append('an asset group or the policy template is missing at the asset root')
     if not isinstance(product.get('behavior'), dict) or product.get('doctor_exit') != 0:
         reasons.append('`quati doctor --json` gave no behavior section to bind the run to')
+    elif registered_asset_digest(product) is None:
+        reasons.append('`quati doctor --json` reports no asset digest (data.behavior.asset_digest) to bind the receipts to')
+    elif prereg.get('asset_tree_equals_product_asset_digest') is not True:
+        reasons.append("the evaluator's digest of the asset files differs from the digest the product reports")
     reasons += [f'the sentence of {gate} was not found in {item["source"]}'
                 for gate, item in sorted(prereg['gate_sentences'].items()) if not item['found']]
     return reasons

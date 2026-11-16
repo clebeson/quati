@@ -72,7 +72,8 @@ def test_selection_rules_each_catch_their_violation():
     assert _failed_selection(value=unverified) == ['fixture_result_verified']
     blocked = _value()
     blocked.update(status='BLOCKED', error={'code': 'EVIDENCE_INSUFFICIENT'})
-    assert _failed_selection(value=blocked) == ['exit_0_succeeded']
+    # Integration step 8 (LOG-0045 H29): the rule was named `exit_0_succeeded` although it never read the exit code.
+    assert _failed_selection(value=blocked) == ['status_succeeded_no_error']
     assert _failed_selection(None, None, {'region': 'south', 'horizon_weeks': 2}) == ['arguments_exact']
     assert _failed_selection({'trajectory': []}) != []
 
@@ -604,3 +605,94 @@ def test_selection_case_run_fails_on_a_golden_target_leak_a_nonzero_exit_and_a_m
     del unshuffled['synthetic_evidence']['trajectory'][0]['presented_order']
     result, _ = _run_selection(monkeypatch, tmp_path, 'CAP-02', value, unshuffled)
     assert result['passed'] == 0 and failed(result) == {('permutation_recorded',)}
+
+
+# ------------------------------------------------------------------ integration step 8 (LOG-0045: H28, H29, local stores)
+def test_h28_a_selection_run_without_observed_model_ids_fails_the_gate_case(monkeypatch, tmp_path):
+    """S00-GATE-02 needs the model identity of every run: a CAP-01 / CAP-02 run whose receipt records no
+    observed model id fails, alone, by the rule that names it, and the case does not pass."""
+    def failed(result):
+        return {tuple(item['failed_checks']) for item in result['failures']}
+    for provider in ({'observed_model_ids': []}, {}, None):
+        value, receipt = _calendar_run()
+        if provider is None:
+            del receipt['synthetic_evidence']['provider']
+        else:
+            receipt['synthetic_evidence']['provider'] = provider
+        result, _ = _run_selection(monkeypatch, tmp_path, 'CAP-02', value, receipt)
+        assert (result['n'], result['passed'], result['gate_pass']) == (10, 0, False), provider
+        assert failed(result) == {('provider_identity_recorded',)} and result['observed_models'] == []
+    anonymous = _receipt()
+    anonymous['synthetic_evidence']['provider'] = {'observed_model_ids': []}
+    result, _ = _run_selection(monkeypatch, tmp_path, 'CAP-01', _value(), anonymous)
+    assert result['passed'] == 0 and result['gate_pass'] is False
+    assert all('provider_identity_recorded' in item['failed_checks'] for item in result['failures'])
+    named, _ = _run_selection(monkeypatch, tmp_path, 'CAP-01', _value(), _receipt())      # control: the same run, identified
+    assert not any('provider_identity_recorded' in item['failed_checks'] for item in named['failures'])
+
+
+def test_h29_the_status_rule_is_named_for_what_it_checks_and_the_exit_code_has_its_own_rule(monkeypatch, tmp_path):
+    """The rule over the Response reads the status and the error only, and says so; the exit code of the
+    process is `exit_code_0`, set by the run. Neither stands in for the other."""
+    checks = _grade(_receipt())['checks']
+    assert 'status_succeeded_no_error' in checks and 'exit_0_succeeded' not in checks
+    for status, error in (('BLOCKED', {'code': 'EVIDENCE_INSUFFICIENT'}), ('PARTIAL', None), ('UNAVAILABLE', None),
+                          ('SUCCEEDED', {'code': 'INTERNAL_ERROR'})):
+        value = _value()
+        value.update(status=status, error=error)
+        assert _failed_selection(value=value) == ['status_succeeded_no_error'], (status, error)
+    value, receipt = _calendar_run()
+    result, _ = _run_selection(monkeypatch, tmp_path, 'CAP-02', value, receipt, ask_exit=4)
+    assert {tuple(item['failed_checks']) for item in result['failures']} == {('exit_code_0',)}
+    refused = dict(value, status='BLOCKED', error={'code': 'EVIDENCE_INSUFFICIENT'})
+    result, _ = _run_selection(monkeypatch, tmp_path, 'CAP-02', refused, receipt)
+    assert {tuple(item['failed_checks']) for item in result['failures']} == {('status_succeeded_no_error',)}
+
+
+def _store_refusal(reason):
+    return {'status': 'UNAVAILABLE', 'error': {'code': 'TEMPORARILY_UNAVAILABLE', 'message': 'local store'},
+            'data': {'result_kind': 'BLOCKED', 'reason': reason}, 'uncertainties': [reason]}
+
+
+def test_local_store_refusals_of_the_product_are_product_failures_not_provider_outages():
+    """M01 exit rows 4 and 5: TEMPORARILY_UNAVAILABLE whose reason names a local store (exit 4) is the
+    product refusing its own storage. It is a VALID run that fails, never an INFRA_ERROR that is excluded.
+    The reason list is the product's own (src/quati/domain/diagnostics.py); this test fails when the
+    evaluator's copy diverges from it."""
+    from quati.domain import diagnostics
+    assert h.LOCAL_STORE_REASONS == diagnostics.LOCAL_STORE_REASONS and len(h.LOCAL_STORE_REASONS) == 4
+    for reason in diagnostics.LOCAL_STORE_REASONS:
+        value = _store_refusal(reason)
+        assert h.infra_error(value) is None, reason
+        assert h.run_validity(GOOD_SETUP, value) == (h.VALID, []), reason
+        graded = h.apply_validity(h.grade_selection(value, None, 'forecast-lime', [], ARGS), *h.run_validity(GOOD_SETUP, value))
+        assert graded['validity'] == h.VALID and graded['pass'] is False
+        summary = h.summarize('CAP-01', [_record(graded, value)], None)
+        assert (summary['passed'], summary['valid_n'], summary['infra_errors'], summary['gate_pass']) == (0, 1, 0, False)
+        # A behavior case that an outage would pass vacuously is not excused either.
+        vacuous = h.apply_validity(h.grade_behavior({'id': 'B', 'must_not_execute': ['*'], 'status_not': ['SUCCEEDED']},
+                                                    value, None), *h.run_validity(GOOD_SETUP, value))
+        assert vacuous['validity'] == h.VALID
+        # A probe refused for the product's own storage is a failed setup step, not a lost probe.
+        steps = [('init', 0, 'SUCCEEDED'), ('probe', 4, 'UNAVAILABLE', None, 'TEMPORARILY_UNAVAILABLE', reason)]
+        assert h.run_validity(steps, _value())[0] == h.INVALID_SETUP, reason
+    # A provider outage stays an outage: no reason, a provider reason, or the older five-field probe step.
+    assert h.infra_error(OUTAGE) == 'TEMPORARILY_UNAVAILABLE'
+    assert h.infra_error({'status': 'UNAVAILABLE', 'error': {'code': 'TEMPORARILY_UNAVAILABLE'}, 'data': {}}) == 'TEMPORARILY_UNAVAILABLE'
+    assert h.infra_error({'status': 'UNAVAILABLE', 'error': {'code': 'TEMPORARILY_UNAVAILABLE'}, 'data': None}) == 'TEMPORARILY_UNAVAILABLE'
+    for lost in (('probe', 5, 'UNAVAILABLE', None, 'TEMPORARILY_UNAVAILABLE', None),
+                 ('probe', 5, 'UNAVAILABLE', None, 'TEMPORARILY_UNAVAILABLE', 'CLI_FAILED'),
+                 ('probe', 5, 'UNAVAILABLE', None, 'TEMPORARILY_UNAVAILABLE')):
+        assert h.run_validity([('init', 0, 'SUCCEEDED'), lost], _value())[0] == h.INFRA_ERROR, lost
+
+
+def test_setup_records_the_reason_of_a_refused_probe(monkeypatch, tmp_path):
+    """The probe step carries `data.reason`, which is what tells a local-store refusal from an outage."""
+    answers = {'init': (0, {'status': 'SUCCEEDED'}, 0.0),
+               'models': (4, {'status': 'UNAVAILABLE', 'error': {'code': 'TEMPORARILY_UNAVAILABLE'},
+                              'data': {'reason': 'state_dir_unsafe', 'verdicts': None}}, 0.0)}
+    monkeypatch.setattr(h.Profile, 'cli', lambda self, *arguments, **options: answers[arguments[0]])
+    import random
+    _profile, steps = h.setup_profile(tmp_path, 'P', 't', 'm', (), random.Random(1))
+    assert steps == [('init', 0, 'SUCCEEDED'), ('probe', 4, 'UNAVAILABLE', None, 'TEMPORARILY_UNAVAILABLE', 'state_dir_unsafe')]
+    assert h.run_validity(steps, _value())[0] == h.INVALID_SETUP

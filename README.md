@@ -12,8 +12,8 @@
   <img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-1f4e79?logo=python&logoColor=white">
   <img alt="Interface: CLI only" src="https://img.shields.io/badge/interface-CLI%20only-0b2a4a">
   <img alt="Slice S00 in progress" src="https://img.shields.io/badge/slice-S00%20in%20progress-f5b800">
-  <img alt="Tests: 2127 passed, 53 failing while fix round 8 is integrated" src="https://img.shields.io/badge/tests-2127%20passed%20%C2%B7%2053%20failing%20(round%208%20in%20progress)-f5b800">
-  <img alt="Coverage 99% at integration round 7" src="https://img.shields.io/badge/coverage-99%25%20at%20round%207%20(domain%20%2B%20behavior%20100%25)-2ea44f">
+  <img alt="Tests: 2244 passed, 0 failing" src="https://img.shields.io/badge/tests-2244%20passed%20%C2%B7%200%20failing-2ea44f">
+  <img alt="Coverage 99.87% overall, domain and behavior 100%" src="https://img.shields.io/badge/coverage-99.87%25%20(domain%20%2B%20behavior%20100%25)-2ea44f">
   <img alt="Local first" src="https://img.shields.io/badge/deployment-local--first-6cc24a">
 </p>
 
@@ -137,8 +137,9 @@ quati behavior validate examples/behavior/executive-secretary.yaml   # compile a
 quati behavior render examples/behavior/executive-secretary.yaml     # its prompt preview and build receipt
 ```
 
-Conversation rule in S00: Quati answers text that is social-only by its built-in multilingual table
-(greetings, thanks, pleasantries) with application-owned text, and it displays no model-written
+Conversation rule in S00: Quati answers text that is social-only by its built-in table (greetings, thanks,
+pleasantries; English and Portuguese only for now, other languages go to the model like any other text)
+with application-owned text, and it displays no model-written
 answers. Anything else ends in a verified capability result or in a typed refusal with a non-zero exit
 code; "no installed capability fits" is such a refusal (exit 4), not a success.
 
@@ -275,7 +276,7 @@ first call, one JSON file per case and an index with the verdict of each gate.
 | **Implemented** | `init`, `doctor`, `config validate`, `ask`, `chat`, `models probe`, `behavior validate` / `render`, `trace show` / `explain`, capability registry (synthetic fixtures), 6 provider transports |
 | **Arrives in S02** | `status`, `tell`, `approve`, `deny`, `approvals`, `trace export` / `replay` (they return `UNSUPPORTED` today) |
 | **Live qualification** | pending for the current code; the last accepted run (`gate6-quati`, 2026-11-16) bound an earlier code digest |
-| **Tests** | 2127 passed, 53 failing, 10 skipped at the last measurement (2026-11-16, fix round 8 not yet integrated: the 53 are in one test file that still expects the receipt digests of round 7) · coverage last measured at integration round 7: 99.84% overall, 100% line and branch in `domain/` and `behavior/` |
+| **Tests** | 2244 passed, 0 failing, 10 skipped (2026-11-16, integration step 8; the skips are the opt-in live evaluations and smokes and one wheel-build leg) · coverage 99.87% overall, 100% line and branch in `domain/` and `behavior/` |
 | **Specification** | 31 module PRDs · 15 RFCs · 16 ADRs · 35 work packages across slices S00–S07 |
 | **Canonical state** | `docs/implementation/implementation_state.json` (revision-checked writes only) |
 

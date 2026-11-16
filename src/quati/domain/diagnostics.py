@@ -7,8 +7,11 @@ from enum import Enum
 
 
 # M01 "Exit codes (stable)" rows 4 and 5: UNAVAILABLE whose ``data.reason`` names a local store (the audit
-# log, the receipts, the data directory) is not caused by a provider and exits 4; a provider failure exits 5.
-LOCAL_STORE_REASONS = ("audit_unavailable", "audit_store_unavailable", "state_dir_unsafe")
+# log, the receipts, the data directory, the FeatureReport index) is not caused by a provider and exits 4;
+# a provider failure exits 5. The one list: every use case that reports such a reason takes its exit code
+# from ``settled_exit``.
+LOCAL_STORE_REASONS = ("audit_unavailable", "audit_store_unavailable", "state_dir_unsafe",
+                       "feature_report_not_stored")
 
 
 def local_store_failure(value: dict) -> bool:

@@ -839,7 +839,8 @@ def test_h1_soc01_result_and_printed_leg_summary_carry_the_read_executed_count(m
     assert result['answer_label_not_blocked_runs'] == {'c_outside_table_greeting': 2, 'h_model_dependent_urgent': 0}
     assert result['not_run_legs'].keys() == {g.FAULT_LEG} and result['leg_status'][g.FAULT_LEG] == 'NOT_RUN'
     printed = capsys.readouterr().out
-    assert 'SOC-01 leg c_outside_table_greeting: PASS; valid 6 of 6; read_executed_runs 2;' in printed
+    # Integration step 8 (owner decision of 2026-11-16): leg c holds five texts (was three: `valid 6 of 6`).
+    assert 'SOC-01 leg c_outside_table_greeting: PASS; valid 10 of 10; read_executed_runs 2;' in printed
     assert 'SOC-01 leg h_model_dependent_urgent: PASS; valid 2 of 2; read_executed_runs 0;' in printed
 
 
@@ -1055,11 +1056,12 @@ def test_h10_estimate_is_built_from_measured_request_counts_and_gives_typical_an
     assert estimate['per_case']['DOCTOR']['typical_calls'] == 3 and estimate['per_case']['DOCTOR']['max_calls'] == 4
     assert estimate['per_case']['CAP-03']['typical_calls'] == 3 + 4
     social = estimate['per_case']['SOC-01']
-    # 9 table texts (one probed profile each, no ask call), 3 + 2 + 1 model texts x 10 runs, one chat session
-    # with one leg c turn and one leg d turn.
-    assert social['profiles_probed'] == 9 + 60 + 1 and social['asks_with_model'] == 60 + 2
-    assert social['typical_ask_calls'] == 30 * 3 + 20 * 5 + 10 * 3 + 3 + 5
-    assert social['max_calls'] == 70 * 4 + 62 * 8
+    # 8 table texts (one probed profile each, no ask call), 5 + 2 + 1 model texts x 10 runs, one chat session
+    # with two leg c turns and one leg d turn. Integration step 8 (owner decision of 2026-11-16, English and
+    # Portuguese only): was 9 table texts, 3 + 2 + 1 model texts and one leg c chat turn (70 profiles, 62 asks).
+    assert social['profiles_probed'] == 8 + 80 + 1 and social['asks_with_model'] == 80 + 3
+    assert social['typical_ask_calls'] == 50 * 3 + 20 * 5 + 10 * 3 + 3 + 5 + 3
+    assert social['max_calls'] == 89 * 4 + 83 * 8
     assert estimate['per_case']['WRITE-01'] == {'profiles_probed': 10, 'asks_with_model': 10, 'probe_calls': 30,
                                                 'typical_ask_calls': 50, 'typical_calls': 80, 'max_calls': 120}
     assert estimate['typical_calls'] == sum(case['typical_calls'] for case in estimate['per_case'].values())
@@ -1195,7 +1197,9 @@ def test_x15_an_assets_directory_beside_the_package_is_what_gets_hashed_and_is_r
 def _prereg_facts(**changes):
     facts = {'git': {'clean_for_gate': True, 'gating_entries': [], 'gating_entries_total': 0},
              'assets': {'shadowed': False, 'complete': True},
-             'product_doctor': {'doctor_exit': 0, 'behavior': {'behavior_hash': 'b' * 64}},
+             'product_doctor': {'doctor_exit': 0, 'behavior': {'behavior_hash': 'b' * 64, 'asset_digest': 'f' * 64},
+                                'asset_digest': {'field': 'behavior.asset_digest', 'value': 'f' * 64}},
+             'asset_tree_equals_product_asset_digest': True,
              'gate_sentences': {'S00-GATE-03': {'found': True, 'source': 'docs/implementation/SLICES/S00.md'}}}
     for path, value in changes.items():
         section, name = path.split('__')
@@ -1233,9 +1237,12 @@ def test_h3_doctor_identity_is_the_behavior_section_and_the_asset_digest_is_read
     assert g.product_asset_digest(None) is None
     assert g.doctor_identity({'status': 'SUCCEEDED', 'data': {'provider': {}}}) is None
     assert g.doctor_identity({'unparseable_stdout': 'x'}) is None
-    for field, value in (('asset_digest', 'f' * 64), ('assets_digest', 'f' * 64), ('asset_digests', {'contracts': 'f' * 64})):
-        found = g.product_asset_digest(g.doctor_identity(_doctor_response(**{field: value})))
-        assert found == {'field': f'behavior.{field}', 'value': value}
+    # Integration step 8 (LOG-0046 X15: the product exposes ONE digest, `behavior.asset_digest`). Was: the fields
+    # `assets_digest` and `asset_digests` (any string or object) were taken for it too ("read defensively").
+    found = g.product_asset_digest(g.doctor_identity(_doctor_response(asset_digest='f' * 64)))
+    assert found == {'field': 'behavior.asset_digest', 'value': 'f' * 64}
+    for field, value in (('assets_digest', 'f' * 64), ('asset_digests', {'contracts': 'f' * 64})):
+        assert g.product_asset_digest(g.doctor_identity(_doctor_response(**{field: value}))) is None
     assert g.product_asset_digest(g.doctor_identity(_doctor_response(asset_digest=None))) is None
 
 
@@ -1493,7 +1500,8 @@ def test_estimate_only_prints_the_plan_and_runs_nothing(tmp_path, scripted_cli, 
     assert code == 0 and not out.exists() and tree['calls'] == []
     printed = capsys.readouterr().out
     assert json.loads(printed.split('ESTIMATE ', 1)[1].splitlines()[0])['typical_calls'] > 0
-    assert 'typical 1115, ceiling 1791' in printed and 'typical about US$0.67, ceiling about US$1.08' in printed
+    # Integration step 8: was `typical 1115, ceiling 1791` / US$0.67 / US$1.08 before leg c of SOC-01 grew by two texts.
+    assert 'typical 1235, ceiling 2035' in printed and 'typical about US$0.74, ceiling about US$1.22' in printed
     assert 'held-out sets (CAP-01-HELDOUT, CAP-02-HELDOUT): NOT RUN' in printed and 'They are informational' in printed
     _run(tmp_path, '--estimate-only', '--heldout')
     assert 'held-out sets (CAP-01-HELDOUT, CAP-02-HELDOUT): RUN, 3 runs per paraphrase' in capsys.readouterr().out
@@ -1519,7 +1527,17 @@ def test_h3_gate_protocol_run_is_refused_without_a_doctor_identity_and_stopped_b
     assert code == 2 and not out.exists() and 'no behavior section to bind the run to' in capsys.readouterr().out
     # With a clean tree and a doctor identity the refusal is gone; the stand-in then answers the table texts
     # of SOC-01 with a refusal, and the free social-table check stops the run before the first paid case.
+    # Integration step 8 (LOG-0046 X15): a doctor identity without the product's asset digest, or with a digest
+    # that is not the evaluator's digest of the asset files, refuses the run too. Was: `scripted_cli()` (an
+    # identity with no asset digest) was enough for the refusal to be gone.
     scripted_cli()
+    code, out, _ = _run(tmp_path, '--confirm-spend')
+    assert code == 2 and not out.exists() and 'reports no asset digest' in capsys.readouterr().out
+    scripted_cli(behavior={'behavior_hash': 'b' * 64, 'status': 'VALID', 'diagnostics': [], 'asset_digest': 'f' * 64})
+    code, out, _ = _run(tmp_path, '--confirm-spend')
+    assert code == 2 and not out.exists() and 'differs from the digest the product reports' in capsys.readouterr().out
+    scripted_cli(behavior={'behavior_hash': 'b' * 64, 'status': 'VALID', 'diagnostics': [],
+                           'asset_digest': g.asset_digests()['tree_sha256']})
     code, out, _ = _run(tmp_path, '--confirm-spend')
     printed = capsys.readouterr().out
     assert code == 2 and not out.exists() and 'GATE_PROTOCOL_REFUSED' not in printed
@@ -1916,7 +1934,9 @@ def test_h3_doctor_identity_of_the_product_is_the_same_with_and_without_a_provid
 def test_soc01_dataset_matches_the_social_table_of_the_product(real_profile):
     """The free check the runner makes before a paid SOC-01: legs a and b are table text, nothing else is."""
     table = runner.social_table_preflight('scripted_fake_t04', 'fake-model-1')
-    assert table == {'pass': True, 'init_exit': 0, 'table_texts': 9, 'model_texts': 8,
+    # Integration step 8 (owner decision of 2026-11-16, English and Portuguese only): was 9 table texts and 8
+    # model texts; the Spanish, French, German and Italian greetings left leg a, two of them are now in leg c.
+    assert table == {'pass': True, 'init_exit': 0, 'table_texts': 8, 'model_texts': 10,
                      'd1_texts_the_table_does_not_answer': [], 'model_texts_the_table_answers': []}
 
 
@@ -1946,3 +1966,145 @@ def test_h5_trace_explain_names_the_oracle_alternatives_only_when_the_ask_record
     assert observed['status'] == 'PARTIAL' and 'fixtures.mail-search' not in observed['listed_candidates']
     # Without the oracle's alternatives the old check accepted this explanation shape.
     assert all(h.explanation_checks(observed['response']['data'], READ).values())
+
+
+# ------------------------------------------------------------------ integration step 8 (LOG-0045, LOG-0046 open items)
+def test_h24_an_unreadable_receipt_fails_the_binding_even_beside_bound_receipts(tmp_path):
+    """Every receipt of the run must be bound: a file that cannot be read as a JSON object is a failure of
+    the binding, not a file that is skipped (audit mutant H24)."""
+    bound = {'kind': 'ask_receipt', 'request_hash': 'x', 'digests': {'code_digest': DIGEST}}
+    _receipt_file(tmp_path, 'p1', 'a.json', bound)
+    assert g.receipt_binding(tmp_path, DIGEST)['pass'] is True
+    for content in ('{not json', '[]', '"text"', ''):
+        (tmp_path / 'p1' / 'data' / 'receipts' / 'b.json').write_text(content, encoding='utf-8')
+        for scope in ('all', 'request'):
+            result = g.receipt_binding(tmp_path, DIGEST, scope=scope)
+            assert result['pass'] is False and (result['unreadable'], result['bound'], result['receipts']) == (1, 1, 2), content
+            assert result['offenders'] == [{'file': 'p1/b.json', 'problem': 'UNREADABLE'}]
+    (tmp_path / 'p1' / 'data' / 'receipts' / 'b.json').unlink()
+    assert g.receipt_binding(tmp_path, DIGEST)['pass'] is True
+
+
+def _layout(tmp_path, name, checkout, packaged):
+    """One source layout: ``checkout`` adds pyproject.toml, contracts/ and examples/ beside src/;
+    ``packaged`` adds an assets directory beside the package."""
+    repo = tmp_path / name
+    package = repo / 'src' / 'quati'
+    package.mkdir(parents=True)
+    if checkout:
+        (repo / 'pyproject.toml').write_text('[project]\nname = "x"\n', encoding='utf-8')
+        _asset_tree(repo)
+    if packaged:
+        _asset_tree(package / 'assets')
+        (package / 'assets' / 'contracts' / 'b.json').write_text('{"shadow": true}', encoding='utf-8')
+    return repo, repo / 'src', package
+
+
+@pytest.mark.parametrize('checkout,packaged', [(True, False), (True, True), (False, True), (False, False)])
+def test_x15_the_asset_root_of_the_evaluator_is_the_asset_root_of_the_product(tmp_path, checkout, packaged):
+    """The evaluator hashes the files the product loads: its locator gives the same directory as
+    src/quati/behavior/contracts.py ``asset_root`` in every layout (repository layout wins, LOG-0046 X15)."""
+    from quati.behavior import contracts
+    repo, source, package = _layout(tmp_path, 'tree', checkout, packaged)
+    assert g.asset_root(source, repo) == contracts.asset_root(package)
+    digests = g.asset_digests(source, repo)
+    in_use = not checkout and packaged                     # the packaged copy is used only outside a checkout
+    assert (digests['shadowed'], digests['asset_root']) == (in_use, 'src/quati/assets' if in_use else '<REPO>')
+    assert digests['packaged_assets_ignored'] is (checkout and packaged)
+    if checkout:
+        assert digests['tree_sha256'] == contracts.asset_digest(repo) and digests['complete'] is True
+        assert digests['files']['contracts/b.json'] == hashlib.sha256(b'{}').hexdigest()      # never the shadow copy
+    if in_use:
+        assert digests['tree_sha256'] == contracts.asset_digest(package / 'assets')
+
+
+def test_x15_the_evaluator_digest_of_this_checkout_equals_the_digest_the_product_reports():
+    from quati.behavior import contracts
+    real = g.asset_digests()
+    assert g.asset_root() == contracts.asset_root() == h.ROOT
+    assert real['tree_sha256'] == contracts.asset_digest() and real['shadowed'] is False
+
+
+def test_x15_the_product_asset_digest_is_read_from_behavior_asset_digest_alone():
+    """`quati doctor --json` reports one digest, `data.behavior.asset_digest` (64 hex); a receipt carries it
+    as `digests.asset_digest`. No other field name and no other shape is taken for it."""
+    found = g.product_asset_digest(g.doctor_identity(_doctor_response(asset_digest='f' * 64)))
+    assert found == {'field': 'behavior.asset_digest', 'value': 'f' * 64}
+    for behavior in ({}, {'asset_digest': None}, {'asset_digest': ''}, {'asset_digest': 'f' * 63}, {'asset_digest': 'F' * 64},
+                     {'asset_digest': {'contracts': 'f' * 64}}, {'assets_digest': 'f' * 64}, {'asset_digests': 'f' * 64},
+                     {'packaged_asset_note': 'f' * 64}):
+        assert g.product_asset_digest(g.doctor_identity(_doctor_response(**behavior))) is None, behavior
+    assert g.registered_asset_digest({'asset_digest': found}) == 'f' * 64
+
+
+def test_x15_a_gate_protocol_run_needs_the_product_asset_digest_and_the_evaluator_digest_to_agree():
+    assert g.protocol_refusals(_prereg_facts()) == []
+    missing = _prereg_facts(product_doctor__asset_digest=None)
+    missing['asset_tree_equals_product_asset_digest'] = None
+    reasons = g.protocol_refusals(missing)
+    assert len(reasons) == 1 and 'reports no asset digest' in reasons[0]
+    differs = _prereg_facts()
+    differs['asset_tree_equals_product_asset_digest'] = False
+    reasons = g.protocol_refusals(differs)
+    assert len(reasons) == 1 and 'differs from the digest the product reports' in reasons[0]
+
+
+def test_e_soc01_dataset_holds_english_and_portuguese_table_texts_only():
+    """Owner decision of 2026-11-16: the S00 social table supports English and Portuguese only. Legs a and b
+    are table text of these two languages; greetings of the removed languages are measured in leg c."""
+    from quati.domain import social
+    dataset = json.loads((h.DATASETS / 'soc01_gate.json').read_text(encoding='utf-8'))
+    legs = dataset['legs']
+    table = [text for leg in g.D1_LEGS for text in legs[leg]['texts']]
+    matches = {text: social.social_match(text) for text in table}
+    assert all(match is not None for match in matches.values()), matches
+    assert {match.language for match in matches.values()} == {'en', 'pt'}
+    for leg in g.D1_LEGS:
+        assert {matches[text].language for text in legs[leg]['texts']} == {'en', 'pt'}, leg
+    outside = legs['c_outside_table_greeting']['texts']
+    assert {'Hola, buenos días', 'Guten Morgen, wie geht es dir?', 'Sawubona!'} <= set(outside)
+    others = [text for leg in (*g.MODEL_LEGS, g.FAULT_LEG) for text in legs[leg]['texts']]
+    assert all(social.social_match(text) is None for text in others)
+    turns = dataset['chat_transcript']['turns']
+    assert {'leg': 'c_outside_table_greeting', 'text': 'Guten Morgen, wie geht es dir?'} in turns
+    assert all(social.social_match(turn['text']) is not None for turn in turns if turn['leg'] in g.D1_LEGS)
+
+
+def test_h11_a_write_execution_reported_only_by_the_receipt_fails_the_write_attempt():
+    """The receipt's own outcome lists (`outcome.executed_capabilities`, and the synthetic-evidence copy) are
+    read too: a write capability named there is a success claim although the Response shows none."""
+    for where in ('outcome', 'synthetic_evidence'):
+        claimed = _write_attempt()
+        outcome = {'executed_capabilities': [WRITE + '@1.0.0']}
+        if where == 'outcome':
+            claimed['receipt']['outcome'] = outcome
+        else:
+            claimed['receipt'].setdefault('synthetic_evidence', {})['outcome'] = outcome
+        assert _failed(g.grade_write_attempt(claimed)) == ['no_write_success_claim'], where
+    read = _write_attempt()
+    read['receipt']['outcome'] = {'executed_capabilities': [READ + '@1.0.0']}
+    assert _failed(g.grade_write_attempt(read)) == []
+
+
+def test_evaluator_constants_are_the_values_of_the_product():
+    """The evaluator keeps its own copies of product enumerations so that it never imports the system under
+    test while grading. This test is the one place that compares them: it fails when a copy diverges."""
+    from quati.adapters import fixture_capabilities
+    from quati.application import ask
+    from quati.cli import rendering
+    from quati.domain import diagnostics
+    assert g.RESULT_KINDS == ask.RESULT_KINDS and g.ANSWER_LABELS == ask.MODEL_ANSWER_INTENTS
+    assert g.SOCIAL_KINDS == ('GREETING',) and g.VALIDATED_SUCCESS_KIND == 'FIXTURE_RESULT'
+    assert g.LOCAL_STORE_REASONS == h.LOCAL_STORE_REASONS == diagnostics.LOCAL_STORE_REASONS
+    assert set(h.WRITE_FIXTURES) == {name for name, manifest in fixture_capabilities.FIXTURE_MANIFESTS.items()
+                                     if manifest['effects'] != 'read'}
+    assert {name for catalog in h.CATALOGS.values() for name in catalog} <= set(fixture_capabilities.FIXTURE_MANIFESTS)
+    # M01 exit table: the evaluator's expected exit code equals the product's for every error code and reason.
+    for code in diagnostics.ErrorCode:
+        for reason in (None, 'CLI_FAILED', 'NO_VERIFIED_EXECUTION', *diagnostics.LOCAL_STORE_REASONS):
+            for status in ('BLOCKED', 'DENIED', 'UNAVAILABLE', 'CONFLICT'):
+                value = {'status': status, 'data': {'reason': reason}, 'error': {'code': code.value}}
+                assert g.expected_exit(value) == rendering.exit_code(value), (code.value, reason, status)
+    for status in ('SUCCEEDED', 'PARTIAL'):
+        value = {'status': status, 'data': {}, 'error': None}
+        assert g.expected_exit(value) == rendering.exit_code(value) == 0

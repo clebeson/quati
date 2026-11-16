@@ -36,6 +36,7 @@ from typing import Any, Callable
 from quati.application.ask import DIGEST_FIELDS, RESULT_KINDS
 from quati.application.discovery_tools import DISCOVERY_TOOLS
 from quati.domain.capability_registry import Refusal
+from quati.domain.diagnostics import settled_exit
 
 SOURCE = "S00_RECEIPTS_AND_REGISTRY_AUDIT_LOG"
 INTEGRITY = "UNSIGNED_LOCAL_FILE"
@@ -143,10 +144,11 @@ def _not_found() -> tuple[int, dict]:
 
 
 def _store_unavailable() -> tuple[int, dict]:
-    return 4, _response("UNAVAILABLE", {"reason": "audit_store_unavailable"}, "TEMPORARILY_UNAVAILABLE",
-                        "The local receipts or the audit log cannot be read safely; nothing was shown.",
-                        "Check that the Quati data directory, its receipts and capabilities directories and the "
-                        "audit log are private files of this user (no symlink), then retry.")
+    value = _response("UNAVAILABLE", {"reason": "audit_store_unavailable"}, "TEMPORARILY_UNAVAILABLE",
+                      "The local receipts or the audit log cannot be read safely; nothing was shown.",
+                      "Check that the Quati data directory, its receipts and capabilities directories and the "
+                      "audit log are private files of this user (no symlink), then retry.")
+    return settled_exit(5, value), value            # a local store, not a provider: 4 by the shared exit rule
 
 
 def _ambiguous() -> tuple[int, dict]:

@@ -1,4 +1,8 @@
-"""Code-owned multilingual social table (S00_RUNTIME_CONTRACT "Displayed text and social outcomes").
+"""Code-owned social table (S00_RUNTIME_CONTRACT "Displayed text and social outcomes").
+
+S00 supports English and Portuguese only (owner decision of 2026-11-16); other languages are deferred.
+A greeting, pleasantry, thanks or urgency phrase of any other language is ordinary text: it is not
+social-only and goes to the model path like every other text.
 
 A text is *social-only* when all of the following hold (LOG-0041 D1, LOG-0044 X4):
 
@@ -12,7 +16,7 @@ A text is *social-only* when all of the following hold (LOG-0041 D1, LOG-0044 X4
    ``MAX_PUNCTUATION_RUN`` characters. A run that directly follows or directly precedes a word is
    attached to it; any other run is free. Before the first word, between two words and after the last
    word there is at most one free run. A sequence of punctuation groups (Morse-like text) is
-   therefore not social, while "¡Hola! ¿Qué tal?" is.
+   therefore not social, while "Hello! - How are you?" is.
 3. *Length.* The folded text has at most ``MAX_SOCIAL_CHARACTERS`` characters and
    ``MAX_SOCIAL_WORDS`` words.
 4. *Phrases.* Its words, in order, can be cut completely into phrases of ``SOCIAL_TABLE`` (greetings,
@@ -22,11 +26,11 @@ A text is *social-only* when all of the following hold (LOG-0041 D1, LOG-0044 X4
 Such a text asks for nothing: the application answers it with its own deterministic template and no
 model is called. Every other text is outside the table.
 
-The table is data. Demonstratives, pronouns and copulas ("this", "it", "is", "isto", "é", "das",
-"ist") are never markers and never one-word entries: they occur only inside the fixed phrases listed
-here ("this is urgent", "how are you"), so "how do you do this" or "salve isto" is not social. No
-entry is an ordinary imperative or work word of another table language. Unaccented spellings are
-listed explicitly; nothing is stripped from the input.
+The table is data. Demonstratives, pronouns and copulas ("this", "it", "is", "isto", "isso", "é") are
+never markers and never one-word entries: they occur only inside the fixed phrases listed here
+("this is urgent", "how are you"), so "how do you do this" or "olá, isto" is not social. No entry is
+an ordinary imperative or work word of the other table language. Unaccented spellings are listed
+explicitly; nothing is stripped from the input.
 """
 
 from __future__ import annotations
@@ -34,12 +38,12 @@ from __future__ import annotations
 import unicodedata
 from dataclasses import dataclass
 
-DEFAULT_REPLY = "Hello!"       # the reply of a language that has no template of its own
+DEFAULT_REPLY = "Hello!"       # English, the fallback reply
 GREETING, PLEASANTRY, THANKS = "greeting", "pleasantry", "thanks"
 
-# (language, reply template or None, {kind: phrases}). A language's template answers its phrases;
-# None falls back to DEFAULT_REPLY (English). A phrase belongs to the first language that lists it.
-SOCIAL_TABLE: tuple[tuple[str, str | None, dict[str, tuple[str, ...]]], ...] = (
+# (language, reply template, {kind: phrases}). A language's template answers its phrases. A phrase
+# belongs to the first language that lists it.
+SOCIAL_TABLE: tuple[tuple[str, str, dict[str, tuple[str, ...]]], ...] = (
     ("en", "Hello!", {
         GREETING: ("hello", "hi", "hey", "hello there", "hi there", "hey there", "good morning", "good afternoon",
                    "good evening", "good day", "howdy", "hiya", "greetings", "yo"),
@@ -53,77 +57,13 @@ SOCIAL_TABLE: tuple[tuple[str, str | None, dict[str, tuple[str, ...]]], ...] = (
                      "como voce esta", "como está", "e você", "e voce", "e aí", "e ai"),
         THANKS: ("obrigado", "obrigada", "muito obrigado", "muito obrigada", "valeu"),
     }),
-    ("es", "¡Hola!", {
-        GREETING: ("hola", "buenos días", "buenos dias", "buenas tardes", "buenas noches", "buenas"),
-        PLEASANTRY: ("qué tal", "que tal", "cómo estás", "como estas", "cómo está usted", "como esta usted"),
-        THANKS: ("gracias", "muchas gracias"),
-    }),
-    ("fr", "Bonjour!", {
-        GREETING: ("bonjour", "bonsoir", "salut", "coucou"),
-        PLEASANTRY: ("ça va", "ca va", "comment ça va", "comment ca va", "comment allez vous", "comment vas tu"),
-        THANKS: ("merci", "merci beaucoup"),
-    }),
-    ("de", "Hallo!", {
-        GREETING: ("hallo", "guten tag", "guten morgen", "guten abend", "moin", "moin moin", "servus",
-                   "grüß gott", "grüss gott", "gruss gott"),
-        PLEASANTRY: ("wie geht es dir", "wie geht es ihnen", "wie geht's", "wie gehts", "alles gut", "alles klar"),
-        THANKS: ("danke", "danke schön", "danke schon", "vielen dank"),
-    }),
-    ("it", "Ciao!", {
-        GREETING: ("ciao", "buongiorno", "buonasera"),
-        PLEASANTRY: ("come stai", "come sta", "come va", "tutto bene"),
-        THANKS: ("grazie", "grazie mille"),
-    }),
-    ("nl", None, {
-        GREETING: ("hoi", "goedemorgen", "goedemiddag", "goedenavond", "goedendag"),
-        PLEASANTRY: ("hoe gaat het", "hoe gaat het met je", "hoe gaat het met u"),
-        THANKS: ("bedankt", "dank je", "dank je wel", "dank u"),
-    }),
-    ("tr", None, {
-        GREETING: ("merhaba", "selam", "günaydın", "günaydin", "gunaydin", "iyi günler", "iyi gunler", "iyi akşamlar",
-                   "iyi aksamlar"),
-        PLEASANTRY: ("nasılsın", "nasilsin", "nasılsınız", "nasilsiniz"),
-        THANKS: ("teşekkürler", "tesekkurler", "teşekkür ederim", "tesekkur ederim"),
-    }),
-    ("ru", None, {
-        GREETING: ("привет", "здравствуйте", "здравствуй", "добрый день", "доброе утро", "добрый вечер"),
-        PLEASANTRY: ("как дела", "как ты", "как вы"),
-        THANKS: ("спасибо", "спасибо большое", "большое спасибо"),
-    }),
-    ("ja", None, {
-        GREETING: ("こんにちは", "おはよう", "おはようございます", "こんばんは", "konnichiwa"),
-        PLEASANTRY: ("お元気ですか", "元気ですか"),
-        THANKS: ("ありがとう", "ありがとうございます"),
-    }),
-    ("zh", None, {
-        GREETING: ("你好", "您好", "大家好", "早上好", "晚上好", "ni hao"),
-        PLEASANTRY: ("你好吗", "您好吗"),
-        THANKS: ("谢谢", "謝謝"),
-    }),
-    ("ko", None, {
-        GREETING: ("안녕하세요", "안녕", "안녕하십니까"),
-        PLEASANTRY: ("잘 지내세요", "잘 지냈어요"),
-        THANKS: ("감사합니다", "고맙습니다"),
-    }),
-    ("hi", None, {
-        GREETING: ("नमस्ते", "नमस्कार", "namaste", "namaskar"),
-        PLEASANTRY: ("आप कैसे हैं", "कैसे हो"),
-        THANKS: ("धन्यवाद", "शुक्रिया"),
-    }),
-    ("ar", None, {
-        GREETING: ("مرحبا", "مرحباً", "السلام عليكم", "أهلا", "اهلا", "صباح الخير", "مساء الخير"),
-        PLEASANTRY: ("كيف حالك",),
-        THANKS: ("شكرا", "شكراً"),
-    }),
 )
-# A greeting whose own template differs from its language's template.
-GREETING_REPLIES = {"bonsoir": "Bonsoir!", "salut": "Salut!", "buongiorno": "Buongiorno!"}
 # Urgency. A marker word names no object and no action. The demonstrative or copula that carries it exists
 # only inside these fixed phrases. Urgency alone is not social (SOC-01 negative: "urgent" needs a greeting).
-MARKERS = frozenset(("urgent", "urgently", "urgente", "dringend"))
-URGENCY_PHRASES = ("this is urgent", "it is urgent", "isto é urgente", "isso é urgente", "é urgente", "c'est urgent",
-                   "das ist dringend", "es ist dringend", "è urgente", "questo è urgente")
-# Ordinary punctuation: ASCII punctuation and the sentence punctuation, quotes and dashes of the table's scripts.
+MARKERS = frozenset(("urgent", "urgently", "urgente"))
+URGENCY_PHRASES = ("this is urgent", "it is urgent", "isto é urgente", "isso é urgente", "é urgente")
+# Ordinary punctuation: ASCII punctuation and common sentence punctuation, quotes and dashes. The set is the one
+# specified in fix round 8; it was not reduced when the table was reduced to English and Portuguese.
 PUNCTUATION = frozenset("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" "¡¿«»‘’‚“”„‹›‐–—―·" "、。「」『』・" "،؛؟" "।")
 # Pictographic emoji that name no object and no action (a smile, a wave, folded hands, a heart).
 EMOJI = frozenset("\U0001F44B\U0001F642\U0001F600\U0001F603\U0001F604\U0001F601\U0001F60A\U0001F609\u263A"
@@ -219,8 +159,7 @@ def _compile() -> dict[tuple[str, ...], tuple[str, str, str]]:
     for language, template, kinds in SOCIAL_TABLE:
         for kind, listed in kinds.items():
             for phrase in listed:
-                reply = GREETING_REPLIES.get(phrase, template or DEFAULT_REPLY)
-                phrases.setdefault(words(phrase), (language, kind, reply))
+                phrases.setdefault(words(phrase), (language, kind, template))
     return phrases
 
 
@@ -261,7 +200,7 @@ def social_match(text: str) -> SocialMatch | None:
     return SocialMatch(language, reply)
 
 
-__all__ = ["DEFAULT_REPLY", "EMOJI", "GREETING_REPLIES", "MARKERS", "MAX_FREE_PUNCTUATION_RUNS", "MAX_PHRASE_WORDS",
+__all__ = ["DEFAULT_REPLY", "EMOJI", "MARKERS", "MAX_FREE_PUNCTUATION_RUNS", "MAX_PHRASE_WORDS",
            "MAX_PUNCTUATION_RUN",
            "MAX_SOCIAL_CHARACTERS", "MAX_SOCIAL_WORDS", "PHRASES", "PUNCTUATION", "SKIN_TONES", "SOCIAL_TABLE",
            "SocialMatch", "URGENCY_PHRASES", "fold", "social_match", "words"]

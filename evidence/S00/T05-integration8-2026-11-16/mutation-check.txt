@@ -1,0 +1,192 @@
+Mutation check of integration step 8 (LOG-0045 item B.8). No live provider call; scratch copies only.
+
+Script: evidence/S00/T05-integration8-2026-11-16/mutation_check_script.py (one copy of src, tests, examples, contracts,
+pyproject.toml and the documents the tests read per mutant; the repository is never modified).
+Command: .venv/bin/python evidence/S00/T05-integration8-2026-11-16/mutation_check_script.py . <scratch>
+Tree: the final tree of this step (code digest and suite result in green.txt).
+A mutant is KILLED when its pytest selection fails; the first failing test is named. Tier L2: the selection holds
+only child-process tests of the public entry. L1: in-process tests. H: the harness grader tests.
+
+Source tables: evidence/S00/GATES-AUDIT3-2026-11-16/audit-scripts/forkT/full.tsv (25 rows, 23 SURVIVED),
+l2.tsv (12 SURVIVED of the child-process run) and harness.tsv (6 SURVIVED). Every surviving mutant of the three
+tables is listed below, re-derived on the current code where the code changed (see "Re-derived" at the end).
+
+Result: 62 mutants, 53 KILLED, 9 SURVIVED. Each survivor is explained under its table; none is a gap.
+
+==== A. Survivors of the full suite at a5a3af3 (full.tsv) ====
+KILLED   | L2 | W01 listening sockets: SO_ACCEPTCONN -> SO_KEEPALIVE
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_t1_doctor_counts_a_real_listening_socket_of_its_own_process_and_only_while_it_is_open
+KILLED   | L1 | P23 registry lock file opened with plain os.open
+           killed by tests/unit/test_s00_integration8.py::test_p23_the_registry_lock_file_is_opened_as_a_private_file_or_not_at_all[symlink]
+KILLED   | L1 | P23b registry lock file: a wider mode is repaired instead of refused
+           killed by tests/unit/test_s00_integration8.py::test_p23_the_registry_lock_file_is_opened_as_a_private_file_or_not_at_all[symlink]
+KILLED   | L1 | P06 private open follows a symlink (O_NOFOLLOW dropped)
+           killed by tests/unit/test_s00_integration8.py::test_p23_the_registry_lock_file_is_opened_as_a_private_file_or_not_at_all[symlink]
+KILLED   | L2 | P06/L2 private open follows a symlink (O_NOFOLLOW dropped)
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_p20_a_symbolic_link_in_place_of_the_report_pointer_is_never_followed
+KILLED   | L2 | T10 trace: list items copied without the per-item shape check
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_t10_a_forged_item_in_any_displayed_list_withholds_the_whole_list[boolean]
+KILLED   | L2 | T14 explain: selected without a handler execution
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_t14_t15_t16_explain_selects_only_the_executed_allowed_succeeded_invoke
+KILLED   | L2 | T15 explain: any policy verdict is the decision
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_t14_t15_t16_explain_selects_only_the_executed_allowed_succeeded_invoke
+KILLED   | L2 | T16 explain: status of the selected step ignored
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_t14_t15_t16_explain_selects_only_the_executed_allowed_succeeded_invoke
+KILLED   | L2 | T05 trace: events of another tenant shown
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_t05_t06_audit_lines_of_another_tenant_or_actor_are_not_shown[tenant_id-01ARZ3NDEKTSV4RRFFQ69G5FAV]
+KILLED   | L2 | T06 trace: events of another actor shown
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_t05_t06_audit_lines_of_another_tenant_or_actor_are_not_shown[actor_id-01BX5ZZKBKACTAV9WEVGEMMVRZ]
+KILLED   | L2 | P17 trace reader tightens directories
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_p17_trace_show_changes_no_mode_and_refuses_a_permissive_receipts_directory
+KILLED   | L1 | S17 marker set gains a work word (please)
+           killed by tests/unit/test_s00_integration8.py::test_e_the_social_table_is_exactly_the_english_and_portuguese_entries
+KILLED   | L2 | S17/L2 marker set gains a work word (please)
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_text_outside_the_social_table_is_never_a_greeting[other_words]
+KILLED   | L1 | S05c format characters are dropped inside and around a word
+           killed by tests/unit/test_s00_integration8.py::test_s05c_a_format_character_inside_or_around_any_table_word_makes_the_text_not_social
+KILLED   | L2 | S05c/L2 format characters are dropped inside and around a word
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_text_outside_the_social_table_is_never_a_greeting[format_characters]
+KILLED   | L2 | I05 owner uid not compared
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_i05_a_signed_record_of_another_os_user_is_rejected
+KILLED   | L1 | C05 asset locator: an assets FILE or symlink is accepted
+           killed by tests/unit/test_s00_integration8.py::test_c05_only_a_real_assets_directory_is_the_packaged_asset_root
+SURVIVED | L1 | S02b fold: single NFKC (before casefold only)
+           selection result: 220 passed, 88 deselected in 29.42s
+SURVIVED | L1 | S12 a phrase belongs to the last language listing it
+           selection result: 220 passed, 88 deselected in 29.19s
+SURVIVED | L1 | S15 shortest phrase first
+           selection result: 220 passed, 88 deselected in 29.37s
+KILLED   | L1 | P10b a writer tightens only when group or other bits are set
+           killed by tests/unit/test_s00_integration8.py::test_p10b_a_writer_leaves_a_state_directory_with_mode_0700_exactly
+SURVIVED | L2 | T03 trace: identifier shape not validated
+           selection result: 42 passed in 52.89s
+SURVIVED | L2 | T04 trace: identifier prefix match
+           selection result: 42 passed in 52.94s
+SURVIVED | L2 | T11 trace: receipt ids not shape-checked
+           selection result: 42 passed in 52.82s
+SURVIVED | L2 | X07 presentation boundary: exit without the shared rule
+           selection result: 18 passed, 134 deselected in 40.97s
+
+Explanations of the survivors in A:
+* S02b (one NFKC, before the casefold only). Equivalent in outcome. Exhaustive computation over every Unicode
+  code point: exactly 26 code points fold differently under the mutant (U+01F0, U+0390, U+03B0, U+1E96-U+1E99,
+  U+1F50, U+1F52, U+1F54, U+1F56, U+1FB6, U+1FB7, U+1FC6, U+1FC7, U+1FD2, U+1FD3, U+1FD6, U+1FD7, U+1FE2-U+1FE4,
+  U+1FE6, U+1FE7, U+1FF6, U+1FF7). In both forms the result holds a letter that occurs in no table word
+  (a Greek letter, or j, h, t, w, y carrying a combining mark that neither form removes), so the text is not
+  social under either. No code point has a casefold that starts with a combining mark while its NFKC form does
+  not, so the second NFKC can never compose a table letter across a character boundary.
+* S12 (a phrase belongs to the last language that lists it). Equivalent on the specified table: no phrase is
+  listed twice (tests/unit/test_s00_integration8.py::test_e_the_social_table_is_exactly_the_english_and_portuguese_entries
+  pins `len(PHRASES) == number of listed entries`), so first-wins and last-wins build the same mapping. The rule
+  matters only if a later table change adds a duplicate; that change must add its test.
+* S15 (shortest phrase first). Equivalent on the specified table. Exhaustive computation over all 230513 sequences
+  of one to three entries (table phrases, urgency phrases, markers; at most 12 words): none has more than one
+  segmentation, so the order in which phrase lengths are tried cannot change the entries found or the reply.
+* T03, T04, T11 (identifier shape not validated; prefix match; receipt ids not shape-checked). Each check is backed
+  by another one and the lookup is by equality, so removing one changes no answer: the audit's own verdict
+  ("each masks the other ... not a defect"). The backing is now proven: the pairs T03+T11 and T04+T11 (table D)
+  are KILLED by test_t03_t11_a_receipt_whose_request_id_has_another_shape_is_never_found.
+* X07 (the presentation boundary without the shared exit rule) and, in table B, X06 (the ask use case without it).
+  The rule is applied twice by design, once in the use case and once at the boundary, so that the two cannot
+  disagree; removing one application changes nothing while the other stands. The pairs X07+X06 and X07+D7a
+  (table D) are KILLED, by test_x06_an_audit_log_that_becomes_unsafe_during_the_turn_is_a_local_store_refusal_with_exit_4
+  and by the store matrix: the rule itself is proven on the public path, each application is redundant alone.
+
+==== B. Killed only by in-process tests at a5a3af3 (l2.tsv), now against child-process tests ====
+KILLED   | L2 | S06 urgency alone is social
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_text_outside_the_social_table_is_never_a_greeting[urgency_alone]
+KILLED   | L2 | P10 a reader accepts group or other bits
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_p17_trace_show_changes_no_mode_and_refuses_a_permissive_receipts_directory
+KILLED   | L2 | P11 symlinked ancestor of the data directory accepted
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_p11_a_data_directory_below_a_symbolic_link_is_refused_by_every_command
+KILLED   | L2 | P19 feature report save: directory chain not verified
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_p19_the_measured_report_is_not_stored_through_a_directory_swapped_during_the_probe
+KILLED   | L2 | P20 feature report pointer read follows a symlink
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_p20_a_symbolic_link_in_place_of_the_report_pointer_is_never_followed
+KILLED   | L2 | P24 audit_events: plain read
+           killed by tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[audit.jsonl-fifo]
+KILLED   | L2 | P32b probe: authentication before the configured check
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_p32b_an_unconfigured_probe_is_not_configured_before_any_authentication[argv0]
+KILLED   | L2 | X03 local store reasons: no audit_store_unavailable
+           killed by tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[audit.jsonl-symlink_outside]
+SURVIVED | L2 | X06 ask use case: exit without the shared rule
+           selection result: 17 passed, 135 deselected in 36.96s
+KILLED   | L2 | I02 empty identifier accepted
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_i02_a_signed_record_with_an_empty_identifier_is_rejected[tenant_id]
+KILLED   | L2 | I08 identity state shown inside a capability context
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_i08_no_credential_state_is_shown_inside_a_capability_context
+
+X06: see the explanation of X07 above (pair X07+X06 KILLED at L2).
+P10b is listed in l2.tsv and in full.tsv; it is KILLED (table A, L1): a writer leaves mode 0700 exactly.
+
+==== C. Harness grader survivors (harness.tsv) ====
+KILLED   | H  | H11 write: receipt-reported write execution accepted
+           killed by tests/unit/test_eval_harness_soc01.py::test_h11_a_write_execution_reported_only_by_the_receipt_fails_the_write_attempt
+KILLED   | H  | H11b write: launched not checked
+           killed by tests/unit/test_eval_harness_soc01.py::test_write_attempt_fails_on_a_success_claim_and_on_displayed_model_text
+KILLED   | H  | H24 binding: unreadable receipt not failing
+           killed by tests/unit/test_eval_harness_soc01.py::test_h24_an_unreadable_receipt_fails_the_binding_even_beside_bound_receipts
+KILLED   | H  | H28 selection: model identity not required
+           killed by tests/unit/test_eval_harness_grader.py::test_selection_rules_each_catch_their_violation
+KILLED   | H  | H29 selection: status not checked
+           killed by tests/unit/test_eval_harness_grader.py::test_selection_rules_each_catch_their_violation
+KILLED   | H  | H30 selection: only-target rule off
+           killed by tests/unit/test_eval_harness_grader.py::test_selection_rules_each_catch_their_violation
+
+==== D. Mutants of this step's own changes, pairs and sanity ====
+KILLED   | L2 | T10b trace: a list of records may hold anything
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_t10_a_list_of_records_that_holds_anything_but_objects_is_withheld[trajectory]
+KILLED   | L1 | S05d the zero-width joiner is dropped between letters
+           killed by tests/unit/test_s00_integration8.py::test_s05c_a_format_character_inside_or_around_any_table_word_makes_the_text_not_social
+KILLED   | L2 | X03b local store reasons: no feature_report_not_stored
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_p19_the_measured_report_is_not_stored_through_a_directory_swapped_during_the_probe
+KILLED   | L2 | E01 a removed language is still in the table (Spanish)
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_text_outside_the_social_table_is_never_a_greeting[other_languages]
+KILLED   | L2 | E02 a removed marker is still a marker (dringend)
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_text_outside_the_social_table_is_never_a_greeting[other_languages]
+KILLED   | L2 | E03 a removed urgency phrase is still listed (das ist dringend)
+           killed by tests/unit/test_s00_integration8.py::test_e_the_social_table_is_exactly_the_english_and_portuguese_entries
+SURVIVED | L2 | D7a trace store refusal: exit 5
+           selection result: 1 passed, 114 deselected in 3.35s
+KILLED   | H  | H40 infra: a local-store refusal is a provider outage again
+           killed by tests/unit/test_eval_harness_grader.py::test_local_store_refusals_of_the_product_are_product_failures_not_provider_outages
+KILLED   | H  | H41 infra: a probe refused for a local store is a lost probe
+           killed by tests/unit/test_eval_harness_grader.py::test_local_store_refusals_of_the_product_are_product_failures_not_provider_outages
+KILLED   | H  | H42 evaluator copy of the local-store reasons diverges
+           killed by tests/unit/test_eval_harness_grader.py::test_local_store_refusals_of_the_product_are_product_failures_not_provider_outages
+KILLED   | H  | H43 asset locator: a packaged directory wins inside a checkout
+           killed by tests/unit/test_eval_harness_soc01.py::test_x15_the_asset_root_of_the_evaluator_is_the_asset_root_of_the_product[True-True]
+KILLED   | H  | H44 product asset digest: any field that holds "asset"
+           killed by tests/unit/test_eval_harness_soc01.py::test_h3_doctor_identity_is_the_behavior_section_and_the_asset_digest_is_read_defensively
+KILLED   | H  | H45 gate run without a product asset digest is not refused
+           killed by tests/unit/test_eval_harness_soc01.py::test_h3_gate_protocol_run_is_refused_without_a_doctor_identity_and_stopped_by_the_social_table
+KILLED   | H  | H46 gate run with a differing asset digest is not refused
+           killed by tests/unit/test_eval_harness_soc01.py::test_h3_gate_protocol_run_is_refused_without_a_doctor_identity_and_stopped_by_the_social_table
+KILLED   | L2 | T03+T11 trace: neither the identifier nor the receipt ids are shape-checked
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_t03_t11_a_receipt_whose_request_id_has_another_shape_is_never_found[not-a-request-id]
+KILLED   | L2 | X07+D7a exit rule applied neither by the trace use case nor at the boundary
+           killed by tests/integration/cli/test_s00_fix8_store_matrix.py::test_x2_every_store_file_is_private_or_every_command_refuses_in_bounded_time[audit.jsonl-symlink_outside]
+KILLED   | L2 | X07+X06 exit rule applied neither by the ask use case nor at the boundary
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_x06_an_audit_log_that_becomes_unsafe_during_the_turn_is_a_local_store_refusal_with_exit_4
+KILLED   | L2 | Z00 sanity: the English reply text changed
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_english_and_portuguese_are_answered_by_the_table_with_no_model_call
+KILLED   | L2 | T04+T11 trace: identifier matched by prefix and receipt ids not shape-checked
+           killed by tests/integration/cli/test_s00_integration8_public.py::test_t03_t11_a_receipt_whose_request_id_has_another_shape_is_never_found[request-00000000000000000000000000000000 and more text]
+
+D7a (the trace use case returns 5 for an unreadable store instead of settling it): survives alone for the reason
+given for X07 (the boundary settles 5 to 4); the pair X07+D7a is KILLED.
+
+Re-derived mutants (the code changed after a5a3af3):
+* P23, P23b: `open_private` has no `tighten` argument any more. P23 replaces the call with a plain `os.open`;
+  P23b replaces it with a checked open that repairs a wider mode. Both are killed at L1 by the adapter test, which
+  deliberately does not run the check by name (`prepare`) first; on the public path that earlier check refuses
+  the same faults before any audit line (tests/integration/cli/test_s00_fix8_store_matrix.py, registry.flock rows).
+* P06: the flag is now in `private_fs._open`; killed at L1 (lock file) and at L2 (FeatureReport pointer).
+* P10, P10b: `_verify` was rewritten in round 8 (a writer never adds a permission).
+* S05c: `words` was rewritten in round 8; the mutant skips every format character except the zero-width joiner,
+  S05d skips the joiner between letters.
+* S06, S17: the marker set and the "urgency alone" branch of round 8.
+* I02: the identifier check is now a ULID match; the mutant accepts the empty string again.
+* C05: the fallback of the asset locator is now `checkout`.
+* X03: the list has four reasons; X03 removes `audit_store_unavailable`, X03b the new `feature_report_not_stored`.
+* H29: the rule is now `status_succeeded_no_error`.

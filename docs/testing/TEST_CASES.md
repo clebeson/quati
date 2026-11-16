@@ -6,7 +6,7 @@ All 101 scenarios are planned and NOT_RUN. Their case mappings do not imply full
 
 Requirement assertions: M03-FR-01, M03-AT-01, M03-RT-01, M31-FR-01, M31-AT-01, K1, K10
 
-**Given:** First run “Hi, how are you?” through provider-disabled baseline and record its S01 behavior. Separately run the same greeting through an approved real model route with tool-call tracing; the baseline is not evidence for L3. In S00 (LOG-0041 D1 and D2) a text that is social-only by the code-owned multilingual table, such as this greeting, is decided by that table and answered by the application template with no model call, identically in every provider state, so both trajectories give the same Response for it; the L3 leg therefore measures only texts outside the table (a greeting the table does not know, greeting-led work), which the model classifies.
+**Given:** First run “Hi, how are you?” through provider-disabled baseline and record its S01 behavior. Separately run the same greeting through an approved real model route with tool-call tracing; the baseline is not evidence for L3. In S00 (LOG-0041 D1 and D2) a text that is social-only by the code-owned social table (English and Portuguese only in S00 by owner decision of 2026-11-16; other languages are deferred and not scheduled to a slice, so a greeting of another language is a text outside the table), such as this greeting, is decided by that table and answered by the application template with no model call, identically in every provider state, so both trajectories give the same Response for it; the L3 leg therefore measures only texts outside the table (a greeting the table does not know, greeting-led work), which the model classifies.
 
 **Prerequisites:** Authenticated U1; empty job store; provider-disabled baseline configuration plus a separate approved actual-model route with tools enabled for the L3 trajectory.
 
@@ -2894,7 +2894,7 @@ Requirement assertions: M15-FR-02, M15-FR-03, M15-AT-02
 1. Provision FX-REG-08: Local capability registry in the S00 fixture state; no network. populate synthetic values exactly as stated in given.
 2. Run selection with an empty shortlist and with a NONE_FITS reply from a scripted model.
 3. Inspect the observable evidence: Response and invocation log. Check each assertion against the actual response, persisted records and decision trace.
-4. Run the specified fault injection: Model timeout; same honest response. Capture recovery/status and verify the corresponding safety assertion.
+4. Run the specified fault injection: Model timeout after the search: the request ends as a typed provider failure (`DEADLINE_EXCEEDED`, exit 5), no capability is invoked and nothing claims work (LOG-0044 decision D7: no SUCCEEDED answer without a validated execution). Capture recovery/status and verify the corresponding safety assertion.
 
 **Required assertions:**
 
@@ -2903,7 +2903,7 @@ Requirement assertions: M15-FR-02, M15-FR-03, M15-AT-02
 
 **Negative:** Negative: a non-empty shortlist with a fitting item selects it.
 
-**Fault:** Model timeout; same honest response.
+**Fault:** Model timeout after the search: the request ends as a typed provider failure (`DEADLINE_EXCEEDED`, exit 5), no capability is invoked and nothing claims work (LOG-0044 decision D7: no SUCCEEDED answer without a validated execution).
 
 **Evidence:** Registry rows, decision records, audit events and CLI transcript; deterministic model stubs are not provider proof.
 

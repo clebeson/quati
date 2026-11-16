@@ -1,0 +1,109 @@
+GREEN run of integration step 8 (2026-11-16). No live provider call: QUATI_LIVE_EVAL, QUATI_LIVE_SMOKE and QUATI_ALLOW_LIVE were unset in
+every command below (child processes of the tests set QUATI_ALLOW_LIVE=1 only with the scripted, network-free transport).
+Base commit a3fb55a plus the uncommitted changes of this step. Code digest of src/quati (tests/evals/live_harness.code_digest):
+f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8 (was 8fa1c31e427b8338276b03dee5f2f8f67a3b37f682cc48cd0678bcadf9afdf24 at a3fb55a; src/quati changed in this step).
+Asset digest (quati doctor --json, data.behavior.asset_digest): cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2 (assets unchanged).
+
+## 1. The selection of red.txt (plus tests/unit/test_selection_none_fits.py), after the changes
+$ .venv/bin/python -m pytest -q -p no:cacheprovider --no-header -rf --tb=line tests/unit/test_s00_integration8.py tests/integration/cli/test_s00_integration8_public.py tests/unit/test_eval_harness_grader.py tests/unit/test_eval_harness_soc01.py tests/unit/test_selection_none_fits.py
+........................................................................ [ 24%]
+........................................................................ [ 48%]
+........................................................................ [ 72%]
+........................................................................ [ 96%]
+...........                                                              [100%]
+299 passed in 78.03s (0:01:18)
+
+New test files: tests/unit/test_s00_integration8.py 41 tests; tests/integration/cli/test_s00_integration8_public.py 37 tests (child processes of the public entry).
+
+## 2. Full suite (plain)
+$ .venv/bin/python -m pytest -q -p no:cacheprovider
+2244 passed, 10 skipped in 590.38s (0:09:50)
+Baseline at a3fb55a, measured at the start of this step with the same command: 2180 passed, 10 skipped.
+The 10 skips are unchanged: 7 opt-in live evaluations and 2 external smokes (never enabled here) and the fresh-wheel leg (setuptools not importable).
+
+## 3. Coverage (branch mode; CLI child processes measured through tests/coverage/sitecustomize.py; isolated data file in scratch)
+# rcfile: [run] branch = True, parallel = True, source = <repo>/src/quati, data_file = <scratch>/cov/.coverage; [report] show_missing = True
+# QUATI_TEST_COVERAGE_BOOTSTRAP=<repo>/tests/coverage COVERAGE_PROCESS_START=<rcfile>
+$ .venv/bin/python -m coverage run --rcfile=<rcfile> -m pytest -q -p no:cacheprovider   (last line)
+2244 passed, 10 skipped in 1033.71s (0:17:13)
+$ .venv/bin/python -m coverage combine --rcfile=<rcfile> && .venv/bin/python -m coverage report --rcfile=<rcfile> --precision=2
+Name                                                Stmts   Miss Branch BrPart   Cover   Missing
+------------------------------------------------------------------------------------------------
+src/quati/__init__.py                                   1      0      0      0 100.00%
+src/quati/__main__.py                                   2      0      0      0 100.00%
+src/quati/adapters/__init__.py                          0      0      0      0 100.00%
+src/quati/adapters/capability_store.py                207      0     36      0 100.00%
+src/quati/adapters/evidence.py                         43      0      6      0 100.00%
+src/quati/adapters/feature_reports.py                  42      0      8      0 100.00%
+src/quati/adapters/fixture_capabilities.py            137      0     14      0 100.00%
+src/quati/adapters/fts_index.py                        17      0      2      0 100.00%
+src/quati/adapters/local_identity.py                  135      4     26      2  96.27%   53, 96, 112-113
+src/quati/adapters/policy_gate.py                      46      0      4      0 100.00%
+src/quati/adapters/private_fs.py                      126      0     40      0 100.00%
+src/quati/adapters/providers/__init__.py                4      0      0      0 100.00%
+src/quati/adapters/providers/_sdk.py                   99      0     54      0 100.00%
+src/quati/adapters/providers/anthropic.py              57      0     16      0 100.00%
+src/quati/adapters/providers/cli.py                   317      0     92      0 100.00%
+src/quati/adapters/providers/openai_compatible.py     112      0     36      0 100.00%
+src/quati/adapters/runtime_facts.py                   103      0     32      0 100.00%
+src/quati/adapters/trace_store.py                      32      0     10      0 100.00%
+src/quati/application/__init__.py                       0      0      0      0 100.00%
+src/quati/application/ask.py                          397      0    108      0 100.00%
+src/quati/application/behavior_commands.py             56      0      6      0 100.00%
+src/quati/application/capability_commands.py           91      0     24      0 100.00%
+src/quati/application/capability_registry.py          372      0     86      0 100.00%
+src/quati/application/cli_service.py                  332      0    112      0 100.00%
+src/quati/application/code_identity.py                 14      0      0      0 100.00%
+src/quati/application/context_envelope.py              93      0     18      0 100.00%
+src/quati/application/discovery.py                    257      0     78      0 100.00%
+src/quati/application/discovery_tools.py               80      0     20      0 100.00%
+src/quati/application/identity.py                     138      1     34      1  98.84%   48
+src/quati/application/ports.py                         29      0      0      0 100.00%
+src/quati/application/providers.py                    535      0    166      0 100.00%
+src/quati/application/trace_commands.py               235      0     72      0 100.00%
+src/quati/behavior/__init__.py                          0      0      0      0 100.00%
+src/quati/behavior/compiler.py                        189      0     56      0 100.00%
+src/quati/behavior/contracts.py                       196      0     68      0 100.00%
+src/quati/behavior/fsutil.py                           39      0      4      0 100.00%
+src/quati/behavior/manifest.py                        136      0     64      0 100.00%
+src/quati/behavior/store.py                           223      0     64      0 100.00%
+src/quati/behavior/trusted_config.py                   94      0     26      0 100.00%
+src/quati/cli/__init__.py                               0      0      0      0 100.00%
+src/quati/cli/chat.py                                  66      0     26      0 100.00%
+src/quati/cli/composition.py                           48      0      0      0 100.00%
+src/quati/cli/local_policy.py                          37      0      8      0 100.00%
+src/quati/cli/main.py                                 171      2     38      1  98.56%   304, 317
+src/quati/cli/rendering.py                             49      0     22      0 100.00%
+src/quati/domain/__init__.py                            0      0      0      0 100.00%
+src/quati/domain/canonical.py                          31      0     16      0 100.00%
+src/quati/domain/capability_import.py                  27      0      8      0 100.00%
+src/quati/domain/capability_lint.py                    29      0     16      0 100.00%
+src/quati/domain/capability_registry.py               155      0     50      0 100.00%
+src/quati/domain/decision_policy.py                    42      0     18      0 100.00%
+src/quati/domain/diagnostics.py                        55      0      2      0 100.00%
+src/quati/domain/discovery.py                         103      0     16      0 100.00%
+src/quati/domain/policy.py                            321      0    106      0 100.00%
+src/quati/domain/social.py                            107      0     46      0 100.00%
+src/quati/domain/statechart.py                        157      0     92      0 100.00%
+------------------------------------------------------------------------------------------------
+TOTAL                                                6384      7   1846      4  99.87%
+$ .venv/bin/python -m coverage report --rcfile=<rcfile> --precision=2 --include="*/quati/domain/*,*/quati/behavior/*" | tail -1
+TOTAL                                      1904      0    652      0  100.00%
+# Gates: domain and behavior 100.00% line and branch; overall 99.87% (floor 99.84%). The seven missed statements are the ones
+# missed at the baseline: adapters/local_identity.py 53, 96, 112-113; application/identity.py 48; cli/main.py 304, 317.
+
+## 4. Specification validators (after the document edits; consolidated specification and traceability mirrors rebuilt last)
+$ .venv/bin/python spec_tools/build_consolidated.py && .venv/bin/python docs/traceability/build_matrix.py
+$ .venv/bin/python spec_tools/validate_spec.py
+L0 SPEC VALIDATION: PASS (contracts, examples, reference freshness, states, requirement references). NO APP RUNTIME PROOF.
+$ .venv/bin/python spec_tools/validate_readiness.py
+{"fixture_recipes": 125, "requirement_plans": 243, "requirements": 243, "runtime_qualified": false, "semantic_coverage_requires_review": true, "shared_cases": 101, "status": "PASS", "tier": "L0", "work_packages": 35}
+
+## 5. Mutation check
+Result: 62 mutants, 53 KILLED, 9 SURVIVED. Each survivor is explained under its table; none is a gap.
+See mutation-check.txt (every survivor is explained; pairs of mutually backing checks are killed).
+
+## 6. Dry run of the gate plan (NOT_GATE_EVIDENCE; see dryrun_stdout_NOT_GATE_EVIDENCE.txt and dryrun/)
+binding: 1475 of 1475 receipts carry the pre-registered code digest and the product's asset digest; 242 of 242 doctor Responses report the
+pre-registered behavior section; the evaluator's digest of the asset files equals the product's; the SOC-01 dataset matches the social table
+(8 table texts, 10 model texts). Estimate of the gate command: typical 1235 provider calls (about US$0.74), ceiling 2035 (about US$1.22).

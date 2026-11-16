@@ -38,8 +38,15 @@ def test_social_text_without_an_opening_greeting_gets_the_template_of_its_langua
     code, value = harness.ask("How are you doing today?")
     assert (code, value["data"]["text"], value["data"]["result_kind"]) == (0, "Hello!", "GREETING")
     assert "I am well" not in json.dumps(value) and len(harness.script.items) == 2     # the model was not asked
+    # Integration step 8 (owner decision 2026-11-16: English and Portuguese only): was
+    # `harness.ask("Wie geht es dir?")` -> (0, "Hallo!"). The rule is asserted on Portuguese; the German
+    # pleasantry is not social-only any more: it goes to the model and is never answered as a greeting.
+    code, value = harness.ask("Como vai você?")
+    assert (code, value["data"]["text"]) == (0, "Olá!")                                # never an English default
+    assert len(harness.script.items) == 2                                              # still not asked
     code, value = harness.ask("Wie geht es dir?")
-    assert (code, value["data"]["text"]) == (0, "Hallo!")                              # never an English default
+    assert code != 0 and value["status"] != "SUCCEEDED" and "text" not in value["data"]
+    assert len(harness.script.items) == 0                                              # this time the model was asked
 
 
 def test_model_request_budget_counts_classification_repairs(tmp_path, monkeypatch):

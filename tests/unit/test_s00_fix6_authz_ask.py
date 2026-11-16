@@ -184,8 +184,10 @@ def test_f2_control_a_mixed_greeting_and_work_request_still_runs_the_tool_loop(p
     assert profile.spied("handler") == ["calendar-read"] and profile.spied("script_left") == [0]
 
 
+# Integration step 8 (owner decision 2026-11-16: English and Portuguese only): the third case was
+# ("Wie geht es dir?", "Hallo!"); a Portuguese pleasantry without a greeting takes its place.
 @pytest.mark.parametrize("text, reply", [("How are you doing today?", "Hello!"), ("thanks!", "Hello!"),
-                                         ("Wie geht es dir?", "Hallo!")])
+                                         ("Tudo bem?", "Olá!")])
 def test_f2_f3_social_text_without_a_greeting_gets_no_tool_and_no_model_text(profile, text, reply):
     """Fix round 7 (LOG-0041 D1, reply language; replaces the NO_GREETING_TEMPLATE notice path). Old: the
     English no-action notice (text_source application_notice, uncertainty NO_GREETING_TEMPLATE) after one

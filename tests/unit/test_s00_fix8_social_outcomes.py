@@ -41,9 +41,11 @@ from quati.domain import social  # noqa: E402
 AUDIT_TEXTS = REPOSITORY_ROOT / "evidence/S00/GATES-AUDIT3-2026-11-16/audit-scripts/d1_texts.py"
 
 # ----------------------------------------------------------------- the rule, restated as the oracle
-MARKER_WORDS = {"urgent", "urgently", "urgente", "dringend"}
-URGENCY_PHRASES = {"this is urgent", "it is urgent", "isto é urgente", "isso é urgente", "é urgente",
-                   "c'est urgent", "das ist dringend", "es ist dringend", "è urgente", "questo è urgente"}
+# Integration step 8 (owner decision 2026-11-16: English and Portuguese only). Was: four marker words (with
+# "dringend"), ten urgency phrases (with the French, German and Italian ones) and fourteen languages.
+MARKER_WORDS = {"urgent", "urgently", "urgente"}
+URGENCY_PHRASES = {"this is urgent", "it is urgent", "isto é urgente", "isso é urgente", "é urgente"}
+REMOVED_URGENCY = ("dringend", "c'est urgent", "das ist dringend", "es ist dringend", "è urgente", "questo è urgente")
 # Demonstratives, pronouns and copulas of the table's languages: never a marker, never a one-word entry.
 NOT_FREE_STANDING = ("this that these those it is are am be isto isso este esse esta essa aquilo é e está esto eso "
                      "este es c ce ça est das dies es ist sind è questo quello you do que qué was what").split()
@@ -53,8 +55,9 @@ WORK_WORDS = ("salve salva salvar save guarda guardar envia envie send delete ap
 PUNCTUATION = set(string.punctuation) | set("¡¿«»‘’‚“”„‹›‐–—―·、。「」『』・،؛؟।")
 EMOJI = set("👋🙂😀😃😄😁😊😉☺🙏❤")
 MAX_WORDS, MAX_CHARACTERS, MAX_PUNCTUATION_RUN, MAX_FREE_RUNS = 12, 120, 3, 1
-LANGUAGES = ("en", "pt", "es", "fr", "de", "it", "nl", "tr", "ru", "ja", "zh", "ko", "hi", "ar")
-# Work fragments per table language: an instruction, a question or a bare demonstrative.
+LANGUAGES = ("en", "pt")
+# Work fragments per language (the two table languages and the twelve removed ones): an instruction, a
+# question or a bare demonstrative.
 WORK_FRAGMENTS = {
     "en": ["delete everything", "save this", "wire $500", "do this", "send it now", "is it urgent", "this", "it",
            "please forward the contract"],
@@ -118,6 +121,10 @@ def test_x4_clause_1_no_demonstrative_pronoun_or_copula_stands_alone():
     # Urgency alone (markers and urgency phrases, with no greeting, pleasantry or thanks) is not social.
     for text in [*MARKER_WORDS, *URGENCY_PHRASES, "urgent, this is urgent", "urgente, é urgente"]:
         assert not is_social(text), text
+    # A marker or urgency phrase of a removed language is an ordinary word next to a greeting.
+    for urgency in REMOVED_URGENCY:
+        for text in (f"hello, {urgency}", f"{urgency}, hello", f"olá, {urgency}"):
+            assert not is_social(text), text
 
 
 def test_x4_clause_2_no_entry_is_a_work_word_of_another_table_language():
@@ -126,7 +133,9 @@ def test_x4_clause_2_no_entry_is_a_work_word_of_another_table_language():
     assert "salve" not in table_phrases()                    # removed: Portuguese imperative "save"
     for text in ("salve", "Salve!", "Salve isto, é urgente", "salve isso", "ciao, salve", "salve, obrigado"):
         assert not is_social(text), text
-    assert is_social("Ciao!") and is_social("Buongiorno, come stai?")     # Italian is still covered
+    # Integration step 8 (owner decision 2026-11-16: English and Portuguese only). Was: `is_social("Ciao!") and
+    # is_social("Buongiorno, come stai?")` ("Italian is still covered").
+    assert not is_social("Ciao!") and not is_social("Buongiorno, come stai?")
 
 
 @pytest.mark.parametrize("language", LANGUAGES)
@@ -154,7 +163,9 @@ def test_x4_every_table_phrase_alone_and_with_markers_is_social(language):
 def test_x4_every_table_phrase_with_a_work_fragment_is_not_social(language):
     """For EVERY table phrase: the phrase followed or preceded by each work fragment of each language."""
     fragments = [fragment for listed in WORK_FRAGMENTS.values() for fragment in listed]
-    assert set(WORK_FRAGMENTS) == set(LANGUAGES)
+    # Integration step 8: was `set(WORK_FRAGMENTS) == set(LANGUAGES)`; the fragments of the twelve removed
+    # languages are kept as work text although their languages left the table.
+    assert set(LANGUAGES) < set(WORK_FRAGMENTS) and len(WORK_FRAGMENTS) == 14
     for phrase in table_phrases(language):
         for fragment in fragments:
             for text in (f"{phrase} {fragment}", f"{phrase}, {fragment}", f"{phrase}\n{fragment}", f"{phrase}! {fragment}?",
@@ -168,7 +179,13 @@ def test_x4_every_table_phrase_with_a_work_fragment_is_not_social(language):
 # is never silently dropped) and the length bound (clause 4) make them not social: they go to the model path.
 AUDIT_SOCIAL_NOW_NOT_SOCIAL = {"hello " * 5000: "clause 4, length bound", "hello\u200b": "clause 3, U+200B (Cf)",
                                "\u202ehello": "clause 3, U+202E (Cf)",
-                               "hello\U000E0064\U000E0065\U000E006C": "clause 3, tag characters (Cf)"}
+                               "hello\U000E0064\U000E0065\U000E006C": "clause 3, tag characters (Cf)",
+                               # Integration step 8: five more of the audit's "S" texts, in removed languages.
+                               "İyi günler": "owner decision 2026-11-16: English and Portuguese only",
+                               "MERHABA": "owner decision 2026-11-16: English and Portuguese only",
+                               "こんにちは": "owner decision 2026-11-16: English and Portuguese only",
+                               "你好": "owner decision 2026-11-16: English and Portuguese only",
+                               "Привет, как дела?": "owner decision 2026-11-16: English and Portuguese only"}
 
 
 def test_x4_every_audit_text_behaves_as_the_audit_requires():
@@ -287,11 +304,19 @@ def test_x4_clause_3_every_code_point_outside_the_rule_makes_a_greeting_not_soci
 @pytest.mark.parametrize("text, reply", [
     ("hello ❤\ufe0f", "Hello!"), ("hello ❤", "Hello!"), ("bom dia 😊", "Olá!"), ("hello 👋", "Hello!"),
     ("👋 hello", "Hello!"), ("hello 👋\U0001f3fd", "Hello!"), ("thanks 🙏\U0001f3ff", "Hello!"), ("hi 😊😊", "Hello!"),
-    ("hi 😊 👋 ❤\ufe0f!", "Hello!"), ("good 😀 morning", "Hello!"), ("Olá 🙂, tudo bem? 😉", "Olá!"), ("hallo ☺\ufe0f", "Hallo!"),
-    ("merci 😄😁😃", "Bonjour!"), ("hello ❤\ufe0f\u200d😊", "Hello!"), ("hello 👋\U0001f3fd\u200d❤", "Hello!"),
+    ("hi 😊 👋 ❤\ufe0f!", "Hello!"), ("good 😀 morning", "Hello!"), ("Olá 🙂, tudo bem? 😉", "Olá!"),
+    # Integration step 8 (owner decision 2026-11-16: English and Portuguese only). Were: ("hallo ☺\ufe0f", "Hallo!")
+    # and ("merci 😄😁😃", "Bonjour!"); the same emoji now follow Portuguese entries.
+    ("olá ☺\ufe0f", "Olá!"), ("obrigado 😄😁😃", "Olá!"), ("hello ❤\ufe0f\u200d😊", "Hello!"),
+    ("hello 👋\U0001f3fd\u200d❤", "Hello!"),
 ])
 def test_x4_clause_3_allowlisted_emoji_keep_a_greeting_social(text, reply):
     assert social.social_match(text).reply == reply
+
+
+def test_x4_clause_3_an_allowlisted_emoji_does_not_make_a_removed_language_social():
+    for text in ("hallo ☺\ufe0f", "merci 😄😁😃", "hola 👋", "ciao 😊"):
+        assert not is_social(text), text
 
 
 def test_x4_clause_3_an_emoji_is_never_a_phrase():
@@ -301,15 +326,21 @@ def test_x4_clause_3_an_emoji_is_never_a_phrase():
 
 @pytest.mark.parametrize("text, expected", [
     ("HELLO!!!", True), ("hello!!!!", False), ("hello?!", True), ("hello...", True), ("hello…", True),
-    ("hello....", False), ("hello‼", True), ("hello‼‼", False), ('"hello"', True), ("¡Hola!", True),
-    ("¿Qué tal?", True), ("hello - hi", True), ("hi — urgent: hi", True), ("hello , . hi", False),
+    ("hello....", False), ("hello‼", True), ("hello‼‼", False), ('"hello"', True), ("¡Olá!", True),
+    ("¿Tudo bem?", True), ("hello - hi", True), ("hi — urgent: hi", True), ("hello , . hi", False),
     ("hello . . .", False), ("hello ! ?", False), ("! ? hello", False), ("hello -..", True), ("hello -.. .", False),
-    ("hello:-)", True), ("hello :-) !", False), ("こんにちは。", True), ("你好！", True), ("你好、谢谢。", True),
-    ("¡Hola! ¿Qué tal?", True), ("Buenos días, ¿qué tal?", True), ('"Hello." "Hi."', True),
-    ("Hello! — ¿Qué tal?", True), ("hello. - . hi", False), ("hello. -.. .hi", True), ("hello.... hi", False),
+    ("hello:-)", True), ("hello :-) !", False), ("olá。", True), ("oi！", True), ("olá、obrigado。", True),
+    ("¡Olá! ¿Tudo bem?", True), ("Bom dia, ¿tudo bem?", True), ('"Hello." "Hi."', True),
+    ("Hello! — ¿Tudo bem?", True), ("hello. - . hi", False), ("hello. -.. .hi", True), ("hello.... hi", False),
     ("hello — — hi", False), ("-.. hello", True), ("-.. . hello", False), ("hello,hi", True), ("hello!?!hi", True),
     ("hello!?!?hi", False), ("— hello —", True), ("— hello — —", False), ("...", False), ("- . -", False),
-    ("مرحبا، شكرا؟", True), ("नमस्ते।", True), ("«Bonjour»", True), ("„Hallo“", True), ("what's up", True),
+    ("olá، obrigado؟", True), ("olá।", True), ("«Bom dia»", True), ("„Olá“", True), ("what's up", True),
+    # Integration step 8 (owner decision 2026-11-16: English and Portuguese only). The twelve rows above that held
+    # a phrase of a removed language keep their punctuation and now hold a Portuguese phrase; the original texts
+    # were True and are False, because of their language and not of their punctuation.
+    ("¡Hola!", False), ("¿Qué tal?", False), ("こんにちは。", False), ("你好！", False), ("你好、谢谢。", False),
+    ("¡Hola! ¿Qué tal?", False), ("Buenos días, ¿qué tal?", False), ("Hello! — ¿Qué tal?", False),
+    ("مرحبا، شكرا؟", False), ("नमस्ते।", False), ("«Bonjour»", False), ("„Hallo“", False),
     ("what’s up", True), ("hello! 😊", True), ("hello 😊!", True), ("hello! 😊 !", True), ("hello 😊! !", False),
     ("hello !😊! hi", False),
 ])
@@ -339,20 +370,27 @@ def test_x4_clause_4_length_bound_in_words_and_characters():
 
 
 def test_x4_reply_selection_is_unchanged():
-    assert social.social_match("merci").reply == "Bonjour!"                  # no greeting: the language's template
+    # Integration step 8 (owner decision 2026-11-16: English and Portuguese only). Were: "merci" -> "Bonjour!",
+    # "das ist dringend, hallo" -> "Hallo!", "es ist dringend. Danke!" -> language "de", "спасибо" -> DEFAULT_REPLY.
+    # The same rules are asserted on Portuguese and English text; the old texts are not social.
+    assert social.social_match("obrigado").reply == "Olá!"                   # no greeting: the language's template
     assert social.social_match("thanks, bom dia").reply == "Olá!"            # the first greeting decides
-    assert social.social_match("das ist dringend, hallo").reply == "Hallo!"  # an urgency phrase selects no reply
-    assert social.social_match("es ist dringend. Danke!").language == "de"
-    assert social.social_match("спасибо").reply == social.DEFAULT_REPLY == "Hello!"
+    assert social.social_match("isto é urgente, olá").reply == "Olá!"        # an urgency phrase selects no reply
+    assert social.social_match("é urgente. Obrigada!").language == "pt"
+    assert social.social_match("thanks").reply == social.DEFAULT_REPLY == "Hello!"
+    for text in ("merci", "das ist dringend, hallo", "es ist dringend. Danke!", "спасибо"):
+        assert social.social_match(text) is None, text
     assert social.words("c'est urgent, नमस्ते") == ("c", "est", "urgent", "नमस्ते")
     assert social.words("hello \U0001F173") is None and social.words("") == ()
 
 
 # ----------------------------------------------------------------- child processes: ask and chat agree
 SOCIAL_SAMPLE = [("hello ❤\ufe0f", "Hello!"), ("bom dia 😊", "Olá!"), ("Olá, isto é urgente", "Olá!"),
-                 ("Hallo, es ist dringend", "Hallo!"), ("How do you do?", "Hello!"), ("thanks 🙏", "Hello!"),
-                 ("HELLO!!!", "Hello!"), ("ＨＥＬＬＯ", "Hello!"), ("Ciao, come stai?", "Ciao!")]
-WORK_SAMPLE = ["Salve isto, é urgente", "salve isso", "How do you do this?", "how do you do it",
+                 ("Olá, tudo bem?", "Olá!"), ("How do you do?", "Hello!"), ("thanks 🙏", "Hello!"),
+                 ("HELLO!!!", "Hello!"), ("ＨＥＬＬＯ", "Hello!"), ("Boa noite, como vai?", "Olá!")]
+# Integration step 8 (owner decision 2026-11-16: English and Portuguese only): ("Hallo, es ist dringend", "Hallo!")
+# and ("Ciao, come stai?", "Ciao!") were in SOCIAL_SAMPLE; they are the first two entries of WORK_SAMPLE now.
+WORK_SAMPLE = ["Hallo, es ist dringend", "Ciao, come stai?", "Salve isto, é urgente", "salve isso", "How do you do this?", "how do you do it",
                "hello 🅳🅴🅻🅴🆃🅴 🅰🅻🅻 🅴🆅🅴🅽🆃🆂", "hi 🇩 🇪 🇱 🇪 🇹 🇪", "hello -.. . .-.. . - . / .- .-.. .-..",
                "hello ⠙⠑⠇⠑⠞⠑ ⠁⠇⠇", "hi, is it urgent?", "como está isto?", "e aí, é isso?",
                "hello\U000E0064\U000E0065\U000E006C", "hello \ue000", "hello\u200b", "hi ➡\ufe0f 📧 👔 💰",

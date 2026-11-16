@@ -7,13 +7,13 @@ Scope: synchronous fixture-only discovery. No job, worker, durable acceptance, e
 ## Interfaces and trust
 
 - `quati chat [--jsonl]` (M01-FR-04, M01-AT-03, M01-RT-03; owned by S00-T01) is a line-based terminal session and is part of the S00 target contract: each input line is one turn through the same use case as the equivalent one-shot command, with the same identity, authorization, approval, exit-code and error-code rules; it keeps no state outside the ledger and the M31 context envelope; `--jsonl` prints exactly one Response envelope per input line on stdout. In S00 a turn is an `ask`; `/status`, `/tell`, `/approvals`, `/approve` and `/deny` return the same error as their one-shot commands until those commands exist (S02). The normative rules are in `docs/prds/M01.md` § Chat session. It is not a GUI or full-screen TUI.
-- CLI commands return stable JSON Response envelopes. Exit codes are exactly the table in `docs/prds/M01.md` § Exit codes: 0 successful command execution, 1 `INTERNAL_ERROR`, 2 invalid input, 3 missing configuration, 4 `DENIED`, `BLOCKED`, `UNAVAILABLE` or `CONFLICT` not caused by a provider, 5 provider failure (`TEMPORARILY_UNAVAILABLE`, `DEADLINE_EXCEEDED` or `OUTPUT_INVALID` from a model or tool provider), 6 worker tick with remaining or failed work. Unsupported future commands are errors, never successful placeholders. Delivered in S00: `quati init`, `doctor [--probe]`, `config validate`, `ask TEXT [--synthetic-evidence]`, `chat [--jsonl]`, `models probe`, `capabilities install|install-fixture|list|search|describe|disable`, `behavior validate|render PACKAGE [--root DIR]` and `trace show|explain` (S00 form, M26). Registered but not delivered, each answering UNAVAILABLE `UNSUPPORTED` (exit 4) that names its slice and reading or changing nothing: `status`, `tell`, `approve`, `deny`, `approvals list|revoke`, `inbox`, `messages`, `worker run|tick|install|uninstall`, `trace export|replay`, `spaces describe`, `policy show|diff|edit|apply` (S02); `config validate FILE`, `config diff|simulate|propose|apply|rollback`, `behavior propose|simulate|diff|promote|rollback`, `prefs show|set|expire|history|rollback`, `artifact register|show|revise|history`, `memory search` (S03); `brains reindex` (S04); `server`, `login`, `grants list` (S05). Two refusals that are not obvious from the table: exit 2 `CONFIG_INVALID` is returned by `config validate` when a check is INVALID, by `behavior validate|render` for a rejected package, and by every `ask` or `chat` turn while the active behavior package does not compile (reason `BEHAVIOR_PACKAGE_INVALID`, decided before the request text and the provider state are looked at); exit 4 UNAVAILABLE `TEMPORARILY_UNAVAILABLE` reason `state_dir_unsafe` (with `component`) is returned by any command whose data directory chain is not a private directory chain of the user, before anything is read or changed (M01 § Data directory). Every receipt carries `digests.code_digest` (M01 § Data directory rule 5).
+- CLI commands return stable JSON Response envelopes. Exit codes are exactly the table in `docs/prds/M01.md` § Exit codes: 0 successful command execution, 1 `INTERNAL_ERROR`, 2 invalid input, 3 missing configuration, 4 `DENIED`, `BLOCKED`, `UNAVAILABLE` or `CONFLICT` not caused by a provider, 5 provider failure (`TEMPORARILY_UNAVAILABLE`, `DEADLINE_EXCEEDED` or `OUTPUT_INVALID` from a model or tool provider), 6 worker tick with remaining or failed work. Unsupported future commands are errors, never successful placeholders. Delivered in S00: `quati init`, `doctor [--probe]`, `config validate`, `ask TEXT [--synthetic-evidence]`, `chat [--jsonl]`, `models probe`, `capabilities install|install-fixture|list|search|describe|disable`, `behavior validate|render PACKAGE [--root DIR]` and `trace show|explain` (S00 form, M26). Registered but not delivered, each answering UNAVAILABLE `UNSUPPORTED` (exit 4) that names its slice and reading or changing nothing: `status`, `tell`, `approve`, `deny`, `approvals list|revoke`, `inbox`, `messages`, `worker run|tick|install|uninstall`, `trace export|replay`, `spaces describe`, `policy show|diff|edit|apply` (S02); `config validate FILE`, `config diff|simulate|propose|apply|rollback`, `behavior propose|simulate|diff|promote|rollback`, `prefs show|set|expire|history|rollback`, `artifact register|show|revise|history`, `memory search` (S03); `brains reindex` (S04); `server`, `login`, `grants list` (S05). Two refusals that are not obvious from the table: exit 2 `CONFIG_INVALID` is returned by `config validate` when a check is INVALID, by `behavior validate|render` for a rejected package, and by every `ask` or `chat` turn while the active behavior package does not compile (reason `BEHAVIOR_PACKAGE_INVALID`, decided before the request text and the provider state are looked at); exit 4 UNAVAILABLE `TEMPORARILY_UNAVAILABLE` reason `state_dir_unsafe` (with `component`) is returned by any command whose data directory chain is not a private directory chain of the user, before anything is read or changed (M01 § Data directory). Every receipt carries `digests.code_digest` and `digests.asset_digest` (M01 § Data directory rule 5).
 - Local principal originates from the process identity adapter, never model arguments. The S00 catalog contains only public synthetic local fixtures. No tenant-private data is imported.
 - Capability discovery, description and invocation use `DiscoveryPort` and `RegistryPort` exactly as declared in `BOUNDARY_CONTRACTS.md`. Search returns at most five permitted candidates. Invocation validates enabled lifecycle, measured binding eligibility, local scope, effect, input and output schemas. Lifecycle and assurance are never self-declared by a definition (RFC-015 REG-01). Only explicitly registered fixture handlers execute; manifests cannot load code or grant permissions.
 - The model is reached only through `ModelPort` as declared in `BOUNDARY_CONTRACTS.md`. The application owns evidence and final status; a model completion is never passed through as verified work. Provider SDK types remain inside the adapter.
-- For nontrivial input, a typed classification precedes discovery. Invalid output has bounded retries. Classification is advisory; no classification can bypass invocation policy. Text that is social-only by the code-owned multilingual table ("Displayed text and social outcomes" below) is answered deterministically with no model call. Mixed greetings and work do not match that path.
-- A real tool probe must precede autonomous fixture invocation on each live run. `UNKNOWN` is not `SUPPORTED`. Doctor without an explicit probe reports configuration availability separately from measured support. Probe checks a nonce round-trip through an innocuous tool; other features stay `NOT_VERIFIED`.
-- Provider configuration uses `QUATI_BASE_URL`, `QUATI_MODEL`, `QUATI_API_KEY_ENV` naming an environment variable containing the token, and explicit `QUATI_ALLOW_LIVE=1`. Never infer authorization from unrelated session credentials. HTTPS only; reject URL credentials, query, fragment and redirects. No automatic fallback endpoint. Fixed request/tool/output/time limits bound each run. Configuring this is authorization for those bounded synthetic model calls, not any downstream external writes.
+- For nontrivial input, a typed classification precedes discovery. Invalid output has bounded retries. Classification is advisory; no classification can bypass invocation policy. Text that is social-only by the code-owned social table, which supports English and Portuguese only in S00 ("Displayed text and social outcomes" below), is answered deterministically with no model call. Mixed greetings and work do not match that path.
+- A real tool probe must precede autonomous fixture invocation on each live run. `UNKNOWN` is not `SUPPORTED`. Doctor without an explicit probe reports configuration availability separately from measured support. The probe measures `tools`, `structured_output`, `streaming`, `timeout` and `concurrency` with nonce round-trips using the schemas the ask really sends (M17 probe table); a feature that was not exercised stays `NOT_VERIFIED`.
+- Provider configuration uses `QUATI_PROVIDER` (the registered transport, M17), `QUATI_BASE_URL`, `QUATI_MODEL`, `QUATI_API_KEY_ENV` naming an environment variable containing the token, and explicit `QUATI_ALLOW_LIVE=1`. Never infer authorization from unrelated session credentials. For a transport that takes an endpoint: HTTPS only; reject URL credentials, query, fragment and redirects. No automatic fallback endpoint. Fixed request/tool/output/time limits bound each run. Configuring this is authorization for those bounded synthetic model calls, not any downstream external writes.
 - Evidence records structured operation IDs, hashes, timing, usage, sanitized result codes and provenance. Default evidence omits raw request, tool arguments and model text. Synthetic live evaluations may explicitly capture their synthetic arguments and outputs; secrets remain redacted. Unknown cost remains null, never zero.
 - Failed/blocked requests never claim completed work. A work request with no validated execution is never a success: "no installed capability fits" is `NO_CAPABILITY` with a typed non-success (rule 7 of "Displayed text and social outcomes"). Successful fixture output is labeled `FIXTURE_RESULT`, not completed professional research. Probe-only success is not routing competence.
 
@@ -60,30 +60,28 @@ words, `CONVERSATION`, the no-action notice and `NO_GREETING_TEMPLATE`), which n
 2. **Social-only text (D1; LOG-0044 X4).** The social table is data in `src/quati/domain/social.py`.
    A text that carries a request, a question or an instruction never matches it: every clause below
    must hold, and a text that fails any of them is not social-only (rule 3 applies to it).
-   - *Table.* Per language, the phrases of three kinds (greetings, pleasantries such as "how are
-     you", thanks) and an optional reply template. The languages, in table order, are English
-     (`en`, including "good day", "howdy", "hiya", "greetings", "yo"), Portuguese (`pt`), Spanish
-     (`es`), French (`fr`), German (`de`, including "moin"), Italian (`it`), Dutch (`nl`), Turkish
-     (`tr`), Russian (`ru`), Japanese (`ja`), Chinese (`zh`), Korean (`ko`), Hindi (`hi`) and Arabic
-     (`ar`). The phrase lists of `SOCIAL_TABLE` in that file are the normative table: a phrase is
-     social only if it is listed there, and a phrase is added or removed only together with the
-     review that the clauses "No free-standing function words" and "Cross-language review" require.
-   - *Urgency.* The marker words are exactly `urgent`, `urgently`, `urgente` and `dringend`. The
-     urgency phrases are exactly "this is urgent", "it is urgent", "isto é urgente", "isso é
-     urgente", "é urgente", "c'est urgent", "das ist dringend", "es ist dringend", "è urgente" and
-     "questo è urgente". They name no object and no action.
+   - *Table.* S00 supports **English (`en`) and Portuguese (`pt`) only** (owner decision of
+     2026-11-16). Other languages are deferred and are not scheduled to a slice: a greeting,
+     pleasantry, thanks or urgency phrase of any other language is ordinary text, is not social-only
+     and goes to the model path (rule 3). Per language the table holds the phrases of three kinds
+     (greetings, pleasantries such as "how are you", thanks) and one reply template. The English
+     greetings include "good day", "howdy", "hiya", "greetings" and "yo". The phrase lists of
+     `SOCIAL_TABLE` in that file are the normative table: a phrase is social only if it is listed
+     there, and a phrase is added or removed only together with the review that the clauses "No
+     free-standing function words" and "Cross-language review" require.
+   - *Urgency.* The marker words are exactly `urgent`, `urgently` and `urgente`. The urgency
+     phrases are exactly "this is urgent", "it is urgent", "isto é urgente", "isso é urgente" and
+     "é urgente". They name no object and no action.
    - *No free-standing function words.* A demonstrative, a pronoun or a copula ("this", "it", "is",
-     "isto", "isso", "é", "esto", "es", "c", "est", "das", "ist", "è", "questo", "you", "do") is
-     never a marker and never a one-word table entry. Such a word occurs only inside a fixed, fully
-     listed phrase ("this is urgent", "how are you", "how do you do", "e você"), and a phrase matches
-     only as a whole. "How do you do this?", "hi, is it urgent?", "como está isto?" and "hello,
-     this" are therefore not social-only. The one-word greeting `yo` (required above) is also the
-     Spanish subject pronoun; it stays because it names only the speaker and no table phrase or
-     marker gives it a verb or an object.
-   - *Cross-language review.* No entry is an ordinary imperative or work word of another table
-     language. Every entry was reviewed against the fourteen languages; the review removed the
-     Italian greeting `salve`, which is the Portuguese imperative "save" ("Salve isto, é urgente" is
-     "Save this, it is urgent").
+     "isto", "isso", "é", "you", "do") is never a marker and never a one-word table entry. Such a
+     word occurs only inside a fixed, fully listed phrase ("this is urgent", "how are you", "how do
+     you do", "e você"), and a phrase matches only as a whole. "How do you do this?", "hi, is it
+     urgent?", "como está isto?" and "hello, this" are therefore not social-only. The one-word
+     greeting `yo` (required above) names only the speaker and no table phrase or marker gives it a
+     verb or an object.
+   - *Cross-language review.* No entry is an ordinary imperative or work word of the other table
+     language. `salve` is not an entry: it is the Portuguese imperative "save" ("Salve isto, é
+     urgente" is "Save this, it is urgent").
    - *Normalization.* Unicode NFKC, casefold, NFKC again; the casefold of the Turkish dotted capital
      I is a plain `i`. Every clause below is applied to the normalized text. Nothing is stripped
      from the input; unaccented spellings are table entries.
@@ -115,7 +113,7 @@ words, `CONVERSATION`, the no-action notice and `NO_GREETING_TEMPLATE`), which n
      characters. A run is *attached* when it directly follows a word or directly precedes a word,
      and *free* otherwise. Before the first word, between two words and after the last word there
      is at most one free run (and, by definition, at most one run attached to the word before and
-     one attached to the word after). "¡Hola! ¿Qué tal?" and "hi — urgent: hi" satisfy this; a
+     one attached to the word after). "¡Olá! ¿Tudo bem?" and "hi — urgent: hi" satisfy this; a
      sequence of punctuation groups (Morse-like text such as `hello -.. . .-..`) does not.
    - *Length.* The normalized text has at most 120 characters and at most 12 words.
    - *Rule.* A text is social-only when its words, in order, can be cut completely into table
@@ -135,19 +133,19 @@ words, `CONVERSATION`, the no-action notice and `NO_GREETING_TEMPLATE`), which n
      identical (apart from the request and trace identifiers and the receipt reference) in every
      provider state: no provider configured, configured but not probed, probed, model unavailable,
      invalid classification. `quati chat` gives the same Response for the same line.
-   - *Reply language.* The reply is the template of the first greeting phrase in the text; a text
-     without a greeting gets the template of the language of its first phrase. A language without
-     a template (Dutch, Turkish, Russian, Japanese, Chinese, Korean, Hindi and Arabic in S00)
-     answers with the English template `Hello!`. A phrase listed by two languages belongs to the
-     first one in table order.
+   - *Reply language.* The reply templates are `Hello!` (English, also the fallback constant) and
+     `Olá!` (Portuguese); there is no other. The reply is the template of the first greeting
+     phrase in the text; a text without a greeting gets the template of the language of its first
+     phrase. A phrase listed by both languages would belong to the first one in table order.
    - *Precedence.* The only exception to "identical in every provider state" is the M01 exit-code
      precedence: an active behavior package or statechart that does not compile is checked first
      and gives `BLOCKED` / `CONFIG_INVALID`, reason `BEHAVIOR_PACKAGE_INVALID`, exit 2, for every
      ask (social-only or not) in every provider state. Input validation (exit 2) and
      authentication (exit 4, `UNAUTHENTICATED`) precede it as for every command.
 3. **Every other text goes to the model (D2).** It needs a configured provider with a current
-   measured FeatureReport (`NOT_CONFIGURED` exit 3 or `UNSUPPORTED` exit 4 otherwise), is
-   classified and enters the tool loop. A text that mixes a greeting with a request
+   measured FeatureReport (`NOT_CONFIGURED` exit 3 or `UNSUPPORTED` exit 4 otherwise); then, before
+   the first model call, it passes the admission check of M01 § Data directory rules 2 and 4 (see
+   "Registry authorization" below); then it is classified and enters the tool loop. A text that mixes a greeting with a request
    ("Hi! What's my next appointment?") is not social-only and follows this rule. A classification
    `intent` of `social` or `simple_answer` on such a text is not an outcome: if the turn ends with
    no validated execution it is `BLOCKED` / `EVIDENCE_INSUFFICIENT`, reason
@@ -191,10 +189,22 @@ words, `CONVERSATION`, the no-action notice and `NO_GREETING_TEMPLATE`), which n
 Every registry read and write reachable from the command line or from an ask session passes
 `AuthorizationPort` before any registry lookup or change, and its decision is logged as
 `authz.decided`: `capabilities list|search|describe` and the `quati_search`, `quati_describe`,
-`quati_invoke`, `quati_status` tools (`read`), the catalog digest of an ask receipt (`read`,
-operation `ask`, once per ask), and `capabilities install|install-fixture|disable`, including
-`--enable-fixture` (`manage`). The resource is `registry:<tenant_id>`; the space that owns it is the
+`quati_invoke`, `quati_status` tools (`read`; operations `list`, `search`, `describe`, `invoke`,
+`status`), the admission check of a work ask before its first model call (`read`, operation
+`ask_admission`, once per work ask that has a configured provider with measured tool support),
+the catalog digest of an ask receipt (`read`, operation `ask`, once per ask that reaches the model
+path), `trace show|explain` (`read`, operations `trace_show`, `trace_explain`),
+`capabilities install|install-fixture|disable`, including `--enable-fixture` (`manage`; operations
+`install`, `install_fixture`, `disable`), and `models probe` / `doctor --probe` (`manage`,
+operation `models_probe`). The resource is `registry:<tenant_id>`; the space that owns it is the
 tenant's organization space, resolved from the identity directory and never from the request.
 The exact rules are in `docs/rfcs/RFC-013_IDENTITY_TENANCY_SPACES.md` section 12.1 and
-`docs/prds/M02.md` "S00 decisions". When the catalog read of an ask is denied or cannot be
-logged, the receipt has `digests.catalog_digest = null` and `catalog_access = <reason>`.
+`docs/prds/M02.md` "S00 decisions".
+
+A work ask checks the registry store, the audit log and the caller's `read` grant on the registry
+(operation `ask_admission`, logged as `authz.decided`) before its first model call: an unusable
+store is `state_dir_unsafe`, an unusable audit log is `audit_unavailable` and a missing grant is
+DENIED `FORBIDDEN` with the M02 reason (`NO_SPACE_GRANT`), each with exit 4, zero model calls and no
+dependence on the model (M01 § Data directory rules 2 and 4). If the catalog read at the end of an
+admitted ask is nevertheless denied or cannot be logged, the receipt has
+`digests.catalog_digest = null` and `catalog_access = <reason>`.

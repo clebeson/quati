@@ -1,0 +1,186 @@
+RED run of integration step 8 (before any change to src/ or tests/evals/). Tree: HEAD a3fb55a plus the new test files
+tests/unit/test_s00_integration8.py, tests/integration/cli/test_s00_integration8_public.py, tests/integration/cli/fixtures/integration8_runner.py
+and the tests appended to tests/unit/test_eval_harness_grader.py and tests/unit/test_eval_harness_soc01.py.
+Command: .venv/bin/python -m pytest -q -p no:cacheprovider --no-header -rf --tb=line <the four test files>
+Baseline before the new tests (full suite at a3fb55a): 2180 passed, 10 skipped.
+The tests that already pass are proofs of existing behavior that no test held (see mutation-check.txt);
+the failing ones name the behavior and grader changes of this step.
+
+FFFFFFFFF.FFFF............F.........FF.................F................ [ 25%]
+.........................................FFF............................ [ 50%]
+........................................................................ [ 75%]
+..............................................................FFFF.FFF   [100%]
+=================================== FAILURES ===================================
+E   AssertionError: assert (('en', 'Hell...ille')}), ...) == (('en', 'Hell...', 'valeu')}))
+      
+      Left contains 12 more items, first extra item: ('es', '¡Hola!', {'greeting': ('hola', 'buenos días', 'buenos dias', 'buenas tardes', 'buenas noches', 'buenas'), 'ple...'que tal', 'cómo estás', 'como estas', 'cómo está usted', 'como esta usted'), 'thanks': ('gracias', 'muchas gracias')})
+      Use -v to get more diff
+tests/unit/test_s00_integration8.py:70: AssertionError: assert (('en', 'Hell...ille')}), ...) == (('en', 'Hell...', 'valeu')}))
+E   AssertionError: مرحبا
+    assert SocialMatch(language='ar', reply='Hello!') is None
+     +  where SocialMatch(language='ar', reply='Hello!') = <function social_match at 0x7479a80d0220>('مرحبا')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: مرحبا
+E   AssertionError: hallo
+    assert SocialMatch(language='de', reply='Hallo!') is None
+     +  where SocialMatch(language='de', reply='Hallo!') = <function social_match at 0x7479a80d0220>('hallo')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: hallo
+E   AssertionError: hola
+    assert SocialMatch(language='es', reply='¡Hola!') is None
+     +  where SocialMatch(language='es', reply='¡Hola!') = <function social_match at 0x7479a80d0220>('hola')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: hola
+E   AssertionError: bonjour
+    assert SocialMatch(language='fr', reply='Bonjour!') is None
+     +  where SocialMatch(language='fr', reply='Bonjour!') = <function social_match at 0x7479a80d0220>('bonjour')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: bonjour
+E   AssertionError: नमस्ते
+    assert SocialMatch(language='hi', reply='Hello!') is None
+     +  where SocialMatch(language='hi', reply='Hello!') = <function social_match at 0x7479a80d0220>('नमस्ते')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: नमस्ते
+E   AssertionError: ciao
+    assert SocialMatch(language='it', reply='Ciao!') is None
+     +  where SocialMatch(language='it', reply='Ciao!') = <function social_match at 0x7479a80d0220>('ciao')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: ciao
+E   AssertionError: こんにちは
+    assert SocialMatch(language='ja', reply='Hello!') is None
+     +  where SocialMatch(language='ja', reply='Hello!') = <function social_match at 0x7479a80d0220>('こんにちは')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: こんにちは
+E   AssertionError: 안녕하세요
+    assert SocialMatch(language='ko', reply='Hello!') is None
+     +  where SocialMatch(language='ko', reply='Hello!') = <function social_match at 0x7479a80d0220>('안녕하세요')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: 안녕하세요
+E   AssertionError: hoi
+    assert SocialMatch(language='nl', reply='Hello!') is None
+     +  where SocialMatch(language='nl', reply='Hello!') = <function social_match at 0x7479a80d0220>('hoi')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: hoi
+E   AssertionError: привет
+    assert SocialMatch(language='ru', reply='Hello!') is None
+     +  where SocialMatch(language='ru', reply='Hello!') = <function social_match at 0x7479a80d0220>('привет')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: привет
+E   AssertionError: merhaba
+    assert SocialMatch(language='tr', reply='Hello!') is None
+     +  where SocialMatch(language='tr', reply='Hello!') = <function social_match at 0x7479a80d0220>('merhaba')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: merhaba
+E   AssertionError: 你好
+    assert SocialMatch(language='zh', reply='Hello!') is None
+     +  where SocialMatch(language='zh', reply='Hello!') = <function social_match at 0x7479a80d0220>('你好')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:86: AssertionError: 你好
+E   AssertionError: hello, dringend
+    assert SocialMatch(language='en', reply='Hello!') is None
+     +  where SocialMatch(language='en', reply='Hello!') = <function social_match at 0x7479a80d0220>('hello, dringend')
+     +    where <function social_match at 0x7479a80d0220> = social.social_match
+tests/unit/test_s00_integration8.py:124: AssertionError: hello, dringend
+E   AssertionError: assert ('audit_unava...e_dir_unsafe') == ('audit_unava...t_not_stored')
+      
+      Right contains one more item: 'feature_report_not_stored'
+      Use -v to get more diff
+tests/unit/test_s00_integration8.py:194: AssertionError: assert ('audit_unava...e_dir_unsafe') == ('audit_unava...t_not_stored')
+E   AssertionError: assert not True
+     +  where True = hasattr(<module 'quati.application.discovery_tools' from 'src/quati/application/discovery_tools.py'>, 'honest_no_capability')
+tests/unit/test_s00_integration8.py:207: AssertionError: assert not True
+E   assert (0 == 0 and 'GREETING' not in '{"data":{"a...nties":[]}\n'
+     +  where 0 = <test_s00_integration8_public.Run object at 0x7479a80dd010>.code
+      
+      'GREETING' is contained here:
+        lt_kind":"GREETING","result_status":"RESPONDED","scope":"S00_T01_LOCAL_CLI","text":"\u00a1Hola!","text_source":"application_template","tool_calls":[],"trace_id":"c882e16f1af04b68a12861c11c5720f2","usage":{"cost_usd":null},"work_performed":false},"error":null,"evidence_refs":["sha256:821a98cb59250f31d4ac5c9e54cbfe3b75207f6c3a38c99d4c2c03b51919b50a:/tmp/pytest-of-<USER>/pytest-1797/test_text_outside_the_social_t2/data/receipts/7bca2c6443d44bda9baa94ebc0457d32.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+      ?           ++++++++
+      ?            ...
+      
+      ...Full output truncated, use '-vv' to show)
+tests/integration/cli/test_s00_integration8_public.py:447: assert (0 == 0 and 'GREETING' not in '{"data":{"a...nties":[]}\n'
+E   AssertionError: assert ('status_succeeded_no_error' in {'exit_0_succeeded': True, 'fixture_result_verified': True, 'synthetic_evidence_present': True, 'search_before_invoke': True, ...})
+tests/unit/test_eval_harness_grader.py:637: AssertionError: assert ('status_succeeded_no_error' in {'exit_0_succeeded': True, 'fixture_result_verified': True, 'synthetic_evidence_present': True, 'search_before_invoke': True, ...})
+E   AttributeError: module 'live_harness' has no attribute 'LOCAL_STORE_REASONS'
+tests/unit/test_eval_harness_grader.py:662: AttributeError: module 'live_harness' has no attribute 'LOCAL_STORE_REASONS'
+E   AssertionError: assert [('init', 0, ...UNAVAILABLE')] == [('init', 0, ..._dir_unsafe')]
+      
+      At index 1 diff: ('probe', 4, 'UNAVAILABLE', None, 'TEMPORARILY_UNAVAILABLE') != ('probe', 4, 'UNAVAILABLE', None, 'TEMPORARILY_UNAVAILABLE', 'state_dir_unsafe')
+      Use -v to get more diff
+tests/unit/test_eval_harness_grader.py:696: AssertionError: assert [('init', 0, ...UNAVAILABLE')] == [('init', 0, ..._dir_unsafe')]
+E   KeyError: 'packaged_assets_ignored'
+tests/unit/test_eval_harness_soc01.py:1993: KeyError: 'packaged_assets_ignored'
+E   AssertionError: assert PosixPath('/tmp/pytest-of-<USER>/pytest-1797/test_x15_the_asset_root_of_the1/tree/src/quati/assets') == PosixPath('/tmp/pytest-of-<USER>/pytest-1797/test_x15_the_asset_root_of_the1/tree')
+     +  where PosixPath('/tmp/pytest-of-<USER>/pytest-1797/test_x15_the_asset_root_of_the1/tree/src/quati/assets') = <function asset_root at 0x7479a5707a60>(PosixPath('/tmp/pytest-of-<USER>/pytest-1797/test_x15_the_asset_root_of_the1/tree/src'), PosixPath('/tmp/pytest-of-<USER>/pytest-1797/test_x15_the_asset_root_of_the1/tree'))
+     +    where <function asset_root at 0x7479a5707a60> = g.asset_root
+     +  and   PosixPath('/tmp/pytest-of-<USER>/pytest-1797/test_x15_the_asset_root_of_the1/tree') = <function asset_root at 0x7479a804d080>(PosixPath('/tmp/pytest-of-<USER>/pytest-1797/test_x15_the_asset_root_of_the1/tree/src/quati'))
+     +    where <function asset_root at 0x7479a804d080> = <module 'quati.behavior.contracts' from 'src/quati/behavior/contracts.py'>.asset_root
+tests/unit/test_eval_harness_soc01.py:1989: AssertionError: assert PosixPath('/tmp/pytest-of-<USER>/pytest-1797/test_x15_the_asset_root_of_the1/tree/src/quati/assets') == PosixPath('/tmp/pytest-of-<USER>/pytest-1797/test_x15_the_asset_root_of_the1/tree')
+E   KeyError: 'packaged_assets_ignored'
+tests/unit/test_eval_harness_soc01.py:1993: KeyError: 'packaged_assets_ignored'
+E   KeyError: 'packaged_assets_ignored'
+tests/unit/test_eval_harness_soc01.py:1993: KeyError: 'packaged_assets_ignored'
+E   AssertionError: {'asset_digest': 'fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'}
+    assert {'field': 'behavior.asset_digest', 'value': 'fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'} is None
+     +  where {'field': 'behavior.asset_digest', 'value': 'fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'} = <function product_asset_digest at 0x7479a5707ce0>({'asset_digest': 'fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 'behavior_hash': 'bbbbbbbbbbbbbbbb...eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 'profile_ref': 'examples/behavior/executive-secretary.yaml', ...})
+     +    where <function product_asset_digest at 0x7479a5707ce0> = g.product_asset_digest
+     +    and   {'asset_digest': 'fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 'behavior_hash': 'bbbbbbbbbbbbbbbb...eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 'profile_ref': 'examples/behavior/executive-secretary.yaml', ...} = <function doctor_identity at 0x7479a5707c40>({'status': 'SUCCEEDED', 'data': {'provider': {}, 'behavior': {'behavior_hash': 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...dddddddddddddddddddddddddd', 'build_digest': 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', ...}}})
+     +      where <function doctor_identity at 0x7479a5707c40> = g.doctor_identity
+     +      and   {'status': 'SUCCEEDED', 'data': {'provider': {}, 'behavior': {'behavior_hash': 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb...dddddddddddddddddddddddddd', 'build_digest': 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', ...}}} = _doctor_response(**{'asset_digest': 'fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'})
+tests/unit/test_eval_harness_soc01.py:2016: AssertionError: {'asset_digest': 'fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'}
+E   assert (0 == 1)
+     +  where 0 = len([])
+tests/unit/test_eval_harness_soc01.py:2025: assert (0 == 1)
+E   AssertionError: assert {'de', 'en', ...', 'it', 'pt'} == {'en', 'pt'}
+      
+      Extra items in the left set:
+      'fr'
+      'it'
+      'de'
+      'es'
+      Use -v to get more diff
+tests/unit/test_eval_harness_soc01.py:2041: AssertionError: assert {'de', 'en', ...', 'it', 'pt'} == {'en', 'pt'}
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_integration8.py::test_e_the_social_table_is_exactly_the_english_and_portuguese_entries
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[ar]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[de]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[es]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[fr]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[hi]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[it]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[ja]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[ko]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[nl]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[ru]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[tr]
+FAILED tests/unit/test_s00_integration8.py::test_e_text_of_any_other_language_is_not_social_only[zh]
+FAILED tests/unit/test_s00_integration8.py::test_s17_no_other_word_is_an_urgency_marker[dringend]
+FAILED tests/unit/test_s00_integration8.py::test_local_store_reasons_are_the_documented_list_and_each_settles_exit_4
+FAILED tests/unit/test_s00_integration8.py::test_d7_no_helper_builds_a_succeeded_no_capability_answer
+FAILED tests/integration/cli/test_s00_integration8_public.py::test_text_outside_the_social_table_is_never_a_greeting[other_languages]
+FAILED tests/unit/test_eval_harness_grader.py::test_h29_the_status_rule_is_named_for_what_it_checks_and_the_exit_code_has_its_own_rule
+FAILED tests/unit/test_eval_harness_grader.py::test_local_store_refusals_of_the_product_are_product_failures_not_provider_outages
+FAILED tests/unit/test_eval_harness_grader.py::test_setup_records_the_reason_of_a_refused_probe
+FAILED tests/unit/test_eval_harness_soc01.py::test_x15_the_asset_root_of_the_evaluator_is_the_asset_root_of_the_product[True-False]
+FAILED tests/unit/test_eval_harness_soc01.py::test_x15_the_asset_root_of_the_evaluator_is_the_asset_root_of_the_product[True-True]
+FAILED tests/unit/test_eval_harness_soc01.py::test_x15_the_asset_root_of_the_evaluator_is_the_asset_root_of_the_product[False-True]
+FAILED tests/unit/test_eval_harness_soc01.py::test_x15_the_asset_root_of_the_evaluator_is_the_asset_root_of_the_product[False-False]
+FAILED tests/unit/test_eval_harness_soc01.py::test_x15_the_product_asset_digest_is_read_from_behavior_asset_digest_alone
+FAILED tests/unit/test_eval_harness_soc01.py::test_x15_a_gate_protocol_run_needs_the_product_asset_digest_and_the_evaluator_digest_to_agree
+FAILED tests/unit/test_eval_harness_soc01.py::test_e_soc01_dataset_holds_english_and_portuguese_table_texts_only
+27 failed, 259 passed in 99.73s (0:01:39)
+
+---- RED addendum (found by the consistency sweep, item C; written and run before the fix in src/quati/application/discovery_tools.py):
+Command: .venv/bin/python -m pytest -q -p no:cacheprovider --no-header --tb=short tests/unit/test_s00_integration8.py -k refused_before
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_a_tool_step_refused_before_any_registry_lookup_does_not_read_the_catalog _
+tests/unit/test_s00_integration8.py:259: in test_a_tool_step_refused_before_any_registry_lookup_does_not_read_the_catalog
+    assert len(reads) == before, supplied                 # no registry read for the refused step
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: fixtures.does-not-exist
+E   assert 3 == 2
+E    +  where 3 = len(['request-0001', 'request-0001', 'request-0001'])
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_integration8.py::test_a_tool_step_refused_before_any_registry_lookup_does_not_read_the_catalog
+1 failed, 39 deselected in 0.27s

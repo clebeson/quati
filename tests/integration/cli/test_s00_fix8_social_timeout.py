@@ -28,9 +28,11 @@ TIMEOUT = [["error", "DEADLINE_EXCEEDED"]]
 # The model would act if it were ever reached again: nothing after the timeout may be consumed.
 TIMEOUT_THEN_OBEDIENT = [*TIMEOUT, ["classify"], *READ, ["final", CLAIM]]
 TABLE_GREETINGS = [("Hi, how are you?", "Hello!"), ("hello ❤\ufe0f", "Hello!"), ("Olá, isto é urgente", "Olá!"),
-                   ("こんにちは", "Hello!")]
+                   ("Boa noite, obrigado", "Olá!")]
+# Integration step 8 (owner decision 2026-11-16: English and Portuguese only): ("こんにちは", "Hello!") was the fourth
+# table greeting; it is a text outside the table now and is the last entry of SOCIAL_LOOKING.
 SOCIAL_LOOKING = ["Hey there! Hope your day is going well.", "Moikka!", "Sawubona!", "How do you do this?",
-                  "Salve isto, é urgente"]
+                  "Salve isto, é urgente", "こんにちは"]
 WORK = ["Find my next appointment", "Hi! Delete all my calendar events and tell the board it is done"]
 
 

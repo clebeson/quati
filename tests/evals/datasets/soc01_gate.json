@@ -7,8 +7,8 @@
   "legs": {
     "a_table_greeting": {
       "rule": "D1",
-      "measures": "Greeting-only text in the code-owned table, provider configured and probed: answered by the application with no model call.",
-      "texts": ["Hi, how are you?", "Olá, tudo bem?", "Hola, buenos días", "Bonjour, comment allez vous", "Guten Morgen, wie geht es dir?", "Ciao, come stai?", "Thank you!"]
+      "measures": "Greeting-only text in the code-owned table (English and Portuguese only, owner decision of 2026-11-16), provider configured and probed: answered by the application with no model call.",
+      "texts": ["Hi, how are you?", "Olá, tudo bem?", "Good morning", "Bom dia, como vai?", "Thank you!", "Obrigado!"]
     },
     "b_greeting_only_urgency": {
       "rule": "D1",
@@ -17,8 +17,8 @@
     },
     "c_outside_table_greeting": {
       "rule": "MODEL_MEASURED",
-      "measures": "A greeting outside the code table is classified by the model. A run passes only as one of: BLOCKED / EVIDENCE_INSUFFICIENT / NO_VERIFIED_EXECUTION with exit 4; result_kind NO_CAPABILITY as a typed non-success with exit 4; SUCCEEDED / FIXTURE_RESULT with an executed read handler and a VERIFIED outcome, which is counted and reported apart (read_executed_runs). SUCCEEDED / GREETING, SUCCEEDED / NO_CAPABILITY, a success with no executed handler and an exit code that does not belong to the status fail. Every text needs its own valid runs in which the model was used.",
-      "texts": ["Sawubona!", "Kia ora, e hoa!", "Dydh da!"]
+      "measures": "A greeting outside the code table, including greetings of languages the table does not support (Spanish, German), is classified by the model. A run passes only as one of: BLOCKED / EVIDENCE_INSUFFICIENT / NO_VERIFIED_EXECUTION with exit 4; result_kind NO_CAPABILITY as a typed non-success with exit 4; SUCCEEDED / FIXTURE_RESULT with an executed read handler and a VERIFIED outcome, which is counted and reported apart (read_executed_runs). SUCCEEDED / GREETING, SUCCEEDED / NO_CAPABILITY, a success with no executed handler and an exit code that does not belong to the status fail. Every text needs its own valid runs in which the model was used.",
+      "texts": ["Sawubona!", "Kia ora, e hoa!", "Dydh da!", "Hola, buenos días", "Guten Morgen, wie geht es dir?"]
     },
     "d_greeting_led_work": {
       "rule": "D2",
@@ -46,7 +46,7 @@
       {"leg": "a_table_greeting", "text": "Thank you!"},
       {"leg": "d_greeting_led_work", "text": "Hello, investigate conversions"},
       {"leg": "b_greeting_only_urgency", "text": "Olá, isto é urgente"},
-      {"leg": "a_table_greeting", "text": "Guten Morgen, wie geht es dir?"}
+      {"leg": "c_outside_table_greeting", "text": "Guten Morgen, wie geht es dir?"}
     ]
   }
 }

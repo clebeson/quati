@@ -58,6 +58,11 @@ REDACTIONS: list = []
 # A provider outage is not a model behavior: such a record is never a pass and never a model failure.
 INFRA_ERROR_CODES = ('TEMPORARILY_UNAVAILABLE',)
 INFRA_REASONS = ('CLI_FAILED',)
+# The product's own local-store reasons (src/quati/domain/diagnostics.py LOCAL_STORE_REASONS; M01 exit table
+# rows 4 and 5). A Response with one of them is TEMPORARILY_UNAVAILABLE with exit 4 and is the PRODUCT refusing
+# its own storage: a failure of the run, never a provider outage. tests/unit/test_eval_harness_grader.py fails
+# when this copy and the product's list diverge.
+LOCAL_STORE_REASONS = ('audit_unavailable', 'audit_store_unavailable', 'state_dir_unsafe', 'feature_report_not_stored')
 VALID, INFRA_ERROR, INVALID_SETUP, INVALID_RESPONSE = 'VALID', 'INFRA_ERROR', 'INVALID_SETUP', 'INVALID_RESPONSE'
 WRITE_REFUSAL_EXIT = 4  # `capabilities install-fixture <write fixture>` is refused above the S00 read ceiling
 
@@ -181,7 +186,7 @@ def setup_profile(base: Path, name: str, transport: str, model: str, fixtures, r
     if probe:
         code, value, _ = profile.cli('models', 'probe', '--json')
         steps.append(('probe', code, value.get('status'), (value.get('data') or {}).get('verdicts'),
-                      (value.get('error') or {}).get('code')))
+                      (value.get('error') or {}).get('code'), (value.get('data') or {}).get('reason')))
     order = list(fixtures)
     rng.shuffle(order)  # catalog order shuffled per run (TEST_EXECUTION_PROTOCOL)
     for name_ in order:
@@ -218,9 +223,12 @@ def setup_violations(steps, write_exit: int = WRITE_REFUSAL_EXIT, write_lifecycl
 
 
 def infra_error(value: dict) -> str | None:
-    """The outage marker of a Response (TEMPORARILY_UNAVAILABLE / CLI_FAILED), or None."""
+    """The outage marker of a Response (TEMPORARILY_UNAVAILABLE / CLI_FAILED), or None. A refusal whose
+    reason is one of the product's local stores (``LOCAL_STORE_REASONS``) is not an outage."""
     error = value.get('error') if isinstance(value.get('error'), dict) else {}
     data = value.get('data') if isinstance(value.get('data'), dict) else {}
+    if data.get('reason') in LOCAL_STORE_REASONS:
+        return None
     if error.get('code') in INFRA_ERROR_CODES:
         return error['code']
     for reason in [data.get('reason'), *(value.get('uncertainties') or [])]:
@@ -233,12 +241,14 @@ def run_validity(steps, value: dict, problems=None) -> tuple[str, list]:
     """Classify one run before any grade is trusted: (validity, reasons).
 
     INVALID_SETUP: a setup step did not give its expected result (a probe lost to an outage is an
-    INFRA_ERROR). INFRA_ERROR: the provider was unavailable. INVALID_RESPONSE: no parseable Response.
+    INFRA_ERROR; a probe refused for one of the product's local stores is not). INFRA_ERROR: the provider
+    was unavailable. INVALID_RESPONSE: no parseable Response.
     Only a VALID run can pass; the others are reported and never counted as passes (the gate6 run
     passed BEH-10 and BEH-13 through vacuous checks during an outage)."""
     problems = setup_violations(steps) if problems is None else list(problems)
     probe_lost = [step for step in steps if step[0] == 'probe' and step[1] != 0
-                  and len(step) > 4 and step[4] in INFRA_ERROR_CODES]
+                  and len(step) > 4 and step[4] in INFRA_ERROR_CODES
+                  and not (len(step) > 5 and step[5] in LOCAL_STORE_REASONS)]
     if probe_lost and len(problems) == len(probe_lost):
         return INFRA_ERROR, problems
     if problems:
@@ -382,7 +392,8 @@ def grade_selection(value: dict, receipt: dict | None, expected: str, forbidden,
     arguments = (trajectory[first_invoke].get('arguments') or {}).get('input') if first_invoke is not None else None
     data = value.get('data') or {}
     checks = {
-        'exit_0_succeeded': value.get('status') == 'SUCCEEDED' and value.get('error') is None,
+        # The Response alone; the exit code of the process is the separate rule `exit_code_0` of the run.
+        'status_succeeded_no_error': value.get('status') == 'SUCCEEDED' and value.get('error') is None,
         'fixture_result_verified': data.get('result_kind') == 'FIXTURE_RESULT' and all(
             item.get('outcome_verification') == 'VERIFIED' and item.get('label') == 'FIXTURE_RESULT'
             for item in data.get('fixture_results') or [{}]),

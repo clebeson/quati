@@ -44,7 +44,9 @@ from quati.domain.diagnostics import ContractViolation
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 IDENTITY_FIELDS = ('tenant_id', 'principal_id', 'personal_space_id', 'organization_space_id')
-LOCAL_REASONS = ('audit_unavailable', 'audit_store_unavailable', 'state_dir_unsafe')
+# Integration step 8: `feature_report_not_stored` joined the list (it always exited 4 through a literal in the
+# probe use case; M01 exit table row 4 now names the four reasons and one rule settles them).
+LOCAL_REASONS = ('audit_unavailable', 'audit_store_unavailable', 'state_dir_unsafe', 'feature_report_not_stored')
 ASSETS = contracts.asset_digest()      # LOG-0044 X15: set on every receipt next to the code digest (M01 rule 5)
 
 

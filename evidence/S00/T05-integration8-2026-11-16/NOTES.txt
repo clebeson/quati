@@ -1,0 +1,27 @@
+T05 integration step 8 (2026-11-16): evidence of the integration work for LOG-0044, LOG-0045 and LOG-0046 open items
+and of the owner decision of 2026-11-16 (the S00 social table supports English and Portuguese only).
+No live provider call was made: QUATI_LIVE_EVAL and QUATI_LIVE_SMOKE were never set; QUATI_ALLOW_LIVE was set only
+inside child processes of tests whose transport is the scripted, network-free fake. tests/evals/run_live_eval.py
+was run only with --estimate-only and --dry-run-scripted. Nothing was committed or pushed.
+
+red.txt                      The new tests before any change to src/ or tests/evals/ (27 failed, 259 passed), and an
+                             addendum: the red run of the test for the registry read after a refused tool step,
+                             written before that fix.
+green.txt                    The same selection, the full suite, coverage, L0 validators, mutation and dry-run summary.
+changed-expectations.md      Every changed expectation of an existing test: file:line, old, new, citation.
+mutation-check.txt           62 mutants: every survivor of the third audit's three tables re-derived on the current
+mutation_check_script.py     code, the mutants of this step's changes and four pairs. 53 killed; 9 survive and are
+                             explained (three proven equivalent by exhaustive computation, six redundant alone and
+                             killed as pairs).
+estimate_only_stdout_NOT_GATE_EVIDENCE.txt
+                             `--estimate-only` output of the planned gate command.
+dryrun_stdout_NOT_GATE_EVIDENCE.txt, dryrun/
+                             `--dry-run-scripted` run of the planned case list with the gate repetitions: the public
+                             CLI with the scripted, network-free model. NOT_GATE_EVIDENCE. The scripted policy is a
+                             keyword stand-in: CAP-01 and CAP-02 fail on one paraphrase each (27 of 30) and the
+                             behavior suite likewise; this says nothing about a model. What the dry run shows is the
+                             binding (1475 of 1475 receipts, 242 of 242 doctor Responses), the equality of the
+                             evaluator's and the product's asset digest and the social-table preflight.
+
+Code digest of src/quati at the end of this step: f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8
+Asset digest reported by `quati doctor --json`:   cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2

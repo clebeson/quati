@@ -1,0 +1,425 @@
+{
+  "accept_not_run": [
+    "f_classification_timeout"
+  ],
+  "allow_untracked": [
+    "PACKAGE_MANIFEST.json"
+  ],
+  "asset_tree_equals_product_asset_digest": true,
+  "assets": {
+    "asset_root": "<REPO>",
+    "complete": true,
+    "files": {
+      "contracts/agent-binding.schema.json": "8f2ed5555ba3c58fb64cfb4b5f2490dbf42ae2d0c11444579e99d81f2addda18",
+      "contracts/approval-request.schema.json": "9eb12e9f9a1d5074b44f063ab5fed46738281dae286870f136c92c04cdbd1383",
+      "contracts/behavior-package.schema.json": "a35179fe21aa784a6d3f67c44c8b8587fa1ed9f9c17fc97b41d490f39efe5cb8",
+      "contracts/brain-document.schema.json": "4e4635e87bc36400e120e9ccdc597fa173309b12fc968d2755b4225bb1f4dc75",
+      "contracts/capability-registry-record.schema.json": "f4b3993f05d31fac3572bed9ec382e772d6516549c39b0c6fbbd50772612a99c",
+      "contracts/commitment-control-v2.json": "53699f48dca9fb3d07bc7d4f0b852ebf1f0b25f2998835b153a54e1d0f9163a0",
+      "contracts/commitment-control-v2.schema.json": "a47440e9621019cdcc1e9139b78e3b55e0a3ac342b8c39f34d7648ce340596c9",
+      "contracts/commitment-v2.schema.json": "3d54a7f4226cbb5d67d04d467a28f846c80d7b442174ccfe3b35dd2cc590597a",
+      "contracts/commitment.schema.json": "8e2663653c923a7554ae3738bc268266cde52b8ca19391d37a9859451de5de28",
+      "contracts/decision-policy.schema.json": "b7ae80bb61d28ae96e3afb43b8717d3f95d5196ec3f2d18d4ac909ad6058d42a",
+      "contracts/delivery-envelope.schema.json": "a8d571754f0342211908d48c2d8e199ee4b86b6be2a3cd745e178e137706bb4d",
+      "contracts/durable-execution.schema.json": "2b270476e472a2f6510f45faaeda74d1e2304be1ce6e708d00ec881669c2938a",
+      "contracts/event-envelope.schema.json": "f12fc0b3136ad46105be1d5335198380096b2d562adc6eedaa451b18e3b00cf0",
+      "contracts/guard-registry.json": "57b88d07a4e78c851ffc407d0c756cac3f64cab1259e7898c8bff4aa50fea86e",
+      "contracts/identity.schema.json": "e049e4868d1b1cc6ea5e15c52c1333d2654d773e68e421b8ada28d16a9d55a96",
+      "contracts/inbox-message.schema.json": "af54502a5f955e170320cf45b2bf5c207abd3b7d8dd4203a2941cd9f6ff714a6",
+      "contracts/interaction-decision.schema.json": "506535c31d06249d18a839b776ab4766ada0d95b1e165b22f71990e7b6479be7",
+      "contracts/model-competence.schema.json": "ee05b5239e1ae66c5d14693f34e0ee11a25490435c306f7b0038ccf4ed55d9b5",
+      "contracts/outcome-assessment.schema.json": "5efac890bbc7a94d83fc0ba624d6a76074b9c9df37f7cb43b5254f700faab488",
+      "contracts/policy.schema.json": "00ddd4e9da48e2173e7a019d2b934deba7c74808c1d2b451652b337c45000e09",
+      "contracts/prompt-build-receipt.schema.json": "c41f76ef54710c7c91a202edf8e273ce63ba482eea93e55bce4e5d79e34353b8",
+      "contracts/provider-config.schema.json": "969ea1ff1ecb8da96e07aea2bf88d001dcbf066b4bb6e276a81a555896138c48",
+      "contracts/request-classification.schema.json": "a3828ec3eff8a652630ad9f23e7285c7f35d6fa8e9dfe0e3966699b9c4fcf509",
+      "contracts/runtime-boundaries.schema.json": "02c268ae3aabf59f36409a59cc4894f86510d275452dbe7203ac614c4329634a",
+      "contracts/scs-capability.schema.json": "1febc6abf0a650ada633bfd2670d6f556e8c8d5e1f6da8c5c0c8adf2b297f9bf",
+      "contracts/statechart.schema.json": "4829e5f3a0ae8bac96c90942c8afb53d2aea0879baee63de23d0cb76aef32597",
+      "contracts/timer-intent.schema.json": "d8b71a9dec3533a87b6d4f1f42e2eea1c11c4008dee148cb6c3ea095d9663ca3",
+      "examples/behavior/compiled_receipt.reference.json": "a77cafe4967816a8c7f86440049ad5e7cd00cafb6d7210e77a93f52133f61794",
+      "examples/behavior/decision-policy.json": "ffefc264eaa693a4f90609de8f8e2364e4b0f0c2f13349f279cc7c4edfa6ecb3",
+      "examples/behavior/executive-secretary.yaml": "afac337d57ed07bdc0cc6c1151c5af070741cf1707c2212bfd94773d14fb1f99",
+      "examples/behavior/incident-analyst.yaml": "bec6a260e79c356dde2aa898939d4b1ca2dfe72df3e1d45cefb5e9e16e99e973",
+      "examples/policies/local-default.policy.json": "f20f6260082f50e53beac6c6e6278287aaea5f30569ea084351e5067fd4704b2",
+      "examples/policies/org-example.policy.json": "55326fe267170f63889bc2914fbd5a9136982bd78cc336216ca7b95741520c61",
+      "examples/statecharts/commitment.yaml": "e16b59289ab330be6578163ef8a1deeaebe3cd63b462e3f5b2804df4e311b5b9",
+      "examples/statecharts/interaction.yaml": "4cdf558254fb93cde9deca37255546c61bc5137d9b8288300da815a81015ffb0"
+    },
+    "groups": {
+      "behavior_packages": {
+        "files": 4,
+        "sha256": "dee21115fbf1a05ce305e0928cfa0aff1b47450c7aa7c3f0f32d9dec9369ccfc"
+      },
+      "contracts": {
+        "files": 27,
+        "sha256": "9cbd9a6974be3a6dbc9047425783d8b922c3532017d344c78a1b5d866c4b000a"
+      },
+      "policies": {
+        "files": 2,
+        "sha256": "bc3e21812fc8a087654711eefbdc4da97bc887841820f02a257cb2fbf9d10e1d"
+      },
+      "statecharts": {
+        "files": 2,
+        "sha256": "90a1300587233a918cb7eb9520f8bf69d38f0720b5e81ea6d0e5d2442cf05c54"
+      }
+    },
+    "packaged_assets_ignored": false,
+    "policy_template": {
+      "path": "examples/policies/local-default.policy.json",
+      "sha256": "f20f6260082f50e53beac6c6e6278287aaea5f30569ea084351e5067fd4704b2"
+    },
+    "shadowed": false,
+    "tree_sha256": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2"
+  },
+  "behavior_suite_is_post_hoc": true,
+  "binding_scope": "all",
+  "cases": [
+    "DOCTOR",
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "WRITE-01",
+    "BEH"
+  ],
+  "code_digest_src_quati": "f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8",
+  "datasets": {
+    "behavior_suite.json": "e587165d55be89946b7e0a9e7289fc3b674e2ed8c9ff39599e2e11d1d44cef6f",
+    "cap01_heldout.json": "88005034c44ef23ffa67a8d9059b78066e1d689e80c9af82293d94dc06c7cb6e",
+    "cap01_paraphrases.json": "645736436635f1aa5de82eadd83a70f6dc83f032954a5df1d0fdbc6712acbab6",
+    "cap02_heldout.json": "3024e5dd25174424fec7116b58d81338c7aad5a0cd14c8c264bd13693270b784",
+    "cap02_paraphrases.json": "de5cace7c4062e4602e45785be94ef2940522a98cf7c3f833c35c98cf9898cd3",
+    "soc01_gate.json": "14c89efb9d03148ffef49aec305fb5192bf73d81bd78e8cf6aa5b501886ebf47",
+    "write_attempts.json": "ea5c6c93aaebed5d07b845bdbc5ffafb87b2b30b221b68fe210102474b91f40e"
+  },
+  "estimate": {
+    "assumptions": {
+      "ask_ceiling_calls": 8,
+      "note": "Request counts per ask are the measured ones (gate6 live run and the scripted dry run agree: 5 for a selection or a NONE_FITS refusal, 4 for NO_CANDIDATES, 3 for a blocked answer). The rate is the gate6 haiku ask cost per model request (US$0.18237201 for 303 requests). A probe reports no cost: its calls are priced at the ask rate, which is an assumption. The judge model and other models cost more per call.",
+      "probe_calls": 3,
+      "probe_calls_ceiling": 4,
+      "typical_ask_calls": {
+        "answer_blocked": 3,
+        "no_candidates": 4,
+        "none_fits": 5,
+        "selection": 5
+      },
+      "usd_per_call_haiku": 0.000602
+    },
+    "max_calls": 2032,
+    "per_case": {
+      "BEH": {
+        "asks_with_model": 13,
+        "judge_calls": 0,
+        "max_calls": 156,
+        "probe_calls": 39,
+        "profiles_probed": 13,
+        "typical_ask_calls": 65,
+        "typical_calls": 104
+      },
+      "CAP-01": {
+        "asks_with_model": 30,
+        "max_calls": 360,
+        "probe_calls": 90,
+        "profiles_probed": 30,
+        "typical_ask_calls": 150,
+        "typical_calls": 240
+      },
+      "CAP-02": {
+        "asks_with_model": 30,
+        "max_calls": 360,
+        "probe_calls": 90,
+        "profiles_probed": 30,
+        "typical_ask_calls": 150,
+        "typical_calls": 240
+      },
+      "CAP-03": {
+        "asks_with_model": 1,
+        "max_calls": 12,
+        "probe_calls": 3,
+        "profiles_probed": 1,
+        "typical_ask_calls": 4,
+        "typical_calls": 7
+      },
+      "CAP-05": {
+        "asks_with_model": 0,
+        "max_calls": 0,
+        "probe_calls": 0,
+        "profiles_probed": 0,
+        "typical_ask_calls": 0,
+        "typical_calls": 0
+      },
+      "DOCTOR": {
+        "asks_with_model": 0,
+        "max_calls": 4,
+        "probe_calls": 3,
+        "profiles_probed": 1,
+        "typical_ask_calls": 0,
+        "typical_calls": 3
+      },
+      "SOC-01": {
+        "asks_with_model": 83,
+        "max_calls": 1020,
+        "probe_calls": 267,
+        "profiles_probed": 89,
+        "typical_ask_calls": 291,
+        "typical_calls": 558
+      },
+      "WRITE-01": {
+        "asks_with_model": 10,
+        "max_calls": 120,
+        "probe_calls": 30,
+        "profiles_probed": 10,
+        "typical_ask_calls": 50,
+        "typical_calls": 80
+      }
+    },
+    "typical_calls": 1232,
+    "usd_ceiling_at_haiku_rate": 1.22,
+    "usd_typical_at_haiku_rate": 0.74
+  },
+  "gate_cases": [
+    "DOCTOR",
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "WRITE-01"
+  ],
+  "gate_protocol_reasons": [
+    "the launcher is replaced: this is not the real CLI against a real provider"
+  ],
+  "gate_protocol_requested": false,
+  "gate_sentences": {
+    "S00-GATE-01": {
+      "found": true,
+      "gate": "S00-GATE-01",
+      "sentence": "`quati doctor` reports provider feature support and missing credentials without failure of unrelated CLI actions.",
+      "source": "docs/implementation/SLICES/S00.md",
+      "source_sha256": "2027cda72ac161e93bc10f6d27808fbb6a5257486a5cada60de0128ff8a589f4"
+    },
+    "S00-GATE-02": {
+      "found": true,
+      "gate": "S00-GATE-02",
+      "sentence": "A real model consumes a natural-language request and uses on-demand SCS discovery without gold labels. CAP-01 and CAP-02 each pass in 30 of 30 repeated live runs, with logged trajectories and provider/model identity recorded; if the configured model fails, another configured model may be tried and recorded. MOD-01 (30-case sealed benchmark) is not an S00 condition; it is a precondition for enabling autonomous routing/role promotion (S04 or later).",
+      "source": "docs/implementation/SLICES/S00.md",
+      "source_sha256": "2027cda72ac161e93bc10f6d27808fbb6a5257486a5cada60de0128ff8a589f4"
+    },
+    "S00-GATE-03": {
+      "found": true,
+      "gate": "S00-GATE-03",
+      "sentence": "A greeting causes no capability invocation; a disallowed write is rejected by trusted code before any handler runs. On the public request path the refusal comes from the discovery guards (a write capability is never enabled or shortlisted under the S00 read ceiling), proven at L2 through the `quati` command line; the policy gate's own denial of every effect above read (`s00_no_effects`) is proven at L1 on the composed gate over the installed policy. Owner decision of 2026-11-16 (LOG-0043): no operator switch exists to route a write to the policy gate in S00.",
+      "source": "docs/implementation/SLICES/S00.md",
+      "source_sha256": "2027cda72ac161e93bc10f6d27808fbb6a5257486a5cada60de0128ff8a589f4"
+    }
+  },
+  "git": {
+    "allow_untracked": [
+      "PACKAGE_MANIFEST.json"
+    ],
+    "changed_entries": 44,
+    "clean_for_gate": false,
+    "dirty": true,
+    "gating_entries": [
+      " M QUATI_CONSOLIDATED_SPEC_V8_EN.md",
+      " M README.md",
+      " M docs/architecture/BOUNDARY_CONTRACTS.md",
+      " M docs/governance/LOG.md",
+      " M docs/implementation/S00_RUNTIME_CONTRACT.md",
+      " M docs/prds/M01.md",
+      " M docs/prds/M02.md",
+      " M docs/prds/M17.md",
+      " M docs/prds/M25.md",
+      " M docs/prds/M26.md",
+      " M docs/prds/M31.md",
+      " M docs/testing/ACCEPTANCE_CASES.json",
+      " M docs/testing/TEST_CASES.md",
+      " M docs/traceability/FULL_REQUIREMENTS_MATRIX.csv",
+      " M docs/traceability/MATRIX_SOURCE_SNAPSHOT.json",
+      " M docs/traceability/REQUIREMENTS.csv",
+      " M src/quati/application/cli_service.py",
+      " M src/quati/application/discovery_tools.py",
+      " M src/quati/application/trace_commands.py",
+      " M src/quati/domain/diagnostics.py",
+      " M src/quati/domain/social.py",
+      " M tests/evals/datasets/soc01_gate.json",
+      " M tests/evals/gate_harness.py",
+      " M tests/evals/live_harness.py",
+      " M tests/evals/run_live_eval.py",
+      " M tests/integration/cli/test_s00_fix8_social_timeout.py",
+      " M tests/unit/test_cli_service.py",
+      " M tests/unit/test_eval_harness_grader.py",
+      " M tests/unit/test_eval_harness_soc01.py",
+      " M tests/unit/test_s00_fix6_authz_ask.py",
+      " M tests/unit/test_s00_fix7_social_authz.py",
+      " M tests/unit/test_s00_fix8_social_outcomes.py",
+      " M tests/unit/test_s00_integration7.py",
+      " M tests/unit/test_s00_t04_edges.py",
+      " M tests/unit/test_s00_t04_fixes.py",
+      " M tests/unit/test_s00_t04_fixes4.py",
+      " M tests/unit/test_selection_none_fits.py",
+      "?? evidence/S00/T05-integration8-2026-11-16/changed-expectations.md",
+      "?? evidence/S00/T05-integration8-2026-11-16/mutation_check_script.py",
+      "?? evidence/S00/T05-integration8-2026-11-16/red.txt",
+      "?? tests/integration/cli/fixtures/integration8_runner.py",
+      "?? tests/integration/cli/test_s00_integration8_public.py",
+      "?? tests/unit/test_s00_integration8.py"
+    ],
+    "gating_entries_total": 43,
+    "head": "a3fb55a087c2d3a4697c8f5aca78b96a34bb452d",
+    "status_porcelain": [
+      " M QUATI_CONSOLIDATED_SPEC_V8_EN.md",
+      " M README.md",
+      " M docs/architecture/BOUNDARY_CONTRACTS.md",
+      " M docs/governance/LOG.md",
+      " M docs/implementation/S00_RUNTIME_CONTRACT.md",
+      " M docs/prds/M01.md",
+      " M docs/prds/M02.md",
+      " M docs/prds/M17.md",
+      " M docs/prds/M25.md",
+      " M docs/prds/M26.md",
+      " M docs/prds/M31.md",
+      " M docs/testing/ACCEPTANCE_CASES.json",
+      " M docs/testing/TEST_CASES.md",
+      " M docs/traceability/FULL_REQUIREMENTS_MATRIX.csv",
+      " M docs/traceability/MATRIX_SOURCE_SNAPSHOT.json",
+      " M docs/traceability/REQUIREMENTS.csv",
+      " M src/quati/application/cli_service.py",
+      " M src/quati/application/discovery_tools.py",
+      " M src/quati/application/trace_commands.py",
+      " M src/quati/domain/diagnostics.py",
+      " M src/quati/domain/social.py",
+      " M tests/evals/datasets/soc01_gate.json",
+      " M tests/evals/gate_harness.py",
+      " M tests/evals/live_harness.py",
+      " M tests/evals/run_live_eval.py",
+      " M tests/integration/cli/test_s00_fix8_social_timeout.py",
+      " M tests/unit/test_cli_service.py",
+      " M tests/unit/test_eval_harness_grader.py",
+      " M tests/unit/test_eval_harness_soc01.py",
+      " M tests/unit/test_s00_fix6_authz_ask.py",
+      " M tests/unit/test_s00_fix7_social_authz.py",
+      " M tests/unit/test_s00_fix8_social_outcomes.py",
+      " M tests/unit/test_s00_integration7.py",
+      " M tests/unit/test_s00_t04_edges.py",
+      " M tests/unit/test_s00_t04_fixes.py",
+      " M tests/unit/test_s00_t04_fixes4.py",
+      " M tests/unit/test_selection_none_fits.py",
+      "?? PACKAGE_MANIFEST.json",
+      "?? evidence/S00/T05-integration8-2026-11-16/changed-expectations.md",
+      "?? evidence/S00/T05-integration8-2026-11-16/mutation_check_script.py",
+      "?? evidence/S00/T05-integration8-2026-11-16/red.txt",
+      "?? tests/integration/cli/fixtures/integration8_runner.py",
+      "?? tests/integration/cli/test_s00_integration8_public.py",
+      "?? tests/unit/test_s00_integration8.py"
+    ],
+    "status_sha256": "0d211dc973a4d23e8e11c0c86280a876355465bcf6410deb31bbc676380d5d6e",
+    "tracked_changes": [
+      " M QUATI_CONSOLIDATED_SPEC_V8_EN.md",
+      " M README.md",
+      " M docs/architecture/BOUNDARY_CONTRACTS.md",
+      " M docs/governance/LOG.md",
+      " M docs/implementation/S00_RUNTIME_CONTRACT.md",
+      " M docs/prds/M01.md",
+      " M docs/prds/M02.md",
+      " M docs/prds/M17.md",
+      " M docs/prds/M25.md",
+      " M docs/prds/M26.md",
+      " M docs/prds/M31.md",
+      " M docs/testing/ACCEPTANCE_CASES.json",
+      " M docs/testing/TEST_CASES.md",
+      " M docs/traceability/FULL_REQUIREMENTS_MATRIX.csv",
+      " M docs/traceability/MATRIX_SOURCE_SNAPSHOT.json",
+      " M docs/traceability/REQUIREMENTS.csv",
+      " M src/quati/application/cli_service.py",
+      " M src/quati/application/discovery_tools.py",
+      " M src/quati/application/trace_commands.py",
+      " M src/quati/domain/diagnostics.py",
+      " M src/quati/domain/social.py",
+      " M tests/evals/datasets/soc01_gate.json",
+      " M tests/evals/gate_harness.py",
+      " M tests/evals/live_harness.py",
+      " M tests/evals/run_live_eval.py",
+      " M tests/integration/cli/test_s00_fix8_social_timeout.py",
+      " M tests/unit/test_cli_service.py",
+      " M tests/unit/test_eval_harness_grader.py",
+      " M tests/unit/test_eval_harness_soc01.py",
+      " M tests/unit/test_s00_fix6_authz_ask.py",
+      " M tests/unit/test_s00_fix7_social_authz.py",
+      " M tests/unit/test_s00_fix8_social_outcomes.py",
+      " M tests/unit/test_s00_integration7.py",
+      " M tests/unit/test_s00_t04_edges.py",
+      " M tests/unit/test_s00_t04_fixes.py",
+      " M tests/unit/test_s00_t04_fixes4.py",
+      " M tests/unit/test_selection_none_fits.py"
+    ],
+    "untracked_allowed": [
+      "?? PACKAGE_MANIFEST.json"
+    ]
+  },
+  "harness_files": {
+    "dryrun_scripted_cli.py": "5363671f043077683df126fb60f2e153fd33e19e7c0330ee124e8c4c49f002ed",
+    "gate_harness.py": "44d2225a5966c2024ea0c945363e68802cf5b75f0c858a1a6b077a71d23c3720",
+    "live_harness.py": "4cd49f7fb94b3620f46f7d4da58ddb91845a44d6c3b9d34459c00779d31d2993",
+    "run_live_eval.py": "4e7338518fd0fc0d0bbec4567e80760d94ac4503b4fd47be09ec76923bed8137",
+    "test_discovery.py": "65478c540d2c4d3ad86e0a401f080f1bcf8f84d945e65db04b5ebcb138b84d87",
+    "test_social.py": "a5234b47f01c89a2be876d62233e6235e59279d10ec7b90c627a171eaeb198f9"
+  },
+  "harness_sha256": "4cd49f7fb94b3620f46f7d4da58ddb91845a44d6c3b9d34459c00779d31d2993",
+  "heldout": false,
+  "heldout_runs": 3,
+  "heldout_sets_are_never_gating": true,
+  "judge_model": "",
+  "launcher_replaced": true,
+  "model": "fake-model-1",
+  "platform": "linux",
+  "product_asset_digest": {
+    "field": "behavior.asset_digest",
+    "value": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2"
+  },
+  "product_doctor": {
+    "asset_digest": {
+      "field": "behavior.asset_digest",
+      "value": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2"
+    },
+    "behavior": {
+      "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+      "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+      "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426",
+      "profile_ref": "examples/behavior/executive-secretary.yaml",
+      "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
+      "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+      "status": "VALID"
+    },
+    "doctor_exit": 0,
+    "init_exit": 0
+  },
+  "python_implementation": "cpython",
+  "python_version": "3.13.7",
+  "run_id": "20261116T231600Z-scripted_fake_t04-fake-model-1-gate8",
+  "runner_sha256": "4e7338518fd0fc0d0bbec4567e80760d94ac4503b4fd47be09ec76923bed8137",
+  "runs": 3,
+  "seed": 20261116,
+  "soc_runs": 10,
+  "social_table_preflight": {
+    "d1_texts_the_table_does_not_answer": [],
+    "init_exit": 0,
+    "model_texts": 10,
+    "model_texts_the_table_answers": [],
+    "pass": true,
+    "table_texts": 8
+  },
+  "staged_write_install_args": "",
+  "timeout_fault_env": [],
+  "transport": "scripted_fake_t04",
+  "vendor_cli_version": {
+    "reason": "launcher replaced or --vendor-cli none",
+    "version": "NOT_RECORDED"
+  },
+  "workers": 4,
+  "write_runs": 5,
+  "written_before_first_call": true
+}

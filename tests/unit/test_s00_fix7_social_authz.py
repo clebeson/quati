@@ -64,6 +64,12 @@ SAMPLES = [
     ("en", "Hi, how are you? This is urgent.", "Hello!"), ("en", "How are you doing today?", "Hello!"),
     ("pt", "Olá, tudo bem?", "Olá!"), ("pt", "tudo bem?", "Olá!"), ("pt", "Olá, isto é urgente", "Olá!"),
     ("pt", "Bom dia!", "Olá!"), ("pt", "Obrigado!", "Olá!"),
+    ("pt", "Boa tarde", "Olá!"), ("pt", "Oi, como vai?", "Olá!"), ("pt", "URGENTE: oi", "Olá!"),
+]
+# Integration step 8 (owner decision 2026-11-16: English and Portuguese only). These 24 samples of twelve languages
+# were in SAMPLES with the reply given here (answered by the table, exit 0, no model call). They are not
+# social-only any more: each goes to the model path like any other text.
+REMOVED_SAMPLES = [
     ("es", "¡Hola! ¿Qué tal?", "¡Hola!"), ("es", "Buenos días", "¡Hola!"),
     ("fr", "Bonjour, ça va ?", "Bonjour!"), ("fr", "Salut", "Salut!"), ("fr", "Bonsoir", "Bonsoir!"),
     ("de", "Moin", "Hallo!"), ("de", "Guten Tag, wie geht es Ihnen?", "Hallo!"),
@@ -78,7 +84,8 @@ SAMPLES = [
     ("hi", "Namaste", "Hello!"), ("hi", "नमस्ते", "Hello!"),
     ("ar", "مرحبا", "Hello!"), ("ar", "السلام عليكم", "Hello!"),
 ]
-REQUIRED_LANGUAGES = {"en", "pt", "es", "fr", "de", "it", "nl", "tr", "ru", "ja", "zh", "ko", "hi", "ar"}
+REMOVED_LANGUAGES = {"es", "fr", "de", "it", "nl", "tr", "ru", "ja", "zh", "ko", "hi", "ar"}
+REQUIRED_LANGUAGES = {"en", "pt"}                # was the fourteen languages; the table supports exactly these two
 # Provider states of decision D1; each is (profile fixture name, script or None for no provider).
 STATES = {
     "no_provider_configured": ("probed", None),
@@ -88,7 +95,8 @@ STATES = {
     "probed_model_unavailable": ("probed", []),
     "probed_invalid_classification": ("probed", INVALID_CLASSIFICATION),
 }
-ONE_SHOT = ["hello", "Hi, how are you?", "hello, this is urgent", "thanks", "tudo bem?", "こんにちは", "Merhaba!"]
+# Integration step 8: "こんにちは" and "Merhaba!" (removed languages) were the last two; two Portuguese samples replace them.
+ONE_SHOT = ["hello", "Hi, how are you?", "hello, this is urgent", "thanks", "tudo bem?", "Bom dia!", "Obrigado!"]
 
 
 def social_data(reply: str) -> dict:
@@ -254,6 +262,34 @@ def assert_no_model_and_no_registry_use(workspace: Profile, script: list | None,
 def test_d1_sample_table_covers_the_required_languages():
     assert {language for language, _text, _reply in SAMPLES} == REQUIRED_LANGUAGES
     assert len({text for _language, text, _reply in SAMPLES}) == len(SAMPLES)
+    assert {language for language, _text, _reply in REMOVED_SAMPLES} == REMOVED_LANGUAGES and len(REMOVED_SAMPLES) == 24
+    assert not REMOVED_LANGUAGES & REQUIRED_LANGUAGES
+
+
+def test_e_a_sample_of_a_removed_language_is_never_answered_by_the_table(probed):
+    """Owner decision of 2026-11-16 (English and Portuguese only), for every sample the table answered
+    before: with no provider it is the work refusal NOT_CONFIGURED (exit 3); with a probed model that
+    labels it ``social`` it is BLOCKED / NO_VERIFIED_EXECUTION (exit 4, decision D2); never a GREETING and
+    never the old reply."""
+    texts = [text for _language, text, _reply in REMOVED_SAMPLES]
+    code, turns, output = probed.chat(None, texts)
+    assert code == 0 and "GREETING" not in output
+    for (_language, text, old_reply), turn in zip(REMOVED_SAMPLES, turns):
+        assert (turn["status"], turn["error"]["code"], turn["data"]["result_kind"]) == (
+            "BLOCKED", "NOT_CONFIGURED", "BLOCKED"), text
+        assert "text" not in turn["data"] and turn["data"]["provider_used"] is False
+    script = [["classify_social"], ["final", CLAIM], ["final", CLAIM]]
+    code, turns, output = probed.chat(script * len(texts), texts)
+    assert code == 0 and "GREETING" not in output and CLAIM not in output
+    assert probed.spied("script_left") == [0] and probed.spied("handler") == []
+    for (_language, text, _old_reply), turn in zip(REMOVED_SAMPLES, turns):
+        assert (turn["status"], turn["error"]["code"], turn["data"]["reason"]) == (
+            "BLOCKED", "EVIDENCE_INSUFFICIENT", "NO_VERIFIED_EXECUTION"), text
+    for _language, text, _old_reply in REMOVED_SAMPLES[::6]:
+        code, value, _output = probed.ask(None, text)
+        assert (code, value["status"], value["error"]["code"]) == (3, "BLOCKED", "NOT_CONFIGURED"), text
+        code, value, _output = probed.ask(script, text)
+        assert (code, value["status"], value["data"]["reason"]) == (4, "BLOCKED", "NO_VERIFIED_EXECUTION"), text
 
 
 @pytest.mark.parametrize("state", STATES)
@@ -286,7 +322,7 @@ def test_d1_one_shot_ask_is_deterministic_whatever_a_probed_model_would_label(pr
 def test_d1_one_shot_ask_has_one_outcome_in_every_provider_state(state, request):
     fixture, script = STATES[state]
     workspace = request.getfixturevalue(fixture)
-    replies = {text: reply for _language, text, reply in SAMPLES} | {"Merhaba!": "Hello!"}
+    replies = {text: reply for _language, text, reply in SAMPLES} | {"Obrigado!": "Olá!"}
     for text in ONE_SHOT:
         before = len(workspace.audit())
         code, value, _output = workspace.ask(script, text)
@@ -296,7 +332,7 @@ def test_d1_one_shot_ask_has_one_outcome_in_every_provider_state(state, request)
 
 
 def test_d1_chat_jsonl_turn_equals_the_one_shot_ask(probed):
-    lines = ["Hi, how are you?", "Olá, isto é urgente", "こんにちは"]
+    lines = ["Hi, how are you?", "Olá, isto é urgente", "Boa tarde"]       # the third was "こんにちは" (removed language)
     _code, turns, _output = probed.chat(HOSTILE, lines)
     for line, turn in zip(lines, turns):
         assert stable(turn) == stable(probed.ask(HOSTILE, line)[1])
@@ -649,17 +685,29 @@ def test_d1_table_is_data_with_unicode_aware_matching():
     for _language, text, reply in SAMPLES:
         found = social.social_match(text)
         assert found is not None and found.reply == reply, text
-    assert {language for language, _reply, _phrases in social.SOCIAL_TABLE} >= REQUIRED_LANGUAGES
+    # Integration step 8 (owner decision 2026-11-16: English and Portuguese only): was `>= REQUIRED_LANGUAGES`
+    # over fourteen languages; the table now holds exactly the two.
+    assert {language for language, _reply, _phrases in social.SOCIAL_TABLE} == REQUIRED_LANGUAGES == {"en", "pt"}
+    for _language, text, _old_reply in REMOVED_SAMPLES:
+        assert social.social_match(text) is None, text
     assert social.social_match("ＨＥＬＬＯ").reply == "Hello!"                 # compatibility forms, any case
     assert social.social_match("BOM DIA").reply == "Olá!"
-    assert social.social_match("İyi günler").language == "tr"                # Turkish dotted capital I
+    # Integration step 8: was `social_match("İyi günler").language == "tr"` (Turkish left the table). The fold of
+    # the dotted capital I is still a plain "i", which a table word shows: "Hİ" is "hi".
+    assert social.social_match("İyi günler") is None and social.fold("İ") == "i"
+    assert social.social_match("Hİ").reply == "Hello!"
     assert social.social_match("hello 👋").reply == "Hello!"                 # an allowlisted emoji (fix round 8, X4)
-    assert social.social_match("नमस्ते!").language == "hi"                    # combining marks stay in the word
+    # Integration step 8: was `social_match("नमस्ते!").language == "hi"` (Hindi left the table); combining marks
+    # still stay in the word, as the word list of the next line shows.
+    assert social.social_match("नमस्ते!") is None
     assert social.words("c'est urgent, नमस्ते") == ("c", "est", "urgent", "नमस्ते")
-    assert social.social_match("merci").reply == "Bonjour!"                  # no greeting: the language's template
+    # Integration step 8: were `social_match("merci").reply == "Bonjour!"` and `social_match("спасибо").reply ==
+    # DEFAULT_REPLY`; the rule (no greeting: the language's template) is asserted on Portuguese and English thanks.
+    assert social.social_match("merci") is None and social.social_match("спасибо") is None
+    assert social.social_match("obrigada").reply == "Olá!"                   # no greeting: the language's template
     assert social.social_match("thanks, bom dia").reply == "Olá!"            # the first greeting decides
     assert social.social_match("bom dia, hello").reply == "Olá!"
-    assert social.social_match("спасибо").reply == social.DEFAULT_REPLY == "Hello!"
+    assert social.social_match("thank you").reply == social.DEFAULT_REPLY == "Hello!"
 
 
 @pytest.mark.parametrize("text", [
@@ -684,7 +732,8 @@ def test_d1_table_invariants():
     # Fix round 8 (LOG-0044 X4 clause 1): was `MARKERS >= {the four urgency words, "this", "isto", "isso", "é",
     # "esto", "c", "est", "das", "ist", "è", "questo"}`. Demonstratives and copulas are no longer free-standing
     # markers; they exist only inside the fixed urgency phrases.
-    assert social.MARKERS == {"urgent", "urgently", "urgente", "dringend"}
+    # Integration step 8 (owner decision 2026-11-16: English and Portuguese only): "dringend" left the set.
+    assert social.MARKERS == {"urgent", "urgently", "urgente"}
     assert not social.MARKERS & {"this", "isto", "isso", "é", "esto", "c", "est", "das", "ist", "è", "questo"}
     # Fix round 8 (LOG-0044 X4 clause 4): was `social_match("hello " * 20000).reply == "Hello!"` (a long text
     # segmented iteratively). A social-only text is short: 20000 words are over the length bound, so the text is

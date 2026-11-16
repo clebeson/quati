@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 25,
+  "revision": 26,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S00",
@@ -172,7 +172,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-16T22:07:57.140016Z",
+  "last_updated_at": "2026-11-16T23:31:36.549834Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -183,7 +183,7 @@
   "execution_authorized": true,
   "active_work": {
     "work_package_id": "S00-T05",
-    "phase": "IMPLEMENT",
+    "phase": "EDD",
     "owner": "root coordinator",
     "input_snapshot_ref": "evidence/S00/T01-2026-11-15/input_snapshot.json",
     "completed_steps": [
@@ -207,23 +207,21 @@
       "Fix round 7 and live harness extension done test-first; 1566 passed, 10 skipped (LOG-0042)",
       "Integration step done (1622 passed, 10 skipped); owner amended the S00-GATE-03 sentence (LOG-0043)",
       "Third independent audit at a5a3af3: NOT READY for the live run; 5 P1, 5 P2 findings (LOG-0044)",
-      "Fix round 8 and harness round 8 done test-first; 2180 passed, 10 skipped (LOG-0046); audit 3 test part recorded (LOG-0045)"
+      "Fix round 8 and harness round 8 done test-first; 2180 passed, 10 skipped (LOG-0046); audit 3 test part recorded (LOG-0045)",
+      "Integration step 8 done; social table reduced to English and Portuguese by owner decision; main published to the owner's repository (LOG-0047, LOG-0048); 2244 passed, 10 skipped"
     ],
-    "next_action": "Integration step for LOG-0045 and LOG-0046 open items; fourth independent audit; pilot and live requalification (gate8); acceptance audit of the live evidence; seals for all four S00 gates on one commit; SLICE_ACCEPTED",
+    "next_action": "Run the live pilot, then the gate run gate8 on the committed tree; focused audit of the diff since a5a3af3 and of the live evidence; seals for all four S00 gates on one commit; SLICE_ACCEPTED; then sync the specification debt listed in LOG-0048",
     "owned_files": [
-      "src/secma/cli",
-      "src/secma/application",
-      "tests/unit/test_s00_t01.py",
-      "docs/implementation",
-      "evidence/S00/T01-2026-11-15"
+      "src/quati",
+      "tests",
+      "docs",
+      "evidence/S00"
     ],
     "pending_findings": [
       "Independent review: malformed identity JSON and FIFO credentials must fail closed without traceback or hang; canonical JSON and token schema conformity require correction.",
       "LOG-0013 open specification questions need owner confirmation before the consuming work package starts",
       "LOG-0014 owner decisions from the architecture re-audit are pending",
       "All S00 gate seals must reference one commit; S00-GATE-02 seals on a655c20 must be superseded by new records on the final S00 commit after requalification",
-      "LOG-0039 F1-F12, F15, F17 must be fixed and re-audited before any S00 gate is sealed",
-      "LOG-0041 N1-N4 (P1) and N5-N13 (P2) must be fixed and re-audited before any S00 gate is sealed",
       "LOG-0044 X1-X5 (P1) and X6-X10 (P2) must be fixed and re-audited before the live run"
     ],
     "evidence_refs": [
@@ -261,7 +259,8 @@
       "evidence/S00/T05-fix8-store-2026-11-16/green.txt",
       "evidence/S00/T05-fix8-social-outcomes-2026-11-16/green.txt",
       "evidence/S00/T05-harness8-2026-11-16/green.txt",
-      "docs/audit/S00_AUDIT3_PART3_TESTS_2026-11-16.md"
+      "docs/audit/S00_AUDIT3_PART3_TESTS_2026-11-16.md",
+      "evidence/S00/T05-integration8-2026-11-16/green.txt"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",

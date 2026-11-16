@@ -22,7 +22,9 @@ def service(tmp_path, monkeypatch):
     return CLIService(identity, ProviderConfig(), write_receipt, authorize=lambda context, operation, action: None)
 
 
-@pytest.mark.parametrize(('utterance', 'answer'), [('olá!', 'Olá!'), ('good evening.', 'Hello!'), ('hola', '¡Hola!')])
+# Integration step 8 (owner decision 2026-11-16: English and Portuguese only): the third case was ('hola', '¡Hola!');
+# Spanish is asserted below to be refused as work without a provider.
+@pytest.mark.parametrize(('utterance', 'answer'), [('olá!', 'Olá!'), ('good evening.', 'Hello!'), ('boa noite', 'Olá!')])
 def test_exact_greeting_follows_detected_language_without_provider(service, utterance, answer):
     code, result = service.ask(utterance)
     assert code == 0
@@ -30,6 +32,9 @@ def test_exact_greeting_follows_detected_language_without_provider(service, utte
     assert not result['data']['provider_used']
     assert result['data']['tool_calls'] == []
     assert result['data']['commitment_id'] is None
+    code, result = service.ask('hola')
+    assert (code, result['status'], result['error']['code']) == (3, 'BLOCKED', 'NOT_CONFIGURED')
+    assert 'text' not in result['data']
 
 
 def test_missing_identity_never_calls_receipt_or_business_dependency(tmp_path):

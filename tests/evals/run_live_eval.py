@@ -21,12 +21,13 @@ Order of a run, everything before the first case being free of provider calls:
 3. The pre-registration is built: code digest, harness, datasets, asset files (contracts, behavior
    packages, statecharts, policy template), the product's own `doctor` identity, git state, gate sentences.
    A gate-protocol run is REFUSED when the working tree is dirty (changed tracked files, or untracked files
-   not named with `--allow-untracked PATH`), when `src/quati/assets` shadows the repository assets, when
+   not named with `--allow-untracked PATH`), when `src/quati/assets` is the asset root in use, when the
+   product reports no asset digest or one that is not the evaluator's own digest of the asset files, when
    the doctor identity or a gate sentence cannot be read, or when the SOC-01 texts do not match the
    product's social table (checked with no provider configured).
 4. PREREG.json is written, then the cases run.
 5. After the last case the run fails unless every receipt of every profile carries the pre-registered code
-   digest (and the product's own asset digest, when `doctor` reports one), every doctor Response reports the
+   digest and the product's own asset digest (`doctor` reports it), every doctor Response reports the
    pre-registered behavior section and every ask Response reports `launched` false.
 
 A gate whose cases passed while a required leg was NOT_RUN is printed as PASS_WITH_NOT_RUN_LEGS, never as
