@@ -1,11 +1,14 @@
 """Typer presentation boundary; no durable work or provider qualification is implied."""
+import os
 import sys
 
 import typer
 
+from quati.adapters import runtime_facts
 from quati.adapters.evidence import write_receipt
 from quati.adapters.feature_reports import FileFeatureReportStore
 from quati.adapters.local_identity import LocalIdentity
+from quati.application.behavior_commands import BehaviorCommands, active_package_status
 from quati.application.cli_service import CLIService, config_diagnostics, response
 from quati.application.ports import ProviderConfig
 from quati.cli import composition, local_policy
@@ -13,8 +16,9 @@ from quati.cli.chat import run_chat
 from quati.cli.rendering import failure, render
 
 app = typer.Typer(no_args_is_help=False, add_completion=False, pretty_exceptions_enable=False,
-                  help='Quati local CLI. This delivery supports init, doctor, ask, chat, models probe and safe '
-                       'local greetings.')
+                  help='Quati local CLI. This delivery supports init, doctor, config validate, ask, chat, '
+                       'models probe, behavior validate/render, the capability registry commands and safe '
+                       'local greetings. Commands of later slices are listed and answer UNSUPPORTED.')
 models = typer.Typer(no_args_is_help=True, add_completion=False, help='Model provider commands.')
 app.add_typer(models, name='models')
 approvals = typer.Typer(no_args_is_help=True, add_completion=False, help='Approval requests (slice S02).')
@@ -22,6 +26,18 @@ app.add_typer(approvals, name='approvals')
 capabilities = typer.Typer(no_args_is_help=True, add_completion=False,
                            help='Operator capability registry commands (synthetic fixtures in S00).')
 app.add_typer(capabilities, name='capabilities')
+behavior = typer.Typer(no_args_is_help=True, add_completion=False,
+                       help='Behavior package compiler (validate and render in S00; lifecycle in slice S03).')
+app.add_typer(behavior, name='behavior')
+config = typer.Typer(no_args_is_help=True, add_completion=False,
+                     help='Configuration checks (validate in S00; profile changes in slice S03).')
+app.add_typer(config, name='config')
+trace = typer.Typer(no_args_is_help=True, add_completion=False, help='Audit trace commands (slice S02).')
+app.add_typer(trace, name='trace')
+worker = typer.Typer(no_args_is_help=True, add_completion=False, help='Ledger worker commands (slice S02).')
+app.add_typer(worker, name='worker')
+# An undelivered command accepts any arguments and options: its only answer is the typed UNSUPPORTED.
+ANY_ARGUMENTS = {'allow_extra_args': True, 'ignore_unknown_options': True}
 
 
 def _config():
@@ -36,7 +52,10 @@ def _service(config=None):
                       policy_installer=lambda summary: local_policy.install(
                           identity.directory, summary['tenant_id'], summary['principal_id']),
                       feature_reports=FileFeatureReportStore(),
-                      ask_runtime=lambda context: composition.ask_runtime(identity, context))
+                      ask_runtime=lambda context: composition.ask_runtime(identity, context),
+                      behavior_check=lambda: active_package_status(
+                          composition.REPOSITORY_ROOT, composition.BEHAVIOR_PROFILE, composition.MODEL_ROLE_REF),
+                      runtime_facts=lambda: runtime_facts.collect(identity.directory))
 
 
 def _commands():
@@ -47,6 +66,16 @@ def _emit(result):
     code, value = result
     typer.echo(render(value))
     raise typer.Exit(code)
+
+
+def _undelivered(group, name, label, slice_id):
+    """Register ``name`` as a command of a later slice: any syntax returns the typed UNSUPPORTED (M01-FR-01)."""
+    @group.command(name, context_settings=ANY_ARGUMENTS,
+                   help=f'Delivered in slice {slice_id}; returns UNSUPPORTED before then.')
+    def command(arguments: list[str] = typer.Argument(None),
+                json_output: bool = typer.Option(False, '--json')):
+        _emit(_service().unsupported(label))
+    return command
 
 
 @app.command('init')
@@ -118,6 +147,38 @@ def deny(approval_request_id: str, reason: str = typer.Option(None, '--reason'),
          json_output: bool = typer.Option(False, '--json')):
     """Deny a request (slice S02; returns UNSUPPORTED before then)."""
     _emit(_service().unsupported('deny'))
+
+
+for _name in ('inbox', 'messages'):
+    _undelivered(app, _name, _name, 'S02')
+for _name in ('run', 'tick', 'install', 'uninstall'):
+    _undelivered(worker, _name, f'worker {_name}', 'S02')
+for _name in ('show', 'explain', 'export', 'replay'):
+    _undelivered(trace, _name, f'trace {_name}', 'S02')
+for _name in ('diff', 'simulate', 'propose', 'apply', 'rollback'):
+    _undelivered(config, _name, f'config {_name}', 'S03')
+for _name in ('propose', 'simulate', 'diff', 'promote', 'rollback'):
+    _undelivered(behavior, _name, f'behavior {_name}', 'S03')
+
+
+@config.command('validate')
+def config_validate(file: str = typer.Argument(None), json_output: bool = typer.Option(False, '--json')):
+    """Check the local configuration (identity, policy, provider, behavior package); changes nothing."""
+    _emit(_service().config_validate(file))
+
+
+@behavior.command('validate')
+def behavior_validate(package: str, root: str = typer.Option(None, '--root', help='Package root (default: .).'),
+                      json_output: bool = typer.Option(False, '--json')):
+    """Compile a behavior package and its statechart; print the deterministic receipt or the diagnostics."""
+    _emit(BehaviorCommands(LocalIdentity()).validate(package, root or os.getcwd()))
+
+
+@behavior.command('render')
+def behavior_render(package: str, root: str = typer.Option(None, '--root', help='Package root (default: .).'),
+                    json_output: bool = typer.Option(False, '--json')):
+    """Compile a behavior package and print its English prompt preview with the build receipt."""
+    _emit(BehaviorCommands(LocalIdentity()).render(package, root or os.getcwd()))
 
 
 @models.command('probe')

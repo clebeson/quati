@@ -1,0 +1,165 @@
+# GREEN evidence, S00 fix round 6 CLI surface (audit findings 6-12). 2026-11-16T16:10:16Z
+# git HEAD: a6430d03e16320f232a9f1e0846c41c21c1e5521 (uncommitted working tree; a second agent edits other paths concurrently)
+# git status --short:
+#    M QUATI_CONSOLIDATED_SPEC_V8_EN.md
+#    M docs/prds/M01.md
+#    M docs/prds/M17.md
+#    M docs/prds/M26.md
+#    M docs/prds/M30.md
+#    M docs/rfcs/RFC-010_BEHAVIOR_COMPILER.md
+#    M src/quati/adapters/capability_store.py
+#    M src/quati/adapters/evidence.py
+#    M src/quati/adapters/local_identity.py
+#    M src/quati/application/ask.py
+#    M src/quati/application/capability_commands.py
+#    M src/quati/application/capability_registry.py
+#    M src/quati/application/cli_service.py
+#    M src/quati/application/discovery.py
+#    M src/quati/application/identity.py
+#    M src/quati/application/providers.py
+#    M src/quati/cli/composition.py
+#    M src/quati/cli/main.py
+#    M src/quati/cli/rendering.py
+#    M tests/integration/policy/test_decision_audited_before_invocation.py
+#    M tests/integration/test_approval_injection.py
+#    M tests/integration/test_identity.py
+#    M tests/integration/test_models_probe_cli.py
+#    M tests/integration/test_s00_t04_cli.py
+#    M tests/unit/s00_t03_support.py
+#    M tests/unit/test_m17.py
+#    M tests/unit/test_s00_t04_edges.py
+#    M tests/unit/test_s00_t04_fixes.py
+#    M tests/unit/test_s00_t04_fixes2.py
+#    M tests/unit/test_s00_t04_fixes3.py
+#   ?? PACKAGE_MANIFEST.json
+#   ?? evidence/S00/T05-fix6-authz-ask-2026-11-16/
+#   ?? evidence/S00/T05-fix6-cli-surface-2026-11-16/
+#   ?? src/quati/adapters/private_fs.py
+#   ?? src/quati/adapters/runtime_facts.py
+#   ?? src/quati/application/behavior_commands.py
+#   ?? tests/integration/cli/test_behavior_commands.py
+#   ?? tests/packaging/
+#   ?? tests/unit/s00_fix6_runner.py
+#   ?? tests/unit/test_s00_fix6_authz_ask.py
+#   ?? tests/unit/test_s00_fix6_cli_surface.py
+
+## 1. Full suite
+$ .venv/bin/python -m pytest -q -p no:cacheprovider -rs
+sssssssss............................................................... [  6%]
+..........................s............................................. [ 12%]
+........................................................................ [ 19%]
+........................................................................ [ 25%]
+........................................................................ [ 31%]
+........................................................................ [ 38%]
+........................................................................ [ 44%]
+........................................................................ [ 50%]
+........................................................................ [ 57%]
+........................................................................ [ 63%]
+........................................................................ [ 69%]
+........................................................................ [ 76%]
+........................................................................ [ 82%]
+........................................................................ [ 88%]
+........................................................................ [ 95%]
+......................................................                   [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/evals/test_discovery.py:34: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_discovery.py:38: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_discovery.py:42: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_discovery.py:47: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_discovery.py:52: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_social.py:16: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_social.py:21: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/external/test_live_claude_cli.py:26: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_SMOKE=claude_cli
+SKIPPED [1] tests/external/test_live_codex_cli.py:26: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_SMOKE=codex_cli
+SKIPPED [1] tests/packaging/test_fresh_install.py:96: fresh-wheel install NOT VERIFIED here: the build backend declared in pyproject.toml (setuptools>=75) is not importable in this environment and no package index is reachable offline
+1124 passed, 10 skipped in 128.37s (0:02:08)
+[exit code] 0
+
+## 2. Coverage (branch mode; CLI child processes measured through tests/coverage/sitecustomize.py)
+# rcfile: [run] branch = True, parallel = True, source = <REPO>/src/quati, private data_file; [report] show_missing = True
+# run started 16:13:23Z, finished 16:17:22Z (after section 1)
+$ QUATI_TEST_COVERAGE_BOOTSTRAP=<REPO>/tests/coverage COVERAGE_PROCESS_START=<rcfile> .venv/bin/python -m coverage run --rcfile=<rcfile> -m pytest -q -p no:cacheprovider
+1124 passed, 10 skipped in 236.40s (0:03:56)
+$ .venv/bin/python -m coverage combine --rcfile=<rcfile> && .venv/bin/python -m coverage report --rcfile=<rcfile> --precision=2
+Name                                                Stmts   Miss Branch BrPart   Cover   Missing
+------------------------------------------------------------------------------------------------
+src/quati/__init__.py                                   1      0      0      0 100.00%
+src/quati/__main__.py                                   2      0      0      0 100.00%
+src/quati/adapters/__init__.py                          0      0      0      0 100.00%
+src/quati/adapters/capability_store.py                139      0     12      0 100.00%
+src/quati/adapters/evidence.py                         35      1      8      1  95.35%   40
+src/quati/adapters/feature_reports.py                  39      0      6      0 100.00%
+src/quati/adapters/fixture_capabilities.py            136      0     14      0 100.00%
+src/quati/adapters/fts_index.py                        17      0      2      0 100.00%
+src/quati/adapters/local_identity.py                  128      5     22      3  94.67%   47, 90, 106-107, 126
+src/quati/adapters/policy_gate.py                      36      0      0      0 100.00%
+src/quati/adapters/private_fs.py                       59      0     18      0 100.00%
+src/quati/adapters/providers/__init__.py                4      0      0      0 100.00%
+src/quati/adapters/providers/_sdk.py                   99      0     54      0 100.00%
+src/quati/adapters/providers/anthropic.py              57      0     16      0 100.00%
+src/quati/adapters/providers/cli.py                   317      0     92      0 100.00%
+src/quati/adapters/providers/openai_compatible.py     112      0     36      0 100.00%
+src/quati/adapters/runtime_facts.py                    51      0      6      0 100.00%
+src/quati/application/__init__.py                       0      0      0      0 100.00%
+src/quati/application/ask.py                          456      0    128      0 100.00%
+src/quati/application/behavior_commands.py             55      0      6      0 100.00%
+src/quati/application/capability_commands.py           90      0     24      0 100.00%
+src/quati/application/capability_registry.py          372      0     86      0 100.00%
+src/quati/application/cli_service.py                  261      0     92      0 100.00%
+src/quati/application/code_identity.py                 14      0      0      0 100.00%
+src/quati/application/context_envelope.py              93      0     18      0 100.00%
+src/quati/application/discovery.py                    254      0     78      0 100.00%
+src/quati/application/discovery_tools.py               83      0     20      0 100.00%
+src/quati/application/identity.py                     138      1     34      1  98.84%   48
+src/quati/application/ports.py                         29      0      0      0 100.00%
+src/quati/application/providers.py                    519      0    162      0 100.00%
+src/quati/behavior/__init__.py                          0      0      0      0 100.00%
+src/quati/behavior/compiler.py                        189      0     56      0 100.00%
+src/quati/behavior/contracts.py                       174      0     64      0 100.00%
+src/quati/behavior/fsutil.py                           39      0      4      0 100.00%
+src/quati/behavior/manifest.py                        136      0     64      0 100.00%
+src/quati/behavior/store.py                           223      0     64      0 100.00%
+src/quati/behavior/trusted_config.py                   94      0     26      0 100.00%
+src/quati/cli/__init__.py                               0      0      0      0 100.00%
+src/quati/cli/chat.py                                  66      0     26      0 100.00%
+src/quati/cli/composition.py                           41      0      0      0 100.00%
+src/quati/cli/local_policy.py                          37      0      8      0 100.00%
+src/quati/cli/main.py                                 134      2     20      1  98.05%   234, 247
+src/quati/cli/rendering.py                             30      0     16      0 100.00%
+src/quati/domain/__init__.py                            0      0      0      0 100.00%
+src/quati/domain/canonical.py                          31      0     16      0 100.00%
+src/quati/domain/capability_import.py                  27      0      8      0 100.00%
+src/quati/domain/capability_lint.py                    29      0     16      0 100.00%
+src/quati/domain/capability_registry.py               155      0     50      0 100.00%
+src/quati/domain/decision_policy.py                    42      0     18      0 100.00%
+src/quati/domain/diagnostics.py                        49      0      2      0 100.00%
+src/quati/domain/discovery.py                         103      0     16      0 100.00%
+src/quati/domain/policy.py                            321      0    106      0 100.00%
+src/quati/domain/statechart.py                        157      0     92      0 100.00%
+------------------------------------------------------------------------------------------------
+TOTAL                                                5673      9   1606      6  99.79%
+$ .venv/bin/python -m coverage report --rcfile=<rcfile> --precision=2 --include="*/quati/domain/*,*/quati/behavior/*" | tail -1
+TOTAL                                      1769      0    602      0  100.00%
+# Baseline before this round (evidence/S00/T05-identity-2026-11-16/green.txt): TOTAL 5219 stmts, 25 missed, 99.52%.
+# Remaining misses in files of this task: adapters/evidence.py:40 (symlinked evidence directory raise; was line 38 at baseline)
+# and cli/main.py:234,247 (were 173,186 at baseline). The other listed files belong to the parallel task.
+
+## 3. Specification validators (after the PRD edits and the consolidated rebuild)
+$ .venv/bin/python spec_tools/build_consolidated.py
+[exit code] 0
+$ .venv/bin/python spec_tools/validate_spec.py
+L0 SPEC VALIDATION: PASS (contracts, examples, reference freshness, states, requirement references). NO APP RUNTIME PROOF.
+$ .venv/bin/python spec_tools/validate_readiness.py
+{"fixture_recipes": 125, "requirement_plans": 243, "requirements": 243, "runtime_qualified": false, "semantic_coverage_requires_review": true, "shared_cases": 101, "status": "PASS", "tier": "L0", "work_packages": 35}
+
+## 4. Mutation checks for the key canary (finding 11), applied in place and reverted
+# mutant 1: providers.py appends the key value to the LIVE_NOT_ALLOWED hint -> killed by
+#   test_f11_use_case_results_hold_no_key_value_before_the_output_redactor (1 failed, 2 passed of -k f11)
+# mutant 2: adapters/evidence.py redact() returns its input unchanged -> killed by
+#   test_f11_canary_key_is_absent_from_receipts_reports_and_the_audit_log_of_a_probed_session (1 failed, 2 passed of -k f11)
+
+## 5. Notes
+# red.txt was written before any src/ change with the first version of the new tests. Afterwards the new tests
+# were corrected or extended (profile path hidden from an unauthenticated doctor, snapshot comparisons in the
+# behavior command tests, the registry listing after an audit refusal, unit edge tests, one more canary test).
+# The installed-wheel leg of tests/packaging/test_fresh_install.py is SKIPPED here: NOT VERIFIED.

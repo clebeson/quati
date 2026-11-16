@@ -14,7 +14,6 @@ from typing import Any, Callable, Mapping
 
 import jsonschema
 
-from quati.application.identity import ScopeAuthorization, context_space_grants
 from quati.domain.canonical import digest
 from quati.domain.capability_registry import Refusal, iso
 from quati.domain.discovery import (
@@ -25,9 +24,9 @@ from quati.domain.policy import EffectIntent
 
 FIXTURE_RESULT = "FIXTURE_RESULT"
 HIDDEN_LIFECYCLES = ("DRAFT", "VALIDATED", "STAGED")
-# M02 reason table, LOCAL row NO_SPACE_GRANT (the command is delivered in slice S02).
+# M02 reason table, LOCAL row NO_SPACE_GRANT / ROLE_INSUFFICIENT (the command is delivered in slice S02).
 SPACE_GRANT_NEXT_ACTION = ("Inspect the space grant with `quati spaces describe <space-id>` (delivered in slice S02); "
-                           "nothing was read.")
+                           "nothing was read or changed.")
 
 
 @dataclass
@@ -79,11 +78,12 @@ def _valid(instance: Any, schema: Mapping[str, Any]) -> bool:
 
 class DiscoveryService:
     def __init__(self, registry, index, handlers, *, policy_gate, grants, clock: Callable, ids: Callable[[str], str],
-                 audit: Callable[[dict], None] | None = None, effect_ceiling: str = "read",
-                 authorization=None) -> None:
-        # No path skips the space check (RFC-013 1<=>N rule): without an injected AuthorizationPort the
-        # grants are the spaces of the verified context. The composition root injects the live directory.
-        self.authorization = authorization or ScopeAuthorization(context_space_grants, clock)
+                 authorization, audit: Callable[[dict], None] | None = None, effect_ceiling: str = "read") -> None:
+        # The AuthorizationPort is required (RFC-013 1<=>N rule): there is no fallback and no grant is
+        # ever derived from the request. A falsy port object is still the port.
+        if authorization is None:
+            raise TypeError("DiscoveryService requires an AuthorizationPort")
+        self.authorization = authorization
         self.registry = registry
         self.index = index
         self.handlers = handlers
@@ -102,6 +102,31 @@ class DiscoveryService:
 
     def audit(self, event: dict) -> None:
         self.audit_sink({"at": iso(self.clock()), **event})
+
+    def authorize(self, context, operation: str, action: str = "read") -> PortResult | None:
+        """The single enforcement point of every registry operation (RFC-013 section 6 and section 12,
+        S00 row; M02 authorization order rows 4 and 7), before any registry lookup or change.
+
+        The resource is the tenant's capability registry; the port resolves the space that OWNS it
+        from the directory, never from the request. ``action`` is ``read`` (list, search, describe,
+        invoke, status, the ask receipt's catalog digest) or ``manage`` (install, enable, disable).
+        The decision and the scope it was evaluated against are logged for the allowed and the
+        denied operation alike; an operation whose decision cannot be logged is refused.
+        """
+        evaluation = self.authorization.decide(context, action, f"registry:{context.tenant_id}")
+        decision, scope = evaluation.decision, evaluation.scope
+        try:
+            self.audit({"event": "authz.decided", "operation": operation, "decision": decision.to_json(),
+                        "authorized_scope": None if scope is None else scope.to_json(),
+                        "owner_space_id": evaluation.space_id, "actor_id": context.actor_id,
+                        "tenant_id": context.tenant_id, "request_id": context.request_id})
+            logged = True
+        except Exception:  # noqa: BLE001 - an audit failure refuses the operation
+            logged = False
+        if decision.verdict != "ALLOW":
+            return PortResult("DENIED", "FORBIDDEN", decision.reason_code, {"reason": decision.reason_code},
+                              next_action=SPACE_GRANT_NEXT_ACTION, trace={"handler_executed": False})
+        return None if logged else refused("audit_unavailable")
 
 
 class DiscoveryTurn:
@@ -138,29 +163,8 @@ class DiscoveryTurn:
         return None
 
     def authorize(self, operation: str) -> PortResult | None:
-        """RFC-013 section 6: the space of this read must be in AuthorizedScope, before any lookup.
-
-        The decision and the scope it was evaluated against are logged for the allowed and the
-        denied read alike; a read whose decision cannot be logged is refused.
-        """
-        service, context = self.service, self.context
-        try:
-            space_id = service.grants.resolve(context).space_id
-        except Exception:  # noqa: BLE001 - a request that targets no resolvable space reads nothing
-            space_id = ""
-        decision, scope = service.authorization.decide(context, "read", f"space:{space_id}")
-        try:
-            service.audit({"event": "authz.decided", "operation": operation, "decision": decision.to_json(),
-                           "authorized_scope": None if scope is None else scope.to_json(),
-                           "actor_id": context.actor_id, "tenant_id": context.tenant_id,
-                           "request_id": context.request_id})
-            logged = True
-        except Exception:  # noqa: BLE001 - an audit failure refuses the read
-            logged = False
-        if decision.verdict != "ALLOW":
-            return PortResult("DENIED", "FORBIDDEN", decision.reason_code, {"reason": decision.reason_code},
-                              next_action=SPACE_GRANT_NEXT_ACTION, trace={"handler_executed": False})
-        return None if logged else refused("audit_unavailable")
+        """A read of the turn's registry, authorized for the turn's own context (never the caller's)."""
+        return self.service.authorize(self.context, operation)
 
     def _entries(self, capability_id: str) -> tuple[list[CatalogEntry], Any]:
         snapshot = self.service.registry.catalog(self.context)

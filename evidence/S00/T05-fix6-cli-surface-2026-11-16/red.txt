@@ -1,0 +1,435 @@
+# RED run before any src/ change (S00 fix round 6, audit findings 6-12). 2026-11-16T15:49:00Z
+# git HEAD: a6430d03e16320f232a9f1e0846c41c21c1e5521; git status --short:
+#    M tests/unit/test_m17.py
+#   ?? PACKAGE_MANIFEST.json
+#   ?? evidence/S00/T05-fix6-cli-surface-2026-11-16/
+#   ?? tests/integration/cli/test_behavior_commands.py
+#   ?? tests/packaging/
+#   ?? tests/unit/test_s00_fix6_cli_surface.py
+# command: .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_s00_fix6_cli_surface.py tests/integration/cli/test_behavior_commands.py tests/packaging/test_fresh_install.py tests/unit/test_m17.py -rfEs --tb=line
+FFFF.FFFFFFFFFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFs..... [ 41%]
+..............................................................FFFFFFFFFF [ 83%]
+FFF..FFF....................                                             [100%]
+=================================== FAILURES ===================================
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:111: TypeError: 'NoneType' object is not subscriptable
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:111: TypeError: 'NoneType' object is not subscriptable
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:111: TypeError: 'NoneType' object is not subscriptable
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:111: TypeError: 'NoneType' object is not subscriptable
+E   AssertionError: assert [('data', '0o...'0o664'), ...] == []
+      
+      Left contains 8 more items, first extra item: ('data', '0o775')
+      Use -v to get more diff
+<local-path>:164: AssertionError: assert [('data', '0o...'0o664'), ...] == []
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:195: TypeError: 'NoneType' object is not subscriptable
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:195: TypeError: 'NoneType' object is not subscriptable
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:195: TypeError: 'NoneType' object is not subscriptable
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:195: TypeError: 'NoneType' object is not subscriptable
+E   AssertionError: {'data': None, 'error': {'code': 'INTERNAL_ERROR', 'message': 'A local resource could not be read or saved.', 'retryab...lse}, 'evidence_refs': [], 'next_action': 'Check local configuration and file permissions; no work was accepted.', ...}
+    assert (1, 'BLOCKED'...TERNAL_ERROR') == (5, 'UNAVAILA..._UNAVAILABLE')
+      
+      At index 0 diff: 1 != 5
+      Use -v to get more diff
+<local-path>:207: AssertionError: {'data': None, 'error': {'code': 'INTERNAL_ERROR', 'message': 'A local resource could not be read or saved.', 'retryab...lse}, 'evidence_refs': [], 'next_action': 'Check local configuration and file permissions; no work was accepted.', ...}
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:207: TypeError: 'NoneType' object is not subscriptable
+E   assert (0 != 0)
+<local-path>:222: assert (0 != 0)
+E   AssertionError: assert (0 == 0 and 'LIVE_NOT_ALLOWED' == 'API_KEY_REF_INVALID'
+      
+      - API_KEY_REF_INVALID
+      + LIVE_NOT_ALLOWED)
+<local-path>:244: AssertionError: assert (0 == 0 and 'LIVE_NOT_ALLOWED' == 'API_KEY_REF_INVALID'
+E   AssertionError: assert (0 == 0 and 'LIVE_NOT_ALLOWED' == 'API_KEY_REF_INVALID'
+      
+      - API_KEY_REF_INVALID
+      + LIVE_NOT_ALLOWED)
+<local-path>:244: AssertionError: assert (0 == 0 and 'LIVE_NOT_ALLOWED' == 'API_KEY_REF_INVALID'
+E   AssertionError: {'data': None, 'error': {'code': 'INTERNAL_ERROR', 'message': 'An unexpected internal error occurred.', 'retryable': False}, 'evidence_refs': [], 'next_action': 'Retry; if it persists, report the error class shown on stderr.', ...}
+    assert (1, 'BLOCKED'...TERNAL_ERROR') == (2, 'BLOCKED'...NFIG_INVALID')
+      
+      At index 0 diff: 1 != 2
+      Use -v to get more diff
+<local-path>:280: AssertionError: {'data': None, 'error': {'code': 'INTERNAL_ERROR', 'message': 'An unexpected internal error occurred.', 'retryable': False}, 'evidence_refs': [], 'next_action': 'Retry; if it persists, report the error class shown on stderr.', ...}
+E   AssertionError: {'data': None, 'error': {'code': 'INTERNAL_ERROR', 'message': 'An unexpected internal error occurred.', 'retryable': False}, 'evidence_refs': [], 'next_action': 'Retry; if it persists, report the error class shown on stderr.', ...}
+    assert (1, 'BLOCKED'...TERNAL_ERROR') == (2, 'BLOCKED'...NFIG_INVALID')
+      
+      At index 0 diff: 1 != 2
+      Use -v to get more diff
+<local-path>:280: AssertionError: {'data': None, 'error': {'code': 'INTERNAL_ERROR', 'message': 'An unexpected internal error occurred.', 'retryable': False}, 'evidence_refs': [], 'next_action': 'Retry; if it persists, report the error class shown on stderr.', ...}
+E   KeyError: 'behavior'
+<local-path>:303: KeyError: 'behavior'
+E   KeyError: 'profile'
+<local-path>:315: KeyError: 'profile'
+E   KeyError: 'listening_sockets'
+<local-path>:339: KeyError: 'listening_sockets'
+E   KeyError: 'measured_support'
+<local-path>:349: KeyError: 'measured_support'
+E   KeyError: 'measured_support'
+<local-path>:380: KeyError: 'measured_support'
+E   assert 2 == 0
+<local-path>:411: assert 2 == 0
+E   AssertionError: assert 'NOT_PROBED' == 'PROBED'
+      
+      - PROBED
+      + NOT_PROBED
+      ? ++++
+<local-path>:421: AssertionError: assert 'NOT_PROBED' == 'PROBED'
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:455: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: inbox
+    assert ' inbox ' in '                                                                                \n Usage: python -m pytest [OPTIONS] ...                               │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\n'
+<local-path>:465: AssertionError: inbox
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:471: TypeError: 'NoneType' object is not subscriptable
+E   TypeError: 'NoneType' object is not subscriptable
+<local-path>:495: TypeError: 'NoneType' object is not subscriptable
+E   assert [2, 2, 2, 2] == [0, 0, 0, 0]
+      
+      At index 0 diff: 2 != 0
+      Use -v to get more diff
+<local-path>:131: assert [2, 2, 2, 2] == [0, 0, 0, 0]
+E   assert (2 == 0)
+<local-path>:172: assert (2 == 0)
+E   AssertionError: assert (2, 2, 'DENIED') == (0, 0, 'SUCCEEDED')
+      
+      At index 0 diff: 2 != 0
+      Use -v to get more diff
+<local-path>:183: AssertionError: assert (2, 2, 'DENIED') == (0, 0, 'SUCCEEDED')
+E   assert 2 == 0
+<local-path>:203: assert 2 == 0
+E   AssertionError: {'data': None, 'error': {'code': 'INVALID_INPUT', 'message': 'Invalid CLI arguments; use --help for syntax.', 'retryable': False}, 'evidence_refs': [], 'next_action': 'Correct the CLI arguments.', ...}
+    assert (2, 'DENIED', 'INVALID_INPUT') == (2, 'DENIED',...NFIG_INVALID')
+      
+      At index 2 diff: 'INVALID_INPUT' != 'CONFIG_INVALID'
+      Use -v to get more diff
+<local-path>:111: AssertionError: {'data': None, 'error': {'code': 'INVALID_INPUT', 'message': 'Invalid CLI arguments; use --help for syntax.', 'retryable': False}, 'evidence_refs': [], 'next_action': 'Correct the CLI arguments.', ...}
+E   AssertionError: {'data': None, 'error': {'code': 'INVALID_INPUT', 'message': 'Invalid CLI arguments; use --help for syntax.', 'retryable': False}, 'evidence_refs': [], 'next_action': 'Correct the CLI arguments.', ...}
+    assert (2, 'DENIED', 'INVALID_INPUT') == (2, 'DENIED',...NFIG_INVALID')
+      
+      At index 2 diff: 'INVALID_INPUT' != 'CONFIG_INVALID'
+      Use -v to get more diff
+<local-path>:283: AssertionError: {'data': None, 'error': {'code': 'INVALID_INPUT', 'message': 'Invalid CLI arguments; use --help for syntax.', 'retryable': False}, 'evidence_refs': [], 'next_action': 'Correct the CLI arguments.', ...}
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'DENIED',...ICATED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:296: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'DENIED',...ICATED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:304: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:304: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:304: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:304: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+      
+      At index 0 diff: 2 != 4
+      Use -v to get more diff
+<local-path>:304: AssertionError: assert (2, 'DENIED',..._INPUT', None) == (4, 'UNAVAILA...PORTED', None)
+E   assert (2 == 0)
+     +  where 2 = CompletedProcess(args=['<local-path>', '-m', 'quati', 'behavior', 'validate', 'package.ya...se},"evidence_refs":[],"next_action":"Correct the CLI arguments.","status":"DENIED","uncertainties":[]}\n', stderr=b'').returncode
+<local-path>:311: assert (2 == 0)
+E   KeyError: 'measured_support'
+<local-path>:51: KeyError: 'measured_support'
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+E   AssertionError: assert [] == ['API_KEY_REF_INVALID']
+      
+      Right contains one more item: 'API_KEY_REF_INVALID'
+      Use -v to get more diff
+<local-path>:629: AssertionError: assert [] == ['API_KEY_REF_INVALID']
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f6_probe_without_identity_is_denied_before_any_provider_call_or_write[argv0]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f6_probe_without_identity_is_denied_before_any_provider_call_or_write[argv1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f6_probe_in_a_capability_context_is_denied_and_changes_nothing[argv0]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f6_probe_in_a_capability_context_is_denied_and_changes_nothing[argv1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_data_directories_and_files_are_created_owner_only
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else[symlink]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else[dangling_symlink]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else[group_writable]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_the_read_and_writes_nowhere_else[world_readable]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_a_registry_write_with_the_typed_reason[symlink]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_an_unsafe_audit_log_refuses_a_registry_write_with_the_typed_reason[group_writable]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f7_a_symlinked_registry_directory_is_refused
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f8_a_sign_in_session_artifact_is_not_a_key_on_the_public_path[value0]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f8_a_sign_in_session_artifact_is_not_a_key_on_the_public_path[eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjaGF0Z3B0In0.c2lnQ0FOQVJZ]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f9_ask_and_doctor_name_the_invalid_statechart_path[guard: authorized_request, action: commit_receipt-guard: always, action: commit_receipt-expected0]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f9_ask_and_doctor_name_the_invalid_statechart_path[guard: safe_to_begin, action: start_work-guard: allow_anything, action: shell_exec-expected1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f9_doctor_reports_the_valid_active_package_hashes
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f10_doctor_report_carries_the_m01_fields_before_init
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f10_listening_sockets_and_the_live_allowance_are_measured_not_constants
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f10_plain_doctor_shows_the_measured_verdicts_of_the_stored_report
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f10_a_probe_that_did_not_open_the_ask_gate_is_not_reported_as_supported
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f11_canary_key_is_absent_from_every_output_of_an_api_transport
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f11_canary_key_is_absent_from_receipts_reports_and_the_audit_log_of_a_probed_session
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[inbox]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[inbox --unread]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[inbox --ack msg-1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[messages]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[worker run]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[worker tick]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[worker install]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[worker uninstall]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[config diff]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[config simulate]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[config propose]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[config apply]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[config rollback]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[config validate profile.toml]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[trace show c-1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[trace show --request request-1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[trace explain c-1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[trace export trace-1 --out trace.json]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[trace replay trace-1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[behavior propose package.yaml]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[behavior simulate package.yaml]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[behavior diff a b]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[behavior promote digest --approval apr-1]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_undelivered_commands_are_registered_and_typed_unsupported[behavior rollback executive-secretary digest]
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_help_lists_every_command_of_the_m01_table
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_config_validate_reports_each_configuration_check
+FAILED tests/unit/test_s00_fix6_cli_surface.py::test_f12_config_validate_rejects_present_but_invalid_configuration
+FAILED tests/integration/cli/test_behavior_commands.py::test_cmp_01_cli_receipt_is_byte_identical_across_processes_and_hash_seeds
+FAILED tests/integration/cli/test_behavior_commands.py::test_cmp_01_shipped_package_matches_the_hashes_recorded_by_the_runtime
+FAILED tests/integration/cli/test_behavior_commands.py::test_render_returns_the_prompt_artifact_of_the_same_build
+FAILED tests/integration/cli/test_behavior_commands.py::test_cmp_02_unsafe_candidate_is_rejected_with_paths_and_the_baseline_is_unchanged
+FAILED tests/integration/cli/test_behavior_commands.py::test_cmp_03_orphan_and_dead_end_statecharts_are_rejected_with_state_ids
+FAILED tests/integration/cli/test_behavior_commands.py::test_package_argument_errors_are_typed
+FAILED tests/integration/cli/test_behavior_commands.py::test_validate_and_render_authenticate_before_reading_the_package
+FAILED tests/integration/cli/test_behavior_commands.py::test_remaining_lifecycle_commands_are_unsupported_until_s03[propose]
+FAILED tests/integration/cli/test_behavior_commands.py::test_remaining_lifecycle_commands_are_unsupported_until_s03[simulate]
+FAILED tests/integration/cli/test_behavior_commands.py::test_remaining_lifecycle_commands_are_unsupported_until_s03[diff]
+FAILED tests/integration/cli/test_behavior_commands.py::test_remaining_lifecycle_commands_are_unsupported_until_s03[promote]
+FAILED tests/integration/cli/test_behavior_commands.py::test_remaining_lifecycle_commands_are_unsupported_until_s03[rollback]
+FAILED tests/integration/cli/test_behavior_commands.py::test_human_rendering_of_validate_is_one_response_line
+FAILED tests/packaging/test_fresh_install.py::test_doctor_reports_provider_not_configured
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[value5]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[{"claudeAiOauth": {"accessToken": "synthetic", "refreshToken": "synthetic"}}]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[  {"access_token": "synthetic"}\n]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[["synthetic"]]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjaGF0Z3B0In0.c2lnLXN5bnRoZXRpYw]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[Bearer synthetic0123456789]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[bearer eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjaGF0Z3B0In0.c2lnLXN5bnRoZXRpYw]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[sk-ant-oat01-synthetic0123456789]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[sk-ant-ort01-synthetic0123456789]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[sess-synthetic0123456789]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[rt_synthetic0123456789]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[ya29.synthetic0123456789]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[1//synthetic0123456789]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[synthetic key with spaces]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[synthetic\nsecond-line]
+FAILED tests/unit/test_m17.py::test_m17_rt_02_codex_signin_not_api_key[synthetic\x00nul]
+SKIPPED [1] tests/packaging/test_fresh_install.py:96: fresh-wheel install NOT VERIFIED here: the build backend declared in pyproject.toml (setuptools>=75) is not importable in this environment and no package index is reachable offline
+80 failed, 91 passed, 1 skipped in 6.23s

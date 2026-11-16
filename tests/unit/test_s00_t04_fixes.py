@@ -82,28 +82,40 @@ def test_p1_1_localized_template_through_the_ask(tmp_path, monkeypatch):
     assert len(model_requests(harness)) == 1
 
 
+# Fix round 6 (audit F3; S00_RUNTIME_CONTRACT "Independent-review fail-closed refinement": "S00 only displays
+# deterministic greetings or application-owned synthetic fixture findings"; LOG-0039). Changed expectations in
+# the two tests below: a social text without a template no longer gets a tool-free MODEL reply. Old: text ==
+# the model's reply, uncertainty MODEL_SOCIAL_REPLY, model calls ["classify", "social_reply"], and an empty or
+# failed second call was BLOCKED EMPTY_SOCIAL_REPLY / exit 5. New: the application-owned no-action notice,
+# uncertainty NO_GREETING_TEMPLATE, the classification is the only model call, so nothing can fail after it.
 @pytest.mark.parametrize("text", ["Wie geht es dir?", "How are you doing today?"])
 def test_p1_1_social_text_without_template_gets_a_tool_free_model_reply(tmp_path, monkeypatch, text):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("  Mir geht es gut, danke!  "))
     code, value = harness.ask(text, synthetic=True)
     assert (code, value["status"], value["data"]["result_kind"]) == (0, "SUCCEEDED", "GREETING")
-    assert value["data"]["text"] == "Mir geht es gut, danke!" and value["data"]["text"] != "Hello!"
-    assert "MODEL_SOCIAL_REPLY" in value["uncertainties"] and value["data"]["tool_calls"] == []
-    reply = model_requests(harness)[1]
-    assert reply.tools == () and reply.output_schema is None and not reply.require_tool
+    assert value["data"]["text"] == ask_module.NO_ACTION_NOTICES["en"] and value["data"]["text"] != "Hello!"
+    assert "Mir geht es gut" not in json.dumps(value)
+    assert "NO_GREETING_TEMPLATE" in value["uncertainties"] and value["data"]["tool_calls"] == []
+    assert "MODEL_SOCIAL_REPLY" not in value["uncertainties"]
+    assert len(model_requests(harness)) == 1 and len(harness.script.items) == 1      # no reply was requested
     assert harness.handlers.total_invocations() == 0
     purposes = [call["purpose"] for call in receipt_of(value)["synthetic_evidence"]["model_calls"]]
-    assert purposes == ["classify", "social_reply"]
+    assert purposes == ["classify"]
 
 
 def test_p1_1_tool_free_social_reply_failures_are_typed(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("   "))
     code, value = harness.ask("Wie geht es dir?")
-    assert (value["status"], value["error"]["code"], value["data"]["reason"]) == (
-        "BLOCKED", "OUTPUT_INVALID", "EMPTY_SOCIAL_REPLY")
+    assert (code, value["status"], value["error"], value["data"]["text"]) == (
+        0, "SUCCEEDED", None, ask_module.NO_ACTION_NOTICES["en"])
     failing = ready(tmp_path / "f", monkeypatch, classified(SOCIAL), ProviderError("TEMPORARILY_UNAVAILABLE",
                                                                                    "UPSTREAM_ERROR"))
     code, value = failing.ask("Wie geht es dir?")
+    assert (code, value["status"], value["error"]) == (0, "SUCCEEDED", None)
+    assert len(model_requests(failing)) == 1                  # the failing second call is never made
+    # A provider failure of the classification itself is still typed (no template: no social fallback).
+    broken = ready(tmp_path / "b", monkeypatch, ProviderError("TEMPORARILY_UNAVAILABLE", "UPSTREAM_ERROR"))
+    code, value = broken.ask("Wie geht es dir?")
     assert (code, value["status"], value["error"]["code"]) == (5, "UNAVAILABLE", "TEMPORARILY_UNAVAILABLE")
 
 

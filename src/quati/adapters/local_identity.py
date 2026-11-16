@@ -17,6 +17,9 @@ from platformdirs import user_config_path
 from quati.application.identity import AccessDenied, LocalToken, RequestContext, canonical_bytes, verify_token
 
 
+TENANT_ROLES = ('OWNER', 'ADMIN', 'MEMBER', 'GUEST')      # contracts/identity.schema.json Membership roles
+
+
 def _ulid():
     alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
     value = (int(time.time() * 1000) << 80) | secrets.randbits(80)
@@ -139,12 +142,37 @@ class LocalIdentity:
     def issue_token(self):
         return self._mint_token(*self._load())
 
-    def space_grants(self, context):
-        """RFC-013 section 2.1 default grants of the LOCAL owner, read live from the signed record."""
+    def _membership(self, context):
+        """(signed record, tenant role) of the context's principal; the role is None without a membership.
+
+        ``quati init`` creates the tenant OWNER and writes no role; an absent ``tenant_role`` is OWNER.
+        A record that carries another RFC-013 tenant role is honoured (1<=>N rule); any other value is
+        no membership at all."""
         record, _key = self._load()
         if (context.actor_id, context.tenant_id) != (record['principal_id'], record['tenant_id']):
+            return record, None
+        role = record.get('tenant_role', 'OWNER')
+        return record, role if isinstance(role, str) and role in TENANT_ROLES else None
+
+    def tenant_role(self, context):
+        """RFC-013 section 2 Membership of the LOCAL principal, read live from the signed record."""
+        return self._membership(context)[1]
+
+    def space_grants(self, context):
+        """RFC-013 section 2.1 default grants, read live from the signed record: the personal space,
+        and the organization space for OWNER, ADMIN and MEMBER (a GUEST gets no ORGANIZATION grant)."""
+        record, role = self._membership(context)
+        if role is None:
             return ()
+        if role == 'GUEST':
+            return (record['personal_space_id'],)
         return record['personal_space_id'], record['organization_space_id']
+
+    def registry_space(self, tenant_id):
+        """The space that owns the tenant's capability registry: the tenant's ORGANIZATION space, as
+        recorded in the signed installation record. Never derived from a request."""
+        record, _key = self._load()
+        return record['organization_space_id'] if record['tenant_id'] == tenant_id else None
 
     def authenticate(self):
         record, key = self._load()

@@ -85,6 +85,7 @@ def run_main(capsys, *arguments):
 
 
 def test_probe_through_the_installed_entry_point(workspace):
+    assert main(['init', '--json']) == 0  # S00 fix round 6 (F6, IDN-01): a probe authenticates the LOCAL identity first
     completed = subprocess.run([sys.executable, '-m', 'quati', 'models', 'probe', '--json'], text=True,
                                capture_output=True, env=dict(os.environ))
     assert completed.returncode == 0, completed.stdout + completed.stderr
@@ -119,6 +120,7 @@ def test_probe_through_the_installed_entry_point(workspace):
 
 
 def test_probe_reports_a_wrong_nonce_and_a_failing_executable(workspace, monkeypatch, capsys):
+    assert run_main(capsys, 'init', '--json')[0] == 0  # S00 fix round 6 (F6, IDN-01): authenticate before probing
     set_mode(workspace, 'liar')
     code, value = run_main(capsys, 'models', 'probe', '--json')
     assert code == 0 and value['data']['feature_report']['observations']['tools'] == 'NONCE_MISMATCH'

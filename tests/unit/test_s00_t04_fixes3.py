@@ -52,7 +52,10 @@ def test_p1_c_audit_repro_needs_the_continuation_and_never_implies_work(tmp_path
     assert receipt_of(value)["continuations"] == [{"after_step": 0, "reason": "NO_SEARCH_ON_WORK"}]
     # (c) deterministic no-work data, a labelled model text and the system notice
     assert data["result_kind"] == "CONVERSATION"
-    assert (data["work_performed"], data["actions_taken"], data["text_source"]) == (False, [], "model_social_reply")
+    # Fix round 6 (audit F3; S00_RUNTIME_CONTRACT "Independent-review fail-closed refinement"; LOG-0039): was
+    # text_source "model_social_reply" with the model's CLAIM as text; now only application-owned text.
+    assert (data["work_performed"], data["actions_taken"], data["text_source"]) == (False, [], "application_template")
+    assert data["text"] == "Hello!" and CLAIM not in json.dumps(value)
     assert data["system_notice"] == ask_module.NO_ACTION_NOTICES["en"]
     assert data["display_lines"] == [data["text"], data["system_notice"]]
     assert (data["commitment_id"], data["delivered"], data["tool_calls"]) == (None, False, [])
@@ -73,10 +76,13 @@ def test_p1_c_conversation_requires_next_action_respond(tmp_path, monkeypatch):
     code, value = harness.ask("Hello, please schedule the audit meeting")
     assert (code, value["status"], value["data"]["result_kind"]) == (4, "BLOCKED", "BLOCKED")
     assert value["data"]["reason"] == "NO_VERIFIED_EXECUTION" and CLAIM not in json.dumps(value)
-    # Social-only text with a non-respond label reaches the loop; no conversation either.
+    # Fix round 6 (audit F2, SOC-01; LOG-0039). Old expectation: social-only text with a non-respond label
+    # reached the tool loop (result_kind BLOCKED, 2 model requests). New: a greeting-only text never reaches
+    # the loop whatever the label says; it gets the deterministic greeting after the single classification.
     only = ready(tmp_path / "s", monkeypatch, classified(label), final("Hi!"))
     code, value = only.ask("Hi there, how are you?")
-    assert value["data"]["result_kind"] == "BLOCKED" and len(model_requests(only)) == 2
+    assert (value["data"]["result_kind"], value["data"]["text"]) == ("GREETING", "Hello!")
+    assert len(model_requests(only)) == 1 and "MODEL_LABEL_NOT_SOCIAL" in value["uncertainties"]
 
 
 def test_p1_c_a_tool_call_after_the_continuation_ends_the_conversation_path(tmp_path, monkeypatch):
@@ -90,9 +96,14 @@ def test_p1_c_notice_follows_the_greeting_language_and_falls_back_to_english(tmp
     code, value = harness.ask("Bom dia! Espero que a família esteja ótima.")
     assert value["data"]["result_kind"] == "CONVERSATION"
     assert value["data"]["system_notice"] == ask_module.NO_ACTION_NOTICES["pt"]
+    # Fix round 6 (audit F3; LOG-0039). Old expectation: a text with no greeting template was still a
+    # CONVERSATION whose notice fell back to English. New: a social label on a text that opens with no
+    # recognized greeting is not a social outcome; it is BLOCKED like any loop without a verified execution.
     other = ready(tmp_path / "f", monkeypatch, classified(SOCIAL), final("x"), final("Kiitos!"))
     code, value = other.ask("Hyvää huomenta! Mitä kuuluu?")
-    assert value["data"]["system_notice"] == ask_module.NO_ACTION_NOTICES["en"]
+    assert (code, value["status"], value["data"]["result_kind"], value["data"]["reason"]) == (
+        4, "BLOCKED", "BLOCKED", "NO_VERIFIED_EXECUTION")
+    assert "system_notice" not in value["data"] and "Kiitos" not in json.dumps(value)
     assert set(ask_module.NO_ACTION_NOTICES) == {"en", "pt", "es", "fr", "de", "it"}
     for language in set(ask_module.GREETING_LANGUAGES.values()):
         assert language in ask_module.NO_ACTION_NOTICES

@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 import uuid
 
+from quati.adapters.private_fs import private_directory
+
 
 def redact(value):
     """Redact string leaves while preserving public protocol keys and control enums."""
@@ -17,7 +19,7 @@ def redact(value):
         'result_status': {'RESPONDED', 'FIXTURE_RESULT'},
         'proof_tier': {'L0', 'L1', 'L2', 'L3', 'L4', 'L5'},
         'code': {'INVALID_INPUT', 'UNAUTHENTICATED', 'FORBIDDEN', 'APPROVAL_REQUIRED', 'REVISION_CONFLICT',
-                 'IDEMPOTENCY_CONFLICT', 'NOT_FOUND', 'NOT_CONFIGURED', 'UNSUPPORTED',
+                 'IDEMPOTENCY_CONFLICT', 'NOT_FOUND', 'NOT_CONFIGURED', 'CONFIG_INVALID', 'UNSUPPORTED',
                  'TEMPORARILY_UNAVAILABLE', 'DEADLINE_EXCEEDED', 'BUDGET_EXCEEDED', 'OUTPUT_INVALID',
                  'EVIDENCE_INSUFFICIENT', 'EFFECT_UNCERTAIN', 'INTERNAL_ERROR'},
     }
@@ -36,8 +38,8 @@ def write_receipt(value):
     directory = Path(os.environ.get('QUATI_DATA_DIR', str(Path.home() / '.quati'))) / 'receipts'
     if any(p.is_symlink() for p in [directory, *directory.parents]):
         raise OSError('Evidence directory cannot traverse symlinks')
-    directory.mkdir(parents=True, mode=0o700, exist_ok=True)
-    directory.chmod(0o700)
+    private_directory(directory.parent)  # the data directory itself is owner-only, whatever the umask
+    private_directory(directory)
     record = redact({**value, 'timestamp':datetime.now(timezone.utc).isoformat(), 'evidence_version':'s00/1'})
     blob = json.dumps(record, indent=2, sort_keys=True).encode() + b'\n'
     path = directory / (uuid.uuid4().hex + '.json')

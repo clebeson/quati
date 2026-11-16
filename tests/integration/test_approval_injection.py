@@ -52,6 +52,7 @@ from quati.adapters.policy_gate import LocalPolicyGate
 from quati.application.capability_registry import RegistryService
 from quati.application.discovery import DiscoveryService, build_effect_intent
 from quati.application.discovery_tools import DISCOVERY_TOOLS
+from quati.application.identity import ScopeAuthorization
 from quati.domain.capability_registry import RegistryPolicy
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -289,6 +290,10 @@ def test_pol_01(profile: Profile) -> None:
             for event in policy_events(appended)] == [
         ("discovery.selection_error", "fixtures.calendar-write", "NOT_IN_SHORTLIST", value["data"]["request_id"])]
     assert_no_authority_granted(profile, appended)
+    # Fix round 6 (audit F4): the `capabilities list` read made by assert_no_authority_granted is now itself
+    # authorized and logged (one authz.decided record), so the baseline for "deciding wrote nothing" is
+    # re-read here. No assertion below is changed.
+    appended = before.unchanged()
     # S00-GATE-03: the code-level policy gate itself (K3) over this profile's trusted policy.
     context, gate, _clock, _ids = trusted_gate(profile)
     adopted = json.loads((profile.root / "config" / "policy.registry.json").read_bytes())["versions"][-1]
@@ -461,8 +466,11 @@ def _opened(profile: Profile, base: Path, runtime_profile: str):
                                policy=RegistryPolicy(max_effect_class="dangerous"))
     events: list[dict] = []
     grants = StaticGrants(LOCAL_READ_GRANTS | {"calendar.write", "forecast.write"})
+    # Fix round 6 (audit F5, setup only): the AuthorizationPort is a required parameter; this is the
+    # production port over the profile's own identity directory, exactly as the composition root wires it.
     discovery = DiscoveryService(registry, Fts5CapabilityIndex(), handlers, policy_gate=gate, grants=grants,
-                                 clock=clock, ids=ids, audit=events.append, effect_ceiling="dangerous")
+                                 clock=clock, ids=ids, audit=events.append, effect_ceiling="dangerous",
+                                 authorization=ScopeAuthorization(LocalIdentity(profile.root / "config"), clock))
     for name in ("calendar-read", "calendar-write", "forecast-publish"):
         installed = install_fixture(registry, context, name, base / "sources")
         assert installed["data"]["lifecycle"] == "ENABLED", name

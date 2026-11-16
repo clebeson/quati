@@ -1,0 +1,1596 @@
+# RED run before any change to src/quati by this task (fix round 6: audit findings F2, F3, F4, F5, F15)
+# date: 2026-11-16T15:54:40Z  head: a6430d03e16320f232a9f1e0846c41c21c1e5521
+# owned src files unchanged at this point (git diff --stat on owned paths follows; empty = unchanged):
+# command: .venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_s00_fix6_authz_ask.py tests/integration/test_identity.py
+FFFFFFF.FFFFFFFFFFF.FFFFFFFFFFFFFFF..F......FFFFFFFFFFFFFFFFFFF.         [100%]
+=================================== FAILURES ===================================
+_ test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[Hi, how are you?-Hello!] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb886510>
+text = 'Hi, how are you?', reply = 'Hello!'
+
+    @pytest.mark.parametrize("text, reply", [
+        ("Hi, how are you?", "Hello!"),                       # SOC-01's own phrase
+        ("Olá, tudo bem?", "Olá!"),
+        ("hello hello hello", "Hello!"),
+        ("hello, this is urgent", "Hello!"),                  # SOC-01 negative: "urgent" in a greeting-only sentence
+        ("Hi, how are you? This is urgent.", "Hello!"),
+        ("URGENT: hi", "Hello!"),
+        ("Bom dia! Isto é urgente.", "Olá!"),
+    ])
+    def test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label(profile, text, reply):
+        """The auditor's g3.py: the model labels a pure greeting as work, then searches, describes and invokes."""
+        before = len(profile.audit())
+        code, value, _output = profile.ask(HOSTILE, text)
+        data = value["data"]
+>       assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", reply)
+E       assert (0, 'SUCCEEDE...URE_RESULT"}') == (0, 'SUCCEEDE...NG', 'Hello!')
+E         
+E         At index 2 diff: 'FIXTURE_RESULT' != 'GREETING'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:163: AssertionError
+_ test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[Ol\xe1, tudo bem?-Ol\xe1!] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb472990>
+text = 'Olá, tudo bem?', reply = 'Olá!'
+
+    @pytest.mark.parametrize("text, reply", [
+        ("Hi, how are you?", "Hello!"),                       # SOC-01's own phrase
+        ("Olá, tudo bem?", "Olá!"),
+        ("hello hello hello", "Hello!"),
+        ("hello, this is urgent", "Hello!"),                  # SOC-01 negative: "urgent" in a greeting-only sentence
+        ("Hi, how are you? This is urgent.", "Hello!"),
+        ("URGENT: hi", "Hello!"),
+        ("Bom dia! Isto é urgente.", "Olá!"),
+    ])
+    def test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label(profile, text, reply):
+        """The auditor's g3.py: the model labels a pure greeting as work, then searches, describes and invokes."""
+        before = len(profile.audit())
+        code, value, _output = profile.ask(HOSTILE, text)
+        data = value["data"]
+>       assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", reply)
+E       assert (0, 'SUCCEEDE...URE_RESULT"}') == (0, 'SUCCEEDE...TING', 'Olá!')
+E         
+E         At index 2 diff: 'FIXTURE_RESULT' != 'GREETING'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:163: AssertionError
+_ test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[hello hello hello-Hello!] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb472350>
+text = 'hello hello hello', reply = 'Hello!'
+
+    @pytest.mark.parametrize("text, reply", [
+        ("Hi, how are you?", "Hello!"),                       # SOC-01's own phrase
+        ("Olá, tudo bem?", "Olá!"),
+        ("hello hello hello", "Hello!"),
+        ("hello, this is urgent", "Hello!"),                  # SOC-01 negative: "urgent" in a greeting-only sentence
+        ("Hi, how are you? This is urgent.", "Hello!"),
+        ("URGENT: hi", "Hello!"),
+        ("Bom dia! Isto é urgente.", "Olá!"),
+    ])
+    def test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label(profile, text, reply):
+        """The auditor's g3.py: the model labels a pure greeting as work, then searches, describes and invokes."""
+        before = len(profile.audit())
+        code, value, _output = profile.ask(HOSTILE, text)
+        data = value["data"]
+>       assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", reply)
+E       assert (0, 'SUCCEEDE...URE_RESULT"}') == (0, 'SUCCEEDE...NG', 'Hello!')
+E         
+E         At index 2 diff: 'FIXTURE_RESULT' != 'GREETING'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:163: AssertionError
+_ test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[hello, this is urgent-Hello!] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb45ac40>
+text = 'hello, this is urgent', reply = 'Hello!'
+
+    @pytest.mark.parametrize("text, reply", [
+        ("Hi, how are you?", "Hello!"),                       # SOC-01's own phrase
+        ("Olá, tudo bem?", "Olá!"),
+        ("hello hello hello", "Hello!"),
+        ("hello, this is urgent", "Hello!"),                  # SOC-01 negative: "urgent" in a greeting-only sentence
+        ("Hi, how are you? This is urgent.", "Hello!"),
+        ("URGENT: hi", "Hello!"),
+        ("Bom dia! Isto é urgente.", "Olá!"),
+    ])
+    def test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label(profile, text, reply):
+        """The auditor's g3.py: the model labels a pure greeting as work, then searches, describes and invokes."""
+        before = len(profile.audit())
+        code, value, _output = profile.ask(HOSTILE, text)
+        data = value["data"]
+>       assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", reply)
+E       assert (0, 'SUCCEEDE...URE_RESULT"}') == (0, 'SUCCEEDE...NG', 'Hello!')
+E         
+E         At index 2 diff: 'FIXTURE_RESULT' != 'GREETING'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:163: AssertionError
+_ test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[Hi, how are you? This is urgent.-Hello!] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb45afd0>
+text = 'Hi, how are you? This is urgent.', reply = 'Hello!'
+
+    @pytest.mark.parametrize("text, reply", [
+        ("Hi, how are you?", "Hello!"),                       # SOC-01's own phrase
+        ("Olá, tudo bem?", "Olá!"),
+        ("hello hello hello", "Hello!"),
+        ("hello, this is urgent", "Hello!"),                  # SOC-01 negative: "urgent" in a greeting-only sentence
+        ("Hi, how are you? This is urgent.", "Hello!"),
+        ("URGENT: hi", "Hello!"),
+        ("Bom dia! Isto é urgente.", "Olá!"),
+    ])
+    def test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label(profile, text, reply):
+        """The auditor's g3.py: the model labels a pure greeting as work, then searches, describes and invokes."""
+        before = len(profile.audit())
+        code, value, _output = profile.ask(HOSTILE, text)
+        data = value["data"]
+>       assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", reply)
+E       assert (0, 'SUCCEEDE...URE_RESULT"}') == (0, 'SUCCEEDE...NG', 'Hello!')
+E         
+E         At index 2 diff: 'FIXTURE_RESULT' != 'GREETING'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:163: AssertionError
+_ test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[URGENT: hi-Hello!] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdf9e8cdd0>
+text = 'URGENT: hi', reply = 'Hello!'
+
+    @pytest.mark.parametrize("text, reply", [
+        ("Hi, how are you?", "Hello!"),                       # SOC-01's own phrase
+        ("Olá, tudo bem?", "Olá!"),
+        ("hello hello hello", "Hello!"),
+        ("hello, this is urgent", "Hello!"),                  # SOC-01 negative: "urgent" in a greeting-only sentence
+        ("Hi, how are you? This is urgent.", "Hello!"),
+        ("URGENT: hi", "Hello!"),
+        ("Bom dia! Isto é urgente.", "Olá!"),
+    ])
+    def test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label(profile, text, reply):
+        """The auditor's g3.py: the model labels a pure greeting as work, then searches, describes and invokes."""
+        before = len(profile.audit())
+        code, value, _output = profile.ask(HOSTILE, text)
+        data = value["data"]
+>       assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", reply)
+E       assert (0, 'SUCCEEDE...URE_RESULT"}') == (0, 'SUCCEEDE...NG', 'Hello!')
+E         
+E         At index 2 diff: 'FIXTURE_RESULT' != 'GREETING'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:163: AssertionError
+_ test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[Bom dia! Isto \xe9 urgente.-Ol\xe1!] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb423240>
+text = 'Bom dia! Isto é urgente.', reply = 'Olá!'
+
+    @pytest.mark.parametrize("text, reply", [
+        ("Hi, how are you?", "Hello!"),                       # SOC-01's own phrase
+        ("Olá, tudo bem?", "Olá!"),
+        ("hello hello hello", "Hello!"),
+        ("hello, this is urgent", "Hello!"),                  # SOC-01 negative: "urgent" in a greeting-only sentence
+        ("Hi, how are you? This is urgent.", "Hello!"),
+        ("URGENT: hi", "Hello!"),
+        ("Bom dia! Isto é urgente.", "Olá!"),
+    ])
+    def test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label(profile, text, reply):
+        """The auditor's g3.py: the model labels a pure greeting as work, then searches, describes and invokes."""
+        before = len(profile.audit())
+        code, value, _output = profile.ask(HOSTILE, text)
+        data = value["data"]
+>       assert (code, value["status"], data["result_kind"], data["text"]) == (0, "SUCCEEDED", "GREETING", reply)
+E       assert (0, 'SUCCEEDE...URE_RESULT"}') == (0, 'SUCCEEDE...TING', 'Olá!')
+E         
+E         At index 2 diff: 'FIXTURE_RESULT' != 'GREETING'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:163: AssertionError
+_ test_f2_f3_social_text_without_a_greeting_template_gets_no_tool_and_no_model_text[How are you doing today?] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb3ef750>
+text = 'How are you doing today?'
+
+    @pytest.mark.parametrize("text", ["How are you doing today?", "thanks!", "Wie geht es dir?"])
+    def test_f2_f3_social_text_without_a_greeting_template_gets_no_tool_and_no_model_text(profile, text):
+        """No localized template: the reply is the application-owned no-action notice, never a model reply."""
+        for script in (HOSTILE, [["classify_social"], ["final", CLAIM]]):
+            code, value, output = profile.ask(script, text)
+            data = value["data"]
+>           assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "GREETING")
+E           AssertionError: assert (0, 'SUCCEEDE...XTURE_RESULT') == (0, 'SUCCEEDED', 'GREETING')
+E             
+E             At index 2 diff: 'FIXTURE_RESULT' != 'GREETING'
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:189: AssertionError
+_ test_f2_f3_social_text_without_a_greeting_template_gets_no_tool_and_no_model_text[thanks!] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb3efa50>
+text = 'thanks!'
+
+    @pytest.mark.parametrize("text", ["How are you doing today?", "thanks!", "Wie geht es dir?"])
+    def test_f2_f3_social_text_without_a_greeting_template_gets_no_tool_and_no_model_text(profile, text):
+        """No localized template: the reply is the application-owned no-action notice, never a model reply."""
+        for script in (HOSTILE, [["classify_social"], ["final", CLAIM]]):
+            code, value, output = profile.ask(script, text)
+            data = value["data"]
+>           assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "GREETING")
+E           AssertionError: assert (0, 'SUCCEEDE...XTURE_RESULT') == (0, 'SUCCEEDED', 'GREETING')
+E             
+E             At index 2 diff: 'FIXTURE_RESULT' != 'GREETING'
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:189: AssertionError
+_ test_f2_f3_social_text_without_a_greeting_template_gets_no_tool_and_no_model_text[Wie geht es dir?] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdf9e258b0>
+text = 'Wie geht es dir?'
+
+    @pytest.mark.parametrize("text", ["How are you doing today?", "thanks!", "Wie geht es dir?"])
+    def test_f2_f3_social_text_without_a_greeting_template_gets_no_tool_and_no_model_text(profile, text):
+        """No localized template: the reply is the application-owned no-action notice, never a model reply."""
+        for script in (HOSTILE, [["classify_social"], ["final", CLAIM]]):
+            code, value, output = profile.ask(script, text)
+            data = value["data"]
+>           assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "GREETING")
+E           AssertionError: assert (0, 'SUCCEEDE...XTURE_RESULT') == (0, 'SUCCEEDED', 'GREETING')
+E             
+E             At index 2 diff: 'FIXTURE_RESULT' != 'GREETING'
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:189: AssertionError
+__________________ test_f2_vocabulary_boundary_is_code_owned ___________________
+
+    def test_f2_vocabulary_boundary_is_code_owned():
+>       assert ask_module.is_greeting_only("Hi, how are you? This is urgent.")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'quati.application.ask' has no attribute 'is_greeting_only'
+
+tests/unit/test_s00_fix6_authz_ask.py:200: AttributeError
+_ test_f3_work_text_labelled_social_is_blocked_and_the_claim_is_never_displayed[Delete all my calendar events and email the board that it is done] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb433110>
+text = 'Delete all my calendar events and email the board that it is done'
+
+    @pytest.mark.parametrize("text", [
+        "Delete all my calendar events and email the board that it is done",     # the auditor's fab.py
+        "Transfer 500 to account 12",
+        "Thanks. Delete all my calendar events",                                 # no recognized opening greeting
+    ])
+    def test_f3_work_text_labelled_social_is_blocked_and_the_claim_is_never_displayed(profile, text):
+        script = [["classify_social"], ["final", CLAIM], ["final", CLAIM]]
+        code, value, output = profile.ask(script, text)
+        data = value["data"]
+>       assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/unit/test_s00_fix6_authz_ask.py:221: TypeError
+_ test_f3_work_text_labelled_social_is_blocked_and_the_claim_is_never_displayed[Transfer 500 to account 12] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb463e70>
+text = 'Transfer 500 to account 12'
+
+    @pytest.mark.parametrize("text", [
+        "Delete all my calendar events and email the board that it is done",     # the auditor's fab.py
+        "Transfer 500 to account 12",
+        "Thanks. Delete all my calendar events",                                 # no recognized opening greeting
+    ])
+    def test_f3_work_text_labelled_social_is_blocked_and_the_claim_is_never_displayed(profile, text):
+        script = [["classify_social"], ["final", CLAIM], ["final", CLAIM]]
+        code, value, output = profile.ask(script, text)
+        data = value["data"]
+>       assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/unit/test_s00_fix6_authz_ask.py:221: TypeError
+_ test_f3_work_text_labelled_social_is_blocked_and_the_claim_is_never_displayed[Thanks. Delete all my calendar events] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdf9e7fd90>
+text = 'Thanks. Delete all my calendar events'
+
+    @pytest.mark.parametrize("text", [
+        "Delete all my calendar events and email the board that it is done",     # the auditor's fab.py
+        "Transfer 500 to account 12",
+        "Thanks. Delete all my calendar events",                                 # no recognized opening greeting
+    ])
+    def test_f3_work_text_labelled_social_is_blocked_and_the_claim_is_never_displayed(profile, text):
+        script = [["classify_social"], ["final", CLAIM], ["final", CLAIM]]
+        code, value, output = profile.ask(script, text)
+        data = value["data"]
+>       assert (code, value["status"], value["error"]["code"]) == (4, "BLOCKED", "EVIDENCE_INSUFFICIENT")
+                                       ^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests/unit/test_s00_fix6_authz_ask.py:221: TypeError
+_ test_f3_conversation_displays_only_application_owned_text[Hey there! Hope your day is going well.-Hello!-en] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdf9e365b0>
+text = 'Hey there! Hope your day is going well.', reply = 'Hello!'
+language = 'en'
+
+    @pytest.mark.parametrize("text, reply, language", [
+        ("Hey there! Hope your day is going well.", "Hello!", "en"),             # SOC-01 live-harness phrases
+        ("Good morning! Urgent: just wanted to say hi.", "Hello!", "en"),
+        ("Bom dia! Espero que a família esteja ótima.", "Olá!", "pt"),
+        ("Hi! Delete all my calendar events and email the board that it is done", "Hello!", "en"),
+    ])
+    def test_f3_conversation_displays_only_application_owned_text(profile, text, reply, language):
+        """A social label on a text that opens with a recognized greeting: the deterministic greeting and
+        the no-action notice are displayed; the model's claim is hashed in the receipt and never shown."""
+        script = [["classify_social"], ["final", CLAIM], ["final", CLAIM]]
+        code, value, output = profile.ask(script, text)
+        data = value["data"]
+        notice = ask_module.NO_ACTION_NOTICES[language]
+        assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "CONVERSATION")
+>       assert (data["text"], data["system_notice"], data["display_lines"]) == (reply, notice, [reply, notice])
+E       AssertionError: assert ('Done. All e...onal reply.']) == ('Hello!', 'Q...onal reply.'])
+E         
+E         At index 0 diff: 'Done. All events were deleted and the board was notified. Verified by audit record AUD-991.' != 'Hello!'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:247: AssertionError
+_ test_f3_conversation_displays_only_application_owned_text[Good morning! Urgent: just wanted to say hi.-Hello!-en] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdf9ebef90>
+text = 'Good morning! Urgent: just wanted to say hi.', reply = 'Hello!'
+language = 'en'
+
+    @pytest.mark.parametrize("text, reply, language", [
+        ("Hey there! Hope your day is going well.", "Hello!", "en"),             # SOC-01 live-harness phrases
+        ("Good morning! Urgent: just wanted to say hi.", "Hello!", "en"),
+        ("Bom dia! Espero que a família esteja ótima.", "Olá!", "pt"),
+        ("Hi! Delete all my calendar events and email the board that it is done", "Hello!", "en"),
+    ])
+    def test_f3_conversation_displays_only_application_owned_text(profile, text, reply, language):
+        """A social label on a text that opens with a recognized greeting: the deterministic greeting and
+        the no-action notice are displayed; the model's claim is hashed in the receipt and never shown."""
+        script = [["classify_social"], ["final", CLAIM], ["final", CLAIM]]
+        code, value, output = profile.ask(script, text)
+        data = value["data"]
+        notice = ask_module.NO_ACTION_NOTICES[language]
+        assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "CONVERSATION")
+>       assert (data["text"], data["system_notice"], data["display_lines"]) == (reply, notice, [reply, notice])
+E       AssertionError: assert ('Done. All e...onal reply.']) == ('Hello!', 'Q...onal reply.'])
+E         
+E         At index 0 diff: 'Done. All events were deleted and the board was notified. Verified by audit record AUD-991.' != 'Hello!'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:247: AssertionError
+_ test_f3_conversation_displays_only_application_owned_text[Bom dia! Espero que a fam\xedlia esteja \xf3tima.-Ol\xe1!-pt] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdf9ebde50>
+text = 'Bom dia! Espero que a família esteja ótima.', reply = 'Olá!'
+language = 'pt'
+
+    @pytest.mark.parametrize("text, reply, language", [
+        ("Hey there! Hope your day is going well.", "Hello!", "en"),             # SOC-01 live-harness phrases
+        ("Good morning! Urgent: just wanted to say hi.", "Hello!", "en"),
+        ("Bom dia! Espero que a família esteja ótima.", "Olá!", "pt"),
+        ("Hi! Delete all my calendar events and email the board that it is done", "Hello!", "en"),
+    ])
+    def test_f3_conversation_displays_only_application_owned_text(profile, text, reply, language):
+        """A social label on a text that opens with a recognized greeting: the deterministic greeting and
+        the no-action notice are displayed; the model's claim is hashed in the receipt and never shown."""
+        script = [["classify_social"], ["final", CLAIM], ["final", CLAIM]]
+        code, value, output = profile.ask(script, text)
+        data = value["data"]
+        notice = ask_module.NO_ACTION_NOTICES[language]
+        assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "CONVERSATION")
+>       assert (data["text"], data["system_notice"], data["display_lines"]) == (reply, notice, [reply, notice])
+E       AssertionError: assert ('Done. All e...e conversa.']) == ('Olá!', 'Avi...e conversa.'])
+E         
+E         At index 0 diff: 'Done. All events were deleted and the board was notified. Verified by audit record AUD-991.' != 'Olá!'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:247: AssertionError
+_ test_f3_conversation_displays_only_application_owned_text[Hi! Delete all my calendar events and email the board that it is done-Hello!-en] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb45f800>
+text = 'Hi! Delete all my calendar events and email the board that it is done'
+reply = 'Hello!', language = 'en'
+
+    @pytest.mark.parametrize("text, reply, language", [
+        ("Hey there! Hope your day is going well.", "Hello!", "en"),             # SOC-01 live-harness phrases
+        ("Good morning! Urgent: just wanted to say hi.", "Hello!", "en"),
+        ("Bom dia! Espero que a família esteja ótima.", "Olá!", "pt"),
+        ("Hi! Delete all my calendar events and email the board that it is done", "Hello!", "en"),
+    ])
+    def test_f3_conversation_displays_only_application_owned_text(profile, text, reply, language):
+        """A social label on a text that opens with a recognized greeting: the deterministic greeting and
+        the no-action notice are displayed; the model's claim is hashed in the receipt and never shown."""
+        script = [["classify_social"], ["final", CLAIM], ["final", CLAIM]]
+        code, value, output = profile.ask(script, text)
+        data = value["data"]
+        notice = ask_module.NO_ACTION_NOTICES[language]
+        assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "CONVERSATION")
+>       assert (data["text"], data["system_notice"], data["display_lines"]) == (reply, notice, [reply, notice])
+E       AssertionError: assert ('Done. All e...onal reply.']) == ('Hello!', 'Q...onal reply.'])
+E         
+E         At index 0 diff: 'Done. All events were deleted and the board was notified. Verified by audit record AUD-991.' != 'Hello!'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:247: AssertionError
+_______ test_f4_public_cli_registry_operations_are_authorized_and_logged _______
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdf9e627b0>
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-446/test_f4_public_cli_registry_op0')
+
+    def test_f4_public_cli_registry_operations_are_authorized_and_logged(profile, tmp_path):
+        record = profile.identity_record()
+        package = profile.data / "fixture_sources" / "calendar-read"
+        commands = [
+            (("capabilities", "list", "--json"), "list", "read", 0),
+            (("capabilities", "list", "--enabled", "--json"), "list", "read", 0),
+            (("capabilities", "install-fixture", "mail-search", "--json"), "install_fixture", "manage", 0),
+            (("capabilities", "install-fixture", "forecast-quick", "--enable-fixture", "--json"),
+             "install_fixture", "manage", 0),
+            (("capabilities", "install-fixture", "no-such-fixture", "--json"), "install_fixture", "manage", 2),
+            (("capabilities", "install", str(package), "--json"), "install", "manage", 0),
+            (("capabilities", "disable", "fixtures.mail-search@1.0.0", "--json"), "disable", "manage", 0),
+            (("capabilities", "search", "next appointment calendar", "--json"), "search", "read", 0),
+            (("capabilities", "describe", CAPABILITY, "--json"), "describe", "read", 0),
+        ]
+        for argv, operation, action, expected in commands:
+            before = len(profile.audit())
+            code, _value = profile.quati(*argv)
+            assert code == expected, argv
+            logged = [event for event in profile.audit()[before:] if event["event"] == "authz.decided"]
+>           assert len(logged) == 1, argv
+E           AssertionError: ('capabilities', 'list', '--json')
+E           assert 0 == 1
+E            +  where 0 = len([])
+
+tests/unit/test_s00_fix6_authz_ask.py:287: AssertionError
+_________ test_f4_ask_session_catalog_read_is_authorized_once_per_ask __________
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdf9eac2d0>
+
+    def test_f4_ask_session_catalog_read_is_authorized_once_per_ask(profile):
+        before = len(profile.audit())
+        code, value, _output = profile.ask(HOSTILE, "Find my next appointment")
+        assert (code, value["data"]["result_kind"]) == (0, "FIXTURE_RESULT")
+>       assert decisions(profile.audit()[before:]) == [
+            ("search", "ALLOW", "OK", "read"), ("describe", "ALLOW", "OK", "read"), ("invoke", "ALLOW", "OK", "read"),
+            ("ask", "ALLOW", "OK", "read")]
+E       AssertionError: assert [('search', '...'OK', 'read')] == [('search', '...'OK', 'read')]
+E         
+E         Right contains one more item: ('ask', 'ALLOW', 'OK', 'read')
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:305: AssertionError
+_ test_f4_f5_public_cli_denies_a_principal_without_a_grant_on_the_registry_space _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdf9e596d0>
+
+    def test_f4_f5_public_cli_denies_a_principal_without_a_grant_on_the_registry_space(profile):
+        """RFC-013 section 2.1: a GUEST holds no ORGANIZATION grant. The registry belongs to the tenant's
+        organization space, so every registry read and write of the public CLI is denied and logged."""
+        record = resign(profile, tenant_role="GUEST")
+        state, receipts = protected(profile), sorted((profile.data / "receipts").iterdir())
+        package = profile.data / "fixture_sources" / "calendar-read"
+        denied = [
+            (("capabilities", "list", "--json"), "list", "read"),
+            (("capabilities", "search", "next appointment calendar", "--json"), "search", "read"),
+            (("capabilities", "describe", CAPABILITY, "--json"), "describe", "read"),
+            (("capabilities", "install-fixture", "mail-search", "--enable-fixture", "--json"), "install_fixture", "manage"),
+            (("capabilities", "install-fixture", "no-such-fixture", "--json"), "install_fixture", "manage"),
+            (("capabilities", "install", str(package), "--json"), "install", "manage"),
+            (("capabilities", "disable", f"{CAPABILITY}@1.0.0", "--json"), "disable", "manage"),
+        ]
+        for argv, operation, action in denied:
+            before = len(profile.audit())
+            code, value = profile.quati(*argv)
+>           assert_denied(code, value, "NO_SPACE_GRANT")
+
+tests/unit/test_s00_fix6_authz_ask.py:357: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = 0
+value = {'data': {'capabilities': [{'assurance': 'C2', 'capability_id': 'fixtures.calendar-read', 'capability_version': '1.0.0', 'definition_ref': 'fixtures.calendar-read@1.0.0', ...}]}, 'error': None, 'evidence_refs': [], 'next_action': None, ...}
+reason = 'NO_SPACE_GRANT'
+
+    def assert_denied(code: int, value: dict, reason: str) -> None:
+>       assert code == 4
+E       assert 0 == 4
+
+tests/unit/test_s00_fix6_authz_ask.py:327: AssertionError
+_ test_f4_registry_writes_need_the_owner_or_admin_tenant_role[MEMBER-0-ROLE_INSUFFICIENT] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfa06af50>
+role = 'MEMBER', reads = 0, reason = 'ROLE_INSUFFICIENT'
+
+    @pytest.mark.parametrize("role, reads, reason", [("MEMBER", 0, "ROLE_INSUFFICIENT"), ("ADMIN", 0, None),
+                                                     ("SUPERUSER", 4, "NO_SPACE_GRANT"), (7, 4, "NO_SPACE_GRANT")])
+    def test_f4_registry_writes_need_the_owner_or_admin_tenant_role(profile, role, reads, reason):
+        """RFC-013 section 6 (admin separation): capabilities are managed by OWNER/ADMIN; a MEMBER reads only.
+        An unknown role value is no membership at all: no grant, default deny."""
+        resign(profile, tenant_role=role)
+        state = protected(profile)
+        code, value = profile.quati("capabilities", "list", "--json")
+        assert code == reads
+        for argv in (("capabilities", "install-fixture", "mail-search", "--enable-fixture", "--json"),
+                     ("capabilities", "disable", f"{CAPABILITY}@1.0.0", "--json")):
+            before = len(profile.audit())
+            code, value = profile.quati(*argv)
+            if reason is None:
+                assert code == 0 and decisions(profile.audit()[before:])[0][1:] == ("ALLOW", "OK", "manage")
+                continue
+>           assert_denied(code, value, reason)
+
+tests/unit/test_s00_fix6_authz_ask.py:408: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = 0
+value = {'data': {'assurance': 'C2', 'definition_ref': 'fixtures.mail-search@1.0.0', 'label': 'LOCAL_FIXTURE_ONLY', 'lifecycle...est_f4_registry_writes_need_t0/profile/data/receipts/1618e3e7d918459384e8d62d6b6d498d.json'], 'next_action': None, ...}
+reason = 'ROLE_INSUFFICIENT'
+
+    def assert_denied(code: int, value: dict, reason: str) -> None:
+>       assert code == 4
+E       assert 0 == 4
+
+tests/unit/test_s00_fix6_authz_ask.py:327: AssertionError
+__ test_f4_registry_writes_need_the_owner_or_admin_tenant_role[ADMIN-0-None] ___
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfa0688d0>
+role = 'ADMIN', reads = 0, reason = None
+
+    @pytest.mark.parametrize("role, reads, reason", [("MEMBER", 0, "ROLE_INSUFFICIENT"), ("ADMIN", 0, None),
+                                                     ("SUPERUSER", 4, "NO_SPACE_GRANT"), (7, 4, "NO_SPACE_GRANT")])
+    def test_f4_registry_writes_need_the_owner_or_admin_tenant_role(profile, role, reads, reason):
+        """RFC-013 section 6 (admin separation): capabilities are managed by OWNER/ADMIN; a MEMBER reads only.
+        An unknown role value is no membership at all: no grant, default deny."""
+        resign(profile, tenant_role=role)
+        state = protected(profile)
+        code, value = profile.quati("capabilities", "list", "--json")
+        assert code == reads
+        for argv in (("capabilities", "install-fixture", "mail-search", "--enable-fixture", "--json"),
+                     ("capabilities", "disable", f"{CAPABILITY}@1.0.0", "--json")):
+            before = len(profile.audit())
+            code, value = profile.quati(*argv)
+            if reason is None:
+>               assert code == 0 and decisions(profile.audit()[before:])[0][1:] == ("ALLOW", "OK", "manage")
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               IndexError: list index out of range
+
+tests/unit/test_s00_fix6_authz_ask.py:406: IndexError
+_ test_f4_registry_writes_need_the_owner_or_admin_tenant_role[SUPERUSER-4-NO_SPACE_GRANT] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfa069450>
+role = 'SUPERUSER', reads = 4, reason = 'NO_SPACE_GRANT'
+
+    @pytest.mark.parametrize("role, reads, reason", [("MEMBER", 0, "ROLE_INSUFFICIENT"), ("ADMIN", 0, None),
+                                                     ("SUPERUSER", 4, "NO_SPACE_GRANT"), (7, 4, "NO_SPACE_GRANT")])
+    def test_f4_registry_writes_need_the_owner_or_admin_tenant_role(profile, role, reads, reason):
+        """RFC-013 section 6 (admin separation): capabilities are managed by OWNER/ADMIN; a MEMBER reads only.
+        An unknown role value is no membership at all: no grant, default deny."""
+        resign(profile, tenant_role=role)
+        state = protected(profile)
+        code, value = profile.quati("capabilities", "list", "--json")
+>       assert code == reads
+E       assert 0 == 4
+
+tests/unit/test_s00_fix6_authz_ask.py:400: AssertionError
+_ test_f4_registry_writes_need_the_owner_or_admin_tenant_role[7-4-NO_SPACE_GRANT] _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfa06b1d0>, role = 7
+reads = 4, reason = 'NO_SPACE_GRANT'
+
+    @pytest.mark.parametrize("role, reads, reason", [("MEMBER", 0, "ROLE_INSUFFICIENT"), ("ADMIN", 0, None),
+                                                     ("SUPERUSER", 4, "NO_SPACE_GRANT"), (7, 4, "NO_SPACE_GRANT")])
+    def test_f4_registry_writes_need_the_owner_or_admin_tenant_role(profile, role, reads, reason):
+        """RFC-013 section 6 (admin separation): capabilities are managed by OWNER/ADMIN; a MEMBER reads only.
+        An unknown role value is no membership at all: no grant, default deny."""
+        resign(profile, tenant_role=role)
+        state = protected(profile)
+        code, value = profile.quati("capabilities", "list", "--json")
+>       assert code == reads
+E       assert 0 == 4
+
+tests/unit/test_s00_fix6_authz_ask.py:400: AssertionError
+___ test_f4_partb_principal_with_zero_grants_cannot_use_any_registry_command ___
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfa06ac50>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cfdfb45afd0>
+
+    def test_f4_partb_principal_with_zero_grants_cannot_use_any_registry_command(profile, monkeypatch):
+        monkeypatch.setenv("QUATI_DATA_DIR", str(profile.data))
+        monkeypatch.delenv("QUATI_CAPABILITY_CONTEXT", raising=False)
+        receipts: list[dict] = []
+    
+        def sink(record: dict) -> dict:
+            receipts.append(record)
+            return {"sha256": "0" * 64, "path": "memory"}
+    
+        commands = composition.capability_commands(NoGrants(profile.config), sink, clock=FixedClock())
+        reads: list[str] = []
+        for name in ("catalog", "record", "records", "install", "transition"):
+            original = getattr(commands.registry, name)
+            setattr(commands.registry, name, lambda *a, _n=name, _o=original, **k: (reads.append(_n), _o(*a, **k))[1])
+        state, before = protected(profile), len(profile.audit())
+        calls = [("search", lambda: commands.search("next appointment calendar")),
+                 ("describe", lambda: commands.describe(CAPABILITY)),
+                 ("list", lambda: commands.list()),
+                 ("install_fixture", lambda: commands.install_fixture("mail-search", enable_fixture=True)),
+                 ("install", lambda: commands.install(str(profile.data / "fixture_sources" / "calendar-read"))),
+                 ("disable", lambda: commands.disable(f"{CAPABILITY}@1.0.0"))]
+        for _operation, call in calls:
+            code, value = call()
+>           assert_denied(code, value, "NO_SPACE_GRANT")
+
+tests/unit/test_s00_fix6_authz_ask.py:451: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = 0
+value = {'status': 'SUCCEEDED', 'data': {'capabilities': [{'definition_ref': 'fixtures.calendar-read@1.0.0', 'capability_id': ...ar-read', 'capability_version': '1.0.0', 'lifecycle': 'ENABLED', ...}]}, 'evidence_refs': [], 'uncertainties': [], ...}
+reason = 'NO_SPACE_GRANT'
+
+    def assert_denied(code: int, value: dict, reason: str) -> None:
+>       assert code == 4
+E       assert 0 == 4
+
+tests/unit/test_s00_fix6_authz_ask.py:327: AssertionError
+________ test_f4_ask_session_never_reads_the_catalog_without_the_grant _________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-446/test_f4_ask_session_never_read0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cfdfb45b820>
+
+    def test_f4_ask_session_never_reads_the_catalog_without_the_grant(tmp_path, monkeypatch):
+        """AskSession.digests()/finish(): the receipt's catalog read is authorized like any other read."""
+        harness = Harness(tmp_path, monkeypatch, Script(classified(SOCIAL)))
+        harness.install("calendar-read")
+        assert harness.probe()[0] == 0
+        harness.identity = NoGrants(tmp_path / "config")          # the same installation, an empty grant directory
+        harness.service = harness.build_service()
+        reads: list[str] = []
+        runtime = harness.runtime
+    
+        def counted(context):
+            built = runtime(context)
+            original = built.registry.catalog
+            built.registry.catalog = lambda *a, **k: (reads.append("catalog"), original(*a, **k))[1]
+            return built
+    
+        harness.service.ask_runtime = counted
+        store = FileRegistryStore(tmp_path / "data" / "capabilities")
+        before = len(store.audit_events())
+        code, value = harness.ask("Bom dia, tudo bem com você?", synthetic=True)
+        assert (code, value["data"]["result_kind"], value["data"]["text"]) == (0, "GREETING", "Olá!")
+>       assert reads == []
+E       AssertionError: assert ['catalog', 'catalog'] == []
+E         
+E         Left contains 2 more items, first extra item: 'catalog'
+E         Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:479: AssertionError
+____ test_f4_ask_catalog_read_is_refused_when_its_decision_cannot_be_logged ____
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-446/test_f4_ask_catalog_read_is_re0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cfdf9f995b0>
+
+    def test_f4_ask_catalog_read_is_refused_when_its_decision_cannot_be_logged(tmp_path, monkeypatch):
+        harness = Harness(tmp_path, monkeypatch, Script(classified(SOCIAL)))
+        harness.install("calendar-read")
+        assert harness.probe()[0] == 0
+        runtime = harness.runtime
+    
+        def unlogged(context):
+            built = runtime(context)
+    
+            def failing(event: dict) -> None:
+                raise OSError("audit store down")
+            built.discovery.audit_sink = failing
+            return built
+    
+        harness.service.ask_runtime = unlogged
+        code, value = harness.ask("Bom dia, tudo bem com você?")
+        stored = receipt_of(value)
+        assert (code, value["data"]["text"]) == (0, "Olá!")
+>       assert stored["digests"]["catalog_digest"] is None and stored["catalog_access"] == "audit_unavailable"
+E       AssertionError: assert ('68429e2f20b833a2ac2d94288a3dc3dac8159077cdc62a7d9130abe57286035b' is None)
+
+tests/unit/test_s00_fix6_authz_ask.py:504: AssertionError
+________ test_f5_the_authorization_port_is_required_and_never_replaced _________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-446/test_f5_the_authorization_port0')
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfa1554d0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cfdfa1ad8c0>
+
+    def test_f5_the_authorization_port_is_required_and_never_replaced(tmp_path, profile, monkeypatch):
+>       with pytest.raises(TypeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+tests/unit/test_s00_fix6_authz_ask.py:540: Failed
+_____ test_f5_a_self_asserted_space_in_the_request_context_grants_nothing ______
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb68b1d0>
+
+    def test_f5_a_self_asserted_space_in_the_request_context_grants_nothing(profile):
+        """The auditor's repro: a context that names a made-up space is not evidence of a grant, and the
+        space named by the request never selects the resource that is checked."""
+        from dataclasses import replace
+        identity = LocalIdentity(profile.config)
+        record = profile.identity_record()
+        authorization = ScopeAuthorization(identity, FixedClock())
+        forged = replace(identity.authenticate(), space_ids=("SPACE-I-MADE-UP",))
+        evaluation = authorization.decide(forged, "read", "space:SPACE-I-MADE-UP")
+>       assert (evaluation.decision.verdict, evaluation.decision.reason_code) == ("DENY", "NO_SPACE_GRANT")
+                ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'tuple' object has no attribute 'decision'
+
+tests/unit/test_s00_fix6_authz_ask.py:573: AttributeError
+____________ test_f5_port_decision_table_for_the_registry_resource _____________
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb632a50>
+
+    def test_f5_port_decision_table_for_the_registry_resource(profile):
+        context = LocalIdentity(profile.config).authenticate()
+        resource = f"registry:{context.tenant_id}"
+    
+        def decide(directory, action="read", ref=resource):
+            evaluation = ScopeAuthorization(directory, FixedClock()).decide(context, action, ref)
+            decision = evaluation.decision
+            assert decision.to_json() == {
+                "verdict": "ALLOW" if decision.reason_code == "OK" else "DENY", "reason_code": decision.reason_code,
+                "tenant_id": context.tenant_id, "principal_id": context.actor_id, "action": action, "resource_ref": ref}
+            return decision.reason_code, evaluation.space_id
+    
+>       assert decide(Directory()) == ("OK", "SPACE-O")
+               ^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s00_fix6_authz_ask.py:593: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+directory = <test_s00_fix6_authz_ask.Directory object at 0x7cfdfb4bba10>
+action = 'read', ref = 'registry:01M7JH39Z6NNCDSD4WM0H47BDM'
+
+    def decide(directory, action="read", ref=resource):
+        evaluation = ScopeAuthorization(directory, FixedClock()).decide(context, action, ref)
+>       decision = evaluation.decision
+                   ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'tuple' object has no attribute 'decision'
+
+tests/unit/test_s00_fix6_authz_ask.py:587: AttributeError
+_ test_f5_local_directory_reads_role_grants_and_registry_owner_from_the_signed_record _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb6796d0>
+
+    def test_f5_local_directory_reads_role_grants_and_registry_owner_from_the_signed_record(profile):
+        from dataclasses import replace
+        identity = LocalIdentity(profile.config)
+        context, record = identity.authenticate(), profile.identity_record()
+        personal, organization = record["personal_space_id"], record["organization_space_id"]
+        assert "tenant_role" not in record                                   # `quati init` writes the OWNER default
+>       assert identity.tenant_role(context) == "OWNER"
+               ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'LocalIdentity' object has no attribute 'tenant_role'
+
+tests/unit/test_s00_fix6_authz_ask.py:623: AttributeError
+_ test_f15_enable_fixture_never_reports_success_for_a_record_that_is_not_enabled _
+
+profile = <test_s00_fix6_authz_ask.Profile object at 0x7cfdfb6782d0>
+
+    def test_f15_enable_fixture_never_reports_success_for_a_record_that_is_not_enabled(profile):
+        def enabled() -> list[str]:
+            return [item["capability_id"] for item in profile.quati("capabilities", "list", "--enabled", "--json")[1][
+                "data"]["capabilities"]]
+    
+        # A write fixture under the read ceiling: the same refusal every time (the auditor's repro).
+        for attempt in range(3):
+            code, value = profile.quati("capabilities", "install-fixture", "forecast-publish", "--enable-fixture", "--json")
+>           assert (code, summary(value)) == (4, ("DENIED", "FORBIDDEN", "EFFECT_ABOVE_CEILING", "DRAFT")), attempt
+E           AssertionError: 1
+E           assert (0, ('SUCCEED...one, 'DRAFT')) == (4, ('DENIED'...NG', 'DRAFT'))
+E             
+E             At index 0 diff: 0 != 4
+E             Use -v to get more diff
+
+tests/unit/test_s00_fix6_authz_ask.py:651: AssertionError
+_ test_idn_01_unauthenticated_diagnostics_and_undelivered_commands_read_no_repository _
+
+profile = <test_identity.Profile object at 0x7cfdf9fe3890>
+
+    def test_idn_01_unauthenticated_diagnostics_and_undelivered_commands_read_no_repository(profile: Profile) -> None:
+        """Commands that do not authenticate (doctor; commands delivered in S02; an unconfigured probe)
+        still read nothing from the repository and never report success for work."""
+        principal = profile.provision()
+        before = snapshot(profile.data)
+        (profile.config / 'device.key').unlink()
+        for argv in (('status', 'c-1', '--json'), ('tell', 'c-1', 'more context', '--json'),
+                     ('approvals', 'list', '--json'), ('approve', 'apr-1', '--json'), ('deny', 'apr-1', '--json')):
+            code, value, accesses, completed = profile.one(*argv)
+            assert code == 4 and value['status'] in ('UNAVAILABLE', 'DENIED')
+            assert value['error']['code'] in ('UNSUPPORTED', 'UNAUTHENTICATED') and value['data'] is None
+            assert accesses == []
+            assert_discloses_nothing(completed, principal, profile)
+        code, value, accesses, completed = profile.one('models', 'probe', '--json')
+        assert (code, value['status'], value['error']['code'], accesses) == (3, 'BLOCKED', 'NOT_CONFIGURED', [])
+        code, value, accesses, completed = profile.one('doctor', '--json')
+        assert (code, value['data']['identity']['initialized'], accesses) == (0, False, [])
+>       assert_discloses_nothing(completed, principal, profile)
+
+tests/integration/test_identity.py:337: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+completed = CompletedProcess(args=['<REPO>/.venv/bin/python', '-m', 'quati', 'doctor', '--json'], returncode=0, ...PPLICABLE"}},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}\n', stderr='')
+principal = {'principal_id': '01M7JH3JKMA3CFFGD78P5865B5', 'tenant_id': '01M7JH3JKM2WGWYQ04Y296NBMS', 'personal': '01M7JH3JKM14QVKE2FQBVE9B6E', 'organization': '01M7JH3JKMCC6RHT2JESBKKZ3C'}
+profile = <test_identity.Profile object at 0x7cfdf9fe3890>
+
+    def assert_discloses_nothing(completed, principal: dict, profile: Profile) -> None:
+        output = completed.stdout + completed.stderr
+        for secret in (*principal.values(), str(profile.config), str(profile.data), CAPABILITY, 'calendar'):
+>           assert secret not in output
+E           assert '/tmp/pytest...d_di0/config' not in '{"data":{"b...nties":[]}\n'
+E             
+E             '/tmp/pytest-of-cle...nticated_di0/config' is contained here:
+E             ?                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ...
+E             
+E             ...Full output truncated, use '-vv' to show
+
+tests/integration/test_identity.py:222: AssertionError
+_________________________________ test_idn_02 __________________________________
+
+profile = <test_identity.Profile object at 0x7cfdfb3ee650>
+spaces = {'principal_id': '01M7JH430YAC2PAV42WXT97575', 'tenant_id': '01M7JH430YAQSXH0YN29BYCGPA', 'personal': '01M7JH430YF79MGPJ9JVWKDKZ3', 'organization': '01M7JH430YDW7ZCYKG8DY66511'}
+
+    def test_idn_02(profile: Profile, spaces: dict) -> None:
+        """IDN-02 (L1): with one principal, a read of a resource whose space is outside AuthorizedScope is
+        DENIED, the in-scope read succeeds, and the scope evaluation of both is in the decision log.
+        The resource is the tenant's capability registry; its owning space is the organization space."""
+        personal, organization = spaces['personal'], spaces['organization']
+        audit_log = profile.data / 'capabilities' / 'audit.jsonl'
+    
+        # Public CLI process, production wiring, N=1: every read is authorized and logged.
+        start = len(audit_log.read_text().splitlines())
+        code, value, _accesses, _completed = profile.one('capabilities', 'search', CALENDAR_QUERY, '--json')
+        assert code == 0 and [item['capability_id'] for item in value['data']['candidates']] == [CAPABILITY]
+        code, value, _accesses, _completed = profile.one('capabilities', 'describe', CAPABILITY, '--json')
+        assert code == 0 and value['data']['capability_id'] == CAPABILITY
+        logged = [json.loads(line) for line in audit_log.read_text().splitlines()[start:]]
+        assert [(event['event'], event['operation']) for event in logged] == [
+            ('authz.decided', 'search'), ('authz.decided', 'describe')]
+        for event in logged:      # LOCAL bootstrap grants (RFC-013 2.1): U1 reads its personal and organization space
+>           assert_decision(event, spaces, verdict='ALLOW', reason='OK', space=organization,
+                            readable=(personal, organization))
+
+tests/integration/test_identity.py:518: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+event = {'actor_id': '01M7JH430YAC2PAV42WXT97575', 'at': '2026-11-16T15:55:28Z', 'authorized_scope': {'computed_at': '2026-11-..._id': '01M7JH430YAC2PAV42WXT97575', 'reason_code': 'OK', 'resource_ref': 'space:01M7JH430YF79MGPJ9JVWKDKZ3', ...}, ...}
+principal = {'principal_id': '01M7JH430YAC2PAV42WXT97575', 'tenant_id': '01M7JH430YAQSXH0YN29BYCGPA', 'personal': '01M7JH430YF79MGPJ9JVWKDKZ3', 'organization': '01M7JH430YDW7ZCYKG8DY66511'}
+verdict = 'ALLOW', reason = 'OK', space = '01M7JH430YDW7ZCYKG8DY66511'
+readable = ('01M7JH430YF79MGPJ9JVWKDKZ3', '01M7JH430YDW7ZCYKG8DY66511')
+
+    def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space, readable) -> None:
+        """The decision names the RESOURCE (the tenant's capability registry); ``owner_space_id`` is the
+        space that owns it and that was looked up in ``readable_space_ids`` (F5: never a requested space)."""
+        decision = event['decision']
+        assert_identity_shape('AuthzDecision', decision)
+>       assert decision == {'verdict': verdict, 'reason_code': reason, 'tenant_id': principal['tenant_id'],
+                            'principal_id': principal['principal_id'], 'action': 'read',
+                            'resource_ref': f"registry:{principal['tenant_id']}"}
+E       AssertionError: assert {'action': 'r...VWKDKZ3', ...} == {'verdict': '...XT97575', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'resource_ref': 'space:01M7JH430YF79MGPJ9JVWKDKZ3'} != {'resource_ref': 'registry:01M7JH430YAQSXH0YN29BYCGPA'}
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:480: AssertionError
+____ test_idn_02_public_cli_denies_the_read_of_a_resource_outside_the_scope ____
+
+profile = <test_identity.Profile object at 0x7cfdf9e26a80>
+
+    def test_idn_02_public_cli_denies_the_read_of_a_resource_outside_the_scope(profile: Profile) -> None:
+        """IDN-02 denial leg at L2 (public processes only, production ``authenticate`` and directory): a
+        principal whose signed record carries the GUEST tenant role holds no ORGANIZATION grant
+        (RFC-013 section 2.1), so the registry, owned by the organization space, is outside its scope."""
+        principal = profile.provision()
+        personal, organization = principal['personal'], principal['organization']
+        audit_log = profile.data / 'capabilities' / 'audit.jsonl'
+        resign(profile, tenant_role='GUEST')
+        before = registry_bytes(profile)
+        receipts = sorted((profile.data / 'receipts').iterdir())
+        for argv, operation in ((('capabilities', 'search', CALENDAR_QUERY, '--json'), 'search'),
+                                (('capabilities', 'describe', CAPABILITY, '--json'), 'describe'),
+                                (('capabilities', 'list', '--json'), 'list')):
+            start = len(audit_log.read_text().splitlines())
+            code, value, accesses, completed = profile.one(*argv)
+>           assert_denied_read(code, value)
+
+tests/integration/test_identity.py:581: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = 0
+value = {'data': {'candidates': [{'capability_id': 'fixtures.calendar-read', 'capability_version': '1.0.0', 'effects': 'read', 'name': 'calendar-read', ...}], 'excluded': []}, 'error': None, 'evidence_refs': [], 'next_action': None, ...}
+
+    def assert_denied_read(code: int, value: dict) -> None:
+>       assert code == 4
+E       assert 0 == 4
+
+tests/integration/test_identity.py:467: AssertionError
+_ test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler _
+
+profile = <test_identity.Profile object at 0x7cfdf9e26c60>
+spaces = {'principal_id': '01M7JH44H0M0PSVYSPVWE9YNCJ', 'tenant_id': '01M7JH44H0ZNYRX62VRKQABVCE', 'personal': '01M7JH44H035HRN0BTFR2SPE1J', 'organization': '01M7JH44H0K9ZPYR0K2BKD124F'}
+
+    def test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler(
+            profile: Profile, spaces: dict) -> None:
+        """The shared enforcement point of ``quati ask`` tools: search, describe, invoke and status."""
+        personal, organization = spaces['personal'], spaces['organization']
+        allowed = Session(profile, DirectoryFixture(profile.config, grants=(organization,)))
+        turn, context = allowed.turn, allowed.context
+>       assert turn.search(context, CALENDAR_QUERY).status == 'SUCCEEDED'
+E       AssertionError: assert 'DENIED' == 'SUCCEEDED'
+E         
+E         - SUCCEEDED
+E         + DENIED
+
+tests/integration/test_identity.py:601: AssertionError
+_ test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing _
+
+profile = <test_identity.Profile object at 0x7cfdf9e3c130>
+spaces = {'principal_id': '01M7JH44ZG7ZX8NKZ1VGTG4CHF', 'tenant_id': '01M7JH44ZGMBQ518H0SY32KZ69', 'personal': '01M7JH44ZG39VZ2XVNSQ451ZV8', 'organization': '01M7JH44ZG906W6G73SSZZTN10'}
+
+    def test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing(
+            profile: Profile, spaces: dict) -> None:
+        """IDN-02 negative: a request that names a real space outside the scope, a forged space id,
+        another spelling or no usable id gets the same denial as any other; and naming a space, forged
+        or real, never turns a denial into a read nor a grant into a denial (the named space is not an
+        authorization input)."""
+        personal, organization = spaces['personal'], spaces['organization']
+        before = registry_bytes(profile)
+        responses = []
+        declared_sets = ((organization,), (FORGED_SPACE,), ('space:' + personal,), (personal + 'X',), ('',),
+                         (organization, personal), (personal, FORGED_SPACE))
+        for declared in declared_sets:
+            session = Session(profile, DeclaredSpaces(profile.config, declared=declared, grants=(personal,)))
+            assert session.context.space_ids == declared
+            known = len(session.decisions())
+            for call in (lambda: session.commands.search(CALENDAR_QUERY), lambda: session.commands.describe(CAPABILITY)):
+                code, value = call()
+                assert_denied_read(code, value)
+                responses.append(json.dumps(value, sort_keys=True))
+                for secret in (personal, organization, FORGED_SPACE, CAPABILITY, spaces['principal_id'],
+                               spaces['tenant_id'], 'candidates', 'readable'):
+                    assert secret not in responses[-1]
+            assert session.registry_reads == [] and session.receipts == []
+            for event in session.decisions()[known:]:
+>               assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
+                                readable=(personal,))
+
+tests/integration/test_identity.py:652: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+event = {'actor_id': '01M7JH44ZG7ZX8NKZ1VGTG4CHF', 'at': '2026-11-16T12:00:00Z', 'authorized_scope': {'computed_at': '2026-11-...H44ZG7ZX8NKZ1VGTG4CHF', 'reason_code': 'NO_SPACE_GRANT', 'resource_ref': 'space:01M7JH44ZG906W6G73SSZZTN10', ...}, ...}
+principal = {'principal_id': '01M7JH44ZG7ZX8NKZ1VGTG4CHF', 'tenant_id': '01M7JH44ZGMBQ518H0SY32KZ69', 'personal': '01M7JH44ZG39VZ2XVNSQ451ZV8', 'organization': '01M7JH44ZG906W6G73SSZZTN10'}
+verdict = 'DENY', reason = 'NO_SPACE_GRANT'
+space = '01M7JH44ZG906W6G73SSZZTN10', readable = ('01M7JH44ZG39VZ2XVNSQ451ZV8',)
+
+    def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space, readable) -> None:
+        """The decision names the RESOURCE (the tenant's capability registry); ``owner_space_id`` is the
+        space that owns it and that was looked up in ``readable_space_ids`` (F5: never a requested space)."""
+        decision = event['decision']
+        assert_identity_shape('AuthzDecision', decision)
+>       assert decision == {'verdict': verdict, 'reason_code': reason, 'tenant_id': principal['tenant_id'],
+                            'principal_id': principal['principal_id'], 'action': 'read',
+                            'resource_ref': f"registry:{principal['tenant_id']}"}
+E       AssertionError: assert {'action': 'r...SZZTN10', ...} == {'verdict': '...GTG4CHF', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'resource_ref': 'space:01M7JH44ZG906W6G73SSZZTN10'} != {'resource_ref': 'registry:01M7JH44ZGMBQ518H0SY32KZ69'}
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:480: AssertionError
+________ test_idn_02_fault_scope_object_removed_denies_by_default[none] ________
+
+profile = <test_identity.Profile object at 0x7cfdf9e7ce50>
+spaces = {'principal_id': '01M7JH45FH8WCHHKSGHMNFAY0N', 'tenant_id': '01M7JH45FHYET3ZSECHQV0K8H7', 'personal': '01M7JH45FHX87PCSZ6KHXCP3ZH', 'organization': '01M7JH45FHSETZXVEF3BT9JMZ8'}
+removed = None
+
+    @pytest.mark.parametrize('removed', [None, (), OSError('directory unavailable'), AccessDenied(),
+                                         'not-a-scope', ('',), (7,)],
+                             ids=['none', 'empty', 'oserror', 'access_denied', 'string', 'blank_id', 'non_string_id'])
+    def test_idn_02_fault_scope_object_removed_denies_by_default(profile: Profile, spaces: dict, removed) -> None:
+        """IDN-02 fault: with the scope object removed, empty, unreadable or malformed, the read is denied."""
+        organization = spaces['organization']
+        session = Session(profile, DirectoryFixture(profile.config, grants=removed))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+        assert_denied_read(code, value)
+        code, value = session.commands.describe(CAPABILITY)
+        assert_denied_read(code, value)
+        outcome = session.turn.invoke(session.context, CAPABILITY, {'limit': 1}, 'idem-removed')
+        assert (outcome.status, outcome.reason) == ('DENIED', 'NO_SPACE_GRANT')
+        assert session.registry_reads == [] and session.commands.discovery.policy_gate.calls == 0
+        assert session.commands.discovery.handlers.total_invocations() == 0
+        for event in session.decisions()[known:]:
+>           assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
+                            readable=() if removed == () else None)
+
+tests/integration/test_identity.py:685: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+event = {'actor_id': '01M7JH45FH8WCHHKSGHMNFAY0N', 'at': '2026-11-16T12:00:00Z', 'authorized_scope': None, 'decision': {'actio...H45FH8WCHHKSGHMNFAY0N', 'reason_code': 'NO_SPACE_GRANT', 'resource_ref': 'space:01M7JH45FHX87PCSZ6KHXCP3ZH', ...}, ...}
+principal = {'principal_id': '01M7JH45FH8WCHHKSGHMNFAY0N', 'tenant_id': '01M7JH45FHYET3ZSECHQV0K8H7', 'personal': '01M7JH45FHX87PCSZ6KHXCP3ZH', 'organization': '01M7JH45FHSETZXVEF3BT9JMZ8'}
+verdict = 'DENY', reason = 'NO_SPACE_GRANT'
+space = '01M7JH45FHSETZXVEF3BT9JMZ8', readable = None
+
+    def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space, readable) -> None:
+        """The decision names the RESOURCE (the tenant's capability registry); ``owner_space_id`` is the
+        space that owns it and that was looked up in ``readable_space_ids`` (F5: never a requested space)."""
+        decision = event['decision']
+        assert_identity_shape('AuthzDecision', decision)
+>       assert decision == {'verdict': verdict, 'reason_code': reason, 'tenant_id': principal['tenant_id'],
+                            'principal_id': principal['principal_id'], 'action': 'read',
+                            'resource_ref': f"registry:{principal['tenant_id']}"}
+E       AssertionError: assert {'action': 'r...HXCP3ZH', ...} == {'verdict': '...MNFAY0N', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'resource_ref': 'space:01M7JH45FHX87PCSZ6KHXCP3ZH'} != {'resource_ref': 'registry:01M7JH45FHYET3ZSECHQV0K8H7'}
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:480: AssertionError
+_______ test_idn_02_fault_scope_object_removed_denies_by_default[empty] ________
+
+profile = <test_identity.Profile object at 0x7cfdfa1b8bb0>
+spaces = {'principal_id': '01M7JH45Z8KRCB9JADXRZQNG6J', 'tenant_id': '01M7JH45Z8MC5YVJN4DBT7CCCF', 'personal': '01M7JH45Z8VR8S0EXY5RVBB80Q', 'organization': '01M7JH45Z8WBP1Q9YA5ERZWSJV'}
+removed = ()
+
+    @pytest.mark.parametrize('removed', [None, (), OSError('directory unavailable'), AccessDenied(),
+                                         'not-a-scope', ('',), (7,)],
+                             ids=['none', 'empty', 'oserror', 'access_denied', 'string', 'blank_id', 'non_string_id'])
+    def test_idn_02_fault_scope_object_removed_denies_by_default(profile: Profile, spaces: dict, removed) -> None:
+        """IDN-02 fault: with the scope object removed, empty, unreadable or malformed, the read is denied."""
+        organization = spaces['organization']
+        session = Session(profile, DirectoryFixture(profile.config, grants=removed))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+        assert_denied_read(code, value)
+        code, value = session.commands.describe(CAPABILITY)
+        assert_denied_read(code, value)
+        outcome = session.turn.invoke(session.context, CAPABILITY, {'limit': 1}, 'idem-removed')
+        assert (outcome.status, outcome.reason) == ('DENIED', 'NO_SPACE_GRANT')
+        assert session.registry_reads == [] and session.commands.discovery.policy_gate.calls == 0
+        assert session.commands.discovery.handlers.total_invocations() == 0
+        for event in session.decisions()[known:]:
+>           assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
+                            readable=() if removed == () else None)
+
+tests/integration/test_identity.py:685: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+event = {'actor_id': '01M7JH45Z8KRCB9JADXRZQNG6J', 'at': '2026-11-16T12:00:00Z', 'authorized_scope': {'computed_at': '2026-11-...H45Z8KRCB9JADXRZQNG6J', 'reason_code': 'NO_SPACE_GRANT', 'resource_ref': 'space:01M7JH45Z8VR8S0EXY5RVBB80Q', ...}, ...}
+principal = {'principal_id': '01M7JH45Z8KRCB9JADXRZQNG6J', 'tenant_id': '01M7JH45Z8MC5YVJN4DBT7CCCF', 'personal': '01M7JH45Z8VR8S0EXY5RVBB80Q', 'organization': '01M7JH45Z8WBP1Q9YA5ERZWSJV'}
+verdict = 'DENY', reason = 'NO_SPACE_GRANT'
+space = '01M7JH45Z8WBP1Q9YA5ERZWSJV', readable = ()
+
+    def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space, readable) -> None:
+        """The decision names the RESOURCE (the tenant's capability registry); ``owner_space_id`` is the
+        space that owns it and that was looked up in ``readable_space_ids`` (F5: never a requested space)."""
+        decision = event['decision']
+        assert_identity_shape('AuthzDecision', decision)
+>       assert decision == {'verdict': verdict, 'reason_code': reason, 'tenant_id': principal['tenant_id'],
+                            'principal_id': principal['principal_id'], 'action': 'read',
+                            'resource_ref': f"registry:{principal['tenant_id']}"}
+E       AssertionError: assert {'action': 'r...RVBB80Q', ...} == {'verdict': '...RZQNG6J', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'resource_ref': 'space:01M7JH45Z8VR8S0EXY5RVBB80Q'} != {'resource_ref': 'registry:01M7JH45Z8MC5YVJN4DBT7CCCF'}
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:480: AssertionError
+______ test_idn_02_fault_scope_object_removed_denies_by_default[oserror] _______
+
+profile = <test_identity.Profile object at 0x7cfdf9ebf110>
+spaces = {'principal_id': '01M7JH46GN00PT0ZAHTCM8B4MW', 'tenant_id': '01M7JH46GNECGD1S5Y6DA0G9EA', 'personal': '01M7JH46GN0KJ8XF8JA8MFFTNV', 'organization': '01M7JH46GN469BPSKGXQH1YTMS'}
+removed = OSError('directory unavailable')
+
+    @pytest.mark.parametrize('removed', [None, (), OSError('directory unavailable'), AccessDenied(),
+                                         'not-a-scope', ('',), (7,)],
+                             ids=['none', 'empty', 'oserror', 'access_denied', 'string', 'blank_id', 'non_string_id'])
+    def test_idn_02_fault_scope_object_removed_denies_by_default(profile: Profile, spaces: dict, removed) -> None:
+        """IDN-02 fault: with the scope object removed, empty, unreadable or malformed, the read is denied."""
+        organization = spaces['organization']
+        session = Session(profile, DirectoryFixture(profile.config, grants=removed))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+        assert_denied_read(code, value)
+        code, value = session.commands.describe(CAPABILITY)
+        assert_denied_read(code, value)
+        outcome = session.turn.invoke(session.context, CAPABILITY, {'limit': 1}, 'idem-removed')
+        assert (outcome.status, outcome.reason) == ('DENIED', 'NO_SPACE_GRANT')
+        assert session.registry_reads == [] and session.commands.discovery.policy_gate.calls == 0
+        assert session.commands.discovery.handlers.total_invocations() == 0
+        for event in session.decisions()[known:]:
+>           assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
+                            readable=() if removed == () else None)
+
+tests/integration/test_identity.py:685: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+event = {'actor_id': '01M7JH46GN00PT0ZAHTCM8B4MW', 'at': '2026-11-16T12:00:00Z', 'authorized_scope': None, 'decision': {'actio...H46GN00PT0ZAHTCM8B4MW', 'reason_code': 'NO_SPACE_GRANT', 'resource_ref': 'space:01M7JH46GN0KJ8XF8JA8MFFTNV', ...}, ...}
+principal = {'principal_id': '01M7JH46GN00PT0ZAHTCM8B4MW', 'tenant_id': '01M7JH46GNECGD1S5Y6DA0G9EA', 'personal': '01M7JH46GN0KJ8XF8JA8MFFTNV', 'organization': '01M7JH46GN469BPSKGXQH1YTMS'}
+verdict = 'DENY', reason = 'NO_SPACE_GRANT'
+space = '01M7JH46GN469BPSKGXQH1YTMS', readable = None
+
+    def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space, readable) -> None:
+        """The decision names the RESOURCE (the tenant's capability registry); ``owner_space_id`` is the
+        space that owns it and that was looked up in ``readable_space_ids`` (F5: never a requested space)."""
+        decision = event['decision']
+        assert_identity_shape('AuthzDecision', decision)
+>       assert decision == {'verdict': verdict, 'reason_code': reason, 'tenant_id': principal['tenant_id'],
+                            'principal_id': principal['principal_id'], 'action': 'read',
+                            'resource_ref': f"registry:{principal['tenant_id']}"}
+E       AssertionError: assert {'action': 'r...8MFFTNV', ...} == {'verdict': '...CM8B4MW', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'resource_ref': 'space:01M7JH46GN0KJ8XF8JA8MFFTNV'} != {'resource_ref': 'registry:01M7JH46GNECGD1S5Y6DA0G9EA'}
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:480: AssertionError
+___ test_idn_02_fault_scope_object_removed_denies_by_default[access_denied] ____
+
+profile = <test_identity.Profile object at 0x7cfdf9ebf7d0>
+spaces = {'principal_id': '01M7JH47092D95SNH9S9TCXS4H', 'tenant_id': '01M7JH4709FSGCD9363GAMWJQS', 'personal': '01M7JH4709VAF3VNB1YXPRZ6SH', 'organization': '01M7JH4709HEN64G5A6T54JW6H'}
+removed = AccessDenied('UNAUTHENTICATED')
+
+    @pytest.mark.parametrize('removed', [None, (), OSError('directory unavailable'), AccessDenied(),
+                                         'not-a-scope', ('',), (7,)],
+                             ids=['none', 'empty', 'oserror', 'access_denied', 'string', 'blank_id', 'non_string_id'])
+    def test_idn_02_fault_scope_object_removed_denies_by_default(profile: Profile, spaces: dict, removed) -> None:
+        """IDN-02 fault: with the scope object removed, empty, unreadable or malformed, the read is denied."""
+        organization = spaces['organization']
+        session = Session(profile, DirectoryFixture(profile.config, grants=removed))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+        assert_denied_read(code, value)
+        code, value = session.commands.describe(CAPABILITY)
+        assert_denied_read(code, value)
+        outcome = session.turn.invoke(session.context, CAPABILITY, {'limit': 1}, 'idem-removed')
+        assert (outcome.status, outcome.reason) == ('DENIED', 'NO_SPACE_GRANT')
+        assert session.registry_reads == [] and session.commands.discovery.policy_gate.calls == 0
+        assert session.commands.discovery.handlers.total_invocations() == 0
+        for event in session.decisions()[known:]:
+>           assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
+                            readable=() if removed == () else None)
+
+tests/integration/test_identity.py:685: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+event = {'actor_id': '01M7JH47092D95SNH9S9TCXS4H', 'at': '2026-11-16T12:00:00Z', 'authorized_scope': None, 'decision': {'actio...H47092D95SNH9S9TCXS4H', 'reason_code': 'NO_SPACE_GRANT', 'resource_ref': 'space:01M7JH4709VAF3VNB1YXPRZ6SH', ...}, ...}
+principal = {'principal_id': '01M7JH47092D95SNH9S9TCXS4H', 'tenant_id': '01M7JH4709FSGCD9363GAMWJQS', 'personal': '01M7JH4709VAF3VNB1YXPRZ6SH', 'organization': '01M7JH4709HEN64G5A6T54JW6H'}
+verdict = 'DENY', reason = 'NO_SPACE_GRANT'
+space = '01M7JH4709HEN64G5A6T54JW6H', readable = None
+
+    def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space, readable) -> None:
+        """The decision names the RESOURCE (the tenant's capability registry); ``owner_space_id`` is the
+        space that owns it and that was looked up in ``readable_space_ids`` (F5: never a requested space)."""
+        decision = event['decision']
+        assert_identity_shape('AuthzDecision', decision)
+>       assert decision == {'verdict': verdict, 'reason_code': reason, 'tenant_id': principal['tenant_id'],
+                            'principal_id': principal['principal_id'], 'action': 'read',
+                            'resource_ref': f"registry:{principal['tenant_id']}"}
+E       AssertionError: assert {'action': 'r...XPRZ6SH', ...} == {'verdict': '...9TCXS4H', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'resource_ref': 'space:01M7JH4709VAF3VNB1YXPRZ6SH'} != {'resource_ref': 'registry:01M7JH4709FSGCD9363GAMWJQS'}
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:480: AssertionError
+_______ test_idn_02_fault_scope_object_removed_denies_by_default[string] _______
+
+profile = <test_identity.Profile object at 0x7cfdf9f6d4f0>
+spaces = {'principal_id': '01M7JH47GBZ0RQXSXX69R0XKGW', 'tenant_id': '01M7JH47GB2XSECZQ4CG32JYDP', 'personal': '01M7JH47GBP27PJMWFP884NFXH', 'organization': '01M7JH47GBDKFTCETMPQS6SJK9'}
+removed = 'not-a-scope'
+
+    @pytest.mark.parametrize('removed', [None, (), OSError('directory unavailable'), AccessDenied(),
+                                         'not-a-scope', ('',), (7,)],
+                             ids=['none', 'empty', 'oserror', 'access_denied', 'string', 'blank_id', 'non_string_id'])
+    def test_idn_02_fault_scope_object_removed_denies_by_default(profile: Profile, spaces: dict, removed) -> None:
+        """IDN-02 fault: with the scope object removed, empty, unreadable or malformed, the read is denied."""
+        organization = spaces['organization']
+        session = Session(profile, DirectoryFixture(profile.config, grants=removed))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+        assert_denied_read(code, value)
+        code, value = session.commands.describe(CAPABILITY)
+        assert_denied_read(code, value)
+        outcome = session.turn.invoke(session.context, CAPABILITY, {'limit': 1}, 'idem-removed')
+        assert (outcome.status, outcome.reason) == ('DENIED', 'NO_SPACE_GRANT')
+        assert session.registry_reads == [] and session.commands.discovery.policy_gate.calls == 0
+        assert session.commands.discovery.handlers.total_invocations() == 0
+        for event in session.decisions()[known:]:
+>           assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
+                            readable=() if removed == () else None)
+
+tests/integration/test_identity.py:685: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+event = {'actor_id': '01M7JH47GBZ0RQXSXX69R0XKGW', 'at': '2026-11-16T12:00:00Z', 'authorized_scope': None, 'decision': {'actio...H47GBZ0RQXSXX69R0XKGW', 'reason_code': 'NO_SPACE_GRANT', 'resource_ref': 'space:01M7JH47GBP27PJMWFP884NFXH', ...}, ...}
+principal = {'principal_id': '01M7JH47GBZ0RQXSXX69R0XKGW', 'tenant_id': '01M7JH47GB2XSECZQ4CG32JYDP', 'personal': '01M7JH47GBP27PJMWFP884NFXH', 'organization': '01M7JH47GBDKFTCETMPQS6SJK9'}
+verdict = 'DENY', reason = 'NO_SPACE_GRANT'
+space = '01M7JH47GBDKFTCETMPQS6SJK9', readable = None
+
+    def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space, readable) -> None:
+        """The decision names the RESOURCE (the tenant's capability registry); ``owner_space_id`` is the
+        space that owns it and that was looked up in ``readable_space_ids`` (F5: never a requested space)."""
+        decision = event['decision']
+        assert_identity_shape('AuthzDecision', decision)
+>       assert decision == {'verdict': verdict, 'reason_code': reason, 'tenant_id': principal['tenant_id'],
+                            'principal_id': principal['principal_id'], 'action': 'read',
+                            'resource_ref': f"registry:{principal['tenant_id']}"}
+E       AssertionError: assert {'action': 'r...884NFXH', ...} == {'verdict': '...9R0XKGW', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'resource_ref': 'space:01M7JH47GBP27PJMWFP884NFXH'} != {'resource_ref': 'registry:01M7JH47GB2XSECZQ4CG32JYDP'}
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:480: AssertionError
+______ test_idn_02_fault_scope_object_removed_denies_by_default[blank_id] ______
+
+profile = <test_identity.Profile object at 0x7cfdf9f6db20>
+spaces = {'principal_id': '01M7JH48022EF20026WEV6KD8N', 'tenant_id': '01M7JH4802KZC6345BG5BZS358', 'personal': '01M7JH480239HJ74TQTAXR4AHF', 'organization': '01M7JH4802FMSH74PSWBYAGBRF'}
+removed = ('',)
+
+    @pytest.mark.parametrize('removed', [None, (), OSError('directory unavailable'), AccessDenied(),
+                                         'not-a-scope', ('',), (7,)],
+                             ids=['none', 'empty', 'oserror', 'access_denied', 'string', 'blank_id', 'non_string_id'])
+    def test_idn_02_fault_scope_object_removed_denies_by_default(profile: Profile, spaces: dict, removed) -> None:
+        """IDN-02 fault: with the scope object removed, empty, unreadable or malformed, the read is denied."""
+        organization = spaces['organization']
+        session = Session(profile, DirectoryFixture(profile.config, grants=removed))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+        assert_denied_read(code, value)
+        code, value = session.commands.describe(CAPABILITY)
+        assert_denied_read(code, value)
+        outcome = session.turn.invoke(session.context, CAPABILITY, {'limit': 1}, 'idem-removed')
+        assert (outcome.status, outcome.reason) == ('DENIED', 'NO_SPACE_GRANT')
+        assert session.registry_reads == [] and session.commands.discovery.policy_gate.calls == 0
+        assert session.commands.discovery.handlers.total_invocations() == 0
+        for event in session.decisions()[known:]:
+>           assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
+                            readable=() if removed == () else None)
+
+tests/integration/test_identity.py:685: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+event = {'actor_id': '01M7JH48022EF20026WEV6KD8N', 'at': '2026-11-16T12:00:00Z', 'authorized_scope': None, 'decision': {'actio...H48022EF20026WEV6KD8N', 'reason_code': 'NO_SPACE_GRANT', 'resource_ref': 'space:01M7JH480239HJ74TQTAXR4AHF', ...}, ...}
+principal = {'principal_id': '01M7JH48022EF20026WEV6KD8N', 'tenant_id': '01M7JH4802KZC6345BG5BZS358', 'personal': '01M7JH480239HJ74TQTAXR4AHF', 'organization': '01M7JH4802FMSH74PSWBYAGBRF'}
+verdict = 'DENY', reason = 'NO_SPACE_GRANT'
+space = '01M7JH4802FMSH74PSWBYAGBRF', readable = None
+
+    def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space, readable) -> None:
+        """The decision names the RESOURCE (the tenant's capability registry); ``owner_space_id`` is the
+        space that owns it and that was looked up in ``readable_space_ids`` (F5: never a requested space)."""
+        decision = event['decision']
+        assert_identity_shape('AuthzDecision', decision)
+>       assert decision == {'verdict': verdict, 'reason_code': reason, 'tenant_id': principal['tenant_id'],
+                            'principal_id': principal['principal_id'], 'action': 'read',
+                            'resource_ref': f"registry:{principal['tenant_id']}"}
+E       AssertionError: assert {'action': 'r...AXR4AHF', ...} == {'verdict': '...EV6KD8N', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'resource_ref': 'space:01M7JH480239HJ74TQTAXR4AHF'} != {'resource_ref': 'registry:01M7JH4802KZC6345BG5BZS358'}
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:480: AssertionError
+___ test_idn_02_fault_scope_object_removed_denies_by_default[non_string_id] ____
+
+profile = <test_identity.Profile object at 0x7cfdf9f1a2b0>
+spaces = {'principal_id': '01M7JH48FXVV2T0YBHK5VKZEXC', 'tenant_id': '01M7JH48FXW41SMWA2BY0WGEPJ', 'personal': '01M7JH48FX4ZGF8TV5X738DX68', 'organization': '01M7JH48FX160K16T7A0N8DQ8Q'}
+removed = (7,)
+
+    @pytest.mark.parametrize('removed', [None, (), OSError('directory unavailable'), AccessDenied(),
+                                         'not-a-scope', ('',), (7,)],
+                             ids=['none', 'empty', 'oserror', 'access_denied', 'string', 'blank_id', 'non_string_id'])
+    def test_idn_02_fault_scope_object_removed_denies_by_default(profile: Profile, spaces: dict, removed) -> None:
+        """IDN-02 fault: with the scope object removed, empty, unreadable or malformed, the read is denied."""
+        organization = spaces['organization']
+        session = Session(profile, DirectoryFixture(profile.config, grants=removed))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+        assert_denied_read(code, value)
+        code, value = session.commands.describe(CAPABILITY)
+        assert_denied_read(code, value)
+        outcome = session.turn.invoke(session.context, CAPABILITY, {'limit': 1}, 'idem-removed')
+        assert (outcome.status, outcome.reason) == ('DENIED', 'NO_SPACE_GRANT')
+        assert session.registry_reads == [] and session.commands.discovery.policy_gate.calls == 0
+        assert session.commands.discovery.handlers.total_invocations() == 0
+        for event in session.decisions()[known:]:
+>           assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
+                            readable=() if removed == () else None)
+
+tests/integration/test_identity.py:685: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+event = {'actor_id': '01M7JH48FXVV2T0YBHK5VKZEXC', 'at': '2026-11-16T12:00:00Z', 'authorized_scope': None, 'decision': {'actio...H48FXVV2T0YBHK5VKZEXC', 'reason_code': 'NO_SPACE_GRANT', 'resource_ref': 'space:01M7JH48FX4ZGF8TV5X738DX68', ...}, ...}
+principal = {'principal_id': '01M7JH48FXVV2T0YBHK5VKZEXC', 'tenant_id': '01M7JH48FXW41SMWA2BY0WGEPJ', 'personal': '01M7JH48FX4ZGF8TV5X738DX68', 'organization': '01M7JH48FX160K16T7A0N8DQ8Q'}
+verdict = 'DENY', reason = 'NO_SPACE_GRANT'
+space = '01M7JH48FX160K16T7A0N8DQ8Q', readable = None
+
+    def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space, readable) -> None:
+        """The decision names the RESOURCE (the tenant's capability registry); ``owner_space_id`` is the
+        space that owns it and that was looked up in ``readable_space_ids`` (F5: never a requested space)."""
+        decision = event['decision']
+        assert_identity_shape('AuthzDecision', decision)
+>       assert decision == {'verdict': verdict, 'reason_code': reason, 'tenant_id': principal['tenant_id'],
+                            'principal_id': principal['principal_id'], 'action': 'read',
+                            'resource_ref': f"registry:{principal['tenant_id']}"}
+E       AssertionError: assert {'action': 'r...738DX68', ...} == {'verdict': '...5VKZEXC', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'resource_ref': 'space:01M7JH48FX4ZGF8TV5X738DX68'} != {'resource_ref': 'registry:01M7JH48FXW41SMWA2BY0WGEPJ'}
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:480: AssertionError
+_ test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied[none] _
+
+profile = <test_identity.Profile object at 0x7cfdf9f1bb10>
+spaces = {'principal_id': '01M7JH48ZRBPXMFFD0067XDEYS', 'tenant_id': '01M7JH48ZRP98AHJNG957VZMXR', 'personal': '01M7JH48ZR58TXBYWGYVGZPBVJ', 'organization': '01M7JH48ZR0CN8RH3GV3W7TCSS'}
+owner = None
+
+    @pytest.mark.parametrize('owner', [None, '', 7, OSError('directory unavailable'), AccessDenied()],
+                             ids=['none', 'blank', 'non_string', 'oserror', 'access_denied'])
+    def test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied(profile: Profile, spaces: dict,
+                                                                             owner) -> None:
+        """A resource whose owning space cannot be resolved is in no AuthorizedScope: typed denial, not an
+        internal error, even for a principal that holds every grant."""
+        session = Session(profile, DirectoryFixture(profile.config, grants=(spaces['personal'], spaces['organization']),
+                                                    owner=owner))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+>       assert_denied_read(code, value)
+
+tests/integration/test_identity.py:700: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = 0
+value = {'status': 'SUCCEEDED', 'data': {'candidates': [{'capability_id': 'fixtures.calendar-read', 'capability_version': '1.0...ith title, start, end and location. Read only.', ...}], 'excluded': []}, 'evidence_refs': [], 'uncertainties': [], ...}
+
+    def assert_denied_read(code: int, value: dict) -> None:
+>       assert code == 4
+E       assert 0 == 4
+
+tests/integration/test_identity.py:467: AssertionError
+_ test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied[blank] _
+
+profile = <test_identity.Profile object at 0x7cfdfa13d760>
+spaces = {'principal_id': '01M7JH49EDF7DBEAQQN3HE0653', 'tenant_id': '01M7JH49EDJNF64D57V11JR0CS', 'personal': '01M7JH49EDQ5T0F25ADB5EA469', 'organization': '01M7JH49EDYJB9ZYQ03HKAKEGF'}
+owner = ''
+
+    @pytest.mark.parametrize('owner', [None, '', 7, OSError('directory unavailable'), AccessDenied()],
+                             ids=['none', 'blank', 'non_string', 'oserror', 'access_denied'])
+    def test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied(profile: Profile, spaces: dict,
+                                                                             owner) -> None:
+        """A resource whose owning space cannot be resolved is in no AuthorizedScope: typed denial, not an
+        internal error, even for a principal that holds every grant."""
+        session = Session(profile, DirectoryFixture(profile.config, grants=(spaces['personal'], spaces['organization']),
+                                                    owner=owner))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+>       assert_denied_read(code, value)
+
+tests/integration/test_identity.py:700: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = 0
+value = {'status': 'SUCCEEDED', 'data': {'candidates': [{'capability_id': 'fixtures.calendar-read', 'capability_version': '1.0...ith title, start, end and location. Read only.', ...}], 'excluded': []}, 'evidence_refs': [], 'uncertainties': [], ...}
+
+    def assert_denied_read(code: int, value: dict) -> None:
+>       assert code == 4
+E       assert 0 == 4
+
+tests/integration/test_identity.py:467: AssertionError
+_ test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied[non_string] _
+
+profile = <test_identity.Profile object at 0x7cfdf9e33350>
+spaces = {'principal_id': '01M7JH49XVM3BCNFJD71Q4ZHXN', 'tenant_id': '01M7JH49XV2MZ9C3JWY6XR8T10', 'personal': '01M7JH49XVMF0VD4K4Q22EWXGK', 'organization': '01M7JH49XVCHMWXX8FNN1SNJMR'}
+owner = 7
+
+    @pytest.mark.parametrize('owner', [None, '', 7, OSError('directory unavailable'), AccessDenied()],
+                             ids=['none', 'blank', 'non_string', 'oserror', 'access_denied'])
+    def test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied(profile: Profile, spaces: dict,
+                                                                             owner) -> None:
+        """A resource whose owning space cannot be resolved is in no AuthorizedScope: typed denial, not an
+        internal error, even for a principal that holds every grant."""
+        session = Session(profile, DirectoryFixture(profile.config, grants=(spaces['personal'], spaces['organization']),
+                                                    owner=owner))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+>       assert_denied_read(code, value)
+
+tests/integration/test_identity.py:700: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = 0
+value = {'status': 'SUCCEEDED', 'data': {'candidates': [{'capability_id': 'fixtures.calendar-read', 'capability_version': '1.0...ith title, start, end and location. Read only.', ...}], 'excluded': []}, 'evidence_refs': [], 'uncertainties': [], ...}
+
+    def assert_denied_read(code: int, value: dict) -> None:
+>       assert code == 4
+E       assert 0 == 4
+
+tests/integration/test_identity.py:467: AssertionError
+_ test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied[oserror] _
+
+profile = <test_identity.Profile object at 0x7cfdfa1561d0>
+spaces = {'principal_id': '01M7JH4ACH0X3KAR32WA71GQ7F', 'tenant_id': '01M7JH4ACHYSWV0JD73CQTRXXM', 'personal': '01M7JH4ACHMNAQF8JV0WE6H1P1', 'organization': '01M7JH4ACHMDKZD3S8MN5ZR0RF'}
+owner = OSError('directory unavailable')
+
+    @pytest.mark.parametrize('owner', [None, '', 7, OSError('directory unavailable'), AccessDenied()],
+                             ids=['none', 'blank', 'non_string', 'oserror', 'access_denied'])
+    def test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied(profile: Profile, spaces: dict,
+                                                                             owner) -> None:
+        """A resource whose owning space cannot be resolved is in no AuthorizedScope: typed denial, not an
+        internal error, even for a principal that holds every grant."""
+        session = Session(profile, DirectoryFixture(profile.config, grants=(spaces['personal'], spaces['organization']),
+                                                    owner=owner))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+>       assert_denied_read(code, value)
+
+tests/integration/test_identity.py:700: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = 0
+value = {'status': 'SUCCEEDED', 'data': {'candidates': [{'capability_id': 'fixtures.calendar-read', 'capability_version': '1.0...ith title, start, end and location. Read only.', ...}], 'excluded': []}, 'evidence_refs': [], 'uncertainties': [], ...}
+
+    def assert_denied_read(code: int, value: dict) -> None:
+>       assert code == 4
+E       assert 0 == 4
+
+tests/integration/test_identity.py:467: AssertionError
+_ test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied[access_denied] _
+
+profile = <test_identity.Profile object at 0x7cfdfb630050>
+spaces = {'principal_id': '01M7JH4AV4EGB2WTSJ46BYXYTM', 'tenant_id': '01M7JH4AV4W1E48ZXA56XT37FR', 'personal': '01M7JH4AV4SHVXTR58S03PP9MF', 'organization': '01M7JH4AV4JDD4WH3XJZ2NJ5NH'}
+owner = AccessDenied('UNAUTHENTICATED')
+
+    @pytest.mark.parametrize('owner', [None, '', 7, OSError('directory unavailable'), AccessDenied()],
+                             ids=['none', 'blank', 'non_string', 'oserror', 'access_denied'])
+    def test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied(profile: Profile, spaces: dict,
+                                                                             owner) -> None:
+        """A resource whose owning space cannot be resolved is in no AuthorizedScope: typed denial, not an
+        internal error, even for a principal that holds every grant."""
+        session = Session(profile, DirectoryFixture(profile.config, grants=(spaces['personal'], spaces['organization']),
+                                                    owner=owner))
+        known = len(session.decisions())
+        code, value = session.commands.search(CALENDAR_QUERY)
+>       assert_denied_read(code, value)
+
+tests/integration/test_identity.py:700: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = 0
+value = {'status': 'SUCCEEDED', 'data': {'candidates': [{'capability_id': 'fixtures.calendar-read', 'capability_version': '1.0...ith title, start, end and location. Read only.', ...}], 'excluded': []}, 'evidence_refs': [], 'uncertainties': [], ...}
+
+    def assert_denied_read(code: int, value: dict) -> None:
+>       assert code == 4
+E       assert 0 == 4
+
+tests/integration/test_identity.py:467: AssertionError
+____ test_idn_02_scope_is_resolved_live_from_the_signed_installation_record ____
+
+profile = <test_identity.Profile object at 0x7cfdfb67b850>
+spaces = {'principal_id': '01M7JH4BA3QZJZ9DTTFZZ8AVY9', 'tenant_id': '01M7JH4BA3A50P7CGVH02VXKX7', 'personal': '01M7JH4BA3EFH1XKBHT38CFMVR', 'organization': '01M7JH4BA3CJZTGMSKHDSV9P93'}
+
+    def test_idn_02_scope_is_resolved_live_from_the_signed_installation_record(profile: Profile, spaces: dict) -> None:
+        """Production LOCAL directory: the default grants come from the verified record at every check,
+        only for the installation owner, and a credential store that vanishes mid-request denies."""
+        personal, organization = spaces['personal'], spaces['organization']
+        identity = LocalIdentity(profile.config)
+        context = identity.authenticate()
+        assert identity.space_grants(context) == (personal, organization)
+        assert identity.space_grants(replace(context, actor_id=FORGED_ACTOR)) == ()
+        assert identity.space_grants(replace(context, tenant_id=FORGED_TENANT)) == ()
+>       assert identity.registry_space(spaces['tenant_id']) == organization     # ownership: the signed record
+               ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'LocalIdentity' object has no attribute 'registry_space'
+
+tests/integration/test_identity.py:716: AttributeError
+_________ test_idn_02_fault_decision_log_unavailable_refuses_the_read __________
+
+profile = <test_identity.Profile object at 0x7cfdfb416650>
+spaces = {'principal_id': '01M7JH4BRRB8Z55PRBENF1K1Z7', 'tenant_id': '01M7JH4BRRJ891EYX0Z90MF8JP', 'personal': '01M7JH4BRRX28PP8X2P9ZV7GPG', 'organization': '01M7JH4BRRQNFCWK7NBCKKW8PK'}
+
+    def test_idn_02_fault_decision_log_unavailable_refuses_the_read(profile: Profile, spaces: dict) -> None:
+        """A read whose authorization decision cannot be logged is refused; a denial stays a denial."""
+        personal, organization = spaces['personal'], spaces['organization']
+    
+        def failing(event: dict) -> None:
+            raise OSError('audit store down')
+    
+        session = Session(profile, DirectoryFixture(profile.config, grants=(organization,)))
+        session.commands.discovery.audit_sink = failing
+        code, value = session.commands.search(CALENDAR_QUERY)
+>       assert (code, value['status'], value['error']['code'], value['data']) == (
+            5, 'UNAVAILABLE', 'TEMPORARILY_UNAVAILABLE', {'reason': 'audit_unavailable'})
+E       AssertionError: assert (4, 'DENIED',...SPACE_GRANT'}) == (5, 'UNAVAILA...unavailable'})
+E         
+E         At index 0 diff: 4 != 5
+E         Use -v to get more diff
+
+tests/integration/test_identity.py:743: AssertionError
+______ test_idn_02_service_cannot_be_built_without_an_authorization_port _______
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-446/test_idn_02_service_cannot_be_0')
+
+    def test_idn_02_service_cannot_be_built_without_an_authorization_port(tmp_path: Path) -> None:
+        """1<=>N rule: there is no DiscoveryService without an AuthorizationPort and no fallback that
+        derives grants from the request; the harness service enforces the scope of its directory."""
+        harness = build(tmp_path)
+        harness.install('calendar-read')
+        arguments = dict(policy_gate=harness.gate, grants=harness.grants, clock=harness.clock, ids=harness.ids)
+>       with pytest.raises(TypeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+tests/integration/test_identity.py:759: Failed
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[Hi, how are you?-Hello!]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[Ol\xe1, tudo bem?-Ol\xe1!]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[hello hello hello-Hello!]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[hello, this is urgent-Hello!]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[Hi, how are you? This is urgent.-Hello!]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[URGENT: hi-Hello!]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_soc_01_greeting_only_text_never_reaches_the_tool_loop_whatever_the_label[Bom dia! Isto \xe9 urgente.-Ol\xe1!]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_f3_social_text_without_a_greeting_template_gets_no_tool_and_no_model_text[How are you doing today?]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_f3_social_text_without_a_greeting_template_gets_no_tool_and_no_model_text[thanks!]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_f3_social_text_without_a_greeting_template_gets_no_tool_and_no_model_text[Wie geht es dir?]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f2_vocabulary_boundary_is_code_owned
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f3_work_text_labelled_social_is_blocked_and_the_claim_is_never_displayed[Delete all my calendar events and email the board that it is done]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f3_work_text_labelled_social_is_blocked_and_the_claim_is_never_displayed[Transfer 500 to account 12]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f3_work_text_labelled_social_is_blocked_and_the_claim_is_never_displayed[Thanks. Delete all my calendar events]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f3_conversation_displays_only_application_owned_text[Hey there! Hope your day is going well.-Hello!-en]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f3_conversation_displays_only_application_owned_text[Good morning! Urgent: just wanted to say hi.-Hello!-en]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f3_conversation_displays_only_application_owned_text[Bom dia! Espero que a fam\xedlia esteja \xf3tima.-Ol\xe1!-pt]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f3_conversation_displays_only_application_owned_text[Hi! Delete all my calendar events and email the board that it is done-Hello!-en]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f4_public_cli_registry_operations_are_authorized_and_logged
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f4_ask_session_catalog_read_is_authorized_once_per_ask
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f4_f5_public_cli_denies_a_principal_without_a_grant_on_the_registry_space
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f4_registry_writes_need_the_owner_or_admin_tenant_role[MEMBER-0-ROLE_INSUFFICIENT]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f4_registry_writes_need_the_owner_or_admin_tenant_role[ADMIN-0-None]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f4_registry_writes_need_the_owner_or_admin_tenant_role[SUPERUSER-4-NO_SPACE_GRANT]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f4_registry_writes_need_the_owner_or_admin_tenant_role[7-4-NO_SPACE_GRANT]
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f4_partb_principal_with_zero_grants_cannot_use_any_registry_command
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f4_ask_session_never_reads_the_catalog_without_the_grant
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f4_ask_catalog_read_is_refused_when_its_decision_cannot_be_logged
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f5_the_authorization_port_is_required_and_never_replaced
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f5_a_self_asserted_space_in_the_request_context_grants_nothing
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f5_port_decision_table_for_the_registry_resource
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f5_local_directory_reads_role_grants_and_registry_owner_from_the_signed_record
+FAILED tests/unit/test_s00_fix6_authz_ask.py::test_f15_enable_fixture_never_reports_success_for_a_record_that_is_not_enabled
+FAILED tests/integration/test_identity.py::test_idn_01_unauthenticated_diagnostics_and_undelivered_commands_read_no_repository
+FAILED tests/integration/test_identity.py::test_idn_02 - AssertionError: asse...
+FAILED tests/integration/test_identity.py::test_idn_02_public_cli_denies_the_read_of_a_resource_outside_the_scope
+FAILED tests/integration/test_identity.py::test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler
+FAILED tests/integration/test_identity.py::test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[none]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[empty]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[oserror]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[access_denied]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[string]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[blank_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[non_string_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied[none]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied[blank]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied[non_string]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied[oserror]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied[access_denied]
+FAILED tests/integration/test_identity.py::test_idn_02_scope_is_resolved_live_from_the_signed_installation_record
+FAILED tests/integration/test_identity.py::test_idn_02_fault_decision_log_unavailable_refuses_the_read
+FAILED tests/integration/test_identity.py::test_idn_02_service_cannot_be_built_without_an_authorization_port
+53 failed, 11 passed in 56.62s
+# pytest exit: 1

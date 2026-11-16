@@ -1,8 +1,11 @@
 """Operator capability commands (M14 CLI): install, install-fixture, list, search, describe, disable.
 
-Every change writes one evidence receipt holding the registry audit events it produced
-(activation included). Search and describe run through the same DiscoveryPort guards as the
-model, for the authenticated operator. Exit codes follow M14/M01: 0 ok, 2 invalid input,
+Every command first passes the AuthorizationPort for the authenticated operator (reads need a
+grant on the space that owns the tenant's registry; install, enable and disable also need the
+OWNER or ADMIN tenant role) and its decision is logged as ``authz.decided``; a denied command
+reads and changes nothing and writes no receipt. Every change writes one evidence receipt holding
+the registry audit events it produced (activation included). Search and describe run through the
+same DiscoveryPort guards as the model. Exit codes follow M14/M01: 0 ok, 2 invalid input,
 3 missing configuration, 4 denied/unavailable/blocked/conflict, 5 provider failure, 1 internal.
 """
 
@@ -65,8 +68,19 @@ class CapabilityCommands:
     def _audit_size(self) -> int:
         return len(self.registry.store.audit_events())
 
+    def _denied(self, operation: str, action: str) -> tuple[int, dict] | None:
+        """RFC-013 section 6: the AuthorizationPort decides, and logs, before any registry read or change."""
+        blocked = self.discovery.authorize(self.context, operation, action)
+        if blocked is None:
+            return None
+        value = blocked.to_response()
+        return _exit(value), _complete(value)
+
     def install(self, path: str, *, fixture_handler: str | None = None, enable_fixture: bool = False,
                 source: str | None = None) -> tuple[int, dict]:
+        denied = self._denied("install", "manage")
+        if denied is not None:
+            return denied
         before = self._audit_size()
         package = Path(path)
         value = self.registry.install(self.context, package, source=source or f"file://{package.resolve()}",
@@ -74,6 +88,9 @@ class CapabilityCommands:
         return self._recorded("install", value, before)
 
     def install_fixture(self, name: str, *, enable_fixture: bool = False) -> tuple[int, dict]:
+        denied = self._denied("install_fixture", "manage")
+        if denied is not None:
+            return denied
         if name not in self.fixture_names:
             return 2, _response("DENIED", {"reason": "FIXTURE_UNKNOWN", "fixtures": list(self.fixture_names)},
                                 "INVALID_INPUT", "FIXTURE_UNKNOWN", "Choose one of the listed public fixtures.")
@@ -83,6 +100,9 @@ class CapabilityCommands:
         return self._recorded("install_fixture", value, before)
 
     def disable(self, ref: str) -> tuple[int, dict]:
+        denied = self._denied("disable", "manage")
+        if denied is not None:
+            return denied
         before = self._audit_size()
         try:
             record = self.registry.record(self.context, ref)
@@ -95,6 +115,9 @@ class CapabilityCommands:
 
     # ------------------------------------------------------------- reads
     def list(self, *, enabled_only: bool = False) -> tuple[int, dict]:
+        denied = self._denied("list", "read")
+        if denied is not None:
+            return denied
         items = [{"definition_ref": f"{item['capability_id']}@{item['capability_version']}",
                   "capability_id": item["capability_id"], "capability_version": item["capability_version"],
                   "lifecycle": item["lifecycle"], "assurance": item["assurance"], "source": item["source"],

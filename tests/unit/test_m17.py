@@ -591,8 +591,32 @@ def test_m17_rt_01_label_not_proof():
 
 
 # ----- M17-RT-02: a vendor sign-in file is never an API key ----------------------------
+# S00 fix round 6 (audit finding 8): the M17 "Key value shape" rows beyond file paths. Synthetic values only.
+SESSION_JWT = 'eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJjaGF0Z3B0In0.c2lnLXN5bnRoZXRpYw'
+SESSION_FILE_CONTENT = json.dumps({'OPENAI_API_KEY': None, 'tokens': {
+    'id_token': SESSION_JWT, 'access_token': SESSION_JWT, 'refresh_token': 'rt_synthetic0123456789',
+    'account_id': 'acc-synthetic'}, 'last_refresh': '2026-11-01T00:00:00Z'})
+SESSION_ARTIFACTS = [
+    SESSION_FILE_CONTENT,                                        # Codex/ChatGPT auth.json content
+    json.dumps({'claudeAiOauth': {'accessToken': 'synthetic', 'refreshToken': 'synthetic'}}),  # Claude sign-in file
+    '  {"access_token": "synthetic"}\n',                         # JSON with surrounding whitespace
+    '["synthetic"]',                                             # any JSON document
+    SESSION_JWT,                                                 # bare session JWT (id or access token)
+    'Bearer synthetic0123456789',                                # an Authorization header value
+    'bearer ' + SESSION_JWT,
+    'sk-ant-oat01-synthetic0123456789',                          # Claude sign-in OAuth access token
+    'sk-ant-ort01-synthetic0123456789',                          # Claude sign-in OAuth refresh token
+    'sess-synthetic0123456789',                                  # ChatGPT session key
+    'rt_synthetic0123456789',                                    # Codex/ChatGPT refresh token
+    'ya29.synthetic0123456789',                                  # Google sign-in OAuth access token
+    '1//synthetic0123456789',                                    # Google sign-in OAuth refresh token
+    'file:~/.codex/auth.json', 'file:///home/someone/.gemini/oauth_creds.json',   # secret_ref file scheme
+    'synthetic key with spaces', 'synthetic\nsecond-line', 'synthetic\x00nul',     # not a single token
+]
+
+
 @pytest.mark.parametrize('value', ['/home/someone/.codex/auth.json', '~/.codex/auth.json', './auth.json',
-                                   '../auth.json', 'auth.json'])
+                                   '../auth.json', 'auth.json', *SESSION_ARTIFACTS])
 def test_m17_rt_02_codex_signin_not_api_key(value):
     calls = []
 
@@ -613,6 +637,18 @@ def test_m17_rt_02_codex_signin_not_api_key(value):
     assert calls == []
 
 
+@pytest.mark.parametrize('value', ['synthetic-never-log', 'sk-proj-synthetic_0123456789-AbC', 'sk-ant-api03-synthetic-0123',
+                                   'sk-or-v1-0123456789abcdef', 'xai-synthetic0123456789', 'AIzaSyntheticKey_0123-456',
+                                   'eyJ-is-only-a-prefix', 'a.b.c', 'sk-ant-oatmeal'])
+def test_m17_rt_02_ordinary_api_keys_are_still_accepted(value):
+    """Control for the shape rows: a single-token API key is accepted and never echoed."""
+    provider = Scripted(environ={'SYNTHETIC_KEY': value}, script=[ModelResponse(text='ok')])
+    report = provider.diagnostics()
+    assert (report['reasons'], report['configured']) == ([], True)
+    assert value not in json.dumps(report)
+    assert provider.complete(ModelRequest(user())).text == 'ok'
+
+
 def test_cli_transports_take_no_key_and_no_endpoint():
     for transport in ('claude_cli', 'codex_cli', 'gemini_cli'):
         provider = create_provider(ProviderConfig(base_url='not-a-url', api_key_env='BAD-NAME', allow_live=True,
@@ -625,6 +661,9 @@ def test_cli_transports_take_no_key_and_no_endpoint():
 class Identity:
     def diagnostics(self):
         return {'configured': True}
+
+    def authenticate(self):  # S00 fix round 6 (F6): the probe command authenticates before any provider call
+        return object()
 
 
 def service_for(report_or_error, cfg=None):

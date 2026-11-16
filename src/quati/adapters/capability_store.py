@@ -3,6 +3,11 @@
 Layout under ``<state_dir>/capabilities/``: ``packages/<id>/<version>/`` immutable package
 copies, ``registry.json`` (compare-and-swap ``revision``, temp + fsync + rename),
 ``capabilities.lock`` (lock_version 1) and ``audit.jsonl`` (append + fsync).
+
+Everything under the root is owner-only (directories 0700, files 0600). The audit log is opened
+without following a symlink and must be a private regular file; otherwise the append is refused
+with the typed reason ``audit_unavailable`` and nothing is written (K7, M26). Tamper-evident
+chaining of the log is S02 ledger work, not provided here.
 """
 
 from __future__ import annotations
@@ -16,6 +21,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable, Iterable, Iterator
 
+from quati.adapters.private_fs import open_private, private_directory, read_private, write_private
 from quati.behavior.fsutil import atomic_write
 from quati.behavior.manifest import PackageEntry, package_sha256, scan_package_dir
 from quati.domain.canonical import canonical_bytes
@@ -32,6 +38,11 @@ def default_registry_root() -> Path:
 
 def empty_state() -> dict:
     return {"schema": STORE_SCHEMA, "revision": 0, **{name: [] for name in SECTIONS}}
+
+
+def _audit_unavailable() -> Refusal:
+    return Refusal("UNAVAILABLE", "TEMPORARILY_UNAVAILABLE", "audit_unavailable",
+                   "The audit log is not a private regular file; nothing was read or recorded.")
 
 
 class FileRegistryStore:
@@ -60,8 +71,8 @@ class FileRegistryStore:
             finally:
                 self._lock_depth -= 1
             return
-        self.root.mkdir(parents=True, exist_ok=True)
-        with open(self.root / "registry.flock", "a+b") as handle:
+        self._private_root()
+        with os.fdopen(open_private(self.root / "registry.flock", os.O_RDWR, tighten=True), "a+b") as handle:
             fcntl.flock(handle, fcntl.LOCK_EX)
             self._lock_depth = 1
             try:
@@ -69,6 +80,13 @@ class FileRegistryStore:
             finally:
                 self._lock_depth = 0
                 fcntl.flock(handle, fcntl.LOCK_UN)
+
+    def _private_root(self) -> None:
+        """The state directory (when this user owns it) and the registry root are owner-only."""
+        parent = self.root.parent
+        if parent.is_dir() and not parent.is_symlink() and parent.stat().st_uid == os.getuid():
+            private_directory(parent)
+        private_directory(self.root)
 
     def transaction(self) -> Iterator[None]:
         """Hold the store lock across a whole load -> stage -> CAS commit -> publish sequence."""
@@ -100,18 +118,20 @@ class FileRegistryStore:
         """Write a content-addressed staging copy (``staging/<sha256>``); nothing is published yet."""
         entries = tuple(entries)
         sha = package_sha256(entries)
+        self._private_root()
         staging = self.root / "staging" / sha
         shutil.rmtree(staging, ignore_errors=True)
+        private_directory(staging)
         for entry in entries:
             target = staging / entry.path
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(entry.data)
+            private_directory(target.parent)
+            write_private(target, entry.data)
         return sha, staging
 
     def publish_package(self, capability_id: str, version: str, staging: Path) -> None:
         """Rename a staged package into place; called only after the registry CAS committed."""
         final = self.package_dir(capability_id, version)
-        final.parent.mkdir(parents=True, exist_ok=True)
+        private_directory(final.parent)
         shutil.rmtree(final, ignore_errors=True)        # an orphan or a tampered copy of the committed digest
         os.replace(staging, final)
 
@@ -161,17 +181,25 @@ class FileRegistryStore:
         return self.root / "audit.jsonl"
 
     def append_audit(self, event: dict) -> None:
-        self.root.mkdir(parents=True, exist_ok=True)
-        descriptor = os.open(self.audit_path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
-        with os.fdopen(descriptor, "ab") as handle:
-            handle.write(canonical_bytes(event) + b"\n")
-            handle.flush()
-            os.fsync(handle.fileno())
+        """Append one event to the private audit log, or refuse with ``audit_unavailable`` (fail closed)."""
+        line = canonical_bytes(event) + b"\n"
+        try:
+            self._private_root()
+            descriptor = open_private(self.audit_path, os.O_WRONLY | os.O_APPEND)
+            with os.fdopen(descriptor, "ab") as handle:
+                handle.write(line)
+                handle.flush()
+                os.fsync(handle.fileno())
+        except OSError:
+            raise _audit_unavailable() from None
 
     def audit_events(self) -> list[dict]:
-        if not self.audit_path.exists():
-            return []
-        return [json.loads(line) for line in self.audit_path.read_bytes().splitlines() if line]
+        """Events of the private audit log; a symlinked or insecure log is ``audit_unavailable``, never read."""
+        try:
+            raw = read_private(self.audit_path)
+        except OSError:
+            raise _audit_unavailable() from None
+        return [json.loads(line) for line in (raw or b"").splitlines() if line]
 
 
 __all__ = ["FileRegistryStore", "STORE_SCHEMA", "default_registry_root", "empty_state"]

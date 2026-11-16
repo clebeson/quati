@@ -30,10 +30,16 @@ def ready(tmp_path, monkeypatch, *items):
 
 def test_social_text_without_an_opening_greeting_gets_no_english_default(tmp_path, monkeypatch):
     """S00-T04 fix round P1-1 (replaces the earlier "defaults to English" expectation): with no template the
-    reply comes from a tool-free model call, never a fixed "Hello!"."""
+    reply is never a fixed "Hello!".
+
+    Fix round 6 (audit F3; S00_RUNTIME_CONTRACT "Independent-review fail-closed refinement"; LOG-0039):
+    the expectation changed from the tool-free model reply ("I am well, thank you.") to the
+    application-owned no-action notice; no model-written text is displayed in S00."""
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("I am well, thank you."))
     code, value = harness.ask("How are you doing today?")
-    assert (code, value["data"]["text"], value["data"]["result_kind"]) == (0, "I am well, thank you.", "GREETING")
+    assert (code, value["data"]["text"], value["data"]["result_kind"]) == (
+        0, ask_module.NO_ACTION_NOTICES["en"], "GREETING")
+    assert "I am well" not in json.dumps(value) and value["data"]["text"] != "Hello!"
     assert ask_module.social_reply("How are you doing today?", {"hi": "Hello!"}) is None   # no greeting opens it
 
 

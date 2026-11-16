@@ -125,28 +125,46 @@ class AuthzDecision:
         return asdict(self)
 
 
-def context_space_grants(context):
-    """Baseline SpaceGrant source: the spaces of the verified context (the ``authorize_read`` rule)."""
-    return context.space_ids
+@dataclass(frozen=True)
+class AuthzEvaluation:
+    """One decision, the AuthorizedScope it was evaluated against (or None) and the space that owns
+    the resource as the directory resolved it (or None). Valid for one transaction only."""
+    decision: AuthzDecision
+    scope: AuthorizedScope | None
+    space_id: str | None
+
+
+REGISTRY_MANAGER_ROLES = ('OWNER', 'ADMIN')
 
 
 class ScopeAuthorization:
-    """S00 AuthorizationPort (RFC-013 sections 6 and 10; M02 authorization order row 7).
+    """S00 AuthorizationPort (RFC-013 sections 6 and 10; M02 authorization order rows 4 and 7).
 
-    Default deny. ``space_grants(context)`` is the SpaceGrant directory: it returns the space ids
-    the context's principal may read and is called again at every check, so a removed grant takes
-    effect at the next check. S00 holds READER-equivalent grants only: ``read`` on ``space:<id>``
-    is the single action that can be allowed. One principal goes through the same code as many.
+    Default deny. ``directory`` is the S00 identity directory (LOCAL: the signed installation
+    record). It is read again at every check, so a removed grant takes effect at the next check:
+
+    * ``space_grants(context)`` - the space ids the context's principal may read;
+    * ``tenant_role(context)`` - the principal's tenant role, or None when it has no membership;
+    * ``registry_space(tenant_id)`` - the space that OWNS the tenant's capability registry.
+
+    Nothing is taken from the request: ``RequestContext.space_ids`` is not an authorization input.
+    Resources and actions that can be allowed (everything else is denied):
+
+    * ``registry:<tenant_id>`` - ``read`` needs a grant on the owning space; ``manage`` (install,
+      enable, disable) needs that grant and the tenant role OWNER or ADMIN (RFC-013 section 6);
+    * ``space:<space_id>`` - ``read`` needs a grant on that space.
+
+    One principal goes through the same code as many.
     """
 
-    def __init__(self, space_grants, clock):
-        self.space_grants = space_grants
+    def __init__(self, directory, clock):
+        self.directory = directory
         self.clock = clock
 
     def authorized_scope(self, context, purpose):
         """The readable spaces for this transaction, or None when no valid scope can be resolved."""
         try:
-            granted = self.space_grants(context)
+            granted = self.directory.space_grants(context)
         except Exception:  # noqa: BLE001 - an unreadable grant source is a missing scope: deny by default
             return None
         if not isinstance(granted, (tuple, list)) or not all(isinstance(item, str) and item for item in granted):
@@ -154,18 +172,45 @@ class ScopeAuthorization:
         return AuthorizedScope(context.tenant_id, context.actor_id, purpose, tuple(dict.fromkeys(granted)),
                                iso(self.clock()), context.request_id)
 
+    def _registry_space(self, tenant_id):
+        try:
+            space_id = self.directory.registry_space(tenant_id)
+        except Exception:  # noqa: BLE001 - an unresolvable owner is in no scope: deny by default
+            return None
+        return space_id if isinstance(space_id, str) and space_id else None
+
+    def _tenant_role(self, context):
+        try:
+            return self.directory.tenant_role(context)
+        except Exception:  # noqa: BLE001 - an unreadable membership is no role: deny by default
+            return None
+
     def decide(self, context, action, resource_ref):
-        """Return (AuthzDecision, the AuthorizedScope it was evaluated against or None)."""
+        """Return the AuthzEvaluation of ``action`` on ``resource_ref`` for the context's principal."""
         scope = self.authorized_scope(context, action)
-        space_id = resource_ref[6:] if isinstance(resource_ref, str) and resource_ref.startswith('space:') else None
-        if scope is None or space_id not in scope.readable_space_ids:
+        readable = () if scope is None else scope.readable_space_ids
+        kind, _, name = resource_ref.partition(':') if isinstance(resource_ref, str) else ('', '', '')
+        space_id = None
+        if kind == 'registry':
+            if name != context.tenant_id:
+                reason = 'TENANT_MISMATCH'
+            else:
+                space_id = self._registry_space(name)
+                if space_id is None or space_id not in readable:
+                    reason = 'NO_SPACE_GRANT'
+                elif action == 'read' or (action == 'manage'
+                                          and self._tenant_role(context) in REGISTRY_MANAGER_ROLES):
+                    reason = 'OK'
+                else:
+                    reason = 'ROLE_INSUFFICIENT'
+        elif kind != 'space' or name not in readable:
             reason = 'NO_SPACE_GRANT'
-        elif action != 'read':
-            reason = 'ROLE_INSUFFICIENT'
         else:
-            reason = 'OK'
-        return AuthzDecision('ALLOW' if reason == 'OK' else 'DENY', reason, context.tenant_id, context.actor_id,
-                             action, resource_ref), scope
+            space_id = name
+            reason = 'OK' if action == 'read' else 'ROLE_INSUFFICIENT'
+        decision = AuthzDecision('ALLOW' if reason == 'OK' else 'DENY', reason, context.tenant_id, context.actor_id,
+                                 action, resource_ref)
+        return AuthzEvaluation(decision, scope, space_id)
 
     def check(self, context, action, resource_ref):
-        return self.decide(context, action, resource_ref)[0]
+        return self.decide(context, action, resource_ref).decision

@@ -43,6 +43,13 @@ _SCHEMA_VALUE = ('additionalProperties', 'items', 'contains', 'not', 'if', 'then
                  'unevaluatedItems', 'unevaluatedProperties', 'contentSchema')
 _SCHEMA_LIST = ('allOf', 'anyOf', 'oneOf', 'prefixItems')
 _SCHEMA_MAP = ('properties', 'patternProperties', '$defs', 'definitions', 'dependentSchemas')
+# M17-RT-02 "Key value shape": a sign-in session artifact is never an API key. The value is only
+# classified here; it is never logged, returned or placed in a hint.
+_KEY_NOT_ONE_TOKEN = re.compile(r'[\s\x00-\x1f\x7f]')
+_KEY_SESSION_JWT = re.compile(r'eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*')
+_KEY_SESSION_PREFIX = re.compile(r'(?:sk-ant-o[ar]t[0-9]|sess-|rt_|ya29\.|1//)')
+_KEY_PATH_HINT = 'QUATI_API_KEY_ENV: a file path is not an API key'
+_KEY_SESSION_HINT = 'QUATI_API_KEY_ENV: a sign-in session file or token is not an API key'
 BUILTIN_ADAPTERS = 'quati.adapters.providers'
 ENTRY_POINT_GROUP = 'quati.providers'
 
@@ -161,6 +168,16 @@ class ProviderError(Exception):
         super().__init__(f'{self.code}:{self.reason}')
 
 
+def key_value_issue(value):
+    """M17-RT-02: the operator hint when ``value`` is a file path or a sign-in session artifact, else None."""
+    if value.startswith(('/', '~', './', '../')) or value.endswith('.json') or value[:5].lower() == 'file:':
+        return _KEY_PATH_HINT
+    if (_KEY_NOT_ONE_TOKEN.search(value) or value.startswith(('{', '[')) or _KEY_SESSION_JWT.fullmatch(value)
+            or _KEY_SESSION_PREFIX.match(value)):
+        return _KEY_SESSION_HINT
+    return None
+
+
 def _utc_now():
     return datetime.now(timezone.utc).isoformat()
 
@@ -240,8 +257,10 @@ class Provider(ABC):
                 value = self.environ.get(name, '')
                 if not value:
                     issues.append(('API_KEY_MISSING', 'QUATI_API_KEY_ENV: configured secret reference has no value'))
-                elif value.startswith(('/', '~', './', '../')) or value.endswith('.json'):
-                    issues.append(('API_KEY_REF_INVALID', 'QUATI_API_KEY_ENV: a file path is not an API key'))
+                else:
+                    hint = key_value_issue(value)
+                    if hint:
+                        issues.append(('API_KEY_REF_INVALID', hint))
         if not self.config.allow_live:
             issues.append(('LIVE_NOT_ALLOWED', 'QUATI_ALLOW_LIVE=1'))
         if self.sdk_module and importlib.util.find_spec(self.sdk_module) is None:

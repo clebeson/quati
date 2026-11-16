@@ -3,30 +3,41 @@
 Flow for a non-greeting request whose provider has a current measured FeatureReport with
 ``tools`` SUPPORTED for the exact config hash: build one ContextEnvelope, classify the
 request through the configured Provider (schema-validated, at most two repairs, advisory
-only), answer social requests deterministically, otherwise run a bounded model loop over
-the four discovery tools with the authenticated RequestContext.
+only), answer greeting-only requests deterministically without any tool, otherwise run a
+bounded model loop over the four discovery tools with the authenticated RequestContext.
 
-The application owns the outcome. Success means a capability really executed and its
-output validated (labelled FIXTURE_RESULT); model text is hashed and recorded but never
-displayed and never proves completion (the only displayed model text is a tool-free social
-reply when no localized greeting template exists). UNKNOWN feature support is never
-SUPPORTED, and every model response must come from the model id observed by the probe.
+The application owns the outcome and every displayed word (S00_RUNTIME_CONTRACT, "Independent-
+review fail-closed refinement"). Success means a capability really executed and its output
+validated (labelled FIXTURE_RESULT), or a deterministic application-owned social reply. Model
+text is hashed and recorded (``final_text_sha256``) but is never displayed and never proves
+completion. UNKNOWN feature support is never SUPPORTED, and every model response must come
+from the model id observed by the probe.
+
+Social rules (code-owned; the model's label is advisory and can only withhold a social outcome):
+
+* A greeting-only text (every word is social vocabulary or an urgency marker, at least one social
+  word; ``is_greeting_only``) never reaches the tool loop, whatever the label says: no tool is
+  offered and no capability can be invoked (SOC-01 and its negative).
+* A text that is not greeting-only goes through the tool loop. A social label can end it as a
+  ``CONVERSATION`` only when the text opens with a recognized greeting (a ``GREETINGS`` template).
+  A social label on any other text is not a social outcome: the ask ends BLOCKED
+  ``NO_VERIFIED_EXECUTION`` like any other loop without a validated execution.
 
 ``data.result_kind`` values (``RESULT_KINDS``):
 
-* ``GREETING`` - a social reply: the model labelled the request social AND the text is
-  social vocabulary only. SUCCEEDED; a localized template, or a tool-free model reply
-  (uncertainty MODEL_SOCIAL_REPLY) when no template exists for the text.
-* ``CONVERSATION`` - a tool-free conversational reply from the discovery loop (e.g. "Hey
-  there! Hope your day is going well."). Requires the classification intent ``social``,
-  ``work_needed`` false and ``next_action`` ``respond``, AND zero tool calls; for text that is
-  not social vocabulary only, the model must also have kept making zero tool calls after the
-  one NO_SEARCH_ON_WORK continuation (the labels are model-controlled, P1-C). SUCCEEDED,
-  uncertainty MODEL_SOCIAL_REPLY, no commitment, delivered false, ``work_performed`` false,
-  ``actions_taken`` [], ``text_source`` ``model_social_reply`` and a deterministic localized
-  ``system_notice`` that no action was taken (``display_lines`` = text, notice). The model
-  text is whitespace-collapsed and cut to 280 characters (empty is BLOCKED
-  EMPTY_SOCIAL_REPLY). Any other tool-free loop stays BLOCKED.
+* ``GREETING`` - the deterministic reply to a greeting-only text: the localized template of its
+  greeting, or, when the text contains no recognized greeting, the application-owned no-action
+  notice alone (uncertainty NO_GREETING_TEMPLATE, ``text_source`` ``application_notice``).
+  SUCCEEDED; uncertainty MODEL_LABEL_NOT_SOCIAL when the model labelled the text as work.
+* ``CONVERSATION`` - a tool-free conversational turn (e.g. "Hey there! Hope your day is going
+  well."). Requires a text that opens with a recognized greeting, the classification intent
+  ``social``, ``work_needed`` false and ``next_action`` ``respond``, zero tool calls, and the model
+  still making zero tool calls after the one NO_SEARCH_ON_WORK continuation (the labels are
+  model-controlled, P1-C). SUCCEEDED, uncertainty MODEL_SOCIAL_REPLY, no commitment, delivered
+  false, ``work_performed`` false, ``actions_taken`` [], ``text`` = the greeting template,
+  ``text_source`` ``application_template`` and a deterministic localized ``system_notice`` that no
+  action was taken (``display_lines`` = template, notice); ``next_action`` says that no work was
+  accepted. The model's reply is only hashed (an empty reply is BLOCKED EMPTY_SOCIAL_REPLY).
 * ``FIXTURE_RESULT`` - at least one capability executed and its output validated. SUCCEEDED,
   or PARTIAL with one ``STEP_NOT_EXECUTED:<step>:<reason>`` uncertainty per later invoke step
   that was refused, denied or failed.
@@ -36,6 +47,10 @@ SUPPORTED, and every model response must come from the model id observed by the 
   deadline (reason ASK_DEADLINE), budget, refusal, unverified outcome (PARTIAL
   OUTCOME_UNVERIFIED), or the model stopped without invoking anything (BLOCKED
   EVIDENCE_INSUFFICIENT, reason NO_VERIFIED_EXECUTION).
+
+The receipt's catalog digest is a registry read: it passes the AuthorizationPort once per ask
+(``authz.decided`` operation ``ask``); when it is denied or cannot be logged the digest is null
+and ``catalog_access`` names the reason.
 """
 
 from __future__ import annotations
@@ -73,7 +88,6 @@ PROTOCOL_VERSION = "s00-ask/3"         # /3: fix round 2 (tools available, reply
 SYNTHETIC_EVIDENCE_SCHEMA = "quati-ask-synthetic-evidence/1"
 CLASSIFY_TOOL_NAME = "quati_classify"
 MAX_CONTINUATIONS = 1                  # one nudge per ask in total (L2 shortlist, R1 no search on work)
-SOCIAL_REPLY_MAX_CHARS = 280
 ASK_LIMITS = {"max_provider_requests": ASK_MAX_PROVIDER_REQUESTS, "max_tool_calls": ASK_MAX_TOOL_CALLS,
               "max_output_tokens": ASK_MAX_OUTPUT_TOKENS, "deadline_s": ASK_DEADLINE_S,
               "deadline_cli_s": ASK_DEADLINE_CLI_S, "max_structured_repairs": MAX_STRUCTURED_REPAIRS,
@@ -98,6 +112,11 @@ SOCIAL_VOCABULARY = frozenset((
     "hola qué que tal cómo como estás estas buenos buenas días dias "
     "tardes noches bonsoir bonjour salut ça ca va comment allez vous hallo wie geht es dir ihnen guten tag morgen "
     "abend ciao buongiorno come stai").split())
+# SOC-01 negative ("urgent" in a greeting-only sentence): urgency words and the demonstrative or
+# copula that carries them ("this is urgent", "isto é urgente", "c'est urgent", "das ist dringend").
+# They name no object and no action, so they never turn a greeting into work. They do not extend
+# ``is_social_only`` (the provider-failure fallback and the provider-free path keep their rule).
+URGENCY_MARKERS = frozenset("urgent urgently urgente dringend this isto isso é esto c est das ist è questo".split())
 
 PROTOCOL_TEXT = (
     "Tool protocol (" + PROTOCOL_VERSION + "): Quati runs the tools quati_search, quati_describe, quati_invoke and "
@@ -117,11 +136,9 @@ SEARCH_CONTINUATION_TEXT = (
     "The Quati tools are available in this conversation and Quati runs them for you. Use quati_search to find a "
     "capability for the user's request, then quati_describe and quati_invoke it, or invoke NONE_FITS when no "
     "candidate fits.")
-SOCIAL_REPLY_TEXT = (
-    "Task: no tools are available for this reply. Answer the user's social message with one short friendly "
-    "sentence in the language of the user's request. Do not offer, describe or claim any work.")
-# P1-C: the deterministic notice that follows every CONVERSATION reply, in the language of the opening
-# greeting template (the same selection as ``social_reply``); English only when no template matches.
+# The deterministic notice that follows every CONVERSATION reply, in the language of the opening greeting
+# template (the same selection as ``social_reply``), and that is the whole reply to a greeting-only text
+# without any recognized greeting (English there: no template names a language).
 GREETING_LANGUAGES = {"Hello!": "en", "Olá!": "pt", "¡Hola!": "es", "Bonjour!": "fr", "Bonsoir!": "fr",
                       "Salut!": "fr", "Hallo!": "de", "Ciao!": "it", "Buongiorno!": "it"}
 NO_ACTION_NOTICES = {
@@ -132,6 +149,8 @@ NO_ACTION_NOTICES = {
     "de": "Quati-Hinweis: Es wurde keine Aktion ausgeführt; dies ist eine Gesprächsantwort.",
     "it": "Avviso di Quati: non è stata eseguita alcuna azione; questa è una risposta di conversazione.",
 }
+CONVERSATION_NEXT_ACTION = ("No work was accepted and no action was taken. To ask for work, send the request "
+                            "itself in a new message.")
 CLASSIFY_TEXT = (
     "Task: classify the user's request with the request-classification vocabulary. The classification is "
     "advisory; it grants no permission. Return only the classification object.")
@@ -215,8 +234,8 @@ def _tokens(text: str) -> list[str]:
 def social_reply(text: str, greetings: Mapping[str, str]) -> str | None:
     """Deterministic greeting in the language of the opening greeting; None when no template fits.
 
-    There is no English default: a social text in a language without a template gets a
-    tool-free model reply instead (or, without a model, no social reply at all).
+    There is no English default greeting: a text that opens with no recognized greeting gets no
+    greeting at all.
     """
     normalized = " ".join(_tokens(text))
     for phrase in sorted(greetings, key=len, reverse=True):
@@ -229,6 +248,33 @@ def is_social_only(text: str) -> bool:
     """True when every word is social vocabulary (greetings, pleasantries); any other word is work."""
     words = _tokens(text)
     return bool(words) and all(word in SOCIAL_VOCABULARY for word in words)
+
+
+def is_greeting_only(text: str) -> bool:
+    """True when every word is social vocabulary or an urgency marker and at least one is social.
+
+    Such a text asks for nothing: it never reaches the tool loop, whatever the model's label says
+    (SOC-01 and its negative). Any other word keeps the text on the work path."""
+    words = _tokens(text)
+    return (any(word in SOCIAL_VOCABULARY for word in words)
+            and all(word in SOCIAL_VOCABULARY or word in URGENCY_MARKERS for word in words))
+
+
+def greeting_template(text: str, greetings: Mapping[str, str]) -> str | None:
+    """The template of the opening greeting, else of the first greeting anywhere in the text
+    (longest phrase first); None when the text contains no recognized greeting. Only for
+    greeting-only texts, where a later greeting ("URGENT: hi") is still the whole message."""
+    reply = social_reply(text, greetings)
+    if reply is not None:
+        return reply
+    words = _tokens(text)
+    phrases = sorted(greetings, key=len, reverse=True)
+    for start in range(len(words)):
+        for phrase in phrases:
+            parts = phrase.split()
+            if words[start:start + len(parts)] == parts:
+                return greetings[phrase]
+    return None
 
 
 # ----------------------------------------------------------------- helpers
@@ -332,6 +378,7 @@ class AskSession:
         self.launched = False
         self.schema = classification_schema()
         self.classify_tool = ToolSpec(CLASSIFY_TOOL_NAME, "Record the request classification.", self.schema)
+        self.catalog_read: tuple[Any, str | None] | None = None      # (snapshot or None, refusal reason)
 
     # ------------------------------------------------------------- one bounded model call
     def call(self, request: ModelRequest, purpose: str):
@@ -488,10 +535,8 @@ class AskSession:
         if len(self.continuations) >= MAX_CONTINUATIONS:
             return None, None
         if not self.steps:
-            # R1: the model answered without a single tool call. P1-C: a social label suppresses this only
-            # for social-vocabulary-only text; both labels are model-controlled.
-            if self.social_label() and is_social_only(self.text):
-                return None, None
+            # R1: the model answered without a single tool call. P1-C: no label suppresses this; a
+            # greeting-only text never enters the loop, so every text here may be work.
             return "NO_SEARCH_ON_WORK", SEARCH_CONTINUATION_TEXT
         chosen = any(step["operation"] in ("invoke", "none_fits") and step["reason"] != "DESCRIBE_REQUIRED"
                      for step, _ in self.steps)
@@ -516,10 +561,10 @@ class AskSession:
             if exc.code in SOCIAL_FALLBACK_CODES and reply is not None and is_social_only(self.text):
                 return self.finish(self.greeting(reply, ["MODEL_UNAVAILABLE_SOCIAL_FALLBACK"]), envelope)
             return self.finish(self.provider_failure(exc), envelope)
-        value = self.classification
-        social = value["intent"] == "social" and value["work_needed"] is False and value["next_action"] == "respond"
-        if social and is_social_only(self.text):          # P1-1: the model label alone never skips the work path
-            return self.finish(self.social(envelope), envelope)
+        if is_greeting_only(self.text):
+            # Audit F2 (SOC-01): a greeting-only text never reaches the tool loop, whatever the model's
+            # label says. P1-1 still holds the other way: the label alone never skips the work path.
+            return self.finish(self.social(), envelope)
         stop = self.loop(envelope)
         return self.finish(self.outcome(stop), envelope)
 
@@ -542,44 +587,41 @@ class AskSession:
         return _envelope_response("SUCCEEDED", self.data("GREETING", result_status="RESPONDED", text=reply),
                                   uncertainties=uncertainties)
 
-    def social(self, envelope: ContextEnvelope) -> dict:
-        reply = social_reply(self.text, self.greetings)
+    def respond_label(self) -> bool:
+        return self.social_label() and (self.classification or {}).get("next_action") == "respond"
+
+    def social(self) -> dict:
+        """The application-owned reply to a greeting-only text: no tool, no model text."""
+        notes = [] if self.respond_label() else ["MODEL_LABEL_NOT_SOCIAL"]
+        reply = greeting_template(self.text, self.greetings)
         if reply is not None:
-            return self.greeting(reply, [])
-        # No localized template: the model answers with tools disabled (no tool offered, no schema).
-        try:
-            response = self.call(ModelRequest((Message("user", envelope.user_text()),),
-                                              system=f"{envelope.system_text()}\n\n{SOCIAL_REPLY_TEXT}"),
-                                 "social_reply")
-        except ProviderError as exc:
-            return self.provider_failure(exc)
-        self.final_text = response.text
-        return self.model_social_reply("GREETING")
+            return self.greeting(reply, notes)
+        # No recognized greeting names a language: the English no-action notice is the whole reply.
+        notice = NO_ACTION_NOTICES["en"]
+        data = self.data("GREETING", result_status="RESPONDED", text=notice, text_source="application_notice",
+                         work_performed=False, actions_taken=[], system_notice=notice, display_lines=[notice])
+        return _envelope_response("SUCCEEDED", data, uncertainties=["NO_GREETING_TEMPLATE", *notes])
 
     def conversation_allowed(self) -> bool:
-        """P1-C: label social/no work/respond, and social-only text or a refused NO_SEARCH_ON_WORK nudge."""
-        if not self.social_label() or (self.classification or {}).get("next_action") != "respond":
-            return False
-        return is_social_only(self.text) or any(item["reason"] == "NO_SEARCH_ON_WORK" for item in self.continuations)
+        """P1-C and audit F3: label social/no work/respond, a text that opens with a recognized greeting,
+        and a model that still made no tool call after the NO_SEARCH_ON_WORK continuation."""
+        return (self.respond_label() and social_reply(self.text, self.greetings) is not None
+                and any(item["reason"] == "NO_SEARCH_ON_WORK" for item in self.continuations))
 
     def conversation(self) -> dict:
-        """R2/P1-C: a tool-free conversational reply; deterministic data says that no work was done."""
-        value = self.model_social_reply("CONVERSATION")
-        if value["status"] == "SUCCEEDED":
-            template = social_reply(self.text, self.greetings)
-            notice = NO_ACTION_NOTICES[GREETING_LANGUAGES.get(template, "en")]
-            value["data"].update(work_performed=False, actions_taken=[], text_source="model_social_reply",
-                                 system_notice=notice, display_lines=[value["data"]["text"], notice])
-        return value
-
-    def model_social_reply(self, kind: str) -> dict:
-        text = " ".join((self.final_text or "").split())[:SOCIAL_REPLY_MAX_CHARS]
-        if not text:
+        """R2/P1-C/F3: a tool-free conversational turn. Every displayed word is application-owned: the
+        deterministic greeting template and the no-action notice; the model's reply is only hashed."""
+        if not (self.final_text or "").strip():
             return _envelope_response("BLOCKED", self.data("BLOCKED", reason="EMPTY_SOCIAL_REPLY"), "OUTPUT_INVALID",
                                       "The model returned an empty social reply.",
                                       "Send the message again; no work was requested or accepted.",
                                       ["EMPTY_SOCIAL_REPLY"])
-        return _envelope_response("SUCCEEDED", self.data(kind, result_status="RESPONDED", text=text),
+        template = social_reply(self.text, self.greetings)
+        notice = NO_ACTION_NOTICES[GREETING_LANGUAGES.get(template, "en")]
+        data = self.data("CONVERSATION", result_status="RESPONDED", text=template, text_source="application_template",
+                         work_performed=False, actions_taken=[], system_notice=notice,
+                         display_lines=[template, notice])
+        return _envelope_response("SUCCEEDED", data, next_action=CONVERSATION_NEXT_ACTION,
                                   uncertainties=["MODEL_SOCIAL_REPLY"])
 
     def provider_failure(self, exc) -> dict:
@@ -677,10 +719,19 @@ class AskSession:
         return {"model_requests": len(self.model_calls), "input_tokens": total("input_tokens"),
                 "output_tokens": total("output_tokens"), "cost_usd": total("cost_usd")}
 
+    def catalog_snapshot(self) -> tuple[Any, str | None]:
+        """The receipt's catalog read (audit F4): authorized and logged once per ask, like every other
+        registry read. Denied or unloggable: no read, (None, reason)."""
+        if self.catalog_read is None:
+            blocked = self.runtime.discovery.authorize(self.context, "ask")
+            self.catalog_read = ((self.runtime.registry.catalog(self.context), None) if blocked is None
+                                 else (None, blocked.reason))
+        return self.catalog_read
+
     def digests(self, envelope: ContextEnvelope | None) -> dict:
         prompt = self.runtime.prompt
-        snapshot = self.runtime.registry.catalog(self.context)
-        catalog = self.catalog(snapshot)
+        snapshot, _refusal = self.catalog_snapshot()
+        catalog = None if snapshot is None else self.catalog(snapshot)
         report_ref = self.gate.get("report_ref")
         values = {"config_hash": self.gate["config_hash"],
                   "model_digest": digest({"transport": self.provider.transport, "model": self.provider.model()}),
@@ -688,7 +739,8 @@ class AskSession:
                   "behavior_hash": prompt.receipt.get("behavior_hash"),
                   "statechart_hash": prompt.receipt.get("statechart_hash"), "policy_ref": prompt.receipt.get("policy_ref"),
                   "envelope_stable_hash": None, "envelope_hash": None, "effective_prompt_hash": None,
-                  "classification_prompt_hash": None, "catalog_digest": digest(catalog),
+                  "classification_prompt_hash": None,
+                  "catalog_digest": None if catalog is None else digest(catalog),
                   "tool_schema_digest": digest(_tool_json(DISCOVERY_TOOLS)),
                   "feature_report_sha256": report_ref.split(":", 2)[1] if report_ref else None,
                   "code_digest": current_code_digest()}
@@ -726,10 +778,12 @@ class AskSession:
                    "cost_usd": self.usage()["cost_usd"], "provider": provider, "final_text_sha256": final_sha,
                    "outcome": outcome, "limits": dict(ASK_LIMITS), "effective_limits": self.effective_limits(),
                    "timing": self.timing(), "continuations": copy.deepcopy(self.continuations)}
+        snapshot, refusal = self.catalog_snapshot()
+        if refusal is not None:
+            receipt["catalog_access"] = refusal
         if self.permutation_seed is not None:
             receipt.update(eval_permutation=True, eval_permutation_seed=self.permutation_seed)
         if self.synthetic:
-            snapshot = self.runtime.registry.catalog(self.context)
             receipt["synthetic_evidence"] = {
                 "schema": SYNTHETIC_EVIDENCE_SCHEMA, "request_text": self.text,
                 "classification": copy.deepcopy(self.classification), "classification_mode": self.classification_mode,
@@ -739,7 +793,8 @@ class AskSession:
                                for step, text in self.steps],
                 "final_model_text": self.final_text, "final_model_text_sha256": final_sha,
                 "model_calls": copy.deepcopy(self.model_calls), "usage": self.usage(), "provider": provider,
-                "digests": digests, "limits": dict(ASK_LIMITS), "catalog": self.catalog(snapshot),
+                "digests": digests, "limits": dict(ASK_LIMITS),
+                "catalog": None if snapshot is None else self.catalog(snapshot),
                 "feature_report_ref": self.gate.get("report_ref"), "outcome": outcome,
                 "effective_limits": self.effective_limits(), "continuations": copy.deepcopy(self.continuations),
                 "model_visible": {
@@ -773,4 +828,5 @@ def run_ask(text: str, context, *, provider, runtime: AskRuntime, gate: dict, cl
 __all__ = ["ASK_DEADLINE_CLI_S", "ASK_DEADLINE_S", "ASK_LIMITS", "ASK_MAX_OUTPUT_TOKENS", "ASK_MAX_PROVIDER_REQUESTS", "ASK_MAX_TOOL_CALLS",
            "ASK_SCOPE", "AskRuntime", "AskSession", "DIGEST_FIELDS", "FEATURE_REPORT_MAX_AGE_S", "MAX_LOOP_REPAIRS",
            "MAX_STRUCTURED_REPAIRS", "NO_ACTION_NOTICES", "PROTOCOL_VERSION", "RESULT_KINDS", "SYNTHETIC_EVIDENCE_SCHEMA",
-           "ask_deadline_seconds", "classification_schema", "exit_code", "feature_gate", "is_social_only", "run_ask", "social_reply"]
+           "ask_deadline_seconds", "classification_schema", "exit_code", "feature_gate", "greeting_template",
+           "is_greeting_only", "is_social_only", "run_ask", "social_reply"]

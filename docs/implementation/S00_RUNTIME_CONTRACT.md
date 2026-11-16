@@ -45,3 +45,56 @@ professional delivery remain S01/later behavior until their evaluation gates pas
 The model's final text is hashed and can be inspected in synthetic evaluations; it
 is not authoritative proof of completed work. Diagnostics and transport share the
 same HTTPS endpoint validation, including port and whitespace checks.
+
+### Displayed text and social outcomes (normative for S00; audit findings F2 and F3, LOG-0039)
+
+These rules are code-owned. The model's classification is advisory: it can withhold a social
+outcome, it can never create one, and it never selects the tool path for a greeting.
+
+1. **Application-owned text only.** Every word `quati ask` and `quati chat` display is produced by
+   the application: a deterministic greeting template, the deterministic localized no-action
+   notice, a rendered `FIXTURE_RESULT`, or a fixed application message. Text written by the model
+   is never displayed, in any result kind. It is recorded as `final_text_sha256` in the receipt
+   (and in full only under `--synthetic-evidence`).
+2. **Greeting-only text.** A text is greeting-only when every word (Unicode `\w+`, casefolded) is
+   in the code-owned social vocabulary or in the code-owned urgency markers, and at least one word
+   is in the social vocabulary. The urgency markers are the words `urgent`, `urgently`, `urgente`,
+   `dringend` and the demonstrative or copula that carries them (`this`, `isto`, `isso`, `é`, `esto`,
+   `c`, `est`, `das`, `ist`, `è`, `questo`); they name no object and no action. A greeting-only text
+   never reaches the tool loop, whatever the model's label says: no tool is offered, no capability
+   can be invoked and no commitment is created (SOC-01 and its negative, "urgent" in a greeting-only
+   sentence). Its result is `GREETING` / `SUCCEEDED` with the localized template of the greeting it
+   contains (the opening greeting, else the first greeting in the text). When it contains no
+   recognized greeting the reply is the no-action notice alone, in English (no template names a
+   language), with uncertainty `NO_GREETING_TEMPLATE`. A label other than social / no work /
+   respond adds uncertainty `MODEL_LABEL_NOT_SOCIAL` and changes nothing else.
+3. **Conversation.** Any other text goes through the tool loop. A label `intent=social`,
+   `work_needed=false`, `next_action=respond` ends the turn as `CONVERSATION` / `SUCCEEDED` only
+   when all of these hold: (a) the text opens with a recognized greeting (a greeting template
+   matches its opening words); (b) the loop made zero tool calls; (c) the model still made zero
+   tool calls after the single `NO_SEARCH_ON_WORK` continuation. The displayed text is the greeting
+   template followed by the localized no-action notice (`display_lines`), with
+   `text_source=application_template`, `work_performed=false`, `actions_taken=[]`, no commitment,
+   and a `next_action` stating that no work was accepted.
+4. **Work labelled social fails closed.** A social or simple-answer label on a text that opens with
+   no recognized greeting is not a social outcome. The turn ends `BLOCKED` / `EVIDENCE_INSUFFICIENT`
+   reason `NO_VERIFIED_EXECUTION` (exit 4), exactly as a work label without a validated execution;
+   nothing the model wrote is displayed.
+5. **Fallbacks keep the narrower rule.** The deterministic fallback after a model timeout or
+   provider unavailability during classification, and the provider-free path, apply only to text
+   made of social vocabulary alone that opens with a recognized greeting (urgency markers excluded).
+6. A greeting in a language without a template is not recognized by code; its handling stays
+   model-dependent (tier L3) and, by rule 4, it cannot end as a `CONVERSATION`.
+
+### Registry authorization (normative for S00; audit findings F4 and F5, LOG-0039)
+
+Every registry read and write reachable from the command line or from an ask session passes
+`AuthorizationPort` before any registry lookup or change, and its decision is logged as
+`authz.decided`: `capabilities list|search|describe` and the `quati_search`, `quati_describe`,
+`quati_invoke`, `quati_status` tools (`read`), the catalog digest of an ask receipt (`read`,
+operation `ask`, once per ask), and `capabilities install|install-fixture|disable`, including
+`--enable-fixture` (`manage`). The resource is `registry:<tenant_id>`; the space that owns it is the
+tenant's organization space, resolved from the identity directory and never from the request.
+The exact rules are in `docs/rfcs/RFC-013_IDENTITY_TENANCY_SPACES.md` section 12.1 and
+`docs/prds/M02.md` "S00 decisions". When the catalog read of an ask is denied or cannot be
+logged, the receipt has `digests.catalog_digest = null` and `catalog_access = <reason>`.

@@ -53,7 +53,8 @@ def _wired(root: Path, *, audit=None, profile: str = "S00", config: Path | None 
     log: list[str] = []
     sink = audit or (lambda event: log.append(event["event"]))
     discovery = DiscoveryService(harness.registry, Fts5CapabilityIndex(), harness.handlers, policy_gate=gate,
-                                 grants=harness.grants, clock=harness.clock, ids=harness.ids, audit=sink)
+                                 grants=harness.grants, clock=harness.clock, ids=harness.ids, audit=sink,
+                                 authorization=harness.discovery.authorization)      # fix round 6 (F5): required port
     original = harness.handlers.execute
 
     def recorded(handler, arguments, *, now):

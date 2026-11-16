@@ -296,7 +296,17 @@ class RegistryService:
                 if self.store.package_digest(manifest["id"], manifest["version"]) != package.package_sha256:
                     _sha, staging = self.store.stage_package(package.entries)     # repair an interrupted publish
                     self.store.publish_package(manifest["id"], manifest["version"], staging)
-                return envelope("SUCCEEDED", {**self._summary(state, existing), "already_installed": True})
+                summary = {**self._summary(state, existing), "already_installed": True}
+                if enable_fixture and existing["lifecycle"] != "ENABLED":
+                    # Audit F15: the operator asked for ENABLED and the record is not; a repeated install
+                    # changes nothing, so it reports why the record cannot be enabled, never success.
+                    refusal = self._enable_refusal(state, context, ref, manifest, fixture_handler)
+                    self._audit({"event": "registry.install_refused", "capability_id": manifest["id"],
+                                 "capability_version": manifest["version"], "reason": refusal.reason,
+                                 "actor_id": context.actor_id})
+                    return envelope(refusal.status, {**summary, "reason": refusal.reason}, code=refusal.code,
+                                    message=refusal.reason)
+                return envelope("SUCCEEDED", summary)
             self._audit({"event": "registry.install_refused", "capability_id": manifest["id"],
                          "capability_version": manifest["version"], "reason": "VERSION_EXISTS",
                          "actor_id": context.actor_id})
@@ -309,6 +319,31 @@ class RegistryService:
                                         import_kind=import_kind, vendor_hints=vendor_hints)
         finally:
             self.store.discard_staging(staging)
+
+    def _enable_refusal(self, state: dict, context, ref: str, manifest: Mapping[str, Any],
+                        fixture_handler: str | None) -> Refusal:
+        """Why an already installed, not ENABLED record does not become ENABLED: the first refusal of
+        the remaining lifecycle steps, evaluated on a discarded copy of the state (nothing is written).
+        A record that the guards would let through is still not enabled by a repeated install."""
+        trial, pending = copy.deepcopy(state), []
+        try:
+            if self._record(trial, context.tenant_id, ref)["lifecycle"] == "DRAFT":
+                self._transition(trial, context, ref, "VALIDATED", pending)
+            current = self._record(trial, context.tenant_id, ref)
+            if current["lifecycle"] == "VALIDATED":
+                if fixture_handler is not None and not self._bindings(trial, current):
+                    self._bind(trial, context, ref, self.fixture_binding(ref, fixture_handler), pending,
+                               manifest=manifest)
+                self._transition(trial, context, ref, "STAGED", pending)
+            current = self._record(trial, context.tenant_id, ref)
+            approval = None
+            if current["lifecycle"] == "STAGED":
+                approval = self._mint(trial, context, current, "FIXTURE_ENABLE", self._declared_effect(trial, current))
+            self._transition(trial, context, ref, "ENABLED", pending, approval=approval)
+        except Refusal as exc:
+            return exc
+        return Refusal("CONFLICT", "REVISION_CONFLICT", "INSTALLED_NOT_ENABLED",
+                       "this version is installed and not enabled; a repeated install does not enable it")
 
     def _install_staged(self, context, package, staging: Path, state: dict, revision: int, ref: str, now, *,
                         source: str, fixture_handler: str | None, enable_fixture: bool, import_kind: str,
@@ -344,6 +379,10 @@ class RegistryService:
                     approval = self._mint(state, context, current, "FIXTURE_ENABLE",
                                           self._declared_effect(state, current))
                     self._transition(state, context, ref, "ENABLED", pending, approval=approval)
+            elif enable_fixture:
+                # Audit F15: nothing can be enabled without a binding; the STAGED guard says so
+                # (BINDING_CHECK_FAILED) and the record stays VALIDATED.
+                self._transition(state, context, ref, "STAGED", pending)
         except Refusal as exc:
             refusal = exc
             pending.append({"event": "registry.transition_refused", "capability_id": manifest["id"],

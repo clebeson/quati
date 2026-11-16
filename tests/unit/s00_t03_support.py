@@ -20,7 +20,7 @@ from quati.adapters.fts_index import Fts5CapabilityIndex
 from quati.adapters.policy_gate import LocalPolicyGate
 from quati.application.capability_registry import RegistryService
 from quati.application.discovery import DiscoveryService
-from quati.application.identity import RequestContext
+from quati.application.identity import RequestContext, ScopeAuthorization
 from quati.domain.policy import PolicyState, policy_version
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -72,6 +72,22 @@ def trusted_policy_state(tenant: str = TENANT) -> PolicyState:
     return PolicyState.from_document(document, tenant_id=tenant, trusted_version=policy_version(document))
 
 
+class SyntheticDirectory:
+    """Fix round 6 (audit F5) setup: ``DiscoveryService`` requires an AuthorizationPort. This is the
+    harness directory for its synthetic contexts: both harness spaces granted, the OWNER tenant role,
+    and every tenant's registry owned by the ORGANIZATION space. It stands in for the request-derived
+    fallback the service used to build when no port was passed (same grants for the default context)."""
+
+    def space_grants(self, context):
+        return PERSONAL, ORGANIZATION
+
+    def tenant_role(self, context):
+        return "OWNER"
+
+    def registry_space(self, tenant_id):
+        return ORGANIZATION
+
+
 @dataclass
 class Harness:
     root: Path
@@ -110,7 +126,8 @@ def build(root: Path, *, clock: FakeClock | None = None, ids: SeededIds | None =
     state = trusted_policy_state() if policy_state is None else policy_state
     gate = LocalPolicyGate(lambda: state, clock=clock, ids=ids, runtime_profile="S00")
     discovery = DiscoveryService(registry, Fts5CapabilityIndex(), handlers, policy_gate=gate, grants=grant_port,
-                                 clock=clock, ids=ids, audit=audit)
+                                 clock=clock, ids=ids, audit=audit,
+                                 authorization=ScopeAuthorization(SyntheticDirectory(), clock))
     return Harness(root, clock, ids, store, handlers, registry, grant_port, gate, discovery, context())
 
 
@@ -134,5 +151,5 @@ def manifest_copy(name: str) -> dict:
 
 
 __all__ = ["handler_for", "handlers_with", "ACTOR", "AGENT", "ORGANIZATION", "OTHER_TENANT", "PERSONAL", "START", "TENANT", "FakeClock",
-           "Harness", "SeededIds", "build", "context", "manifest_copy", "policy_document", "replace",
+           "Harness", "SeededIds", "SyntheticDirectory", "build", "context", "manifest_copy", "policy_document", "replace",
            "trusted_policy_state", "write_fixture_package", "write_package"]

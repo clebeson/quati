@@ -12,7 +12,7 @@
   <img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-1f4e79?logo=python&logoColor=white">
   <img alt="Interface: CLI only" src="https://img.shields.io/badge/interface-CLI%20only-0b2a4a">
   <img alt="Slice S00 in progress" src="https://img.shields.io/badge/slice-S00%20in%20progress-f5b800">
-  <img alt="Tests: 982 passed" src="https://img.shields.io/badge/tests-982%20passed-2ea44f">
+  <img alt="Tests: 1124 passed" src="https://img.shields.io/badge/tests-1124%20passed-2ea44f">
   <img alt="Coverage 99%" src="https://img.shields.io/badge/coverage-99%25%20(domain%20%2B%20behavior%20100%25)-2ea44f">
   <img alt="Local first" src="https://img.shields.io/badge/deployment-local--first-6cc24a">
 </p>
@@ -232,7 +232,7 @@ first call, and one JSON file per case.
 | **Current slice** | S00 — local CLI, provider layer, capability discovery |
 | **Implemented** | `init`, `doctor`, `ask`, `chat`, `models probe`, capability registry (synthetic fixtures), 6 provider transports |
 | **Arrives in S02** | `status`, `tell`, `approve`, `deny`, `approvals` (they return `UNSUPPORTED` today) |
-| **Tests** | 982 passed · 99% coverage overall · 100% line and branch coverage in `domain/` and `behavior/` |
+| **Tests** | 1124 passed · 99% coverage overall · 100% line and branch coverage in `domain/` and `behavior/` |
 | **Specification** | 31 module PRDs · 15 RFCs · 16 ADRs · 35 work packages across slices S00–S07 |
 | **Canonical state** | `docs/implementation/implementation_state.json` (revision-checked writes only) |
 

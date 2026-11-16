@@ -159,7 +159,11 @@ def test_m14_at_01_install_discoverable_after_restart(workspace, monkeypatch, ca
     package = root / "data" / "fixture_sources" / "forecast-lime"
     code, value = child(root, "capabilities", "install", str(package), "--fixture-handler", "forecast-lime",
                         "--enable-fixture", "--json")
-    assert code == 0 and value["data"]["already_installed"] is True    # same digest: idempotent, not re-enabled
+    # Fix round 6 (audit F15; M14 "Repeated install"; LOG-0039). Old expectation: exit 0 SUCCEEDED for this
+    # repeated install with --enable-fixture although the record stays STAGED. New: same digest, idempotent and
+    # not re-enabled as before, but the command no longer reports success for an enable that did not happen.
+    assert (code, value["status"], value["data"]["reason"]) == (4, "CONFLICT", "INSTALLED_NOT_ENABLED")
+    assert value["data"]["already_installed"] is True
     assert value["data"]["lifecycle"] == "STAGED"
     code, value = child(root, "capabilities", "install-fixture", "forecast-quick", "--enable-fixture", "--json")
     assert code == 0

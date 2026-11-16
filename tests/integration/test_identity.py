@@ -13,14 +13,18 @@ Proof tiers
   data directory (registry, receipts, feature reports) or under the temporary home directory.
   No production code is changed or hooked for it. ``os.stat`` raises no audit event, so the
   counter is completed by a byte-exact snapshot of the data directory.
-* IDN-02 is tier L1: the allowed read is observed through the public CLI process (production
-  wiring, N=1); the denied read cannot be requested through the S00 command line (it has no space
-  selector and the scope comes from the signed installation record), so it runs in-process
-  through the same composition root and use-case class the CLI calls, with a synthetic SpaceGrant
-  directory port. The check, its order, the denial and the decision log are production code.
+* IDN-02 is tier L1. The resource is the tenant's capability registry, owned by the tenant's
+  organization space (the owner comes from the signed installation record, never from the
+  request). The allowed read and one denied read are observed through the public CLI process
+  with the production authenticate and directory: the denial uses a validly signed record
+  whose tenant role is GUEST (no ORGANIZATION grant, RFC-013 section 2.1). The other denial legs
+  run in-process through the same composition root and use-case class the CLI calls, with the
+  production authenticate and a synthetic SpaceGrant directory port; only the negative case
+  overrides authenticate, to prove that a space named by the request is not an input.
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
@@ -32,9 +36,11 @@ from pathlib import Path
 
 import jsonschema
 import pytest
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from quati.adapters.local_identity import LocalIdentity
-from quati.application.identity import AccessDenied
+from quati.application.discovery import DiscoveryService
+from quati.application.identity import AccessDenied, ScopeAuthorization, canonical_bytes
 from quati.cli import composition
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -382,24 +388,43 @@ class CounterIds:
         return f'{prefix}-{self.count:05d}'
 
 
+_RECORD = object()
+
+
 class DirectoryFixture(LocalIdentity):
-    """FX-IDN-LOCAL-PRINCIPAL space directory: the real verified principal U1 (``local-os``), with a
-    synthetic SpaceGrant directory port and an explicit request target. ``grants`` is what the
+    """FX-IDN-LOCAL-PRINCIPAL space directory: the real verified principal U1 (``local-os``, the
+    production ``authenticate``) with a synthetic SpaceGrant directory port. ``grants`` is what the
     directory returns for U1 (a tuple of space ids, ``None`` when the scope object is removed, or an
-    exception to raise); ``target`` is the space the request reads, by identifier."""
+    exception to raise). ``owner`` replaces the registry's owning space (default: the signed record)."""
 
-    def __init__(self, directory: Path, *, target, grants) -> None:
+    def __init__(self, directory: Path, *, grants, owner=_RECORD) -> None:
         super().__init__(directory)
-        self.target = target
         self.grants = grants
-
-    def authenticate(self):
-        return replace(super().authenticate(), space_ids=() if self.target is None else (self.target,))
+        self.owner = owner
 
     def space_grants(self, context):
         if isinstance(self.grants, Exception):
             raise self.grants
         return self.grants
+
+    def registry_space(self, tenant_id):
+        if self.owner is _RECORD:
+            return super().registry_space(tenant_id)
+        if isinstance(self.owner, Exception):
+            raise self.owner
+        return self.owner
+
+
+class DeclaredSpaces(DirectoryFixture):
+    """Only for the negative case: a request context that NAMES spaces of its choice. The S00 public
+    path cannot build one (``authenticate`` is the only source), so this is the one override of it."""
+
+    def __init__(self, directory: Path, *, declared, grants) -> None:
+        super().__init__(directory, grants=grants)
+        self.declared = declared
+
+    def authenticate(self):
+        return replace(super().authenticate(), space_ids=self.declared)
 
 
 class Session:
@@ -447,12 +472,15 @@ def assert_denied_read(code: int, value: dict) -> None:
     assert_response(value)
 
 
-def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space: str, readable) -> None:
+def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, space, readable) -> None:
+    """The decision names the RESOURCE (the tenant's capability registry); ``owner_space_id`` is the
+    space that owns it and that was looked up in ``readable_space_ids`` (F5: never a requested space)."""
     decision = event['decision']
     assert_identity_shape('AuthzDecision', decision)
     assert decision == {'verdict': verdict, 'reason_code': reason, 'tenant_id': principal['tenant_id'],
                         'principal_id': principal['principal_id'], 'action': 'read',
-                        'resource_ref': f'space:{space}'}
+                        'resource_ref': f"registry:{principal['tenant_id']}"}
+    assert event['owner_space_id'] == space
     assert (event['actor_id'], event['tenant_id']) == (principal['principal_id'], principal['tenant_id'])
     scope = event['authorized_scope']
     if readable is None:
@@ -465,9 +493,15 @@ def assert_decision(event: dict, principal: dict, *, verdict: str, reason: str, 
     assert scope['valid_for_transaction'] == event['request_id']
 
 
+def registry_bytes(profile: Profile):
+    return (snapshot(profile.data / 'capabilities' / 'packages'),
+            (profile.data / 'capabilities' / 'registry.json').read_bytes())
+
+
 def test_idn_02(profile: Profile, spaces: dict) -> None:
-    """IDN-02 (L1): with one principal, a read in a space outside AuthorizedScope is DENIED, the
-    in-scope read succeeds, and the scope evaluation of both is in the decision log."""
+    """IDN-02 (L1): with one principal, a read of a resource whose space is outside AuthorizedScope is
+    DENIED, the in-scope read succeeds, and the scope evaluation of both is in the decision log.
+    The resource is the tenant's capability registry; its owning space is the organization space."""
     personal, organization = spaces['personal'], spaces['organization']
     audit_log = profile.data / 'capabilities' / 'audit.jsonl'
 
@@ -481,42 +515,88 @@ def test_idn_02(profile: Profile, spaces: dict) -> None:
     assert [(event['event'], event['operation']) for event in logged] == [
         ('authz.decided', 'search'), ('authz.decided', 'describe')]
     for event in logged:      # LOCAL bootstrap grants (RFC-013 2.1): U1 reads its personal and organization space
-        assert_decision(event, spaces, verdict='ALLOW', reason='OK', space=personal,
+        assert_decision(event, spaces, verdict='ALLOW', reason='OK', space=organization,
                         readable=(personal, organization))
 
-    # Two spaces; U1 scoped to the personal space only; a read of each space by identifier.
-    allowed = Session(profile, DirectoryFixture(profile.config, target=personal, grants=(personal,)))
+    # Two spaces; U1 scoped to one of them. Scoped to the registry's space: the read succeeds.
+    allowed = Session(profile, DirectoryFixture(profile.config, grants=(organization,)))
+    assert allowed.context.space_ids == (personal, organization)       # the production authenticate, unchanged
     code, value = allowed.commands.search(CALENDAR_QUERY)
     assert code == 0 and [item['capability_id'] for item in value['data']['candidates']] == [CAPABILITY]
     assert allowed.registry_reads == ['catalog']
-    assert_decision(allowed.decisions()[-1], spaces, verdict='ALLOW', reason='OK', space=personal,
-                    readable=(personal,))
+    assert_decision(allowed.decisions()[-1], spaces, verdict='ALLOW', reason='OK', space=organization,
+                    readable=(organization,))
     assert allowed.decisions()[-1]['request_id'] == allowed.context.request_id
 
-    before = snapshot(profile.data / 'capabilities' / 'packages'), (profile.data / 'capabilities' / 'registry.json').read_bytes()
-    denied = Session(profile, DirectoryFixture(profile.config, target=organization, grants=(personal,)))
+    # Scoped to the other space only: the registry is a resource outside AuthorizedScope.
+    before = registry_bytes(profile)
+    denied = Session(profile, DirectoryFixture(profile.config, grants=(personal,)))
+    assert denied.context.space_ids == (personal, organization)
     known = len(denied.decisions())
     code, value = denied.commands.search(CALENDAR_QUERY)
     assert_denied_read(code, value)
     code, value = denied.commands.describe(CAPABILITY)
     assert_denied_read(code, value)
+    code, value = denied.commands.list()
+    assert_denied_read(code, value)
     assert denied.registry_reads == []                       # denied before any registry lookup (M02 order row 7)
     assert denied.receipts == []
     new = denied.decisions()[known:]
-    assert [event['operation'] for event in new] == ['search', 'describe']
+    assert [event['operation'] for event in new] == ['search', 'describe', 'list']
     for event in new:
         assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
                         readable=(personal,))
         assert event['request_id'] == denied.context.request_id
-    assert before == (snapshot(profile.data / 'capabilities' / 'packages'),
-                      (profile.data / 'capabilities' / 'registry.json').read_bytes())
+    assert before == registry_bytes(profile)
+
+
+def resign(profile: Profile, **changes) -> None:
+    """Rewrite U1's installation record with the real device key (the LOCAL trust anchor). The result
+    is a validly signed directory state that any public CLI process reads; no code path is replaced."""
+    record = json.loads((profile.config / 'identity.json').read_text(encoding='utf-8'))
+    record.pop('signature')
+    record.update(changes)
+    key = Ed25519PrivateKey.from_private_bytes((profile.config / 'device.key').read_bytes())
+    signed = dict(record, signature=base64.b64encode(key.sign(canonical_bytes(record))).decode('ascii'))
+    path = profile.config / 'identity.json'
+    path.write_bytes(canonical_bytes(signed))
+    path.chmod(0o600)
+
+
+def test_idn_02_public_cli_denies_the_read_of_a_resource_outside_the_scope(profile: Profile) -> None:
+    """IDN-02 denial leg at L2 (public processes only, production ``authenticate`` and directory): a
+    principal whose signed record carries the GUEST tenant role holds no ORGANIZATION grant
+    (RFC-013 section 2.1), so the registry, owned by the organization space, is outside its scope."""
+    principal = profile.provision()
+    personal, organization = principal['personal'], principal['organization']
+    audit_log = profile.data / 'capabilities' / 'audit.jsonl'
+    resign(profile, tenant_role='GUEST')
+    before = registry_bytes(profile)
+    receipts = sorted((profile.data / 'receipts').iterdir())
+    for argv, operation in ((('capabilities', 'search', CALENDAR_QUERY, '--json'), 'search'),
+                            (('capabilities', 'describe', CAPABILITY, '--json'), 'describe'),
+                            (('capabilities', 'list', '--json'), 'list')):
+        start = len(audit_log.read_text().splitlines())
+        code, value, accesses, completed = profile.one(*argv)
+        assert_denied_read(code, value)
+        assert not [path for event, path in accesses if path.endswith('registry.json') or '/packages/' in path]
+        assert_discloses_nothing(completed, principal, profile)
+        logged = [json.loads(line) for line in audit_log.read_text().splitlines()[start:]]
+        assert [(event['event'], event['operation']) for event in logged] == [('authz.decided', operation)]
+        assert_decision(logged[0], principal, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
+                        readable=(personal,))
+    assert registry_bytes(profile) == before and sorted((profile.data / 'receipts').iterdir()) == receipts
+    # Control: the same installation with the OWNER role reads again; the denial was the missing grant.
+    resign(profile, tenant_role='OWNER')
+    code, value, _accesses, _completed = profile.one('capabilities', 'search', CALENDAR_QUERY, '--json')
+    assert code == 0 and [item['capability_id'] for item in value['data']['candidates']] == [CAPABILITY]
 
 
 def test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler(
         profile: Profile, spaces: dict) -> None:
     """The shared enforcement point of ``quati ask`` tools: search, describe, invoke and status."""
     personal, organization = spaces['personal'], spaces['organization']
-    allowed = Session(profile, DirectoryFixture(profile.config, target=personal, grants=(personal,)))
+    allowed = Session(profile, DirectoryFixture(profile.config, grants=(organization,)))
     turn, context = allowed.turn, allowed.context
     assert turn.search(context, CALENDAR_QUERY).status == 'SUCCEEDED'
     assert turn.describe(context, CAPABILITY).status == 'SUCCEEDED'
@@ -528,7 +608,7 @@ def test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reach
     assert [event['operation'] for event in allowed.decisions()[-4:]] == ['search', 'describe', 'invoke', 'status']
     assert {event['decision']['verdict'] for event in allowed.decisions()[-4:]} == {'ALLOW'}
 
-    denied = Session(profile, DirectoryFixture(profile.config, target=organization, grants=(personal,)))
+    denied = Session(profile, DirectoryFixture(profile.config, grants=(personal,)))
     turn, context, known = denied.turn, denied.context, len(denied.decisions())
     outcomes = [turn.search(context, CALENDAR_QUERY), turn.describe(context, CAPABILITY),
                 turn.invoke(context, CAPABILITY, {'limit': 1}, 'idem-denied'),
@@ -547,13 +627,18 @@ def test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reach
 
 def test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing(
         profile: Profile, spaces: dict) -> None:
-    """IDN-02 negative: a real space outside the scope, a forged space id and another principal's
-    space all get the same denial; nothing is read and nothing about the scope is returned."""
+    """IDN-02 negative: a request that names a real space outside the scope, a forged space id,
+    another spelling or no usable id gets the same denial as any other; and naming a space, forged
+    or real, never turns a denial into a read nor a grant into a denial (the named space is not an
+    authorization input)."""
     personal, organization = spaces['personal'], spaces['organization']
-    before = snapshot(profile.data / 'capabilities' / 'packages'), (profile.data / 'capabilities' / 'registry.json').read_bytes()
+    before = registry_bytes(profile)
     responses = []
-    for target in (organization, FORGED_SPACE, 'space:' + personal, personal + 'X', ''):
-        session = Session(profile, DirectoryFixture(profile.config, target=target, grants=(personal,)))
+    declared_sets = ((organization,), (FORGED_SPACE,), ('space:' + personal,), (personal + 'X',), ('',),
+                     (organization, personal), (personal, FORGED_SPACE))
+    for declared in declared_sets:
+        session = Session(profile, DeclaredSpaces(profile.config, declared=declared, grants=(personal,)))
+        assert session.context.space_ids == declared
         known = len(session.decisions())
         for call in (lambda: session.commands.search(CALENDAR_QUERY), lambda: session.commands.describe(CAPABILITY)):
             code, value = call()
@@ -563,12 +648,21 @@ def test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_di
                            spaces['tenant_id'], 'candidates', 'readable'):
                 assert secret not in responses[-1]
         assert session.registry_reads == [] and session.receipts == []
-        assert [event['decision']['verdict'] for event in session.decisions()[known:]] == ['DENY', 'DENY']
-        assert all(event['authorized_scope']['readable_space_ids'] == [personal]
-                   for event in session.decisions()[known:])
+        for event in session.decisions()[known:]:
+            assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
+                            readable=(personal,))
+        assert len(session.decisions()[known:]) == 2
     assert len(set(responses)) == 1     # an existing space and a forged one are indistinguishable to the caller
-    assert before == (snapshot(profile.data / 'capabilities' / 'packages'),
-                      (profile.data / 'capabilities' / 'registry.json').read_bytes())
+    assert before == registry_bytes(profile)
+    # The converse: with the real grant, a forged or foreign declared space changes nothing either.
+    for declared in ((FORGED_SPACE,), (personal,), (organization, FORGED_SPACE)):
+        session = Session(profile, DeclaredSpaces(profile.config, declared=declared,
+                                                  grants=(personal, organization)))
+        code, value = session.commands.search(CALENDAR_QUERY)
+        assert code == 0 and [item['capability_id'] for item in value['data']['candidates']] == [CAPABILITY]
+        assert_decision(session.decisions()[-1], spaces, verdict='ALLOW', reason='OK', space=organization,
+                        readable=(personal, organization))
+        assert FORGED_SPACE not in json.dumps(session.decisions()[-1])
 
 
 @pytest.mark.parametrize('removed', [None, (), OSError('directory unavailable'), AccessDenied(),
@@ -576,8 +670,8 @@ def test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_di
                          ids=['none', 'empty', 'oserror', 'access_denied', 'string', 'blank_id', 'non_string_id'])
 def test_idn_02_fault_scope_object_removed_denies_by_default(profile: Profile, spaces: dict, removed) -> None:
     """IDN-02 fault: with the scope object removed, empty, unreadable or malformed, the read is denied."""
-    personal = spaces['personal']
-    session = Session(profile, DirectoryFixture(profile.config, target=personal, grants=removed))
+    organization = spaces['organization']
+    session = Session(profile, DirectoryFixture(profile.config, grants=removed))
     known = len(session.decisions())
     code, value = session.commands.search(CALENDAR_QUERY)
     assert_denied_read(code, value)
@@ -588,23 +682,26 @@ def test_idn_02_fault_scope_object_removed_denies_by_default(profile: Profile, s
     assert session.registry_reads == [] and session.commands.discovery.policy_gate.calls == 0
     assert session.commands.discovery.handlers.total_invocations() == 0
     for event in session.decisions()[known:]:
-        assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=personal,
+        assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=organization,
                         readable=() if removed == () else None)
     assert len(session.decisions()[known:]) == 3
 
 
-def test_idn_02_fault_request_without_a_target_space_is_denied(profile: Profile, spaces: dict) -> None:
-    """A context that targets no space reads nothing: typed denial, not an internal error."""
-    session = Session(profile, DirectoryFixture(profile.config, target=None,
-                                                grants=(spaces['personal'], spaces['organization'])))
+@pytest.mark.parametrize('owner', [None, '', 7, OSError('directory unavailable'), AccessDenied()],
+                         ids=['none', 'blank', 'non_string', 'oserror', 'access_denied'])
+def test_idn_02_fault_resource_without_a_resolvable_owning_space_is_denied(profile: Profile, spaces: dict,
+                                                                         owner) -> None:
+    """A resource whose owning space cannot be resolved is in no AuthorizedScope: typed denial, not an
+    internal error, even for a principal that holds every grant."""
+    session = Session(profile, DirectoryFixture(profile.config, grants=(spaces['personal'], spaces['organization']),
+                                                owner=owner))
     known = len(session.decisions())
     code, value = session.commands.search(CALENDAR_QUERY)
     assert_denied_read(code, value)
     assert session.registry_reads == []
     event = session.decisions()[known:][0]
-    assert (event['decision']['verdict'], event['decision']['reason_code'], event['decision']['resource_ref']) == (
-        'DENY', 'NO_SPACE_GRANT', 'space:')
-    assert_identity_shape('AuthzDecision', event['decision'])
+    assert_decision(event, spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=None,
+                    readable=(spaces['personal'], spaces['organization']))
 
 
 def test_idn_02_scope_is_resolved_live_from_the_signed_installation_record(profile: Profile, spaces: dict) -> None:
@@ -616,9 +713,11 @@ def test_idn_02_scope_is_resolved_live_from_the_signed_installation_record(profi
     assert identity.space_grants(context) == (personal, organization)
     assert identity.space_grants(replace(context, actor_id=FORGED_ACTOR)) == ()
     assert identity.space_grants(replace(context, tenant_id=FORGED_TENANT)) == ()
+    assert identity.registry_space(spaces['tenant_id']) == organization     # ownership: the signed record
+    assert identity.registry_space(FORGED_TENANT) is None
     session = Session(profile, identity)
     assert session.commands.search(CALENDAR_QUERY)[0] == 0
-    assert_decision(session.decisions()[-1], spaces, verdict='ALLOW', reason='OK', space=personal,
+    assert_decision(session.decisions()[-1], spaces, verdict='ALLOW', reason='OK', space=organization,
                     readable=(personal, organization))
     reads = list(session.registry_reads)
     (profile.config / 'device.key').unlink()                 # the scope source is gone for the next check
@@ -627,7 +726,7 @@ def test_idn_02_scope_is_resolved_live_from_the_signed_installation_record(profi
     code, value = session.commands.describe(CAPABILITY)
     assert_denied_read(code, value)
     assert session.registry_reads == reads
-    assert_decision(session.decisions()[-1], spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=personal,
+    assert_decision(session.decisions()[-1], spaces, verdict='DENY', reason='NO_SPACE_GRANT', space=None,
                     readable=None)
 
 
@@ -638,34 +737,53 @@ def test_idn_02_fault_decision_log_unavailable_refuses_the_read(profile: Profile
     def failing(event: dict) -> None:
         raise OSError('audit store down')
 
-    session = Session(profile, DirectoryFixture(profile.config, target=personal, grants=(personal,)))
+    session = Session(profile, DirectoryFixture(profile.config, grants=(organization,)))
     session.commands.discovery.audit_sink = failing
     code, value = session.commands.search(CALENDAR_QUERY)
     assert (code, value['status'], value['error']['code'], value['data']) == (
         5, 'UNAVAILABLE', 'TEMPORARILY_UNAVAILABLE', {'reason': 'audit_unavailable'})
     assert session.registry_reads == []
-    session = Session(profile, DirectoryFixture(profile.config, target=organization, grants=(personal,)))
+    session = Session(profile, DirectoryFixture(profile.config, grants=(personal,)))
     session.commands.discovery.audit_sink = failing
     code, value = session.commands.search(CALENDAR_QUERY)
     assert_denied_read(code, value)
     assert session.registry_reads == []
 
 
-def test_idn_02_service_without_an_injected_port_still_enforces_the_scope(tmp_path: Path) -> None:
-    """1<=>N rule: a DiscoveryService built without an AuthorizationPort has no path that skips the check."""
+def test_idn_02_service_cannot_be_built_without_an_authorization_port(tmp_path: Path) -> None:
+    """1<=>N rule: there is no DiscoveryService without an AuthorizationPort and no fallback that
+    derives grants from the request; the harness service enforces the scope of its directory."""
     harness = build(tmp_path)
     harness.install('calendar-read')
+    arguments = dict(policy_gate=harness.gate, grants=harness.grants, clock=harness.clock, ids=harness.ids)
+    with pytest.raises(TypeError):
+        DiscoveryService(harness.registry, harness.discovery.index, harness.handlers, **arguments)
+    with pytest.raises(TypeError):
+        DiscoveryService(harness.registry, harness.discovery.index, harness.handlers, authorization=None,
+                         **arguments)
     turn = harness.turn()
     assert turn.search(turn.context, CALENDAR_QUERY).status == 'SUCCEEDED'
     allowed = [event for event in harness.store.audit_events() if event['event'] == 'authz.decided']
     assert [event['decision']['verdict'] for event in allowed] == ['ALLOW']
     assert allowed[0]['authorized_scope']['readable_space_ids'] == list(harness.operator.space_ids)
 
-    class OtherSpace:
-        def resolve(self, context):
-            return replace(harness.grants.resolve(context), space_id=FORGED_SPACE)
+    class OtherOwner:
+        """The same directory, with the registry owned by a space the principal holds no grant on."""
 
-    harness.discovery.grants = OtherSpace()
+        def __init__(self, directory) -> None:
+            self.directory = directory
+
+        def space_grants(self, context):
+            return self.directory.space_grants(context)
+
+        def tenant_role(self, context):
+            return self.directory.tenant_role(context)
+
+        def registry_space(self, tenant_id):
+            return FORGED_SPACE
+
+    harness.discovery.authorization = ScopeAuthorization(OtherOwner(harness.discovery.authorization.directory),
+                                                         harness.clock)
     turn = harness.turn()
     result = turn.search(turn.context, CALENDAR_QUERY)
     assert (result.status, result.code, result.reason) == ('DENIED', 'FORBIDDEN', 'NO_SPACE_GRANT')

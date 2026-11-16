@@ -154,7 +154,10 @@ and a new evaluation is required (M25). This lifetime is separate from `approval
   owned by the installation owner UID. At start, and on each CLI call that needs a decision, the
   loader checks owner and mode, parses, validates against the schema, computes `policy_version`
   and caches by digest. Wrong owner/mode, parse failure or schema failure means **fail closed**
-  (K6): all effects denied, `quati doctor` reports the reason, reads continue.
+  (K6): all effects denied, `quati doctor` reports the reason, reads continue. "Reads" here are the
+  operations that create no `EffectIntent` (capability search, describe, status and registry list);
+  K6 is evaluated before the effect class, so the invocation of a `read` or `none` capability is
+  also `DENY` `policy_unavailable` (M25-RT-01).
 - Edits go only through `quati policy edit` (opens `$EDITOR` on a temp copy) or
   `quati policy apply <file>`. Both validate, print a human diff against the active policy,
   require interactive confirmation (TTY, same guard as section 6.2), then atomically replace the

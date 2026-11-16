@@ -100,7 +100,10 @@ def test_r2_social_classification_and_tool_free_loop_is_a_conversation(tmp_path,
     code, value = harness.ask("Hey there! Hope your day is going well.")
     data = value["data"]
     assert (code, value["status"], data["result_kind"]) == (0, "SUCCEEDED", "CONVERSATION")
-    assert data["text"] == "Hello, thanks for asking! How can I help?"
+    # Fix round 6 (audit F3; S00_RUNTIME_CONTRACT "Independent-review fail-closed refinement"; LOG-0039):
+    # was the model's text ("Hello, thanks for asking! How can I help?"); now the application-owned template.
+    assert data["text"] == "Hello!" and "thanks for asking" not in json.dumps(value)
+    assert data["text_source"] == "application_template"
     assert value["uncertainties"] == ["MODEL_SOCIAL_REPLY"] and value["error"] is None
     assert (data["commitment_id"], data["delivered"], data["tool_calls"]) == (None, False, [])
     assert len(model_requests(harness)) == 3                                   # P1-C: one continuation (was 2)
@@ -112,7 +115,10 @@ def test_r2_social_classification_and_tool_free_loop_is_a_conversation(tmp_path,
 def test_r2_conversation_text_is_bounded_and_empty_text_is_typed(tmp_path, monkeypatch):
     harness = ready(tmp_path, monkeypatch, classified(SOCIAL), final("Hi!"), final("word " * 200))
     code, value = harness.ask("Good morning! Urgent: just wanted to say hi.")
-    assert value["data"]["result_kind"] == "CONVERSATION" and len(value["data"]["text"]) == 280
+    # Fix round 6 (audit F3; LOG-0039): was len(text) == 280 (the model's text cut to 280 characters); the
+    # model's text is no longer displayed at all, so there is nothing to bound: the template is the text.
+    assert value["data"]["result_kind"] == "CONVERSATION" and value["data"]["text"] == "Hello!"
+    assert "word word" not in json.dumps(value)
     empty = ready(tmp_path / "e", monkeypatch, classified(SOCIAL), final("Hi!"), final("   "))
     code, value = empty.ask("Good morning! Urgent: just wanted to say hi.")
     assert (value["status"], value["data"]["reason"]) == ("BLOCKED", "EMPTY_SOCIAL_REPLY")

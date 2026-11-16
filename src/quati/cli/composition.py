@@ -45,9 +45,11 @@ def _parts(identity, context, *, clock, ids, handlers):
     registry = RegistryService(store, handlers, clock=clock, ids=ids)
     gate = LocalPolicyGate.from_config_dir(identity.directory, tenant_id=context.tenant_id,
                                            installation_uid=os.getuid(), clock=clock, ids=ids)
+    # The identity adapter is the S00 directory: grants, tenant role and the registry's owning space
+    # are read live from the signed installation record at every check (RFC-013 sections 4 and 6).
     discovery = DiscoveryService(registry, Fts5CapabilityIndex(), handlers, policy_gate=gate,
                                  grants=StaticGrants(LOCAL_READ_GRANTS), clock=clock, ids=ids,
-                                 authorization=ScopeAuthorization(identity.space_grants, clock))
+                                 authorization=ScopeAuthorization(identity, clock))
     return registry, gate, discovery
 
 

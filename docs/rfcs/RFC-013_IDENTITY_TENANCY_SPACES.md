@@ -268,6 +268,51 @@ The use-case layer (`src/quati/application`) is identical in both profiles; only
 | S05 | SERVER profile: `quati server`, PostgreSQL RLS, `oidc-device`, groups and team spaces, `client-key` agents, token exchange for A2A/capabilities, revocation set, step-up for approvals, AUDITOR role |
 | S07 | Signed tenant policies, external-identity linking for channels at scale, optional per-tenant encryption keys |
 
+### 12.1 S00 decisions (LOCAL profile)
+
+Decisions taken for S00 where this RFC was silent (LOG-0038 items 1–11, LOG-0039 F4 and F5). They
+are normative for S00 and are repeated in `docs/prds/M02.md` "S00 decisions".
+
+- **Directory.** S00 has no DirectoryPort. The identity directory is the signed installation
+  record written by `quati init` (owner-only file, Ed25519 signature of the device key). It holds
+  the tenant, the principal, the personal space and the organization space. It is read again at
+  every check, so a change takes effect at the next check.
+- **Membership.** `quati init` creates the tenant OWNER and writes no role; an absent `tenant_role`
+  is `OWNER`. A record that carries `ADMIN`, `MEMBER` or `GUEST` is honoured, so the N=1 code path is
+  the N code path. Any other value is no membership: no grant and no role.
+- **Default grants (section 2.1).** The personal space for every member; the organization space
+  for OWNER, ADMIN and MEMBER; none on the organization space for GUEST. S00 does not model the
+  grant role levels separately: a grant allows `read`.
+- **Resource ownership.** The check of section 6 uses `resource.space_id`, never a space named by
+  the request. The only S00 resource is the tenant's capability registry, `registry:<tenant_id>`.
+  It is owned by the tenant's ORGANIZATION space. The owner is stored in the identity directory
+  (field `organization_space_id` of the signed record) and resolved by the resource's tenant. An
+  owner that cannot be resolved is in no `AuthorizedScope`. From S02 on every space-partitioned
+  row carries `space_id` (section 8) and the check reads it from the row.
+- **`RequestContext.space_ids`** is informational (the principal's bootstrapped spaces at
+  authentication). It is not an authorization input.
+- **Actions.** `read` (list, search, describe, invoke, status, an ask receipt's catalog digest)
+  needs a grant on the owning space. `manage` (install, enable, disable a capability) needs that
+  grant and the tenant role OWNER or ADMIN (section 6, admin separation); the grant is checked
+  first. Everything else is `DENY` `ROLE_INSUFFICIENT`. A resource of another tenant is `DENY`
+  `TENANT_MISMATCH`. `read` on `space:<space_id>` needs a grant on that space; no S00 use case
+  addresses a space directly.
+- **Port.** `AuthorizationPort` is a required dependency of every use case that reaches the
+  registry. There is no fallback and no grant derived from the request.
+- **Decision log.** Each decision is appended to the registry audit log as `authz.decided` with
+  the operation, the `AuthzDecision`, the `AuthorizedScope` it was evaluated against (or null), the
+  owning space id, `actor_id`, `tenant_id` and `request_id`, before any registry lookup, for the
+  allowed and the denied operation alike. An operation whose decision cannot be logged is refused.
+- **Denial.** `DENIED` / `FORBIDDEN` with the reason code, exit 4; the LOCAL `next_action` names
+  `quati spaces describe <space-id>` and states that the command is delivered in S02. The response
+  is the same for an existing space, a forged space and no space.
+- **IDN-01.** "Repository" is the data directory; reading the credential is authentication itself.
+  S00 has no structured request body: a forged `actor_id` arrives as `ask` text or a `chat` line.
+  A receipt names the principal by `principal_hash` only.
+- **IDN-02.** An unmodified S00 installation (one OWNER with the default grants, no grant command)
+  never denies. The denial is proven on the public command line with a validly signed record
+  whose tenant role is GUEST, and in-process with a synthetic grant directory.
+
 Migration from LOCAL to SERVER: export a tenant (ledger + spaces + grants) and import it into a
 server tenant. IDs are ULIDs that are globally unique, so no ID is rewritten. Specified in S05;
 the formats are fixed now so that it stays possible.
