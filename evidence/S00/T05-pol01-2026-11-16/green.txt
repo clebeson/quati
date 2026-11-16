@@ -1,0 +1,42 @@
+# POL-01 green record (S00-T05), tests/integration/test_approval_injection.py
+# final test file sha256: 64ec5a7462eacba180d1e687aa20bb4824a0572bc08c6901f5f8fa9834085426
+# runner sha256: 9317cafe24e367659e8aea79564b011a0605e10934df4fad92f76e17f2bb64f9
+# written: 2026-11-16T14:58:39Z; git HEAD c14af7ef3275f119d1faad5539cb7d844bedb2ae
+# This task changed no file under src/. During the task another agent (IDN-01/IDN-02) edited src/quati in the
+# working tree (uncommitted:  4 files changed, 125 insertions(+), 7 deletions(-)); results are therefore given for both trees.
+
+## A. Clean extraction of commit HEAD (git archive) + the two new test files; full suite
+# command (cwd = extraction): <repo>/.venv/bin/python -m pytest -q -p no:cacheprovider
+........................................................................ [ 89%]
+........................................................................ [ 96%]
+...............................                                          [100%]
+958 passed, 9 skipped in 55.30s
+exit 0
+# = baseline 945 passed, 9 skipped + 13 new POL-01 tests; no failure
+
+## B. Working tree (includes the other agent's uncommitted src/quati and tests/integration/test_identity.py)
+# command: .venv/bin/python -m pytest -q -p no:cacheprovider tests/integration/test_approval_injection.py
+.............                                                            [100%]
+13 passed in 17.19s
+exit 0
+# command: .venv/bin/python -m pytest -q -p no:cacheprovider   (informational; includes files not owned here)
+982 passed, 9 skipped in 84.78s (0:01:24)
+exit 0
+
+## C. L0 validators on the working tree
+# command: .venv/bin/python spec_tools/validate_spec.py
+L0 SPEC VALIDATION: PASS (contracts, examples, reference freshness, states, requirement references). NO APP RUNTIME PROOF.
+exit 0
+# command: .venv/bin/python spec_tools/validate_readiness.py
+{"fixture_recipes": 125, "requirement_plans": 243, "requirements": 243, "runtime_qualified": false, "semantic_coverage_requires_review": true, "shared_cases": 101, "status": "PASS", "tier": "L0", "work_packages": 35}
+exit 0
+
+## D. History
+# 14:50Z full suite on the working tree BEFORE the other agent's src edits existed (git diff --stat -- src was empty),
+#   with the previous revision of the test file (sha256 747d3cfa...): 958 passed, 9 skipped, exit 0.
+# 14:51Z the other agent's in-progress change added an 'authz.decided' audit record to every discovery call; the
+#   previous revision of this test file allowed only 'discovery.selection_error' and 'policy.decided' records and
+#   failed 11 of 13 on that tree. The audit assertions were narrowed to what POL-01 owns: exact sequence of the
+#   selection/policy-decision records, and NO 'registry.*' or approval record of any kind. No assertion about the
+#   denial, handler execution, approval state or persisted authority was weakened. Mutation check re-run on the
+#   final revision (mutation-check.txt).

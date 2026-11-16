@@ -14,6 +14,7 @@ from typing import Any, Callable, Mapping
 
 import jsonschema
 
+from quati.application.identity import ScopeAuthorization, context_space_grants
 from quati.domain.canonical import digest
 from quati.domain.capability_registry import Refusal, iso
 from quati.domain.discovery import (
@@ -24,6 +25,9 @@ from quati.domain.policy import EffectIntent
 
 FIXTURE_RESULT = "FIXTURE_RESULT"
 HIDDEN_LIFECYCLES = ("DRAFT", "VALIDATED", "STAGED")
+# M02 reason table, LOCAL row NO_SPACE_GRANT (the command is delivered in slice S02).
+SPACE_GRANT_NEXT_ACTION = ("Inspect the space grant with `quati spaces describe <space-id>` (delivered in slice S02); "
+                           "nothing was read.")
 
 
 @dataclass
@@ -75,7 +79,11 @@ def _valid(instance: Any, schema: Mapping[str, Any]) -> bool:
 
 class DiscoveryService:
     def __init__(self, registry, index, handlers, *, policy_gate, grants, clock: Callable, ids: Callable[[str], str],
-                 audit: Callable[[dict], None] | None = None, effect_ceiling: str = "read") -> None:
+                 audit: Callable[[dict], None] | None = None, effect_ceiling: str = "read",
+                 authorization=None) -> None:
+        # No path skips the space check (RFC-013 1<=>N rule): without an injected AuthorizationPort the
+        # grants are the spaces of the verified context. The composition root injects the live directory.
+        self.authorization = authorization or ScopeAuthorization(context_space_grants, clock)
         self.registry = registry
         self.index = index
         self.handlers = handlers
@@ -129,13 +137,38 @@ class DiscoveryTurn:
             return refused("BUDGET_EXCEEDED")
         return None
 
+    def authorize(self, operation: str) -> PortResult | None:
+        """RFC-013 section 6: the space of this read must be in AuthorizedScope, before any lookup.
+
+        The decision and the scope it was evaluated against are logged for the allowed and the
+        denied read alike; a read whose decision cannot be logged is refused.
+        """
+        service, context = self.service, self.context
+        try:
+            space_id = service.grants.resolve(context).space_id
+        except Exception:  # noqa: BLE001 - a request that targets no resolvable space reads nothing
+            space_id = ""
+        decision, scope = service.authorization.decide(context, "read", f"space:{space_id}")
+        try:
+            service.audit({"event": "authz.decided", "operation": operation, "decision": decision.to_json(),
+                           "authorized_scope": None if scope is None else scope.to_json(),
+                           "actor_id": context.actor_id, "tenant_id": context.tenant_id,
+                           "request_id": context.request_id})
+            logged = True
+        except Exception:  # noqa: BLE001 - an audit failure refuses the read
+            logged = False
+        if decision.verdict != "ALLOW":
+            return PortResult("DENIED", "FORBIDDEN", decision.reason_code, {"reason": decision.reason_code},
+                              next_action=SPACE_GRANT_NEXT_ACTION, trace={"handler_executed": False})
+        return None if logged else refused("audit_unavailable")
+
     def _entries(self, capability_id: str) -> tuple[list[CatalogEntry], Any]:
         snapshot = self.service.registry.catalog(self.context)
         return [entry for entry in snapshot.entries if entry.capability_id == capability_id], snapshot
 
     # ------------------------------------------------------------------ search
     def search(self, context, query: Any, limit: Any = None) -> PortResult:
-        blocked = self.admit(context)
+        blocked = self.admit(context) or self.authorize("search")
         if blocked is not None:
             return blocked
         if not isinstance(query, str) or not query.strip():
@@ -173,7 +206,7 @@ class DiscoveryTurn:
 
     # ------------------------------------------------------------------ describe
     def describe(self, context, capability_id: Any) -> PortResult:
-        blocked = self.admit(context)
+        blocked = self.admit(context) or self.authorize("describe")
         if blocked is not None:
             return blocked
         if not isinstance(capability_id, str):
@@ -202,7 +235,7 @@ class DiscoveryTurn:
 
     # ------------------------------------------------------------------ invoke
     def invoke(self, context, capability_id: Any, arguments: Any, idempotency_key: str | None = None) -> PortResult:
-        blocked = self.admit(context)
+        blocked = self.admit(context) or self.authorize("invoke")
         if blocked is not None:
             return blocked
         service = self.service
@@ -342,7 +375,7 @@ class DiscoveryTurn:
 
     # ------------------------------------------------------------------ status
     def status(self, context, execution_id: Any) -> PortResult:
-        blocked = self.admit(context)
+        blocked = self.admit(context) or self.authorize("status")
         if blocked is not None:
             return blocked
         execution = self.service.executions.get(execution_id) if isinstance(execution_id, str) else None

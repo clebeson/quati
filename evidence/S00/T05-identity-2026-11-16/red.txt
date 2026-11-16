@@ -1,0 +1,134 @@
+# RED run: IDN-01 / IDN-02 tests written before any change under src/ (S00-T05, 2026-11-16)
+# git HEAD: c14af7ef3275f119d1faad5539cb7d844bedb2ae; src/ working tree changes: 0
+# command: .venv/bin/python -m pytest -q -p no:cacheprovider tests/integration/test_identity.py -rA --tb=short
+.........FFFFFFFFFFFFFFF                                                 [100%]
+=================================== FAILURES ===================================
+_________________________________ test_idn_02 __________________________________
+tests/integration/test_identity.py:472: in test_idn_02
+    assert [(event['event'], event['operation']) for event in logged] == [
+E   AssertionError: assert [] == [('authz.deci..., 'describe')]
+E     
+E     Right contains 2 more items, first extra item: ('authz.decided', 'search')
+E     Use -v to get more diff
+_ test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler _
+tests/integration/test_identity.py:519: in test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler
+    assert [event['operation'] for event in allowed.decisions()[-4:]] == ['search', 'describe', 'invoke', 'status']
+E   AssertionError: assert [] == ['search', 'd...ke', 'status']
+E     
+E     Right contains 4 more items, first extra item: 'search'
+E     Use -v to get more diff
+_ test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing _
+tests/integration/test_identity.py:551: in test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing
+    assert_denied_read(code, value)
+tests/integration/test_identity.py:433: in assert_denied_read
+    assert code == 4
+E   assert 0 == 4
+________ test_idn_02_fault_scope_object_removed_denies_by_default[none] ________
+tests/integration/test_identity.py:574: in test_idn_02_fault_scope_object_removed_denies_by_default
+    assert_denied_read(code, value)
+tests/integration/test_identity.py:433: in assert_denied_read
+    assert code == 4
+E   assert 0 == 4
+_______ test_idn_02_fault_scope_object_removed_denies_by_default[empty] ________
+tests/integration/test_identity.py:574: in test_idn_02_fault_scope_object_removed_denies_by_default
+    assert_denied_read(code, value)
+tests/integration/test_identity.py:433: in assert_denied_read
+    assert code == 4
+E   assert 0 == 4
+______ test_idn_02_fault_scope_object_removed_denies_by_default[oserror] _______
+tests/integration/test_identity.py:574: in test_idn_02_fault_scope_object_removed_denies_by_default
+    assert_denied_read(code, value)
+tests/integration/test_identity.py:433: in assert_denied_read
+    assert code == 4
+E   assert 0 == 4
+___ test_idn_02_fault_scope_object_removed_denies_by_default[access_denied] ____
+tests/integration/test_identity.py:574: in test_idn_02_fault_scope_object_removed_denies_by_default
+    assert_denied_read(code, value)
+tests/integration/test_identity.py:433: in assert_denied_read
+    assert code == 4
+E   assert 0 == 4
+_______ test_idn_02_fault_scope_object_removed_denies_by_default[string] _______
+tests/integration/test_identity.py:574: in test_idn_02_fault_scope_object_removed_denies_by_default
+    assert_denied_read(code, value)
+tests/integration/test_identity.py:433: in assert_denied_read
+    assert code == 4
+E   assert 0 == 4
+______ test_idn_02_fault_scope_object_removed_denies_by_default[blank_id] ______
+tests/integration/test_identity.py:574: in test_idn_02_fault_scope_object_removed_denies_by_default
+    assert_denied_read(code, value)
+tests/integration/test_identity.py:433: in assert_denied_read
+    assert code == 4
+E   assert 0 == 4
+___ test_idn_02_fault_scope_object_removed_denies_by_default[non_string_id] ____
+tests/integration/test_identity.py:574: in test_idn_02_fault_scope_object_removed_denies_by_default
+    assert_denied_read(code, value)
+tests/integration/test_identity.py:433: in assert_denied_read
+    assert code == 4
+E   assert 0 == 4
+__________ test_idn_02_fault_request_without_a_target_space_is_denied __________
+tests/integration/test_identity.py:592: in test_idn_02_fault_request_without_a_target_space_is_denied
+    code, value = session.commands.search(CALENDAR_QUERY)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/quati/application/capability_commands.py:106: in search
+    result = self.discovery.begin_turn(self.context).search(self.context, query)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/quati/application/discovery.py:145: in search
+    scope = self._scope()
+            ^^^^^^^^^^^^^
+src/quati/application/discovery.py:118: in _scope
+    return SearchScope(self.service.grants.resolve(self.context), effect_ceiling=self.service.effect_ceiling,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/quati/adapters/fixture_capabilities.py:310: in resolve
+    return ScopeGrant(self.permissions, space_id=context.space_ids[0])
+                                                 ^^^^^^^^^^^^^^^^^^^^
+E   IndexError: tuple index out of range
+____ test_idn_02_scope_is_resolved_live_from_the_signed_installation_record ____
+tests/integration/test_identity.py:607: in test_idn_02_scope_is_resolved_live_from_the_signed_installation_record
+    assert identity.space_grants(context) == (personal, organization)
+           ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'LocalIdentity' object has no attribute 'space_grants'
+_________ test_idn_02_fault_decision_log_unavailable_refuses_the_read __________
+tests/integration/test_identity.py:635: in test_idn_02_fault_decision_log_unavailable_refuses_the_read
+    assert (code, value['status'], value['error']['code'], value['data']) == (
+                                   ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: 'NoneType' object is not subscriptable
+____ test_idn_02_service_without_an_injected_port_still_enforces_the_scope _____
+tests/integration/test_identity.py:652: in test_idn_02_service_without_an_injected_port_still_enforces_the_scope
+    assert [event['decision']['verdict'] for event in allowed] == ['ALLOW']
+E   AssertionError: assert [] == ['ALLOW']
+E     
+E     Right contains one more item: 'ALLOW'
+E     Use -v to get more diff
+_____ test_authorization_port_denies_everything_that_is_not_a_granted_read _____
+tests/integration/test_identity.py:669: in test_authorization_port_denies_everything_that_is_not_a_granted_read
+    authorization, context = harness.discovery.authorization, harness.operator
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'DiscoveryService' object has no attribute 'authorization'
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/integration/test_identity.py::test_idn_01
+PASSED tests/integration/test_identity.py::test_idn_01_negative_forged_identity_data_has_no_effect_and_discloses_nothing
+PASSED tests/integration/test_identity.py::test_idn_01_unauthenticated_diagnostics_and_undelivered_commands_read_no_repository
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_removed]
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[device_key_removed]
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[identity_record_removed]
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_emptied]
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_is_a_file]
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_never_existed]
+FAILED tests/integration/test_identity.py::test_idn_02 - AssertionError: asse...
+FAILED tests/integration/test_identity.py::test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler
+FAILED tests/integration/test_identity.py::test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[none]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[empty]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[oserror]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[access_denied]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[string]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[blank_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[non_string_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_request_without_a_target_space_is_denied
+FAILED tests/integration/test_identity.py::test_idn_02_scope_is_resolved_live_from_the_signed_installation_record
+FAILED tests/integration/test_identity.py::test_idn_02_fault_decision_log_unavailable_refuses_the_read
+FAILED tests/integration/test_identity.py::test_idn_02_service_without_an_injected_port_still_enforces_the_scope
+FAILED tests/integration/test_identity.py::test_authorization_port_denies_everything_that_is_not_a_granted_read
+15 failed, 9 passed in 28.27s
+# exit code: 1

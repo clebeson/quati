@@ -22,6 +22,7 @@ from quati.application.ask import AskRuntime
 from quati.application.capability_commands import CapabilityCommands
 from quati.application.capability_registry import RegistryService
 from quati.application.discovery import DiscoveryService
+from quati.application.identity import ScopeAuthorization
 from quati.behavior.compiler import BehaviorCompiler
 from quati.domain.policy import TrustedPolicy
 
@@ -45,7 +46,8 @@ def _parts(identity, context, *, clock, ids, handlers):
     gate = LocalPolicyGate.from_config_dir(identity.directory, tenant_id=context.tenant_id,
                                            installation_uid=os.getuid(), clock=clock, ids=ids)
     discovery = DiscoveryService(registry, Fts5CapabilityIndex(), handlers, policy_gate=gate,
-                                 grants=StaticGrants(LOCAL_READ_GRANTS), clock=clock, ids=ids)
+                                 grants=StaticGrants(LOCAL_READ_GRANTS), clock=clock, ids=ids,
+                                 authorization=ScopeAuthorization(identity.space_grants, clock))
     return registry, gate, discovery
 
 

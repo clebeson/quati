@@ -1,0 +1,135 @@
+# Mutation check for tests/integration/test_identity.py (IDN-01, IDN-02), 2026-11-16.
+# Each mutation is applied to a throwaway copy of src/ (never to the repository) and the test file is run
+# against that copy: <python> -m pytest -q -p no:cacheprovider tests/integration/test_identity.py --tb=no -rf
+# A mutation is KILLED when at least one test fails. M0 is the unmutated control.
+
+### M0 control (unmutated copy)
+........................                                                 [100%]
+24 passed in 31.07s
+
+### M1 registry store read before authentication (cli/composition.py capability_commands)
+FF.FFFFFF...............                                                 [100%]
+=========================== short test summary info ============================
+FAILED tests/integration/test_identity.py::test_idn_01 - AssertionError: (('c...
+FAILED tests/integration/test_identity.py::test_idn_01_negative_forged_identity_data_has_no_effect_and_discloses_nothing
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_removed]
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[device_key_removed]
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[identity_record_removed]
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_emptied]
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_is_a_file]
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_never_existed]
+8 failed, 16 passed in 22.08s
+
+### M2 receipt principal taken from an actor_id found in the request body (application/cli_service.py _record)
+F.......................                                                 [100%]
+=========================== short test summary info ============================
+FAILED tests/integration/test_identity.py::test_idn_01 - AssertionError: asse...
+1 failed, 23 passed in 28.18s
+
+### M3 a receipt is written before authentication (application/cli_service.py ask)
+FF.FFFFFF...............                                                 [100%]
+=========================== short test summary info ============================
+FAILED tests/integration/test_identity.py::test_idn_01 - AssertionError: (('a...
+FAILED tests/integration/test_identity.py::test_idn_01_negative_forged_identity_data_has_no_effect_and_discloses_nothing
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_removed]
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[device_key_removed]
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[identity_record_removed]
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_emptied]
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_is_a_file]
+FAILED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_never_existed]
+8 failed, 16 passed in 14.24s
+
+### M4 space check removed from search (application/discovery.py)
+.........FFFFFFFFFFFFFF.                                                 [100%]
+=========================== short test summary info ============================
+FAILED tests/integration/test_identity.py::test_idn_02 - AssertionError: asse...
+FAILED tests/integration/test_identity.py::test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler
+FAILED tests/integration/test_identity.py::test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[none]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[empty]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[oserror]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[access_denied]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[string]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[blank_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[non_string_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_request_without_a_target_space_is_denied
+FAILED tests/integration/test_identity.py::test_idn_02_scope_is_resolved_live_from_the_signed_installation_record
+FAILED tests/integration/test_identity.py::test_idn_02_fault_decision_log_unavailable_refuses_the_read
+FAILED tests/integration/test_identity.py::test_idn_02_service_without_an_injected_port_still_enforces_the_scope
+14 failed, 10 passed in 29.65s
+
+### M5 space check removed from invoke (application/discovery.py)
+..........F.FFFFFFF.....                                                 [100%]
+=========================== short test summary info ============================
+FAILED tests/integration/test_identity.py::test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[none]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[empty]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[oserror]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[access_denied]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[string]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[blank_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[non_string_id]
+8 failed, 16 passed in 30.33s
+
+### M6 missing scope treated as allow (application/identity.py ScopeAuthorization.decide)
+............F.FFFFF.F...                                                 [100%]
+=========================== short test summary info ============================
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[none]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[oserror]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[access_denied]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[string]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[blank_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[non_string_id]
+FAILED tests/integration/test_identity.py::test_idn_02_scope_is_resolved_live_from_the_signed_installation_record
+7 failed, 17 passed in 29.76s
+
+### M7 production wiring dropped: the composition root injects no AuthorizationPort (cli/composition.py)
+.........FFFFFFFFFF.FF..                                                 [100%]
+=========================== short test summary info ============================
+FAILED tests/integration/test_identity.py::test_idn_02 - assert 0 == 4
+FAILED tests/integration/test_identity.py::test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler
+FAILED tests/integration/test_identity.py::test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[none]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[empty]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[oserror]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[access_denied]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[string]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[blank_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[non_string_id]
+FAILED tests/integration/test_identity.py::test_idn_02_scope_is_resolved_live_from_the_signed_installation_record
+FAILED tests/integration/test_identity.py::test_idn_02_fault_decision_log_unavailable_refuses_the_read
+12 failed, 12 passed in 29.96s
+
+### M8 space check moved after the registry lookup in search (application/discovery.py)
+.........FFFFFFFFFFF.F..                                                 [100%]
+=========================== short test summary info ============================
+FAILED tests/integration/test_identity.py::test_idn_02 - AssertionError: asse...
+FAILED tests/integration/test_identity.py::test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler
+FAILED tests/integration/test_identity.py::test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[none]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[empty]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[oserror]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[access_denied]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[string]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[blank_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[non_string_id]
+FAILED tests/integration/test_identity.py::test_idn_02_fault_request_without_a_target_space_is_denied
+FAILED tests/integration/test_identity.py::test_idn_02_fault_decision_log_unavailable_refuses_the_read
+12 failed, 12 passed in 29.77s
+
+### M9 the decision is not logged for allowed reads (application/discovery.py authorize)
+.........FF.........FFF.                                                 [100%]
+=========================== short test summary info ============================
+FAILED tests/integration/test_identity.py::test_idn_02 - AssertionError: asse...
+FAILED tests/integration/test_identity.py::test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler
+FAILED tests/integration/test_identity.py::test_idn_02_scope_is_resolved_live_from_the_signed_installation_record
+FAILED tests/integration/test_identity.py::test_idn_02_fault_decision_log_unavailable_refuses_the_read
+FAILED tests/integration/test_identity.py::test_idn_02_service_without_an_injected_port_still_enforces_the_scope
+5 failed, 19 passed in 31.60s
+
+### M10 LOCAL directory grants the owner spaces to any principal (adapters/local_identity.py space_grants)
+....................F...                                                 [100%]
+=========================== short test summary info ============================
+FAILED tests/integration/test_identity.py::test_idn_02_scope_is_resolved_live_from_the_signed_installation_record
+1 failed, 23 passed in 30.27s
+

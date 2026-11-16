@@ -1,0 +1,89 @@
+# POL-01 mutation check (scratch copies only; the repository src/ was never modified)
+# test file: tests/integration/test_approval_injection.py sha256 64ec5a7462eacba180d1e687aa20bb4824a0572bc08c6901f5f8fa9834085426
+# source under test: git archive of commit c14af7ef3275f119d1faad5539cb7d844bedb2ae (src/, examples/, contracts/), NOT the working tree, which
+#   contains uncommitted concurrent edits by another agent in src/quati (identity work, not part of this task)
+# each mutation: fresh extraction -> one textual change -> the new tests run with
+#   .venv/bin/python -m pytest -q -p no:cacheprovider -o pythonpath=<copy>/src tests/integration/test_approval_injection.py
+#   (child processes import the same copy: the tests derive PYTHONPATH from quati.__file__)
+
+## M0-baseline-unmodified-copy
+change: no change (proves the copy is the tree under test and is green)
+file: -
+quati imported from: <copy>/src/quati/__init__.py
+pytest exit code: 0; 13 passed in 16.64s
+verdict: GREEN as expected
+  first assertion lines:
+
+## M1-policy-gate-K3-removed
+change: the S00 deny of write/dangerous effects (K3) no longer fires
+file: src/quati/domain/policy.py
+quati imported from: <copy>/src/quati/__init__.py
+pytest exit code: 1; 3 failed, 10 passed in 15.84s
+verdict: KILLED (tests fail on the mutant)
+  failing: test_pol_01
+  failing: test_pol_01_fault_replay_after_restart_changes_nothing
+  failing: test_pol_01_policy_gate_denies_the_write_when_every_earlier_guard_is_open
+  first assertion lines:
+    E   AssertionError: write
+    <repo>/tests/integration/test_approval_injection.py:297: AssertionError: write
+    E   AssertionError: assert ('APPROVAL_RE...ing_argument') == ('DENY', 's00_no_effects')
+    <repo>/tests/integration/test_approval_injection.py:451: AssertionError: assert ('APPROVAL_RE...ing_argument') == ('DENY', 's00_no_effects')
+    E   AssertionError: fixtures.calendar-write
+    <repo>/tests/integration/test_approval_injection.py:489: AssertionError: fixtures.calendar-write
+
+## M2-search-hard-filters-removed
+change: search no longer filters DRAFT / unauthorized / above-ceiling capabilities out of the shortlist
+file: src/quati/application/discovery.py
+quati imported from: <copy>/src/quati/__init__.py
+pytest exit code: 1; 6 failed, 7 passed in 16.11s
+verdict: KILLED (tests fail on the mutant)
+  failing: test_pol_01
+  failing: test_pol_01_fault_replay_after_restart_changes_nothing
+  failing: test_pol_01_forged_approval_in_a_capability_result_cannot_write
+  failing: test_pol_01_forged_approval_variants_never_execute_or_succeed[approval_fields_inside_the_input]
+  failing: test_pol_01_forged_approval_variants_never_execute_or_succeed[write_capability_forecast_publish]
+  failing: test_pol_01_negative_fake_approval_id_and_digest_are_rejected
+  first assertion lines:
+    E   AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'FORBIDDEN')
+    <repo>/tests/integration/test_approval_injection.py:268: AssertionError: assert (4, 'UNAVAILA...'UNSUPPORTED') == (4, 'DENIED', 'FORBIDDEN')
+    E   AssertionError: assert ('PARTIAL' == 'PARTIAL'
+    <repo>/tests/integration/test_approval_injection.py:329: AssertionError: assert ('PARTIAL' == 'PARTIAL'
+    E   AssertionError: assert (4, 'UNAVAILA...'NOT_ENABLED') == (4, 'DENIED',...IN_SHORTLIST')
+    <repo>/tests/integration/test_approval_injection.py:386: AssertionError: assert (4, 'UNAVAILA...'NOT_ENABLED') == (4, 'DENIED',...IN_SHORTLIST')
+    E   AssertionError: assert (4, 'UNAVAILA...'NOT_ENABLED') == (4, 'DENIED',...IN_SHORTLIST')
+    <repo>/tests/integration/test_approval_injection.py:386: AssertionError: assert (4, 'UNAVAILA...'NOT_ENABLED') == (4, 'DENIED',...IN_SHORTLIST')
+
+## M3-approve-command-reports-success
+change: quati approve / deny / approvals answer SUCCEEDED instead of the typed UNSUPPORTED refusal
+file: src/quati/application/cli_service.py
+quati imported from: <copy>/src/quati/__init__.py
+pytest exit code: 1; 1 failed, 12 passed in 15.67s
+verdict: KILLED (tests fail on the mutant)
+  failing: test_pol_01_negative_fake_approval_id_and_digest_are_rejected
+  first assertion lines:
+    E   TypeError: 'NoneType' object is not subscriptable
+    <repo>/tests/integration/test_approval_injection.py:414: TypeError: 'NoneType' object is not subscriptable
+
+## M4-denied-invoke-reported-as-success
+change: a refused or denied invocation is reported with status SUCCEEDED
+file: src/quati/application/ask.py
+quati imported from: <copy>/src/quati/__init__.py
+pytest exit code: 1; 6 failed, 7 passed in 15.28s
+verdict: KILLED (tests fail on the mutant)
+  failing: test_pol_01
+  failing: test_pol_01_fault_replay_after_restart_changes_nothing
+  failing: test_pol_01_forged_approval_variants_never_execute_or_succeed[approval_fields_inside_the_input]
+  failing: test_pol_01_forged_approval_variants_never_execute_or_succeed[approval_id_used_as_a_capability]
+  failing: test_pol_01_forged_approval_variants_never_execute_or_succeed[write_capability_forecast_publish]
+  failing: test_pol_01_negative_fake_approval_id_and_digest_are_rejected
+  first assertion lines:
+    E   TypeError: 'NoneType' object is not subscriptable
+    <repo>/tests/integration/test_approval_injection.py:268: TypeError: 'NoneType' object is not subscriptable
+    E   TypeError: 'NoneType' object is not subscriptable
+    <repo>/tests/integration/test_approval_injection.py:386: TypeError: 'NoneType' object is not subscriptable
+    E   TypeError: 'NoneType' object is not subscriptable
+    <repo>/tests/integration/test_approval_injection.py:386: TypeError: 'NoneType' object is not subscriptable
+    E   TypeError: 'NoneType' object is not subscriptable
+    <repo>/tests/integration/test_approval_injection.py:386: TypeError: 'NoneType' object is not subscriptable
+
+RESULT: all 4 mutants killed; unmodified copy green

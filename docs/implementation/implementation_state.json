@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 17,
+  "revision": 18,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S00",
@@ -9,7 +9,7 @@
       "status": "IN_PROGRESS",
       "gates": {
         "S00-GATE-01": "NOT_RUN",
-        "S00-GATE-02": "PASS",
+        "S00-GATE-02": "BLOCKED",
         "S00-GATE-03": "NOT_RUN",
         "S00-GATE-04": "NOT_RUN"
       },
@@ -18,7 +18,9 @@
         "evidence/S00/provider-tdd/green-final.txt",
         "evidence/S00/GATE-02-2026-11-16/tests-verified.txt"
       ],
-      "blockers": [],
+      "blockers": [
+        "S00-GATE-02 seals on a655c20 expired: src/quati changed for IDN-02 (LOG-0038); live requalification required"
+      ],
       "commit": "a655c20966b6687545f771182fb04dde663a1fb7",
       "gate_seal_refs": {
         "S00-GATE-01": [],
@@ -170,7 +172,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-16T14:39:19.795414Z",
+  "last_updated_at": "2026-11-16T15:12:00.940136Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -181,7 +183,7 @@
   "execution_authorized": true,
   "active_work": {
     "work_package_id": "S00-T05",
-    "phase": "SDD",
+    "phase": "AUDIT",
     "owner": "root coordinator",
     "input_snapshot_ref": "evidence/S00/T01-2026-11-15/input_snapshot.json",
     "completed_steps": [
@@ -197,9 +199,10 @@
       "S00-GATE-02 live evidence accepted by independent audit (LOG-0034)",
       "Project renamed Quati (LOG-0035); requalification run gate6-quati 30/30 and 30/30, behavior re-run 13/13 (LOG-0036)",
       "Independent audit of gate6 verdict ACCEPT; journaled gate updates added to checkpoint_execution.py test-first; seals issued; S00-GATE-02 PASS (LOG-0037)",
-      "Gap found while preparing gates 01/03/04: three declared S00-T05 locators do not exist (IDN-01, IDN-02, POL-01); only contribution tests exist"
+      "Gap found while preparing gates 01/03/04: three declared S00-T05 locators do not exist (IDN-01, IDN-02, POL-01); only contribution tests exist",
+      "IDN-01, IDN-02 and POL-01 full-proof tests written test-first; space authorization added on the discovery path; 982 passed (LOG-0038)"
     ],
-    "next_action": "Write the missing full-proof tests IDN-01, IDN-02 (tests/integration/test_identity.py) and POL-01 (tests/integration/test_approval_injection.py) test-first, implement only what they require, then run one final requalification (any src/quati change expires the S00-GATE-02 seals), audit gates 01/03/04 independently with a red-team negative, and seal all four S00 gates on one commit before SLICE_ACCEPTED",
+    "next_action": "Independent audit of the identity change and of gates 01/03/04 (with a red-team negative); fix findings; then one live requalification run, new seals for all four S00 gates on one commit, and SLICE_ACCEPTED",
     "owned_files": [
       "src/secma/cli",
       "src/secma/application",
@@ -211,7 +214,6 @@
       "Independent review: malformed identity JSON and FIFO credentials must fail closed without traceback or hang; canonical JSON and token schema conformity require correction.",
       "LOG-0013 open specification questions need owner confirmation before the consuming work package starts",
       "LOG-0014 owner decisions from the architecture re-audit are pending",
-      "S00-T05: declared full-proof tests missing for IDN-01, IDN-02 and POL-01; slice cannot be accepted until they pass at their declared tier",
       "All S00 gate seals must reference one commit; S00-GATE-02 seals on a655c20 must be superseded by new records on the final S00 commit after requalification"
     ],
     "evidence_refs": [
@@ -234,7 +236,9 @@
       "evidence/S00/T05-20261116T090059Z-codex_cli-gpt-6-luna-gate5/INDEX.json",
       "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/INDEX.json",
       "evidence/S00/T05-20261116T142110Z-claude_cli-haiku-gate6b-beh-quati/INDEX.json",
-      "docs/audit/S00_GATE02_GATE6_ACCEPTANCE_AUDIT_2026-11-16.md"
+      "docs/audit/S00_GATE02_GATE6_ACCEPTANCE_AUDIT_2026-11-16.md",
+      "evidence/S00/T05-identity-2026-11-16/green.txt",
+      "evidence/S00/T05-pol01-2026-11-16/green.txt"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",

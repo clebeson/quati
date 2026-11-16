@@ -1,11 +1,13 @@
 """LOCAL identity records and guards; request text never grants authority."""
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import json
 import re
 import time
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+
+from quati.domain.capability_registry import iso
 
 
 class AccessDenied(Exception):
@@ -93,3 +95,77 @@ def authorize_read(context, tenant_id, space_id):
             or context.tenant_id != tenant_id or space_id not in context.space_ids):
         raise AccessDenied('FORBIDDEN')
     return True
+
+
+@dataclass(frozen=True)
+class AuthorizedScope:
+    """``contracts/identity.schema.json#/$defs/AuthorizedScope``; valid for one transaction only."""
+    tenant_id: str
+    principal_id: str
+    purpose: str
+    readable_space_ids: tuple[str, ...]
+    computed_at: str
+    valid_for_transaction: str
+
+    def to_json(self):
+        return {**asdict(self), 'readable_space_ids': list(self.readable_space_ids)}
+
+
+@dataclass(frozen=True)
+class AuthzDecision:
+    """``contracts/identity.schema.json#/$defs/AuthzDecision``; valid for one transaction only."""
+    verdict: str
+    reason_code: str
+    tenant_id: str
+    principal_id: str
+    action: str
+    resource_ref: str
+
+    def to_json(self):
+        return asdict(self)
+
+
+def context_space_grants(context):
+    """Baseline SpaceGrant source: the spaces of the verified context (the ``authorize_read`` rule)."""
+    return context.space_ids
+
+
+class ScopeAuthorization:
+    """S00 AuthorizationPort (RFC-013 sections 6 and 10; M02 authorization order row 7).
+
+    Default deny. ``space_grants(context)`` is the SpaceGrant directory: it returns the space ids
+    the context's principal may read and is called again at every check, so a removed grant takes
+    effect at the next check. S00 holds READER-equivalent grants only: ``read`` on ``space:<id>``
+    is the single action that can be allowed. One principal goes through the same code as many.
+    """
+
+    def __init__(self, space_grants, clock):
+        self.space_grants = space_grants
+        self.clock = clock
+
+    def authorized_scope(self, context, purpose):
+        """The readable spaces for this transaction, or None when no valid scope can be resolved."""
+        try:
+            granted = self.space_grants(context)
+        except Exception:  # noqa: BLE001 - an unreadable grant source is a missing scope: deny by default
+            return None
+        if not isinstance(granted, (tuple, list)) or not all(isinstance(item, str) and item for item in granted):
+            return None
+        return AuthorizedScope(context.tenant_id, context.actor_id, purpose, tuple(dict.fromkeys(granted)),
+                               iso(self.clock()), context.request_id)
+
+    def decide(self, context, action, resource_ref):
+        """Return (AuthzDecision, the AuthorizedScope it was evaluated against or None)."""
+        scope = self.authorized_scope(context, action)
+        space_id = resource_ref[6:] if isinstance(resource_ref, str) and resource_ref.startswith('space:') else None
+        if scope is None or space_id not in scope.readable_space_ids:
+            reason = 'NO_SPACE_GRANT'
+        elif action != 'read':
+            reason = 'ROLE_INSUFFICIENT'
+        else:
+            reason = 'OK'
+        return AuthzDecision('ALLOW' if reason == 'OK' else 'DENY', reason, context.tenant_id, context.actor_id,
+                             action, resource_ref), scope
+
+    def check(self, context, action, resource_ref):
+        return self.decide(context, action, resource_ref)[0]

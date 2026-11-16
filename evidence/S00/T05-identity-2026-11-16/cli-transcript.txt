@@ -1,0 +1,161 @@
+# IDN-01 / IDN-02 hand exercise through the real CLI (python -m quati), temporary LOCAL profile, 2026-11-16
+# git HEAD c14af7ef3275f119d1faad5539cb7d844bedb2ae plus the working-tree change described in the task report.
+# QUATI_CONFIG_DIR=<PROFILE>/config QUATI_DATA_DIR=<PROFILE>/data HOME=<PROFILE>/home; no provider variable set; no live call.
+# All identifiers are synthetic and belong to this throwaway profile. No secret is printed.
+
+## 1. IDN-01: no local credential
+
+$ quati ask Hello. --json 
+{"data":null,"error":{"code":"UNAUTHENTICATED","message":"Local identity or authorization could not be verified.","retryable":false},"evidence_refs":[],"next_action":"Run quati init or repair the owner-only local credential.","status":"DENIED","uncertainties":[]}
+[exit 4]
+
+$ quati capabilities list --json 
+{"data":null,"error":{"code":"UNAUTHENTICATED","message":"Local identity or authorization could not be verified.","retryable":false},"evidence_refs":[],"next_action":"Run quati init or repair the owner-only local credential.","status":"DENIED","uncertainties":[]}
+[exit 4]
+
+$ quati ask \{\"actor_id\":\"01JD00000000000000000000ZZ\"\,\"request\":\"List\ my\ next\ appointments.\"\} --json 
+{"data":null,"error":{"code":"UNAUTHENTICATED","message":"Local identity or authorization could not be verified.","retryable":false},"evidence_refs":[],"next_action":"Run quati init or repair the owner-only local credential.","status":"DENIED","uncertainties":[]}
+[exit 4]
+
+$ ls <PROFILE>   # neither config nor data was created
+home
+
+## 2. Provision FX-IDN-LOCAL-PRINCIPAL (one principal U1, two spaces)
+
+$ quati init --json 
+{"data":{"initialized":true,"policy":{"action":"INSTALLED","policy_version":"053564d4af9a6f516b922e92001c5eab6168df0b6d631cfc7b74418ccee4df1f","reason":null,"registry_revision":1},"principal_id":"01M7JDZQD20QTPM7294ESH7A9G","profile":"LOCAL","secret_store":"owner_only_file","tenant_id":"01M7JDZQD2K0RK1AWQB8E3FFNV"},"error":null,"evidence_refs":["sha256:201958c7ea5085b1d54f7ca7dfeed3251f008a5c4a7b89bef4fa7a1cde817cc7:<PROFILE>/data/receipts/7168b5e933984d5c8abd21e276c12b89.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+[exit 0]
+
+$ quati capabilities install-fixture calendar-read --enable-fixture --json 
+{"data":{"assurance":"C2","definition_ref":"fixtures.calendar-read@1.0.0","label":"LOCAL_FIXTURE_ONLY","lifecycle":"ENABLED","package_sha256":"bde7a5a78f7abc104e9cfb7ee161bb9373098ffe498a04546d74313a24ed329b"},"error":null,"evidence_refs":["sha256:7c4eac826f5254e97432fa28bc4b6bbb5ec3c642ac96b25c917e9b518fb390e8:<PROFILE>/data/receipts/8fc28c8cf5574c909845dd5248bf6775.json"],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+[exit 0]
+
+$ python: public fields of <PROFILE>/config/identity.json (signature and public key omitted)
+{
+ "tenant_id": "01M7JDZQD2K0RK1AWQB8E3FFNV",
+ "principal_id": "01M7JDZQD20QTPM7294ESH7A9G",
+ "personal_space_id": "01M7JDZQD2R3Y5DNF40R46T26S",
+ "organization_space_id": "01M7JDZQD2ZTEYXWAPSBEQQVR5"
+}
+
+## 3. IDN-01: valid credential, forged actor_id in the request body
+
+$ quati ask '{"actor_id":"01JD00000000000000000000ZZ","tenant_id":"01JD00000000000000000000TT","request":"List my next appointments."}' --json | tee <PROFILE>/forged.json
+{"data":{"commitment_id":null,"delivered":false,"launched":false,"provider_used":false,"received":true,"request_id":"request-9ebdc83fcf5641ee888333bfc8eb7f30","result_kind":"BLOCKED","scope":"S00_T01_LOCAL_CLI","tool_calls":[],"trace_id":"e1cfe4c0083b4b1dbbbf92b5209bdffa","usage":{"cost_usd":null}},"error":{"code":"NOT_CONFIGURED","message":"No configured provider can process this request.","retryable":false},"evidence_refs":["sha256:757b2dcf4e5f7899745e2effd006c1531acfcad19e644a556eeb7586bfd54cb8:<PROFILE>/data/receipts/4d4fef5b86ed4afbbae048ee7502dbc5.json"],"next_action":"Configure the authorized model; no durable work was accepted.","status":"BLOCKED","uncertainties":["QUATI_API_KEY_ENV: configured secret reference has no value","QUATI_ALLOW_LIVE=1"]}
+[exit 3]
+
+$ python: the receipt named by evidence_refs, and sha256 of the authenticated and of the forged actor_id
+{
+ "cost_usd": null,
+ "evidence_version": "s00/1",
+ "output_hash": "053149e7ec8e9848a30d38f8af11dfbe0a6100a75f9dfd7c91b3174652ac5add",
+ "policy_version": "s00-fixture-readonly/1",
+ "principal_hash": "be27f6643f074feb78741ea759e642c5814a09e5a0ad6c873cb1e9e9fcb3d4bf",
+ "proof_tier": "L1",
+ "provider_used": false,
+ "request_hash": "f44e7c1861b68827cbcecdb141609f09068fda54dab1c59b87c124cd3cb2323e",
+ "request_id": "request-9ebdc83fcf5641ee888333bfc8eb7f30",
+ "status": "BLOCKED",
+ "timestamp": "2026-11-16T15:00:39.567960+00:00",
+ "trace_id": "e1cfe4c0083b4b1dbbbf92b5209bdffa"
+}
+sha256(authenticated principal_id) = be27f6643f074feb78741ea759e642c5814a09e5a0ad6c873cb1e9e9fcb3d4bf
+sha256(forged actor_id)            = 10867655536e6ae28ec4d198f149a01255067c983472372d6371e7d53a711a0d
+
+$ grep -rl 01JD00000000000000000000ZZ <PROFILE>/data | wc -l   # the forged id is stored nowhere
+0
+
+## 4. IDN-02: every space-scoped read is authorized and logged (N=1)
+
+$ quati capabilities search find\ my\ next\ appointment\ in\ the\ calendar --json 
+{"data":{"candidates":[{"capability_id":"fixtures.calendar-read","capability_version":"1.0.0","effects":"read","name":"calendar-read","outcome_summary":"List the next upcoming appointments and meetings in the synthetic personal calendar that start after the current time, with title, start, end and location. Read only.","rank":1,"rank_reasons":{"bm25":-5e-06,"filter_results":["NOT_ENABLED:PASS","DIGEST_MISMATCH:PASS","NOT_AUTHORIZED:PASS","EFFECT_ABOVE_CEILING:PASS","DATA_CLASS_ABOVE_CEILING:PASS","BINDING_UNHEALTHY:PASS","MODEL_INCOMPATIBLE:PASS","COST_ABOVE_CAP:PASS"],"rank":1,"shortlist_k":5}}],"excluded":[]},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+[exit 0]
+
+$ quati capabilities describe fixtures.calendar-read --json 
+{"data":{"capability_id":"fixtures.calendar-read","capability_version":"1.0.0","definition":{"description":"List the next upcoming appointments and meetings in the synthetic personal calendar that start after the current time, with title, start, end and location. Read only.","effects":"read","input_schema":{"additionalProperties":false,"properties":{"limit":{"maximum":5,"minimum":1,"type":"integer"}},"type":"object"},"intents":{"negative_examples":["Create a meeting with Ana on Friday"],"positive_examples":["Find my next appointment","What meetings do I have this week?"]},"name":"calendar-read","outcomes":{"criteria":["Only appointments that start after the current time","Ordered by start time"]},"output_schema":{"additionalProperties":false,"properties":{"appointments":{"items":{"additionalProperties":false,"properties":{"end":{"type":"string"},"location":{"type":"string"},"start":{"type":"string"},"title":{"type":"string"}},"required":["title","start","end","location"],"type":"object"},"type":"array"},"evidence_refs":{"items":{"type":"string"},"type":"array"},"label":{"const":"FIXTURE_RESULT"}},"required":["appointments","evidence_refs","label"],"type":"object"},"permissions":["calendar.read"]},"registry":{"assurance":"C2","effect_class_reviewed":"read","lifecycle":"ENABLED"}},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+[exit 0]
+
+$ grep authz.decided <PROFILE>/data/capabilities/audit.jsonl
+{"actor_id":"01M7JDZQD20QTPM7294ESH7A9G","at":"2026-11-16T15:00:39Z","authorized_scope":{"computed_at":"2026-11-16T15:00:39Z","principal_id":"01M7JDZQD20QTPM7294ESH7A9G","purpose":"read","readable_space_ids":["01M7JDZQD2R3Y5DNF40R46T26S","01M7JDZQD2ZTEYXWAPSBEQQVR5"],"tenant_id":"01M7JDZQD2K0RK1AWQB8E3FFNV","valid_for_transaction":"request-31e7ed2536ab4d7fb459918fdc451fa1"},"decision":{"action":"read","principal_id":"01M7JDZQD20QTPM7294ESH7A9G","reason_code":"OK","resource_ref":"space:01M7JDZQD2R3Y5DNF40R46T26S","tenant_id":"01M7JDZQD2K0RK1AWQB8E3FFNV","verdict":"ALLOW"},"event":"authz.decided","operation":"search","request_id":"request-31e7ed2536ab4d7fb459918fdc451fa1","tenant_id":"01M7JDZQD2K0RK1AWQB8E3FFNV"}
+{"actor_id":"01M7JDZQD20QTPM7294ESH7A9G","at":"2026-11-16T15:00:40Z","authorized_scope":{"computed_at":"2026-11-16T15:00:40Z","principal_id":"01M7JDZQD20QTPM7294ESH7A9G","purpose":"read","readable_space_ids":["01M7JDZQD2R3Y5DNF40R46T26S","01M7JDZQD2ZTEYXWAPSBEQQVR5"],"tenant_id":"01M7JDZQD2K0RK1AWQB8E3FFNV","valid_for_transaction":"request-ae88871f59f14c11983b9655109c52ae"},"decision":{"action":"read","principal_id":"01M7JDZQD20QTPM7294ESH7A9G","reason_code":"OK","resource_ref":"space:01M7JDZQD2R3Y5DNF40R46T26S","tenant_id":"01M7JDZQD2K0RK1AWQB8E3FFNV","verdict":"ALLOW"},"event":"authz.decided","operation":"describe","request_id":"request-ae88871f59f14c11983b9655109c52ae","tenant_id":"01M7JDZQD2K0RK1AWQB8E3FFNV"}
+
+## 5. IDN-02 denied read. The S00 command line has no space selector, so an out-of-scope read cannot be
+##    typed as a CLI command. This step is NOT a CLI run: it drives the same composition root and use-case
+##    class (quati.cli.composition.capability_commands) with U1 scoped to the personal space only.
+
+$ python <PROFILE>/denied.py <PROFILE>/config
+    | import json, sys
+    | from dataclasses import replace
+    | from quati.adapters.local_identity import LocalIdentity
+    | from quati.cli import composition
+    | 
+    | record = json.load(open(sys.argv[1] + '/identity.json'))
+    | personal, organization = record['personal_space_id'], record['organization_space_id']
+    | 
+    | class Scoped(LocalIdentity):
+    |     target, grants = None, None
+    |     def authenticate(self):
+    |         return replace(super().authenticate(), space_ids=(self.target,))
+    |     def space_grants(self, context):
+    |         return self.grants
+    | 
+    | for label, target, grants in (('in-scope read (personal)', personal, (personal,)),
+    |                               ('out-of-scope read (organization)', organization, (personal,)),
+    |                               ('scope object removed', personal, None)):
+    |     identity = Scoped(sys.argv[1]); identity.target, identity.grants = target, grants
+    |     commands = composition.capability_commands(identity, lambda record: {'sha256': '0' * 64, 'path': 'memory'})
+    |     code, value = commands.search('find my next appointment in the calendar')
+    |     event = [e for e in commands.registry.store.audit_events() if e['event'] == 'authz.decided'][-1]
+    |     print(f'--- {label}: exit {code}')
+    |     print(json.dumps({k: value[k] for k in ('status', 'error', 'next_action')}, sort_keys=True))
+    |     print('candidates:', [c['capability_id'] for c in (value['data'] or {}).get('candidates', [])])
+    |     print('decision log:', json.dumps({k: event[k] for k in ('decision', 'authorized_scope')}, sort_keys=True))
+--- in-scope read (personal): exit 0
+{"error": null, "next_action": null, "status": "SUCCEEDED"}
+candidates: ['fixtures.calendar-read']
+decision log: {"authorized_scope": {"computed_at": "2026-11-16T15:00:40Z", "principal_id": "01M7JDZQD20QTPM7294ESH7A9G", "purpose": "read", "readable_space_ids": ["01M7JDZQD2R3Y5DNF40R46T26S"], "tenant_id": "01M7JDZQD2K0RK1AWQB8E3FFNV", "valid_for_transaction": "request-8f24dde6ad5540f2be3ab3c4201de13a"}, "decision": {"action": "read", "principal_id": "01M7JDZQD20QTPM7294ESH7A9G", "reason_code": "OK", "resource_ref": "space:01M7JDZQD2R3Y5DNF40R46T26S", "tenant_id": "01M7JDZQD2K0RK1AWQB8E3FFNV", "verdict": "ALLOW"}}
+--- out-of-scope read (organization): exit 4
+{"error": {"code": "FORBIDDEN", "message": "NO_SPACE_GRANT", "retryable": false}, "next_action": "Inspect the space grant with `quati spaces describe <space-id>` (delivered in slice S02); nothing was read.", "status": "DENIED"}
+candidates: []
+decision log: {"authorized_scope": {"computed_at": "2026-11-16T15:00:40Z", "principal_id": "01M7JDZQD20QTPM7294ESH7A9G", "purpose": "read", "readable_space_ids": ["01M7JDZQD2R3Y5DNF40R46T26S"], "tenant_id": "01M7JDZQD2K0RK1AWQB8E3FFNV", "valid_for_transaction": "request-7f8196358baf450e8d330725c01573f4"}, "decision": {"action": "read", "principal_id": "01M7JDZQD20QTPM7294ESH7A9G", "reason_code": "NO_SPACE_GRANT", "resource_ref": "space:01M7JDZQD2ZTEYXWAPSBEQQVR5", "tenant_id": "01M7JDZQD2K0RK1AWQB8E3FFNV", "verdict": "DENY"}}
+--- scope object removed: exit 4
+{"error": {"code": "FORBIDDEN", "message": "NO_SPACE_GRANT", "retryable": false}, "next_action": "Inspect the space grant with `quati spaces describe <space-id>` (delivered in slice S02); nothing was read.", "status": "DENIED"}
+candidates: []
+decision log: {"authorized_scope": null, "decision": {"action": "read", "principal_id": "01M7JDZQD20QTPM7294ESH7A9G", "reason_code": "NO_SPACE_GRANT", "resource_ref": "space:01M7JDZQD2R3Y5DNF40R46T26S", "tenant_id": "01M7JDZQD2K0RK1AWQB8E3FFNV", "verdict": "DENY"}}
+[exit 0]
+
+## 6. IDN-01 fault: the credential store goes missing
+
+$ find <PROFILE>/data -type f | sort | xargs sha256sum | sha256sum   # repository digest before
+41eab608737898cb76cdd9a3da40c74806836d303d5d48da78a94e3b54642bc9  -
+
+$ rm <PROFILE>/config/device.key
+
+$ quati ask Hello. --json 
+{"data":null,"error":{"code":"UNAUTHENTICATED","message":"Local identity or authorization could not be verified.","retryable":false},"evidence_refs":[],"next_action":"Run quati init or repair the owner-only local credential.","status":"DENIED","uncertainties":[]}
+[exit 4]
+
+$ quati capabilities search find\ my\ next\ appointment\ in\ the\ calendar --json 
+{"data":null,"error":{"code":"UNAUTHENTICATED","message":"Local identity or authorization could not be verified.","retryable":false},"evidence_refs":[],"next_action":"Run quati init or repair the owner-only local credential.","status":"DENIED","uncertainties":[]}
+[exit 4]
+
+$ printf 'Hello\nHello\n' | quati chat --jsonl
+{"data":null,"error":{"code":"UNAUTHENTICATED","message":"Local identity or authorization could not be verified.","retryable":false},"evidence_refs":[],"next_action":"Run quati init or repair the owner-only local credential.","status":"DENIED","uncertainties":[]}
+[exit 4]
+
+$ quati doctor --json 
+{"data":{"durable_worker":"NOT_IMPLEMENTED","external_integrations":"NOT_VERIFIED_EXTERNAL","identity":{"authenticator":"local-os","initialized":false,"qualification":"POSIX_LOCAL_ONLY","secret_store":"owner_only_file","status":"NOT_CONFIGURED"},"policy":{"reason":"identity_unavailable","status":"UNAVAILABLE"},"provider":{"adapter_installed":true,"configured":false,"endpoint_host":"api.anthropic.com","features":{"concurrency":"NOT_VERIFIED","streaming":"NOT_VERIFIED","structured_output":"NOT_VERIFIED","timeout":"NOT_VERIFIED","tools":"NOT_VERIFIED"},"missing":["QUATI_API_KEY_ENV: configured secret reference has no value","QUATI_ALLOW_LIVE=1"],"model":"claude-haiku-5-5","pricing":"UNKNOWN","reasons":["API_KEY_MISSING","LIVE_NOT_ALLOWED"],"region":"UNKNOWN","status":"NOT_CONFIGURED","transport":"anthropic"},"scope":"S00_T01_LOCAL_CLI"},"error":null,"evidence_refs":[],"next_action":null,"status":"SUCCEEDED","uncertainties":[]}
+[exit 0]
+
+$ rm -r <PROFILE>/config
+
+$ quati ask Hello. --json 
+{"data":null,"error":{"code":"UNAUTHENTICATED","message":"Local identity or authorization could not be verified.","retryable":false},"evidence_refs":[],"next_action":"Run quati init or repair the owner-only local credential.","status":"DENIED","uncertainties":[]}
+[exit 4]
+
+$ quati capabilities list --json 
+{"data":null,"error":{"code":"UNAUTHENTICATED","message":"Local identity or authorization could not be verified.","retryable":false},"evidence_refs":[],"next_action":"Run quati init or repair the owner-only local credential.","status":"DENIED","uncertainties":[]}
+[exit 4]
+
+$ find <PROFILE>/data -type f | sort | xargs sha256sum | sha256sum   # repository digest after: unchanged
+41eab608737898cb76cdd9a3da40c74806836d303d5d48da78a94e3b54642bc9  -

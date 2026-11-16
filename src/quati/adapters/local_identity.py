@@ -139,6 +139,13 @@ class LocalIdentity:
     def issue_token(self):
         return self._mint_token(*self._load())
 
+    def space_grants(self, context):
+        """RFC-013 section 2.1 default grants of the LOCAL owner, read live from the signed record."""
+        record, _key = self._load()
+        if (context.actor_id, context.tenant_id) != (record['principal_id'], record['tenant_id']):
+            return ()
+        return record['personal_space_id'], record['organization_space_id']
+
     def authenticate(self):
         record, key = self._load()
         token, public = self._mint_token(record, key)

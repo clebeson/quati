@@ -1,0 +1,156 @@
+# GREEN run: IDN-01 / IDN-02 (S00-T05), 2026-11-16
+# git HEAD: c14af7ef3275f119d1faad5539cb7d844bedb2ae plus uncommitted working tree (git status --short):
+#    M src/quati/adapters/local_identity.py
+#    M src/quati/application/discovery.py
+#    M src/quati/application/identity.py
+#    M src/quati/cli/composition.py
+#   ?? PACKAGE_MANIFEST.json
+#   ?? evidence/S00/T05-identity-2026-11-16/
+#   ?? evidence/S00/T05-pol01-2026-11-16/
+#   ?? tests/integration/fixtures/
+#   ?? tests/integration/test_approval_injection.py
+#   ?? tests/integration/test_identity.py
+# sha256 of changed/created files:
+#   747a6c4e70f7e458311303a56ee754ccf25accc0c9fc1ab2bcd8d3ba161677a0  src/quati/adapters/local_identity.py
+#   3578315c2d9d9dd9cfe1c2dbc3ae7e07cb6218a9eeca3d03ad38af0a9cdf9039  src/quati/application/discovery.py
+#   3c17f15842ad3db2a55fb39b315adf29ada0347e356724c30da76925e35eb9e5  src/quati/application/identity.py
+#   f4e7caacdb6a21328f0faaeb061b89784de065bdb7c87dd7ed63a68de389a751  src/quati/cli/composition.py
+#   2e08e112fd580edd8a882d59385354eeb8444dbaa500aa69f3a1cd810cdc38df  tests/integration/test_identity.py
+# Note: tests/integration/test_approval_injection.py (13 tests, POL-01) belongs to a parallel agent and was
+# present in the tree during these runs; 982 = 945 baseline + 24 in tests/integration/test_identity.py + 13 POL-01.
+# python: Python 3.13.7; pytest 9.2.0; Coverage.py, version 7.16.1 with C extension; Linux 6.17.0-41-generic
+
+## 1. Full suite
+$ .venv/bin/python -m pytest -q -p no:cacheprovider     (every QUATI_* variable unset)
+sssssssss............................................................... [  7%]
+........................................................................ [ 14%]
+........................................................................ [ 21%]
+........................................................................ [ 29%]
+........................................................................ [ 36%]
+........................................................................ [ 43%]
+........................................................................ [ 50%]
+........................................................................ [ 58%]
+........................................................................ [ 65%]
+........................................................................ [ 72%]
+........................................................................ [ 79%]
+........................................................................ [ 87%]
+........................................................................ [ 94%]
+.......................................................                  [100%]
+982 passed, 9 skipped in 84.97s (0:01:24)
+[exit code] 0
+
+## 2. Declared locators
+$ .venv/bin/python -m pytest -q -p no:cacheprovider tests/integration/test_identity.py -rA --tb=short
+........................                                                 [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/integration/test_identity.py::test_idn_01
+PASSED tests/integration/test_identity.py::test_idn_01_negative_forged_identity_data_has_no_effect_and_discloses_nothing
+PASSED tests/integration/test_identity.py::test_idn_01_unauthenticated_diagnostics_and_undelivered_commands_read_no_repository
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_removed]
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[device_key_removed]
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[identity_record_removed]
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_emptied]
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_is_a_file]
+PASSED tests/integration/test_identity.py::test_idn_01_fault_missing_credential_store_fails_closed[config_dir_never_existed]
+PASSED tests/integration/test_identity.py::test_idn_02
+PASSED tests/integration/test_identity.py::test_idn_02_in_scope_invocation_runs_and_out_of_scope_invocation_never_reaches_policy_or_handler
+PASSED tests/integration/test_identity.py::test_idn_02_negative_out_of_scope_and_forged_space_ids_have_no_effect_and_disclose_nothing
+PASSED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[none]
+PASSED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[empty]
+PASSED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[oserror]
+PASSED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[access_denied]
+PASSED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[string]
+PASSED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[blank_id]
+PASSED tests/integration/test_identity.py::test_idn_02_fault_scope_object_removed_denies_by_default[non_string_id]
+PASSED tests/integration/test_identity.py::test_idn_02_fault_request_without_a_target_space_is_denied
+PASSED tests/integration/test_identity.py::test_idn_02_scope_is_resolved_live_from_the_signed_installation_record
+PASSED tests/integration/test_identity.py::test_idn_02_fault_decision_log_unavailable_refuses_the_read
+PASSED tests/integration/test_identity.py::test_idn_02_service_without_an_injected_port_still_enforces_the_scope
+PASSED tests/integration/test_identity.py::test_authorization_port_denies_everything_that_is_not_a_granted_read
+24 passed in 30.09s
+[exit code] 0
+
+## 3. Coverage (branch mode; CLI child processes measured through tests/coverage/sitecustomize.py)
+# rcfile: [run] branch = True, parallel = True, source = <REPO>/src/quati; [report] show_missing = True
+$ QUATI_TEST_COVERAGE_BOOTSTRAP=<REPO>/tests/coverage COVERAGE_PROCESS_START=<rcfile> .venv/bin/python -m coverage run --rcfile=<rcfile> -m pytest -q -p no:cacheprovider
+982 passed, 9 skipped in 150.83s (0:02:30)
+[exit code] 0
+$ .venv/bin/python -m coverage combine --rcfile=<rcfile> && .venv/bin/python -m coverage report --rcfile=<rcfile>
+Name                                                Stmts   Miss Branch BrPart  Cover   Missing
+-----------------------------------------------------------------------------------------------
+src/quati/__init__.py                                   1      0      0      0   100%
+src/quati/__main__.py                                   2      0      0      0   100%
+src/quati/adapters/__init__.py                          0      0      0      0   100%
+src/quati/adapters/capability_store.py                123      0     12      0   100%
+src/quati/adapters/evidence.py                         34      1      8      1    95%   38
+src/quati/adapters/feature_reports.py                  39      0      6      0   100%
+src/quati/adapters/fixture_capabilities.py            136      0     14      0   100%
+src/quati/adapters/fts_index.py                        17      0      2      0   100%
+src/quati/adapters/local_identity.py                  114      5     18      3    94%   44, 87, 103-104, 123
+src/quati/adapters/policy_gate.py                      36      0      0      0   100%
+src/quati/adapters/providers/__init__.py                4      0      0      0   100%
+src/quati/adapters/providers/_sdk.py                   99      0     54      0   100%
+src/quati/adapters/providers/anthropic.py              57      0     16      0   100%
+src/quati/adapters/providers/cli.py                   317      0     92      0   100%
+src/quati/adapters/providers/openai_compatible.py     112      0     36      0   100%
+src/quati/application/__init__.py                       0      0      0      0   100%
+src/quati/application/ask.py                          444      0    122      0   100%
+src/quati/application/capability_commands.py           72     16     14      1    80%   70-74, 78, 86-94, 98-103, 119
+src/quati/application/capability_registry.py          347      0     74      0   100%
+src/quati/application/cli_service.py                  148      0     44      0   100%
+src/quati/application/code_identity.py                 14      0      0      0   100%
+src/quati/application/context_envelope.py              93      0     18      0   100%
+src/quati/application/discovery.py                    255      0     76      0   100%
+src/quati/application/discovery_tools.py               83      0     20      0   100%
+src/quati/application/identity.py                     112      1     28      1    99%   48
+src/quati/application/ports.py                         29      0      0      0   100%
+src/quati/application/providers.py                    507      0    158      0   100%
+src/quati/behavior/__init__.py                          0      0      0      0   100%
+src/quati/behavior/compiler.py                        189      0     56      0   100%
+src/quati/behavior/contracts.py                       174      0     64      0   100%
+src/quati/behavior/fsutil.py                           39      0      4      0   100%
+src/quati/behavior/manifest.py                        136      0     64      0   100%
+src/quati/behavior/store.py                           223      0     64      0   100%
+src/quati/behavior/trusted_config.py                   94      0     26      0   100%
+src/quati/cli/__init__.py                               0      0      0      0   100%
+src/quati/cli/chat.py                                  66      0     26      0   100%
+src/quati/cli/composition.py                           41      0      0      0   100%
+src/quati/cli/local_policy.py                          37      0      8      0   100%
+src/quati/cli/main.py                                  98      2     10      1    97%   173, 186
+src/quati/cli/rendering.py                             13      0      4      0   100%
+src/quati/domain/__init__.py                            0      0      0      0   100%
+src/quati/domain/canonical.py                          31      0     16      0   100%
+src/quati/domain/capability_import.py                  27      0      8      0   100%
+src/quati/domain/capability_lint.py                    29      0     16      0   100%
+src/quati/domain/capability_registry.py               155      0     50      0   100%
+src/quati/domain/decision_policy.py                    42      0     18      0   100%
+src/quati/domain/diagnostics.py                        49      0      2      0   100%
+src/quati/domain/discovery.py                         103      0     16      0   100%
+src/quati/domain/policy.py                            321      0    106      0   100%
+src/quati/domain/statechart.py                        157      0     92      0   100%
+-----------------------------------------------------------------------------------------------
+TOTAL                                                5219     25   1462      7    99%
+$ .venv/bin/python -m coverage report --rcfile=<rcfile> --precision=2 | tail -1
+TOTAL                                                5219     25   1462      7  99.52%
+$ .venv/bin/python -m coverage report --rcfile=<rcfile> --precision=2 --include='*/quati/domain/*,*/quati/behavior/*' | tail -1
+TOTAL                                      1769      0    602      0  100.00%
+
+# Baseline measured with the same commands before any change under src/ (HEAD c14af7e, 945 passed, 9 skipped):
+#   Name                                                Stmts   Miss Branch BrPart  Cover   Missing
+#   -----------------------------------------------------------------------------------------------
+#   src/quati/adapters/evidence.py                         34      1      8      1    95%   38
+#   src/quati/adapters/local_identity.py                  109      5     16      3    94%   44, 87, 103-104, 123
+#   src/quati/application/capability_commands.py           72     23     14      1    72%   70-74, 78, 86-94, 98-103, 106-108, 111-114, 119
+#   src/quati/application/identity.py                      66      1     22      1    98%   46
+#   src/quati/cli/main.py                                  98      7     10      1    93%   134, 148, 154, 160, 166, 173, 186
+#   -----------------------------------------------------------------------------------------------
+#   TOTAL                                                5149     37   1452      7    99%
+
+## 4. Specification validators
+$ .venv/bin/python spec_tools/validate_spec.py
+L0 SPEC VALIDATION: PASS (contracts, examples, reference freshness, states, requirement references). NO APP RUNTIME PROOF.
+[exit code] 0
+$ .venv/bin/python spec_tools/validate_readiness.py
+{"fixture_recipes": 125, "requirement_plans": 243, "requirements": 243, "runtime_qualified": false, "semantic_coverage_requires_review": true, "shared_cases": 101, "status": "PASS", "tier": "L0", "work_packages": 35}
+[exit code] 0
