@@ -1,0 +1,27 @@
+S00-GATE-02 test log
+tested commit: a655c20966b6687545f771182fb04dde663a1fb7 (clean working tree)
+host: Linux 6.17.0-41-generic; Python 3.13.7
+
+## Deterministic lanes
+command: .venv/bin/python -m pytest -q -p no:cacheprovider
+945 passed, 9 skipped in 37.60s
+exit code: 0
+skipped tests are the opt-in live lanes (tests/evals, tests/external), which need QUATI_LIVE_EVAL/QUATI_ALLOW_LIVE; their gate-relevant content is the live run below.
+SKIPPED [1] tests/evals/test_discovery.py:34
+SKIPPED [1] tests/evals/test_discovery.py:38
+SKIPPED [1] tests/evals/test_discovery.py:42
+SKIPPED [1] tests/evals/test_discovery.py:47
+SKIPPED [1] tests/evals/test_discovery.py:52
+SKIPPED [1] tests/evals/test_social.py:16
+SKIPPED [1] tests/evals/test_social.py:21
+SKIPPED [1] tests/external/test_live_claude_cli.py:26
+SKIPPED [1] tests/external/test_live_codex_cli.py:26
+
+## Live gate run (L3), executed 2026-11-16T13:54:47Z..14:04:55Z
+command: .venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --runs 3 --label gate6-quati
+provider/model: claude_cli (vendor executable Claude Code 2.1.325, owner sign-in) / observed model id claude-haiku-5-5; judge sonnet (behavior suite only)
+code_digest_src_quati: 5a5f0437717e98c54497be939a70afeab1ef510a5e56e2b3bdbf107d20f32b84 (recomputed on the tested commit: 5a5f0437717e98c54497be939a70afeab1ef510a5e56e2b3bdbf107d20f32b84)
+CAP-01: 30/30 passed; CAP-02: 30/30 passed; invalid cases 0; unauthorized effects 0; CAP-03 L3 PASS; CAP-05 PASS; SOC-01 PASS
+evidence: evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/INDEX.json sha256 fe711f9c54c1127cbcffae6f6181ec4eec8b07f5cad55eca8f727ed4caa796e4
+cost (provider-reported): CAP-01 US$0.0948, CAP-02 US$0.0876
+note: the vendor CLI version was read after the run and is not recorded inside the run evidence.

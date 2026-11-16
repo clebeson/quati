@@ -1,0 +1,7 @@
+{
+  "note": "Hashes of local session transcripts; the transcripts are not published. The root transcript hash was taken while the session was still running, so it identifies the transcript up to the moment of sealing only.",
+  "independent_audit_session_transcript_sha256": "c773849ce1cf228e64f54269011f4ed78dcf4b940c2568a4b401aaa0cffe8a52",
+  "independent_audit_report": "docs/audit/S00_GATE02_GATE6_ACCEPTANCE_AUDIT_2026-11-16.md",
+  "root_coordinator_session_id": "ea3a9e09-79d5-485a-82d9-f4d6ac48dccd",
+  "root_coordinator_session_transcript_sha256_at_sealing": "2668178799b6c14c051d02cc1b53591b21c560ad3c4ee4d6cc1b5cdf06d3ccfe"
+}

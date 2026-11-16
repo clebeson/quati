@@ -1,0 +1,53 @@
+{
+  "commit_evidence": {
+    "commit_sha": "a655c20966b6687545f771182fb04dde663a1fb7",
+    "test_log_ref": "evidence/S00/GATE-02-2026-11-16/tests-verified.txt",
+    "transcript_ref": "evidence/S00/GATE-02-2026-11-16/transcript-ref.json"
+  },
+  "evidence_refs": [
+    "evidence/S00/GATE-02-2026-11-16/tests-verified.txt",
+    "evidence/S00/GATE-02-2026-11-16/transcript-ref.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/PREREG.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/INDEX.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-01.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-02.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-03.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-05.json",
+    "docs/audit/S00_GATE02_GATE6_ACCEPTANCE_AUDIT_2026-11-16.md"
+  ],
+  "evidence_sha256": {
+    "docs/audit/S00_GATE02_GATE6_ACCEPTANCE_AUDIT_2026-11-16.md": "178ceec48fb1e5db5a83b951119070ca3cb3f06c7f06b0c9c1dcb2e6aa15f46c",
+    "evidence/S00/GATE-02-2026-11-16/tests-verified.txt": "cf1d026bab928b8de8aef1ccd47b0df2a8385c11e485e732428ae7ccf464ec44",
+    "evidence/S00/GATE-02-2026-11-16/transcript-ref.json": "034c379ab421f385459d09e028ba4d6a1f055f8b29d39e5c36621d2d109ff04c",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-01.json": "6ec7f141c9e4dbba1d89facb51e898b05a13dbc77ec36b91401800b7535919ce",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-02.json": "0f9e98585d3b60c2531937e638a7d3bb03fa7500389748f4308cb3cd8ebfed28",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-03.json": "f838d6581672f1bf33e25c37ffa4f32682f690d4b73d2cb9037a664e51de0f91",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-05.json": "7ab7fdfe34cdd968e54ee22ab0a88dd1aec89ab31af8d5127bfa19d6672b9459",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/INDEX.json": "fe711f9c54c1127cbcffae6f6181ec4eec8b07f5cad55eca8f727ed4caa796e4",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/PREREG.json": "df061d5cc837ee17e140b45d89ed489d2d44669a074857afc4ea0c456e6a04b3"
+  },
+  "issued_at": "2026-11-16T15:10:00Z",
+  "issuer": {
+    "identity": "independent audit agent session (fresh context, spawned 2026-11-16; transcript hash in transcript-ref.json)",
+    "independent_of_authors": true,
+    "role": "independent evidence reviewer"
+  },
+  "kind": "EVIDENCE_VERIFIED",
+  "proof_tiers": [
+    "L3"
+  ],
+  "rationale": "Independent read-only audit, verdict ACCEPT with no P1 finding (docs/audit/S00_GATE02_GATE6_ACCEPTANCE_AUDIT_2026-11-16.md): tallies recomputed from raw records with the auditor's own scripts (30/30 and 30/30, exact arguments, search-describe-invoke order, zero unauthorized effects); INDEX and PREREG hashes match the files; the code digest in every record equals the digest of src/quati; pre-registration precedes the first provider call; no gold-label leakage; candidate order recorded and varied; no secrets in the evidence; tier L3 is honest. The audit read commit 8a2ec40; the sealed commit adds only the checkpoint helper, its tests and the audit record, and leaves src/, tests/evals and the gate6 evidence byte-identical (git diff 8a2ec40 against the sealed commit is empty for those paths). This record was written by the root coordinator from the auditor's report; it is a process control, not a cryptographic proof of who reviewed. The P2/P3 limits of the audit are recorded as debt in LOG-0037 and are not findings against the gate condition.",
+  "requirement_ids": [],
+  "scope_ids": [
+    "S00-GATE-02"
+  ],
+  "seal_id": "S00-GATE-02-EVIDENCE_VERIFIED-001",
+  "signature": null,
+  "supersedes": null,
+  "test_ids": [
+    "CAP-01",
+    "CAP-02"
+  ],
+  "unresolved_findings": [],
+  "verdict": "PASS"
+}

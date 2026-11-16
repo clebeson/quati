@@ -1,0 +1,52 @@
+{
+  "commit_evidence": {
+    "commit_sha": "a655c20966b6687545f771182fb04dde663a1fb7",
+    "test_log_ref": "evidence/S00/GATE-02-2026-11-16/tests-verified.txt",
+    "transcript_ref": "evidence/S00/GATE-02-2026-11-16/transcript-ref.json"
+  },
+  "evidence_refs": [
+    "evidence/S00/GATE-02-2026-11-16/tests-verified.txt",
+    "evidence/S00/GATE-02-2026-11-16/transcript-ref.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/PREREG.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/INDEX.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-01.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-02.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-03.json",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-05.json"
+  ],
+  "evidence_sha256": {
+    "evidence/S00/GATE-02-2026-11-16/tests-verified.txt": "cf1d026bab928b8de8aef1ccd47b0df2a8385c11e485e732428ae7ccf464ec44",
+    "evidence/S00/GATE-02-2026-11-16/transcript-ref.json": "034c379ab421f385459d09e028ba4d6a1f055f8b29d39e5c36621d2d109ff04c",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-01.json": "6ec7f141c9e4dbba1d89facb51e898b05a13dbc77ec36b91401800b7535919ce",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-02.json": "0f9e98585d3b60c2531937e638a7d3bb03fa7500389748f4308cb3cd8ebfed28",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-03.json": "f838d6581672f1bf33e25c37ffa4f32682f690d4b73d2cb9037a664e51de0f91",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/CAP-05.json": "7ab7fdfe34cdd968e54ee22ab0a88dd1aec89ab31af8d5127bfa19d6672b9459",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/INDEX.json": "fe711f9c54c1127cbcffae6f6181ec4eec8b07f5cad55eca8f727ed4caa796e4",
+    "evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/PREREG.json": "df061d5cc837ee17e140b45d89ed489d2d44669a074857afc4ea0c456e6a04b3"
+  },
+  "issued_at": "2026-11-16T15:10:00Z",
+  "issuer": {
+    "identity": "root coordinator (Claude Code session ea3a9e09)",
+    "independent_of_authors": false,
+    "role": "test runner and reviewing owner"
+  },
+  "kind": "TESTS_VERIFIED",
+  "proof_tiers": [
+    "L1",
+    "L3"
+  ],
+  "rationale": "S00-GATE-02 (S00.md): a real model used on-demand capability discovery without gold labels; CAP-01 and CAP-02 each passed 30 of 30 live runs on claude_cli with observed model claude-haiku-5-5, trajectories and provider/model identity recorded (run gate6-quati, code_digest_src_quati 5a5f0437717e98c54497be939a70afeab1ef510a5e56e2b3bdbf107d20f32b84, equal on the sealed commit). Deterministic lanes on the sealed commit: 945 passed, 9 skipped; the skips are the opt-in live lanes. The seal covers the gate condition only. It closes no requirement plan (requirement_ids is empty on purpose): the status step, fault-injection and negative lines of TEST_CASES CAP-01/CAP-02 are exercised only by L1 scripted tests, CAP-02 presents a single eligible candidate, three of the 60 passes used one generic logged continuation, and the 10 paraphrases were also used while iterating the prompts (LOG-0034, LOG-0037). The seal expires on any change to src/quati, the datasets, the harness or the model configuration.",
+  "requirement_ids": [],
+  "scope_ids": [
+    "S00-GATE-02"
+  ],
+  "seal_id": "S00-GATE-02-TESTS_VERIFIED-001",
+  "signature": null,
+  "supersedes": null,
+  "test_ids": [
+    "CAP-01",
+    "CAP-02"
+  ],
+  "unresolved_findings": [],
+  "verdict": "PASS"
+}

@@ -1,5 +1,26 @@
 {
   "schema_version": "secma-seal-index/1",
-  "records": [],
+  "records": [
+    {
+      "seal_id": "S00-GATE-02-TESTS_VERIFIED-001",
+      "path": "governance/seals/S00-GATE-02-TESTS_VERIFIED-001.json",
+      "record_sha256": "b6ca06583a02eb464c9c03e360222d2733ab41dec2cd10abdcd10b8000c3d703",
+      "kind": "TESTS_VERIFIED",
+      "scope_ids": [
+        "S00-GATE-02"
+      ],
+      "supersedes": null
+    },
+    {
+      "seal_id": "S00-GATE-02-EVIDENCE_VERIFIED-001",
+      "path": "governance/seals/S00-GATE-02-EVIDENCE_VERIFIED-001.json",
+      "record_sha256": "dbc2bf253201c5207648fb5802214d1567b3fd90ae6d26d037ffbc59266c4a68",
+      "kind": "EVIDENCE_VERIFIED",
+      "scope_ids": [
+        "S00-GATE-02"
+      ],
+      "supersedes": null
+    }
+  ],
   "lookup_rule": "Canonical state names exact seal refs. Verify immutable record hash, scope/kind, issuer independence, all artifact digests and supersession. Missing or ambiguous current valid seal blocks gate. Never choose by timestamp alone."
 }
