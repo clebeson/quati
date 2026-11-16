@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 23,
+  "revision": 24,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S00",
@@ -172,7 +172,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-16T19:46:25.618329Z",
+  "last_updated_at": "2026-11-16T20:11:18.518476Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -183,7 +183,7 @@
   "execution_authorized": true,
   "active_work": {
     "work_package_id": "S00-T05",
-    "phase": "AUDIT",
+    "phase": "TDD_RED",
     "owner": "root coordinator",
     "input_snapshot_ref": "evidence/S00/T01-2026-11-15/input_snapshot.json",
     "completed_steps": [
@@ -205,9 +205,10 @@
       "Fix round 6 for LOG-0039 F2-F12, F15, F17 done test-first; 1124 passed, 10 skipped (LOG-0040)",
       "Re-audit of fix round 6 at 2ca778c: GATE-01 and GATE-04 deterministic ACCEPT, GATE-03 REJECT; 17 new findings (LOG-0041)",
       "Fix round 7 and live harness extension done test-first; 1566 passed, 10 skipped (LOG-0042)",
-      "Integration step done (1622 passed, 10 skipped); owner amended the S00-GATE-03 sentence (LOG-0043)"
+      "Integration step done (1622 passed, 10 skipped); owner amended the S00-GATE-03 sentence (LOG-0043)",
+      "Third independent audit at a5a3af3: NOT READY for the live run; 5 P1, 5 P2 findings (LOG-0044)"
     ],
-    "next_action": "Third independent audit at the committed tree; fix what it finds; live requalification with the extended harness (gate7); independent acceptance audit of the live evidence; seals for all four S00 gates on one commit; SLICE_ACCEPTED",
+    "next_action": "Fix round 8 for LOG-0044 (X1-X10, D7, cheap P3) test-first on disjoint paths; fourth independent audit including the unfinished mutation and test-expectation review; then live requalification, acceptance audit of the live evidence, seals for all four S00 gates on one commit, SLICE_ACCEPTED",
     "owned_files": [
       "src/secma/cli",
       "src/secma/application",
@@ -221,7 +222,8 @@
       "LOG-0014 owner decisions from the architecture re-audit are pending",
       "All S00 gate seals must reference one commit; S00-GATE-02 seals on a655c20 must be superseded by new records on the final S00 commit after requalification",
       "LOG-0039 F1-F12, F15, F17 must be fixed and re-audited before any S00 gate is sealed",
-      "LOG-0041 N1-N4 (P1) and N5-N13 (P2) must be fixed and re-audited before any S00 gate is sealed"
+      "LOG-0041 N1-N4 (P1) and N5-N13 (P2) must be fixed and re-audited before any S00 gate is sealed",
+      "LOG-0044 X1-X5 (P1) and X6-X10 (P2) must be fixed and re-audited before the live run"
     ],
     "evidence_refs": [
       "evidence/S00/T01-2026-11-15/authorization.json",
@@ -253,7 +255,8 @@
       "evidence/S00/T05-fix7-social-authz-2026-11-16/green.txt",
       "evidence/S00/T05-fix7-store-cli-2026-11-16/green.txt",
       "evidence/S00/T05-harness7-2026-11-16/green.txt",
-      "evidence/S00/T05-integration7-2026-11-16/green.txt"
+      "evidence/S00/T05-integration7-2026-11-16/green.txt",
+      "docs/audit/S00_AUDIT3_2026-11-16.md"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",

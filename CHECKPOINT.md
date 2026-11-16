@@ -4,10 +4,12 @@ Implementation is authorized. Read docs/implementation/implementation_state.json
 its revision, active task, phase and next_action are the only progress authority.
 Do not trust historical PASS claims that are not backed by seal records.
 
-Current slice: S00. S00-GATE-02 is PASS at state revision 16 (seals in governance/seals,
-LOG-0037). S00-GATE-01, S00-GATE-03 and S00-GATE-04 are NOT_RUN: each needs evidence,
-an independent audit and TESTS_VERIFIED / EVIDENCE_VERIFIED seals on one commit, then
-SLICE_ACCEPTED. Open debts: LOG-0013, LOG-0014, LOG-0021, LOG-0034, LOG-0036, LOG-0037.
+Current slice: S00. No S00 gate is sealed. S00-GATE-02 was sealed at revision 16 on an
+earlier code digest and is BLOCKED again since revision 18 (source changed). Three
+independent audits (LOG-0039, LOG-0041, LOG-0044) drove fix rounds 6, 7 and 8. The live
+requalification with the extended harness runs only after an independent audit says READY.
+All four gates must be sealed on one commit, then SLICE_ACCEPTED. The S00-GATE-03 sentence
+was amended by the owner (LOG-0043).
 
 Entry point: IMPLEMENTATION_READY_INDEX.md, then the selected work package and
 docs/governance/LOG.md. The project was renamed from SECMA to Quati (LOG-0035);
