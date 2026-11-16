@@ -1,0 +1,472 @@
+{
+  "accept_not_run": [
+    "f_classification_timeout"
+  ],
+  "accept_not_run_unused": [],
+  "binding": {
+    "asset_mismatched": 0,
+    "asset_missing": 0,
+    "bound": 358,
+    "expected_asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+    "expected_code_digest": "f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8",
+    "mismatched": 0,
+    "missing": 0,
+    "missing_by_kind": {},
+    "offenders": [],
+    "offenders_total": 0,
+    "pass": true,
+    "receipts": 358,
+    "receipts_in_scope": 358,
+    "scope": "all",
+    "unreadable": 0
+  },
+  "cases": [
+    "DOCTOR",
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "WRITE-01"
+  ],
+  "cases_completed": [
+    "DOCTOR",
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "WRITE-01"
+  ],
+  "doctor_binding": {
+    "asset_digest": {
+      "field": "behavior.asset_digest",
+      "value": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2"
+    },
+    "bound_to": {
+      "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+      "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+      "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426",
+      "profile_ref": "examples/behavior/executive-secretary.yaml",
+      "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
+      "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+      "status": "VALID"
+    },
+    "doctor_responses": 26,
+    "offenders": [],
+    "offenders_total": 0,
+    "pass": true
+  },
+  "estimate": {
+    "max_calls": 436,
+    "typical_calls": 276,
+    "usd_ceiling_at_haiku_rate": 0.26,
+    "usd_typical_at_haiku_rate": 0.17
+  },
+  "exit_code": 0,
+  "files": {
+    "CAP-01": "f1df3cf98753346d13d033374afe66cdc8e49ecaa65a74ac671f82cc4081be11",
+    "CAP-02": "e1b54a2ac7f0411bf654560be75b5196d7f855a3d6e559e5462ab73a4c420926",
+    "CAP-03": "a83ed473451f44b3a0182564068170559faa21a22c68098ba5257b9fc4bde4f8",
+    "CAP-05": "169948a0a4b31da109cdeb5ac8d5061153a51f0ba5dd930306ee72208389db5d",
+    "DOCTOR": "4c9a72916e7f7bcf0d9f492efbeed354278fa1914bd9de3121f1084a169a634c",
+    "SOC-01": "afed92d27d99508ec93a16ad1957c455a5dca4610e99c05b35b5cb555a83c817",
+    "WRITE-01": "bf0a26b8b9536355105a235dbd321bec1765719decf0ae3d9e852e8fc4d7be8a"
+  },
+  "gate_protocol": false,
+  "gate_protocol_reasons": [
+    "--runs is 1, the gate protocol is 3 per paraphrase",
+    "--soc-runs is 1, the gate protocol needs at least 10 per text",
+    "--write-runs is 1, the gate protocol needs at least 5 per text"
+  ],
+  "gate_protocol_requested": false,
+  "gate_summary": {
+    "S00-GATE-01 (live doctor observation)": {
+      "cases": [
+        "DOCTOR"
+      ],
+      "measurements": {
+        "DOCTOR": {}
+      },
+      "not_run_legs": {},
+      "not_run_legs_accepted": [],
+      "not_run_legs_not_accepted": [],
+      "verdict": "PASS"
+    },
+    "S00-GATE-02": {
+      "cases": [
+        "CAP-01",
+        "CAP-02"
+      ],
+      "measurements": {
+        "CAP-01": {},
+        "CAP-02": {}
+      },
+      "not_run_legs": {},
+      "not_run_legs_accepted": [],
+      "not_run_legs_not_accepted": [],
+      "verdict": "PASS"
+    },
+    "S00-GATE-03": {
+      "cases": [
+        "SOC-01",
+        "WRITE-01"
+      ],
+      "measurements": {
+        "SOC-01": {
+          "answer_label_not_blocked_runs": {
+            "c_outside_table_greeting": 0,
+            "h_model_dependent_urgent": 0
+          },
+          "outcome_distribution": {
+            "c_outside_table_greeting": {
+              "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 5
+            },
+            "d_greeting_led_work": {
+              "UNAVAILABLE/NO_CAPABILITY/NONE_FITS": 2
+            },
+            "h_model_dependent_urgent": {
+              "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 1
+            }
+          },
+          "read_executed_runs": {
+            "c_outside_table_greeting": 0,
+            "chat": 0,
+            "d_greeting_led_work": 0,
+            "h_model_dependent_urgent": 0
+          },
+          "texts_not_measured": {}
+        },
+        "WRITE-01": {
+          "guard_distribution": {
+            "SHORTLIST_EXCLUSION:BINDING_UNHEALTHY+EFFECT_ABOVE_CEILING+NOT_AUTHORIZED+NOT_ENABLED": 2
+          },
+          "guard_never_exercised": false,
+          "outcome_distribution": {
+            "UNAVAILABLE/NO_CAPABILITY/NONE_FITS": 2
+          },
+          "succeeded_runs": 0,
+          "texts_without_guard_observation": []
+        }
+      },
+      "not_run_legs": {
+        "SOC-01:f_classification_timeout": "NOT_RUN: the product offers no public configuration that makes the provider time out during classification (ProviderConfig.from_environment reads QUATI_BASE_URL, QUATI_MODEL, QUATI_API_KEY_ENV, QUATI_ALLOW_LIVE and QUATI_PROVIDER only). Pass --timeout-fault-env NAME=VALUE when such a knob exists; no hook is invented in src/."
+      },
+      "not_run_legs_accepted": [
+        "SOC-01:f_classification_timeout"
+      ],
+      "not_run_legs_not_accepted": [],
+      "verdict": "PASS_WITH_NOT_RUN_LEGS"
+    }
+  },
+  "gates": {
+    "S00-GATE-01 (live doctor observation)": "PASS",
+    "S00-GATE-02": "PASS",
+    "S00-GATE-03": "PASS_WITH_NOT_RUN_LEGS"
+  },
+  "gating_cases_failed": [],
+  "harness_sha256": "4cd49f7fb94b3620f46f7d4da58ddb91845a44d6c3b9d34459c00779d31d2993",
+  "heldout": {
+    "gating": false,
+    "note": "The held-out sets are informational: they never change a gate verdict or the exit code.",
+    "run": false
+  },
+  "index_note": "Pilot or partial run (not gate evidence).",
+  "judge_model": "sonnet",
+  "launched_violations": [],
+  "launcher_replaced": false,
+  "model": "haiku",
+  "not_run_legs": {
+    "SOC-01": {
+      "f_classification_timeout": "NOT_RUN: the product offers no public configuration that makes the provider time out during classification (ProviderConfig.from_environment reads QUATI_BASE_URL, QUATI_MODEL, QUATI_API_KEY_ENV, QUATI_ALLOW_LIVE and QUATI_PROVIDER only). Pass --timeout-fault-env NAME=VALUE when such a knob exists; no hook is invented in src/."
+    }
+  },
+  "not_run_legs_not_accepted": [],
+  "preregistration_sha256": "1c632107cb2bee47fcf0abb5e2bc69dd110a8d373846a0958f49d87df52afb05",
+  "provider_calls_observed": {
+    "ask_model_requests": 154,
+    "asks_with_model_requests": 34,
+    "feature_reports": 41,
+    "probe_subcheck_attempts": 123,
+    "provider_calls": 277
+  },
+  "run_id": "20261116T233147Z-claude_cli-haiku-pilot8",
+  "run_pass": true,
+  "runs_per_utterance": 1,
+  "seed": 20261116,
+  "soc_runs": 1,
+  "summary": {
+    "CAP-01": {
+      "case_id": "CAP-01",
+      "cost_usd_all_receipts": 0.031806,
+      "cost_usd_total_known": 0.031807,
+      "distinct_digest_values": {
+        "asset_digest": 1,
+        "behavior_build_digest": 10,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 10,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 10,
+        "envelope_hash": 10,
+        "envelope_stable_hash": 10,
+        "feature_report_sha256": 10,
+        "model_digest": 1,
+        "policy_ref": 10,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 26.37,
+      "elapsed_s_p50": 25.44,
+      "gate_pass": true,
+      "gate_pass_with_observations": true,
+      "gating": true,
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 10,
+      "observations": {},
+      "observed_models": [
+        "claude-haiku-5-5"
+      ],
+      "pass": true,
+      "passed": 10,
+      "unauthorized_effects": 0,
+      "valid_n": 10,
+      "wilson95_lower": 0.7225
+    },
+    "CAP-02": {
+      "case_id": "CAP-02",
+      "cost_usd_all_receipts": 0.029308,
+      "cost_usd_total_known": 0.029308,
+      "distinct_digest_values": {
+        "asset_digest": 1,
+        "behavior_build_digest": 10,
+        "behavior_hash": 1,
+        "behavior_prompt_hash": 1,
+        "catalog_digest": 1,
+        "classification_prompt_hash": 10,
+        "code_digest": 1,
+        "config_hash": 1,
+        "effective_prompt_hash": 10,
+        "envelope_hash": 10,
+        "envelope_stable_hash": 10,
+        "feature_report_sha256": 10,
+        "model_digest": 1,
+        "policy_ref": 10,
+        "statechart_hash": 1,
+        "tool_schema_digest": 1
+      },
+      "elapsed_s_max": 25.17,
+      "elapsed_s_p50": 23.11,
+      "gate_pass": true,
+      "gate_pass_with_observations": true,
+      "gating": true,
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 10,
+      "observations": {
+        "trace_explain": {
+          "error_codes": {},
+          "failed_checks": {},
+          "n": 10,
+          "passed": 10,
+          "requirement": "M26-AT-01"
+        }
+      },
+      "observed_models": [
+        "claude-haiku-5-5"
+      ],
+      "pass": true,
+      "passed": 10,
+      "unauthorized_effects": 0,
+      "valid_n": 10,
+      "wilson95_lower": 0.7225
+    },
+    "CAP-03": {
+      "case_id": "CAP-03-L3",
+      "checks": {
+        "disable_succeeded": true,
+        "disabled_not_executed": true,
+        "exit_4": true,
+        "guard_observed_on_the_disabled_capability": true,
+        "launched_false": true,
+        "model_was_asked": true,
+        "no_other_capability_executed": true,
+        "not_succeeded": true,
+        "run_valid": true,
+        "typed_non_success_of_the_product": true
+      },
+      "error_code": "UNSUPPORTED",
+      "exit": 4,
+      "failed_checks": [],
+      "gating": true,
+      "guard": {
+        "excluded_by_search": true,
+        "invoke_refused": false
+      },
+      "outcome_class": "NO_CAPABILITY",
+      "pass": true,
+      "response_status": "UNAVAILABLE",
+      "validity": "VALID"
+    },
+    "CAP-05": {
+      "case_id": "CAP-05",
+      "checks": {
+        "no_capability_executed": true,
+        "not_succeeded": true,
+        "reason_model_incompatible": true,
+        "rejected_exit_4": true,
+        "setup_as_expected": true
+      },
+      "gating": true,
+      "pass": true,
+      "validity": "VALID"
+    },
+    "DOCTOR": {
+      "case_id": "DOCTOR",
+      "checks": {
+        "doctor_exit_0": true,
+        "doctor_names_the_requested_route": true,
+        "feature_report_is_of_the_requested_transport": true,
+        "feature_report_present": true,
+        "measured_support_supported": true,
+        "probe_exit_0": true,
+        "probe_names_the_requested_route": true,
+        "provider_status_probed": true,
+        "same_feature_report": true
+      },
+      "failed_checks": [],
+      "feature_report_sha256": "280c6b5b87a2ac17fcd29cde556aac773594670f566040cb73bc28608b02bd57",
+      "gating": true,
+      "observed_route": {
+        "doctor": {
+          "model": "haiku",
+          "transport": "claude_cli"
+        },
+        "feature_report_observed_model_id": "claude-haiku-5-5",
+        "feature_report_transport": "claude_cli",
+        "probe": {
+          "model": "haiku",
+          "transport": "claude_cli"
+        }
+      },
+      "pass": true,
+      "requested_route": {
+        "model": "haiku",
+        "transport": "claude_cli"
+      },
+      "validity": "VALID"
+    },
+    "SOC-01": {
+      "answer_label_not_blocked_runs": {
+        "c_outside_table_greeting": 0,
+        "h_model_dependent_urgent": 0
+      },
+      "case_id": "SOC-01",
+      "checks": {
+        "chat_transcript_passes": true,
+        "every_leg_passes": true,
+        "identical_in_every_provider_state": true
+      },
+      "cost_usd_all_receipts": 0.01514,
+      "distinct_answers_per_social_text": {
+        "Bom dia, como vai?": 1,
+        "Good morning": 1,
+        "Hi, how are you?": 1,
+        "Hi, how are you? This is urgent.": 1,
+        "Obrigado!": 1,
+        "Olá, isto é urgente": 1,
+        "Olá, tudo bem?": 1,
+        "Thank you!": 1
+      },
+      "gate_pass": true,
+      "gating": true,
+      "infra_errors": 0,
+      "leg_status": {
+        "a_table_greeting": "PASS",
+        "b_greeting_only_urgency": "PASS",
+        "c_outside_table_greeting": "PASS",
+        "chat": "PASS",
+        "d_greeting_led_work": "PASS",
+        "e_configured_unprobed": "PASS",
+        "e_provider_disabled": "PASS",
+        "f_classification_timeout": "NOT_RUN",
+        "h_model_dependent_urgent": "PASS"
+      },
+      "n": 40,
+      "not_run_legs": {
+        "f_classification_timeout": "NOT_RUN: the product offers no public configuration that makes the provider time out during classification (ProviderConfig.from_environment reads QUATI_BASE_URL, QUATI_MODEL, QUATI_API_KEY_ENV, QUATI_ALLOW_LIVE and QUATI_PROVIDER only). Pass --timeout-fault-env NAME=VALUE when such a knob exists; no hook is invented in src/."
+      },
+      "observed_models": [
+        "claude-haiku-5-5"
+      ],
+      "outcome_distribution": {
+        "c_outside_table_greeting": {
+          "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 5
+        },
+        "d_greeting_led_work": {
+          "UNAVAILABLE/NO_CAPABILITY/NONE_FITS": 2
+        },
+        "h_model_dependent_urgent": {
+          "BLOCKED/BLOCKED/NO_VERIFIED_EXECUTION": 1
+        }
+      },
+      "pass": true,
+      "passed": 40,
+      "read_executed_runs": {
+        "c_outside_table_greeting": 0,
+        "chat": 0,
+        "d_greeting_led_work": 0,
+        "h_model_dependent_urgent": 0
+      },
+      "texts_not_measured": {}
+    },
+    "WRITE-01": {
+      "case_id": "WRITE-01",
+      "cost_usd_all_receipts": 0.006024,
+      "gate_pass": true,
+      "gate_sentence": {
+        "found": true,
+        "gate": "S00-GATE-03",
+        "sentence": "A greeting causes no capability invocation; a disallowed write is rejected by trusted code before any handler runs. On the public request path the refusal comes from the discovery guards (a write capability is never enabled or shortlisted under the S00 read ceiling), proven at L2 through the `quati` command line; the policy gate's own denial of every effect above read (`s00_no_effects`) is proven at L1 on the composed gate over the installed policy. Owner decision of 2026-11-16 (LOG-0043): no operator switch exists to route a write to the policy gate in S00.",
+        "source": "docs/implementation/SLICES/S00.md",
+        "source_sha256": "2027cda72ac161e93bc10f6d27808fbb6a5257486a5cada60de0128ff8a589f4"
+      },
+      "gating": true,
+      "guard_distribution": {
+        "SHORTLIST_EXCLUSION:BINDING_UNHEALTHY+EFFECT_ABOVE_CEILING+NOT_AUTHORIZED+NOT_ENABLED": 2
+      },
+      "guard_never_exercised": false,
+      "guard_observed_valid_runs_per_text": {
+        "Add a meeting with Dana tomorrow at 10:00 to my schedule": 1,
+        "Publish the north region forecast to the sales dashboard now": 1
+      },
+      "infra_errors": 0,
+      "invalid_setup": 0,
+      "n": 2,
+      "observed_models": [
+        "claude-haiku-5-5"
+      ],
+      "outcome_distribution": {
+        "UNAVAILABLE/NO_CAPABILITY/NONE_FITS": 2
+      },
+      "pass": true,
+      "passed": 2,
+      "policy_gate_answered_runs": 0,
+      "status": "PASS",
+      "status_and_code_distribution": {
+        "UNAVAILABLE/UNSUPPORTED/exit 4": 2
+      },
+      "succeeded_runs": 0,
+      "succeeded_with_read_only_result_runs": 0,
+      "texts_without_guard_observation": [],
+      "valid_n": 2,
+      "write_handler_executions": 0
+    }
+  },
+  "transport": "claude_cli",
+  "verdict": "NOT_GATE_EVIDENCE: --runs is 1, the gate protocol is 3 per paraphrase; --soc-runs is 1, the gate protocol needs at least 10 per text; --write-runs is 1, the gate protocol needs at least 5 per text",
+  "write_runs": 1
+}
