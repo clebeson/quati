@@ -1,7 +1,7 @@
 import json, os, subprocess, sys
 from pathlib import Path
 A = Path(__file__).resolve().parent
-REPO = Path('/home/clebeson/dev/SECMA')
+REPO = Path('<local-path>')
 PY = str(REPO/'.venv/bin/python')
 RUNNER = str(REPO/'tests/integration/fixtures/approval_injection_runner.py')
 def env(profile, extra=None):

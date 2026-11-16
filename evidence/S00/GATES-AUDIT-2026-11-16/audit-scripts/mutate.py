@@ -1,6 +1,6 @@
 import subprocess, sys, os, shutil
 from pathlib import Path
-A=Path(__file__).resolve().parent; REPO=Path('/home/clebeson/dev/SECMA'); M=A/os.environ.get('MUT','mut')/'src'
+A=Path(__file__).resolve().parent; REPO=Path('<local-path>'); M=A/os.environ.get('MUT','mut')/'src'
 MUTANTS={
  'M1 K3 s00_no_effects disabled (domain/policy.py)': ('quati/domain/policy.py','if runtime_profile == "S00" and intent.effect_class in ("write", "dangerous"):','if False and runtime_profile == "S00" and intent.effect_class in ("write", "dangerous"):'),
  'M2 authorize ignores DENY (application/discovery.py)': ('quati/application/discovery.py','        if decision.verdict != "ALLOW":\n            return PortResult("DENIED", "FORBIDDEN", decision.reason_code, {"reason": decision.reason_code},\n                              next_action=SPACE_GRANT_NEXT_ACTION','        if False:\n            return PortResult("DENIED", "FORBIDDEN", decision.reason_code, {"reason": decision.reason_code},\n                              next_action=SPACE_GRANT_NEXT_ACTION'),

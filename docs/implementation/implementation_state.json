@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 20,
+  "revision": 21,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S00",
@@ -172,7 +172,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-16T16:30:44.082446Z",
+  "last_updated_at": "2026-11-16T17:06:26.669243Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -183,7 +183,7 @@
   "execution_authorized": true,
   "active_work": {
     "work_package_id": "S00-T05",
-    "phase": "AUDIT",
+    "phase": "TDD_RED",
     "owner": "root coordinator",
     "input_snapshot_ref": "evidence/S00/T01-2026-11-15/input_snapshot.json",
     "completed_steps": [
@@ -202,9 +202,10 @@
       "Gap found while preparing gates 01/03/04: three declared S00-T05 locators do not exist (IDN-01, IDN-02, POL-01); only contribution tests exist",
       "IDN-01, IDN-02 and POL-01 full-proof tests written test-first; space authorization added on the discovery path; 982 passed (LOG-0038)",
       "Independent audit of gates 01/03/04 at 7539afb: GATE-01 ACCEPT, GATE-04 ACCEPT at L0/L1, GATE-03 REJECT; 20 findings recorded (LOG-0039)",
-      "Fix round 6 for LOG-0039 F2-F12, F15, F17 done test-first; 1124 passed, 10 skipped (LOG-0040)"
+      "Fix round 6 for LOG-0039 F2-F12, F15, F17 done test-first; 1124 passed, 10 skipped (LOG-0040)",
+      "Re-audit of fix round 6 at 2ca778c: GATE-01 and GATE-04 deterministic ACCEPT, GATE-03 REJECT; 17 new findings (LOG-0041)"
     ],
-    "next_action": "Independent re-audit of fix round 6 at the committed tree; fix what it finds; then one live requalification (CAP-01, CAP-02, CAP-03, CAP-05, SOC-01 with repeated negatives), seals for all four S00 gates on one commit, SLICE_ACCEPTED",
+    "next_action": "Fix round 7 for LOG-0041 (N1-N17, decisions D1-D6) test-first on disjoint paths, live harness extension, mirror/contract sync, third independent audit, then live requalification and seals for all four S00 gates on one commit",
     "owned_files": [
       "src/secma/cli",
       "src/secma/application",
@@ -217,7 +218,8 @@
       "LOG-0013 open specification questions need owner confirmation before the consuming work package starts",
       "LOG-0014 owner decisions from the architecture re-audit are pending",
       "All S00 gate seals must reference one commit; S00-GATE-02 seals on a655c20 must be superseded by new records on the final S00 commit after requalification",
-      "LOG-0039 F1-F12, F15, F17 must be fixed and re-audited before any S00 gate is sealed"
+      "LOG-0039 F1-F12, F15, F17 must be fixed and re-audited before any S00 gate is sealed",
+      "LOG-0041 N1-N4 (P1) and N5-N13 (P2) must be fixed and re-audited before any S00 gate is sealed"
     ],
     "evidence_refs": [
       "evidence/S00/T01-2026-11-15/authorization.json",
@@ -244,7 +246,8 @@
       "evidence/S00/T05-pol01-2026-11-16/green.txt",
       "docs/audit/S00_GATES_01_03_04_AUDIT_2026-11-16.md",
       "evidence/S00/T05-fix6-authz-ask-2026-11-16/green.txt",
-      "evidence/S00/T05-fix6-cli-surface-2026-11-16/green.txt"
+      "evidence/S00/T05-fix6-cli-surface-2026-11-16/green.txt",
+      "docs/audit/S00_FIX6_REAUDIT_2026-11-16.md"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",

@@ -1,5 +1,5 @@
 import json,hashlib,os,sys,collections
-R='/home/clebeson/dev/SECMA/'
+R='<local-path>'
 E=R+'evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/'
 for case,target in (('CAP-01','forecast-lime'),('CAP-02','calendar-read')):
     c=json.load(open(E+case+'.json')); recs=c['records']

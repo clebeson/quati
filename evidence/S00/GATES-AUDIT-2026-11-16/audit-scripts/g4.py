@@ -72,6 +72,6 @@ p=copy.deepcopy(pkg); p['policy_ref']='trusted_policy/allow_all'; attempt('polic
 p=copy.deepcopy(pkg); p['policy_ref']='../../etc/passwd'; attempt('policy_ref path traversal',p)
 p=copy.deepcopy(pkg); p['policy']='ALLOW_ALL'; attempt('package declares policy: ALLOW_ALL',p)
 p=copy.deepcopy(pkg); p['context']['max_capability_candidates']=20; attempt('max_capability_candidates 20',p)
-d=A/'g4roots'/'escape'; shutil.rmtree(d,ignore_errors=True); d.mkdir(parents=True); q_=copy.deepcopy(pkg); q_['statechart_ref']='../../../../../../home/clebeson/dev/SECMA/examples/statecharts/commitment.yaml'; (d/'p.yaml').write_text(yaml.safe_dump(q_,sort_keys=False)); print('  statechart_ref escapes root:', child(d,'p.yaml')[0][:300])
+d=A/'g4roots'/'escape'; shutil.rmtree(d,ignore_errors=True); d.mkdir(parents=True); q_=copy.deepcopy(pkg); q_['statechart_ref']='../../../../../..<local-path>'; (d/'p.yaml').write_text(yaml.safe_dump(q_,sort_keys=False)); print('  statechart_ref escapes root:', child(d,'p.yaml')[0][:300])
 d=A/'g4roots'/'symlink'; shutil.rmtree(d,ignore_errors=True); d.mkdir(parents=True); q_=copy.deepcopy(pkg); q_['statechart_ref']='chart.yaml'; (d/'p.yaml').write_text(yaml.safe_dump(q_,sort_keys=False)); os.symlink(EX/'statecharts/commitment.yaml', d/'chart.yaml'); print('  statechart_ref is symlink out of root:', child(d,'p.yaml')[0][:300])
 print('pwned file exists:', os.path.exists('/tmp/pwned-quati'))

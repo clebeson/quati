@@ -1,5 +1,5 @@
 import json
-R='/home/clebeson/dev/SECMA/'
+R='<local-path>'
 E=R+'evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/'
 def shape(v,d=0,maxd=6,pre=''):
     if isinstance(v,dict):

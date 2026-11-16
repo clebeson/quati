@@ -1,7 +1,7 @@
 import os, sys, time, shutil, threading, json
 from pathlib import Path
 A=Path(__file__).resolve().parent
-sys.path.insert(0,'/home/clebeson/dev/SECMA/src'); sys.path.insert(0,str(A))
+sys.path.insert(0,'<local-path>'); sys.path.insert(0,str(A))
 from h import q
 P='perf'; shutil.rmtree(A/P, ignore_errors=True); q(P,'init','--json'); q(P,'capabilities','install-fixture','calendar-read','--enable-fixture','--json')
 os.environ['QUATI_DATA_DIR']=str(A/P/'data')

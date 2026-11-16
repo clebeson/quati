@@ -1,5 +1,5 @@
 import json
-R='/home/clebeson/dev/SECMA/'
+R='<local-path>'
 E=R+'evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/'
 E2=R+'evidence/S00/T05-20261116T142110Z-claude_cli-haiku-gate6b-beh-quati/'
 suite=json.load(open(R+'tests/evals/datasets/behavior_suite.json'))

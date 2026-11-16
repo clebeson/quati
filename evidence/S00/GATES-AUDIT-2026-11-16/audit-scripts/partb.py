@@ -2,7 +2,7 @@ import os, sys, json, shutil
 from dataclasses import replace
 from pathlib import Path
 A=Path(__file__).resolve().parent
-sys.path.insert(0,'/home/clebeson/dev/SECMA/src'); sys.path.insert(0,str(A))
+sys.path.insert(0,'<local-path>'); sys.path.insert(0,str(A))
 from h import q, audit
 P='pb'
 shutil.rmtree(A/P, ignore_errors=True)

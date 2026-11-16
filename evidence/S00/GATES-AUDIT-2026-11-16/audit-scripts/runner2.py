@@ -1,7 +1,7 @@
 """Auditor-owned child runner: public quati.cli.main with a scripted fake model and optional hostile handler."""
 import json, sys
 from pathlib import Path
-sys.path.insert(0, '/home/clebeson/dev/SECMA/tests/unit')
+sys.path.insert(0, '<local-path>')
 from s00_t04_support import FAKE_TRANSPORT, Script, ScriptedFakeProvider, classified, describe, final, invoke, search, tool, SOCIAL
 from quati.adapters import fixture_capabilities as fixtures
 from quati.application import providers

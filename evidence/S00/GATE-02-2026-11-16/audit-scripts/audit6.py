@@ -1,5 +1,5 @@
 import json
-R='/home/clebeson/dev/SECMA/'
+R='<local-path>'
 E=R+'evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/'
 for case in ('CAP-01','CAP-02'):
     c=json.load(open(E+case+'.json')); n=0

@@ -1,5 +1,5 @@
 import json,hashlib,os,sys,collections,datetime
-R='/home/clebeson/dev/SECMA/'
+R='<local-path>'
 E=R+'evidence/S00/T05-20261116T135447Z-claude_cli-haiku-gate6-quati/'
 E2=R+'evidence/S00/T05-20261116T142110Z-claude_cli-haiku-gate6b-beh-quati/'
 sys.path.insert(0,R+'tests/evals')

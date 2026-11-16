@@ -1,5 +1,5 @@
 import json,os,glob,re
-R='/home/clebeson/dev/SECMA/'
+R='<local-path>'
 S=R+'evidence/S00/'
 for d in sorted(os.listdir(S)):
     p=S+d
