@@ -1,0 +1,127 @@
+{
+  "case_id": "CAP-05",
+  "checks": {
+    "no_capability_executed": true,
+    "not_succeeded": true,
+    "reason_model_incompatible": true,
+    "rejected_exit_4": true,
+    "setup_as_expected": true
+  },
+  "cli_log": [
+    {
+      "argv": [
+        "init",
+        "--json"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.176,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "capabilities",
+        "install-fixture",
+        "calendar-read",
+        "--json",
+        "--enable-fixture"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.196,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "ask",
+        "Find my next appointment.",
+        "--json",
+        "--synthetic-evidence"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.2,
+      "exit": 4,
+      "stderr_tail": ""
+    }
+  ],
+  "feature_support": "UNPROBED",
+  "pass": true,
+  "receipt": {
+    "cost_usd": null,
+    "digests": {
+      "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+      "code_digest": "f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8"
+    },
+    "evidence_version": "s00/1",
+    "feature_gate": {
+      "config_hash": "10f4b1636e97f91ca6cac7c53c5f3430ac7215ec7103ef46824156cd486a6551",
+      "measured_at": null,
+      "model_identity_source": null,
+      "observed_model_id": null,
+      "reason": null,
+      "report_ref": null,
+      "structured_output": "UNPROBED",
+      "supported": [],
+      "tools": "UNPROBED",
+      "transport": "claude_cli"
+    },
+    "output_hash": "cfe2cf2f0bb829de518aed36e892a819aa5b165b42c55d65ad18459343023f51",
+    "policy_version": "51231474b03fade16834d8dc15b3945817917f7cea4260ef2eb5b3d13624cabb",
+    "principal_hash": "4bb76de6c01e7494036a3326f4eb787bd23c57def56b4d7094d86ff04a5fc5fa",
+    "proof_tier": null,
+    "provider_used": false,
+    "request_hash": "fb684d1517313193ebaa9083147b50165f30d59b1a83e7c6ee3917d2df52e249",
+    "request_id": "request-bb1c3fe9c8714e5c9122516e23d0ed41",
+    "result_kind": "BLOCKED",
+    "status": "UNAVAILABLE",
+    "timestamp": "2026-11-16T23:49:12.578395+00:00",
+    "trace_id": "16a6ea3a2b614c69959f16733d520419"
+  },
+  "response": {
+    "data": {
+      "commitment_id": null,
+      "delivered": false,
+      "feature_support": "UNPROBED",
+      "launched": false,
+      "provider_used": false,
+      "reason": "MODEL_INCOMPATIBLE",
+      "received": true,
+      "request_id": "request-bb1c3fe9c8714e5c9122516e23d0ed41",
+      "result_kind": "BLOCKED",
+      "scope": "S00_T01_LOCAL_CLI",
+      "tool_calls": [],
+      "trace_id": "16a6ea3a2b614c69959f16733d520419",
+      "usage": {
+        "cost_usd": null
+      }
+    },
+    "error": {
+      "code": "UNSUPPORTED",
+      "message": "The configured model has no current measured tool support for this configuration.",
+      "retryable": false
+    },
+    "evidence_refs": [
+      "sha256:612e78e098df9f566dce1975f939c010f3f93f72fc54f4c39bc262332e99ab8c:<EVAL_PROFILES>/CAP-05/data/receipts/57bf639f2b684920957047222439fc25.json"
+    ],
+    "next_action": "Run `quati models probe` for this provider configuration; no work was accepted.",
+    "status": "UNAVAILABLE",
+    "uncertainties": [
+      "MODEL_INCOMPATIBLE",
+      "TOOLS_UNPROBED"
+    ]
+  },
+  "setup": [
+    [
+      "init",
+      0,
+      "SUCCEEDED"
+    ],
+    [
+      "install:calendar-read",
+      0,
+      "ENABLED"
+    ]
+  ],
+  "validity": "VALID",
+  "validity_reasons": []
+}

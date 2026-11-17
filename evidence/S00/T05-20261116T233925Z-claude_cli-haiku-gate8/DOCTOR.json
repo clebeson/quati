@@ -1,0 +1,473 @@
+{
+  "case_id": "DOCTOR",
+  "checks": {
+    "doctor_exit_0": true,
+    "doctor_names_the_requested_route": true,
+    "feature_report_is_of_the_requested_transport": true,
+    "feature_report_present": true,
+    "measured_support_supported": true,
+    "probe_exit_0": true,
+    "probe_names_the_requested_route": true,
+    "provider_status_probed": true,
+    "same_feature_report": true
+  },
+  "cli_log": [
+    {
+      "argv": [
+        "init",
+        "--json"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.169,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "doctor",
+        "--probe",
+        "--json"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 9.836,
+      "exit": 0,
+      "stderr_tail": ""
+    },
+    {
+      "argv": [
+        "doctor",
+        "--json"
+      ],
+      "cost_usd": null,
+      "elapsed_s": 0.201,
+      "exit": 0,
+      "stderr_tail": ""
+    }
+  ],
+  "doctor": {
+    "audit": [],
+    "elapsed_s": 0.2,
+    "exit": 0,
+    "receipt": null,
+    "response": {
+      "data": {
+        "behavior": {
+          "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+          "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+          "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426",
+          "diagnostics": [],
+          "profile_ref": "examples/behavior/executive-secretary.yaml",
+          "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
+          "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+          "status": "VALID"
+        },
+        "config_dir": "<EVAL_PROFILES>/DOCTOR/config",
+        "config_valid": true,
+        "durable_worker": "NOT_IMPLEMENTED",
+        "external_integrations": "NOT_VERIFIED_EXTERNAL",
+        "identity": {
+          "authenticator": "local-os",
+          "initialized": true,
+          "qualification": "POSIX_LOCAL_ONLY",
+          "secret_store": "owner_only_file",
+          "status": "AVAILABLE"
+        },
+        "listening_sockets": 0,
+        "live_calls_allowed": true,
+        "os": "Linux",
+        "os_qualification": "QUALIFIED",
+        "policy": {
+          "reason": null,
+          "status": "AVAILABLE"
+        },
+        "profile": "LOCAL",
+        "provider": {
+          "adapter_installed": true,
+          "configured": true,
+          "endpoint_host": null,
+          "feature_report": {
+            "gate_reason": null,
+            "measured_at": "2026-11-16T23:39:40.463947+00:00",
+            "observed_model_id": "claude-haiku-5-5",
+            "ref": "sha256:de17dd7b02ba48d09637d47d7f7d4f549b87303b956e816cfbfcca219e0628fd:<EVAL_PROFILES>/DOCTOR/data/receipts/98828893c9c84bd7aeb876f0868dbd58.json"
+          },
+          "features": {
+            "concurrency": "NOT_VERIFIED",
+            "streaming": "UNSUPPORTED",
+            "structured_output": "SUPPORTED",
+            "timeout": "SUPPORTED",
+            "tools": "SUPPORTED"
+          },
+          "measured_support": "SUPPORTED",
+          "missing": [],
+          "model": "haiku",
+          "pricing": "UNKNOWN",
+          "reasons": [],
+          "region": "UNKNOWN",
+          "status": "PROBED",
+          "transport": "claude_cli"
+        },
+        "python_version": "3.13.7",
+        "scope": "S00_T01_LOCAL_CLI",
+        "sqlite_fts5": true,
+        "sqlite_journal_mode": "NOT_VERIFIED",
+        "sqlite_journal_reason": "ledger_not_delivered",
+        "sqlite_ok": true,
+        "sqlite_version": "3.46.1",
+        "warnings": [],
+        "worker": {
+          "reason": "worker_not_delivered",
+          "status": "NOT_APPLICABLE"
+        }
+      },
+      "error": null,
+      "evidence_refs": [],
+      "next_action": null,
+      "status": "SUCCEEDED",
+      "uncertainties": []
+    }
+  },
+  "doctor_identities": [
+    {
+      "behavior": {
+        "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+        "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+        "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426",
+        "profile_ref": "examples/behavior/executive-secretary.yaml",
+        "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
+        "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+        "status": "VALID"
+      },
+      "where": "probe"
+    },
+    {
+      "behavior": {
+        "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+        "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+        "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426",
+        "profile_ref": "examples/behavior/executive-secretary.yaml",
+        "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
+        "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+        "status": "VALID"
+      },
+      "where": "doctor"
+    }
+  ],
+  "failed_checks": [],
+  "feature_report": {
+    "aborted": null,
+    "attempts": {
+      "concurrency": 1,
+      "streaming": 1,
+      "structured_output": 1,
+      "timeout": 1,
+      "tools": 1
+    },
+    "config_hash": "10f4b1636e97f91ca6cac7c53c5f3430ac7215ec7103ef46824156cd486a6551",
+    "details": {},
+    "digests": {
+      "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+      "code_digest": "f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8"
+    },
+    "evidence_refs": [],
+    "evidence_version": "s00/1",
+    "features": {
+      "concurrency": "NOT_VERIFIED",
+      "streaming": "UNSUPPORTED",
+      "structured_output": "SUPPORTED",
+      "timeout": "SUPPORTED",
+      "tools": "SUPPORTED"
+    },
+    "kind": "feature_report",
+    "measured_at": "2026-11-16T23:39:40.463947+00:00",
+    "metadata_attestations": {
+      "pricing": "UNKNOWN",
+      "region": "UNKNOWN"
+    },
+    "model_identity_source": "observed",
+    "model_or_adapter_version": "claude-haiku-5-5",
+    "observations": {
+      "concurrency": "CONCURRENCY_NOT_EXERCISED",
+      "streaming": "STREAMING_UNSUPPORTED",
+      "structured_output": "PROBE_PASSED",
+      "timeout": "PROBE_PASSED",
+      "tools": "PROBE_PASSED"
+    },
+    "observed_model_id": "claude-haiku-5-5",
+    "probe_profile": {
+      "name": "ask",
+      "sha256": "572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"
+    },
+    "provider_id": "claude_cli",
+    "retried": {},
+    "timestamp": "2026-11-16T23:39:40.468868+00:00",
+    "transport": "claude_cli"
+  },
+  "feature_report_sha256": "de17dd7b02ba48d09637d47d7f7d4f549b87303b956e816cfbfcca219e0628fd",
+  "observed_route": {
+    "doctor": {
+      "model": "haiku",
+      "transport": "claude_cli"
+    },
+    "feature_report_observed_model_id": "claude-haiku-5-5",
+    "feature_report_transport": "claude_cli",
+    "probe": {
+      "model": "haiku",
+      "transport": "claude_cli"
+    }
+  },
+  "pass": true,
+  "probe": {
+    "audit": [
+      {
+        "actor_id": "01M7KBNSDT1XHG35A7DC3P5DZA",
+        "at": "2026-11-16T23:39:30Z",
+        "authorized_scope": {
+          "computed_at": "2026-11-16T23:39:30Z",
+          "principal_id": "01M7KBNSDT1XHG35A7DC3P5DZA",
+          "purpose": "manage",
+          "readable_space_ids": [
+            "01M7KBNSDT13G4MGZC6TWKBK6E",
+            "01M7KBNSDTP1ND41ZK0WVV36DD"
+          ],
+          "tenant_id": "01M7KBNSDTKCP3CDANX0R8ARX3",
+          "valid_for_transaction": "request-1b8e47bfa7ed48a0b94aa40503927be5"
+        },
+        "decision": {
+          "action": "manage",
+          "principal_id": "01M7KBNSDT1XHG35A7DC3P5DZA",
+          "reason_code": "OK",
+          "resource_ref": "registry:01M7KBNSDTKCP3CDANX0R8ARX3",
+          "tenant_id": "01M7KBNSDTKCP3CDANX0R8ARX3",
+          "verdict": "ALLOW"
+        },
+        "event": "authz.decided",
+        "operation": "models_probe",
+        "owner_space_id": "01M7KBNSDTP1ND41ZK0WVV36DD",
+        "request_id": "request-1b8e47bfa7ed48a0b94aa40503927be5",
+        "tenant_id": "01M7KBNSDTKCP3CDANX0R8ARX3"
+      }
+    ],
+    "elapsed_s": 9.84,
+    "exit": 0,
+    "receipt": {
+      "aborted": null,
+      "attempts": {
+        "concurrency": 1,
+        "streaming": 1,
+        "structured_output": 1,
+        "timeout": 1,
+        "tools": 1
+      },
+      "config_hash": "10f4b1636e97f91ca6cac7c53c5f3430ac7215ec7103ef46824156cd486a6551",
+      "details": {},
+      "digests": {
+        "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+        "code_digest": "f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8"
+      },
+      "evidence_refs": [],
+      "evidence_version": "s00/1",
+      "features": {
+        "concurrency": "NOT_VERIFIED",
+        "streaming": "UNSUPPORTED",
+        "structured_output": "SUPPORTED",
+        "timeout": "SUPPORTED",
+        "tools": "SUPPORTED"
+      },
+      "kind": "feature_report",
+      "measured_at": "2026-11-16T23:39:40.463947+00:00",
+      "metadata_attestations": {
+        "pricing": "UNKNOWN",
+        "region": "UNKNOWN"
+      },
+      "model_identity_source": "observed",
+      "model_or_adapter_version": "claude-haiku-5-5",
+      "observations": {
+        "concurrency": "CONCURRENCY_NOT_EXERCISED",
+        "streaming": "STREAMING_UNSUPPORTED",
+        "structured_output": "PROBE_PASSED",
+        "timeout": "PROBE_PASSED",
+        "tools": "PROBE_PASSED"
+      },
+      "observed_model_id": "claude-haiku-5-5",
+      "probe_profile": {
+        "name": "ask",
+        "sha256": "572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"
+      },
+      "provider_id": "claude_cli",
+      "retried": {},
+      "timestamp": "2026-11-16T23:39:40.468868+00:00",
+      "transport": "claude_cli"
+    },
+    "response": {
+      "data": {
+        "behavior": {
+          "asset_digest": "cbaea523699d41aeba47987db0346e41b1a969fb5d48b68c71ab96ec21aee0a2",
+          "behavior_hash": "7f4395f1169e001652e24a83ae9e65c83e52540ac50d7e4f892aefadb3eb09c8",
+          "build_digest": "2ea7be6b3ab8427fa7457cd363fc58432c9d31ecf64e760a569e58406e803426",
+          "diagnostics": [],
+          "profile_ref": "examples/behavior/executive-secretary.yaml",
+          "prompt_hash": "b40330f8d74301f6e6fe8bbb95946f7642c50b268f92f4231fdaff49cf28a54d",
+          "statechart_hash": "3f7712f757c5591355609c04931164bcc4f0d489a3cfc8a3a7e1aed48c7ded43",
+          "status": "VALID"
+        },
+        "config_dir": "<EVAL_PROFILES>/DOCTOR/config",
+        "config_valid": true,
+        "durable_worker": "NOT_IMPLEMENTED",
+        "external_integrations": "NOT_VERIFIED_EXTERNAL",
+        "feature_report": {
+          "aborted": null,
+          "attempts": {
+            "concurrency": 1,
+            "streaming": 1,
+            "structured_output": 1,
+            "timeout": 1,
+            "tools": 1
+          },
+          "config_hash": "10f4b1636e97f91ca6cac7c53c5f3430ac7215ec7103ef46824156cd486a6551",
+          "details": {},
+          "evidence_refs": [
+            "sha256:de17dd7b02ba48d09637d47d7f7d4f549b87303b956e816cfbfcca219e0628fd:<EVAL_PROFILES>/DOCTOR/data/receipts/98828893c9c84bd7aeb876f0868dbd58.json"
+          ],
+          "features": {
+            "concurrency": "NOT_VERIFIED",
+            "streaming": "UNSUPPORTED",
+            "structured_output": "SUPPORTED",
+            "timeout": "SUPPORTED",
+            "tools": "SUPPORTED"
+          },
+          "measured_at": "2026-11-16T23:39:40.463947+00:00",
+          "metadata_attestations": {
+            "pricing": "UNKNOWN",
+            "region": "UNKNOWN"
+          },
+          "model_identity_source": "observed",
+          "model_or_adapter_version": "claude-haiku-5-5",
+          "observations": {
+            "concurrency": "CONCURRENCY_NOT_EXERCISED",
+            "streaming": "STREAMING_UNSUPPORTED",
+            "structured_output": "PROBE_PASSED",
+            "timeout": "PROBE_PASSED",
+            "tools": "PROBE_PASSED"
+          },
+          "observed_model_id": "claude-haiku-5-5",
+          "probe_profile": {
+            "name": "ask",
+            "sha256": "572ab5fbd594c74210e9ad5dbf3f5cab3f99499237b7c854be6124a7aa603ac3"
+          },
+          "provider_id": "claude_cli",
+          "retried": {},
+          "transport": "claude_cli"
+        },
+        "identity": {
+          "authenticator": "local-os",
+          "initialized": true,
+          "qualification": "POSIX_LOCAL_ONLY",
+          "secret_store": "owner_only_file",
+          "status": "AVAILABLE"
+        },
+        "listening_sockets": 0,
+        "live_calls_allowed": true,
+        "os": "Linux",
+        "os_qualification": "QUALIFIED",
+        "policy": {
+          "reason": null,
+          "status": "AVAILABLE"
+        },
+        "profile": "LOCAL",
+        "provider": {
+          "adapter_installed": true,
+          "configured": true,
+          "endpoint_host": null,
+          "features": {
+            "concurrency": "NOT_VERIFIED",
+            "streaming": "UNSUPPORTED",
+            "structured_output": "SUPPORTED",
+            "timeout": "SUPPORTED",
+            "tools": "SUPPORTED"
+          },
+          "measured_support": "SUPPORTED",
+          "missing": [],
+          "model": "haiku",
+          "pricing": "UNKNOWN",
+          "reasons": [],
+          "region": "UNKNOWN",
+          "status": "PROBED",
+          "transport": "claude_cli"
+        },
+        "python_version": "3.13.7",
+        "scope": "S00_T01_LOCAL_CLI",
+        "sqlite_fts5": true,
+        "sqlite_journal_mode": "NOT_VERIFIED",
+        "sqlite_journal_reason": "ledger_not_delivered",
+        "sqlite_ok": true,
+        "sqlite_version": "3.46.1",
+        "verdicts": {
+          "concurrency": {
+            "attempts": 1,
+            "detail": null,
+            "reason": "CONCURRENCY_NOT_EXERCISED",
+            "verdict": "NOT_VERIFIED"
+          },
+          "streaming": {
+            "attempts": 1,
+            "detail": null,
+            "reason": "STREAMING_UNSUPPORTED",
+            "verdict": "UNSUPPORTED"
+          },
+          "structured_output": {
+            "attempts": 1,
+            "detail": null,
+            "reason": "PROBE_PASSED",
+            "verdict": "SUPPORTED"
+          },
+          "timeout": {
+            "attempts": 1,
+            "detail": null,
+            "reason": "PROBE_PASSED",
+            "verdict": "SUPPORTED"
+          },
+          "tools": {
+            "attempts": 1,
+            "detail": null,
+            "reason": "PROBE_PASSED",
+            "verdict": "SUPPORTED"
+          }
+        },
+        "warnings": [],
+        "worker": {
+          "reason": "worker_not_delivered",
+          "status": "NOT_APPLICABLE"
+        }
+      },
+      "error": null,
+      "evidence_refs": [
+        "sha256:de17dd7b02ba48d09637d47d7f7d4f549b87303b956e816cfbfcca219e0628fd:<EVAL_PROFILES>/DOCTOR/data/receipts/98828893c9c84bd7aeb876f0868dbd58.json"
+      ],
+      "next_action": null,
+      "status": "SUCCEEDED",
+      "uncertainties": [
+        "streaming: UNSUPPORTED (STREAMING_UNSUPPORTED)",
+        "concurrency: NOT_VERIFIED (CONCURRENCY_NOT_EXERCISED)"
+      ]
+    }
+  },
+  "profile_cost": {
+    "cost_usd_known": 0.0,
+    "receipts_cost_unknown": 2
+  },
+  "requested_route": {
+    "model": "haiku",
+    "transport": "claude_cli"
+  },
+  "requirement": "S00-GATE-01 live observation",
+  "setup": [
+    [
+      "init",
+      0,
+      "SUCCEEDED"
+    ]
+  ],
+  "validity": "VALID",
+  "validity_reasons": []
+}
