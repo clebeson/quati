@@ -5,7 +5,8 @@ The same journaled event may also carry one slice patch: gate statuses, per-gate
 seal references resolved from the seal index, the slice commit, evidence
 references and blockers. A gate becomes PASS only with indexed, hash-verified
 TESTS_VERIFIED and EVIDENCE_VERIFIED seal records whose scope covers the gate or
-its slice, and a recorded slice commit. This helper checks the seal locator, the
+its slice, and a recorded slice commit. A seal whose index record names a
+referenced seal in `supersedes` replaces that reference for the gate. This helper checks the seal locator, the
 record hash, identity, scope and verdict; full provenance validation remains in
 spec_tools/validate_readiness.py.
 
@@ -466,11 +467,15 @@ def resolve_slice_patch(state, request, seal_index, seal_root):
     by_id = read_seal_index(seal_index) if request["gate_seals"] else {}
     verdicts = {}
     new_refs = {}
+    superseded = {}
     for gate, seal_ids in request["gate_seals"].items():
         existing = {ref["seal_id"]: ref for ref in item.get("gate_seal_refs", {}).get(gate, [])}
         for seal_id in seal_ids:
             reference, verdict = resolve_seal(seal_id, gate, slice_id, by_id, seal_root)
             verdicts[(gate, seal_id)] = verdict
+            replaced = by_id[seal_id].get("supersedes")
+            if replaced in existing and replaced not in superseded.get(gate, []):
+                superseded.setdefault(gate, []).append(replaced)
             if seal_id in existing:
                 if existing[seal_id] != reference:
                     raise ValueError(f"Seal reference conflict for {gate}: {seal_id}")
@@ -478,6 +483,8 @@ def resolve_slice_patch(state, request, seal_index, seal_root):
             new_refs.setdefault(gate, []).append(reference)
     if new_refs:
         patch["gate_seal_refs"] = new_refs
+    if superseded:
+        patch["superseded_seal_refs"] = superseded
     for key in ("commit", "evidence_refs", "blockers", "resolve_blockers"):
         if key in request:
             patch[key] = request[key]
@@ -489,7 +496,9 @@ def resolve_slice_patch(state, request, seal_index, seal_root):
             continue
         if any(verdict != "PASS" for (seal_gate, _), verdict in verdicts.items() if seal_gate == gate):
             raise ValueError(f"Nonpassing seal used for PASS gate {gate}")
-        references = [*item.get("gate_seal_refs", {}).get(gate, []), *new_refs.get(gate, [])]
+        kept = [ref for ref in item.get("gate_seal_refs", {}).get(gate, [])
+                if ref["seal_id"] not in superseded.get(gate, [])]
+        references = [*kept, *new_refs.get(gate, [])]
         if not MANDATORY_GATE_SEAL_KINDS <= {ref["kind"] for ref in references}:
             raise ValueError(f"PASS gate {gate} requires TESTS_VERIFIED and EVIDENCE_VERIFIED seal references")
         if not (patch.get("commit") or item.get("commit")):
@@ -500,6 +509,9 @@ def resolve_slice_patch(state, request, seal_index, seal_root):
 def apply_slice_patch(state, patch):
     item = state["slices"][patch["slice_id"]]
     item["gates"].update(patch.get("gates", {}))
+    for gate, seal_ids in patch.get("superseded_seal_refs", {}).items():
+        current = item.setdefault("gate_seal_refs", {}).setdefault(gate, [])
+        current[:] = [ref for ref in current if ref["seal_id"] not in seal_ids]
     for gate, references in patch.get("gate_seal_refs", {}).items():
         item.setdefault("gate_seal_refs", {}).setdefault(gate, []).extend(references)
     if "commit" in patch:

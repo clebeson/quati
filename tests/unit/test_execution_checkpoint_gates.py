@@ -397,3 +397,69 @@ def test_existing_reference_that_disagrees_with_the_index_is_rejected(tmp_path):
     before = state_path.read_bytes()
     result = cli(tmp_path, *PASS_ARGS)
     assert_rejected(tmp_path, result, state_path, before, "Seal reference conflict")
+
+
+def _second_cli(tmp_path, revision, *args):
+    return subprocess.run(
+        [sys.executable, str(SCRIPT), "--state", str(tmp_path / "state.json"),
+         "--ledger", str(tmp_path / "execution_ledger.jsonl"),
+         "--seal-index", str(tmp_path / "governance" / "seals" / "index.json"), "--seal-root", str(tmp_path),
+         "--expected-revision", str(revision), "--phase", "CHECKPOINT", "--next-action", "continue",
+         *map(str, args)],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+
+
+def test_a_superseding_seal_replaces_the_reference_it_names(tmp_path):
+    state_path, ledger_path, records = workspace(tmp_path)
+    assert cli(tmp_path, *PASS_ARGS).returncode == 0
+    newer_tests = write_seal(tmp_path, "S00-GATE-02-TESTS-002", "TESTS_VERIFIED", ["S00-GATE-02"])
+    newer_tests["supersedes"] = "S00-GATE-02-TESTS-001"
+    newer_evidence = write_seal(tmp_path, "S00-GATE-02-EVIDENCE-002", "EVIDENCE_VERIFIED", ["S00"])
+    newer_evidence["supersedes"] = "S00-GATE-02-EVIDENCE-001"
+    write_index(tmp_path, [*records, newer_tests, newer_evidence])
+
+    result = _second_cli(tmp_path, 8, "--gate", "S00-GATE-02=PASS", "--slice-commit", "b" * 40,
+                         "--gate-seal", "S00-GATE-02=S00-GATE-02-TESTS-002",
+                         "--gate-seal", "S00-GATE-02=S00-GATE-02-EVIDENCE-002")
+
+    assert result.returncode == 0, result.stderr
+    item = json.loads(state_path.read_text(encoding="utf-8"))["slices"]["S00"]
+    assert [ref["seal_id"] for ref in item["gate_seal_refs"]["S00-GATE-02"]] == [
+        "S00-GATE-02-TESTS-002", "S00-GATE-02-EVIDENCE-002"]
+    assert item["commit"] == "b" * 40
+    row = [json.loads(line) for line in ledger_path.read_text(encoding="utf-8").splitlines()][-1]
+    assert row["slice_patch"]["superseded_seal_refs"] == {
+        "S00-GATE-02": ["S00-GATE-02-TESTS-001", "S00-GATE-02-EVIDENCE-001"]}
+
+
+def test_superseding_only_one_kind_leaves_a_pass_gate_without_its_pair_rejected(tmp_path):
+    state_path, _, records = workspace(tmp_path)
+    assert cli(tmp_path, *PASS_ARGS).returncode == 0
+    odd = write_seal(tmp_path, "S00-GATE-02-AUDIT-002", "INDEPENDENT_AUDIT_PASSED", ["S00-GATE-02"])
+    odd["supersedes"] = "S00-GATE-02-TESTS-001"
+    write_index(tmp_path, [*records, odd])
+    before = state_path.read_bytes()
+
+    result = _second_cli(tmp_path, 8, "--gate", "S00-GATE-02=PASS",
+                         "--gate-seal", "S00-GATE-02=S00-GATE-02-AUDIT-002")
+
+    assert result.returncode == 2
+    assert "TESTS_VERIFIED and EVIDENCE_VERIFIED" in result.stderr
+    assert state_path.read_bytes() == before
+
+
+def test_a_seal_that_supersedes_nothing_referenced_keeps_existing_references(tmp_path):
+    state_path, _, records = workspace(tmp_path)
+    assert cli(tmp_path, *PASS_ARGS).returncode == 0
+    extra = write_seal(tmp_path, "S00-GATE-02-AUDIT-001", "INDEPENDENT_AUDIT_PASSED", ["S00-GATE-02"])
+    extra["supersedes"] = "SOME-OTHER-SEAL"
+    write_index(tmp_path, [*records, extra])
+
+    result = _second_cli(tmp_path, 8, "--gate", "S00-GATE-02=PASS",
+                         "--gate-seal", "S00-GATE-02=S00-GATE-02-AUDIT-001")
+
+    assert result.returncode == 0, result.stderr
+    refs = json.loads(state_path.read_text(encoding="utf-8"))["slices"]["S00"]["gate_seal_refs"]["S00-GATE-02"]
+    assert [ref["seal_id"] for ref in refs] == [
+        "S00-GATE-02-TESTS-001", "S00-GATE-02-EVIDENCE-001", "S00-GATE-02-AUDIT-001"]

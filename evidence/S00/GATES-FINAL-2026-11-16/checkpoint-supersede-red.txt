@@ -1,0 +1,6 @@
+
+tests/unit/test_execution_checkpoint_gates.py:447: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_a_superseding_seal_replaces_the_reference_it_names
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_superseding_only_one_kind_leaves_a_pass_gate_without_its_pair_rejected
+2 failed, 24 passed in 1.37s
