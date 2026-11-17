@@ -1,12 +1,12 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 27,
+  "revision": 31,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
-  "current_slice": "S00",
+  "current_slice": "S01",
   "slices": {
     "S00": {
-      "status": "IN_PROGRESS",
+      "status": "PASS",
       "gates": {
         "S00-GATE-01": "PASS",
         "S00-GATE-02": "PASS",
@@ -37,6 +37,13 @@
             "record_sha256": "1753499c65cf8dc32c26bc49d736715f5887e39b88e3ece062f79f3dc8eb0f6f",
             "kind": "EVIDENCE_VERIFIED",
             "scope_id": "S00-GATE-01"
+          },
+          {
+            "seal_id": "S00-SLICE_ACCEPTED-001",
+            "path": "governance/seals/S00-SLICE_ACCEPTED-001.json",
+            "record_sha256": "30a9721e9fc0a5a6d422b6cca3c250f7208fe79f6b36be527436b6ce270fd421",
+            "kind": "SLICE_ACCEPTED",
+            "scope_id": "S00-GATE-01"
           }
         ],
         "S00-GATE-02": [
@@ -52,6 +59,13 @@
             "path": "governance/seals/S00-GATES-EVIDENCE_VERIFIED-002.json",
             "record_sha256": "1753499c65cf8dc32c26bc49d736715f5887e39b88e3ece062f79f3dc8eb0f6f",
             "kind": "EVIDENCE_VERIFIED",
+            "scope_id": "S00-GATE-02"
+          },
+          {
+            "seal_id": "S00-SLICE_ACCEPTED-001",
+            "path": "governance/seals/S00-SLICE_ACCEPTED-001.json",
+            "record_sha256": "30a9721e9fc0a5a6d422b6cca3c250f7208fe79f6b36be527436b6ce270fd421",
+            "kind": "SLICE_ACCEPTED",
             "scope_id": "S00-GATE-02"
           }
         ],
@@ -69,6 +83,13 @@
             "record_sha256": "1753499c65cf8dc32c26bc49d736715f5887e39b88e3ece062f79f3dc8eb0f6f",
             "kind": "EVIDENCE_VERIFIED",
             "scope_id": "S00-GATE-03"
+          },
+          {
+            "seal_id": "S00-SLICE_ACCEPTED-001",
+            "path": "governance/seals/S00-SLICE_ACCEPTED-001.json",
+            "record_sha256": "30a9721e9fc0a5a6d422b6cca3c250f7208fe79f6b36be527436b6ce270fd421",
+            "kind": "SLICE_ACCEPTED",
+            "scope_id": "S00-GATE-03"
           }
         ],
         "S00-GATE-04": [
@@ -84,6 +105,13 @@
             "path": "governance/seals/S00-GATES-EVIDENCE_VERIFIED-002.json",
             "record_sha256": "1753499c65cf8dc32c26bc49d736715f5887e39b88e3ece062f79f3dc8eb0f6f",
             "kind": "EVIDENCE_VERIFIED",
+            "scope_id": "S00-GATE-04"
+          },
+          {
+            "seal_id": "S00-SLICE_ACCEPTED-001",
+            "path": "governance/seals/S00-SLICE_ACCEPTED-001.json",
+            "record_sha256": "30a9721e9fc0a5a6d422b6cca3c250f7208fe79f6b36be527436b6ce270fd421",
+            "kind": "SLICE_ACCEPTED",
             "scope_id": "S00-GATE-04"
           }
         ]
@@ -217,7 +245,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-17T00:41:17.513304Z",
+  "last_updated_at": "2026-11-17T15:23:59.511609Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -227,8 +255,8 @@
   "work_mode": "IMPLEMENTATION_AUTHORIZED",
   "execution_authorized": true,
   "active_work": {
-    "work_package_id": "S00-T05",
-    "phase": "CHECKPOINT",
+    "work_package_id": "S01-T01",
+    "phase": "DISCOVER",
     "owner": "root coordinator",
     "input_snapshot_ref": "evidence/S00/T01-2026-11-15/input_snapshot.json",
     "completed_steps": [
@@ -255,19 +283,22 @@
       "Fix round 8 and harness round 8 done test-first; 2180 passed, 10 skipped (LOG-0046); audit 3 test part recorded (LOG-0045)",
       "Integration step 8 done; social table reduced to English and Portuguese by owner decision; main published to the owner's repository (LOG-0047, LOG-0048); 2244 passed, 10 skipped",
       "Live pilot8 and gate run gate8 passed; two independent audits accepted with no P1 or P2 (LOG-0049)",
-      "TESTS_VERIFIED and EVIDENCE_VERIFIED seals issued for the four S00 gates on one commit; all four gates PASS"
+      "TESTS_VERIFIED and EVIDENCE_VERIFIED seals issued for the four S00 gates on one commit; all four gates PASS",
+      "Specification text synced (LOG-0052); owner accepted slice S00; SLICE_ACCEPTED issued; S00 PASS; current slice S01 (LOG-0053)",
+      "Resumed at 9c8689d; both L0 validators exited 0; sandbox suite exited 1 with 2251 passed, 10 skipped and one local-socket PermissionError. Fresh Sonnet review accepts the recorded S00 acceptance with limits and identifies helper P1 corrections.",
+      "S00 acceptance resume full suite outside sandbox exited 0: 2252 passed, 10 skipped in 570.32s; both specification validators exited 0. Evidence under evidence/S00/ACCEPTANCE-RESUME-2026-11-17/20261117T152158Z-d80f9810. No S01 source changed."
     ],
-    "next_action": "Sync the specification debt of LOG-0048 (documents only; the contract schema item is deferred to S01 because it changes the asset digest); owner or orchestrator issues SLICE_ACCEPTED for S00; then start S01 from its handoff with smaller models by complexity",
+    "next_action": "Commit/push the validated S00 acceptance checkpoint if not yet recorded; then correct LOG-0054 helper H1-H3/H5-H6 test-first and obtain independent re-review. Resume S01-T01 specification gap resolution only after that correction.",
     "owned_files": [
       "src/quati",
       "tests",
-      "docs",
-      "evidence/S00"
+      "docs"
     ],
     "pending_findings": [
       "Independent review: malformed identity JSON and FIFO credentials must fail closed without traceback or hang; canonical JSON and token schema conformity require correction.",
       "LOG-0013 open specification questions need owner confirmation before the consuming work package starts",
-      "LOG-0014 owner decisions from the architecture re-audit are pending"
+      "LOG-0014 owner decisions from the architecture re-audit are pending",
+      "S00 acceptance helper H1-H3 must be corrected before S01 implementation; see independent review 2026-11-17."
     ],
     "evidence_refs": [
       "evidence/S00/T01-2026-11-15/authorization.json",
@@ -307,7 +338,10 @@
       "docs/audit/S00_AUDIT3_PART3_TESTS_2026-11-16.md",
       "evidence/S00/T05-integration8-2026-11-16/green.txt",
       "docs/audit/S00_GATE8_ACCEPTANCE_AUDIT_2026-11-16.md",
-      "docs/audit/S00_AUDIT5_RETEST_2026-11-16.md"
+      "docs/audit/S00_AUDIT5_RETEST_2026-11-16.md",
+      "docs/audit/S00_ACCEPTANCE_HELPER_REVIEW_2026-11-17.md",
+      "docs/implementation/S01_T01_DESIGN.md",
+      "evidence/S00/ACCEPTANCE-RESUME-2026-11-17/20261117T152158Z-d80f9810/manifest.json"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",

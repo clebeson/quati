@@ -11,7 +11,7 @@
 <p align="center">
   <img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-1f4e79?logo=python&logoColor=white">
   <img alt="Interface: CLI only" src="https://img.shields.io/badge/interface-CLI%20only-0b2a4a">
-  <img alt="Slice S00 gates sealed" src="https://img.shields.io/badge/slice-S00%20gates%20sealed-2ea44f">
+  <img alt="Slice S00 accepted" src="https://img.shields.io/badge/slice-S00%20accepted-2ea44f">
   <img alt="Tests: 2247 passed, 0 failing" src="https://img.shields.io/badge/tests-2247%20passed%20%C2%B7%200%20failing-2ea44f">
   <img alt="Coverage 99.87% overall, domain and behavior 100%" src="https://img.shields.io/badge/coverage-99.87%25%20(domain%20%2B%20behavior%20100%25)-2ea44f">
   <img alt="Local first" src="https://img.shields.io/badge/deployment-local--first-6cc24a">
@@ -287,7 +287,7 @@ first call, one JSON file per case and an index with the verdict of each gate.
 | **Current slice** | S00 — local CLI, provider layer, capability discovery |
 | **Implemented** | `init`, `doctor`, `config validate`, `ask`, `chat`, `models probe`, `behavior validate` / `render`, `trace show` / `explain`, capability registry (synthetic fixtures), 6 provider transports |
 | **Arrives in S02** | `status`, `tell`, `approve`, `deny`, `approvals`, `trace export` / `replay` (they return `UNSUPPORTED` today) |
-| **Live qualification** | run `gate8` (2026-11-16) on the current code; the four S00 gates are sealed; slice acceptance is pending |
+| **Live qualification** | run `gate8` (2026-11-16) on the current code; the four S00 gates are sealed and slice S00 is accepted (2026-11-17) |
 | **Tests** | 2247 passed, 0 failing, 10 skipped (2026-11-16, sealed commit; the skips are the opt-in live evaluations and smokes and one wheel-build leg) · coverage 99.87% overall, 100% line and branch in `domain/` and `behavior/` |
 | **Specification** | 31 module PRDs · 15 RFCs · 16 ADRs · 35 work packages across slices S00–S07 |
 | **Canonical state** | `docs/implementation/implementation_state.json` (revision-checked writes only) |

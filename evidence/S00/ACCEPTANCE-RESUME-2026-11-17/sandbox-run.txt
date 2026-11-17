@@ -1,0 +1,8 @@
+Coordinator transcription of the completed sandbox run; not a replacement for raw child-process output.
+Command: set -o pipefail; .venv/bin/python -m pytest -q -p no:cacheprovider; echo rc=$?
+Pytest exit status: 1 (explicit rc=1).
+Result: 1 failed, 2251 passed, 10 skipped in 588.34s.
+Failure: tests/integration/cli/test_s00_integration8_public.py::test_t1_doctor_counts_a_real_listening_socket_of_its_own_process_and_only_while_it_is_open
+Observed error: PermissionError: [Errno 1] Operation not permitted.
+The test opens a loopback-only listening socket to measure doctor facts. The sandbox prohibits that local operation. A targeted run reproduced 1 failed in 0.45s with the same assertion and PermissionError.
+No test, expectation, threshold, skip or source was changed for this result. An outside-sandbox rerun was separately authorized.

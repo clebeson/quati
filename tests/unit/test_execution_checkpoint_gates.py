@@ -463,3 +463,97 @@ def test_a_seal_that_supersedes_nothing_referenced_keeps_existing_references(tmp
     refs = json.loads(state_path.read_text(encoding="utf-8"))["slices"]["S00"]["gate_seal_refs"]["S00-GATE-02"]
     assert [ref["seal_id"] for ref in refs] == [
         "S00-GATE-02-TESTS-001", "S00-GATE-02-EVIDENCE-001", "S00-GATE-02-AUDIT-001"]
+
+
+def _slice_workspace(tmp_path, with_acceptance=True):
+    records = [
+        write_seal(tmp_path, "S00-TESTS-001", "TESTS_VERIFIED", ["S00"]),
+        write_seal(tmp_path, "S00-EVIDENCE-001", "EVIDENCE_VERIFIED", ["S00"]),
+    ]
+    if with_acceptance:
+        records.append(write_seal(tmp_path, "S00-ACCEPTED-001", "SLICE_ACCEPTED", ["S00"]))
+    state_path, ledger_path, _ = workspace(tmp_path, records)
+    gate_args = []
+    for gate in ("S00-GATE-01", "S00-GATE-02"):
+        gate_args += ["--gate", f"{gate}=PASS", "--gate-seal", f"{gate}=S00-TESTS-001",
+                      "--gate-seal", f"{gate}=S00-EVIDENCE-001"]
+    assert cli(tmp_path, *gate_args, "--slice-commit", COMMIT).returncode == 0
+    return state_path, ledger_path
+
+
+def _acceptance_args():
+    return ["--gate-seal", "S00-GATE-01=S00-ACCEPTED-001", "--gate-seal", "S00-GATE-02=S00-ACCEPTED-001",
+            "--slice-status", "PASS"]
+
+
+def test_slice_pass_needs_all_gates_pass_and_an_acceptance_seal_then_advances(tmp_path):
+    state_path, ledger_path = _slice_workspace(tmp_path)
+
+    result = _second_cli(tmp_path, 8, *_acceptance_args(), "--advance-to", "S01")
+
+    assert result.returncode == 0, result.stderr
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert state["revision"] == 9
+    assert state["slices"]["S00"]["status"] == "PASS"
+    assert state["current_slice"] == "S01"
+    assert state["slices"]["S01"]["status"] == "NOT_STARTED"
+    assert [ref["kind"] for ref in state["slices"]["S00"]["gate_seal_refs"]["S00-GATE-01"]] == [
+        "TESTS_VERIFIED", "EVIDENCE_VERIFIED", "SLICE_ACCEPTED"]
+    row = [json.loads(line) for line in ledger_path.read_text(encoding="utf-8").splitlines()][-1]
+    assert row["slice_patch"]["status"] == "PASS"
+    assert row["advance_to"] == "S01"
+    event = {key: value for key, value in row.items() if key != "event_hash"}
+    assert row["event_hash"] == digest(event)
+
+    later = _second_cli(tmp_path, 9, "--work-package-id", "S01-T01")
+    assert later.returncode == 0, later.stderr
+    assert json.loads(state_path.read_text(encoding="utf-8"))["active_work"]["work_package_id"] == "S01-T01"
+
+
+def test_slice_pass_without_an_acceptance_seal_on_every_gate_is_rejected(tmp_path):
+    state_path, _ = _slice_workspace(tmp_path)
+    before = state_path.read_bytes()
+
+    result = _second_cli(tmp_path, 8, "--gate-seal", "S00-GATE-01=S00-ACCEPTED-001", "--slice-status", "PASS")
+
+    assert result.returncode == 2
+    assert "SLICE_ACCEPTED" in result.stderr
+    assert state_path.read_bytes() == before
+
+
+def test_slice_pass_with_a_gate_that_is_not_pass_is_rejected(tmp_path):
+    state_path, _ = _slice_workspace(tmp_path)
+    before = state_path.read_bytes()
+
+    result = _second_cli(tmp_path, 8, *_acceptance_args(), "--gate", "S00-GATE-02=BLOCKED")
+
+    assert result.returncode == 2
+    assert "every gate" in result.stderr
+    assert state_path.read_bytes() == before
+
+
+def test_advance_is_rejected_while_an_earlier_slice_is_incomplete_or_the_target_is_unknown(tmp_path):
+    state_path, _ = _slice_workspace(tmp_path)
+    before = state_path.read_bytes()
+
+    result = _second_cli(tmp_path, 8, "--advance-to", "S01")
+    assert result.returncode == 2
+    assert "earlier slice" in result.stderr
+    result = _second_cli(tmp_path, 8, *_acceptance_args(), "--advance-to", "S09")
+    assert result.returncode == 2
+    assert "Unknown slice" in result.stderr
+    assert state_path.read_bytes() == before
+
+
+def test_slice_status_values_are_checked_and_a_non_pass_status_needs_no_seal(tmp_path):
+    state_path, _ = _slice_workspace(tmp_path, with_acceptance=False)
+    before = state_path.read_bytes()
+
+    result = _second_cli(tmp_path, 8, "--slice", "S00", "--slice-status", "DONE")
+    assert result.returncode == 2
+    assert "Unsupported slice status" in result.stderr
+    assert state_path.read_bytes() == before
+
+    result = _second_cli(tmp_path, 8, "--slice", "S00", "--slice-status", "BLOCKED")
+    assert result.returncode == 0, result.stderr
+    assert json.loads(state_path.read_text(encoding="utf-8"))["slices"]["S00"]["status"] == "BLOCKED"

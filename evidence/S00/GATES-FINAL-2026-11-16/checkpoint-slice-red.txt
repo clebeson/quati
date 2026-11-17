@@ -1,0 +1,8 @@
+tests/unit/test_execution_checkpoint_gates.py:554: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_slice_pass_needs_all_gates_pass_and_an_acceptance_seal_then_advances
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_slice_pass_without_an_acceptance_seal_on_every_gate_is_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_slice_pass_with_a_gate_that_is_not_pass_is_rejected
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_advance_is_rejected_while_an_earlier_slice_is_incomplete_or_the_target_is_unknown
+FAILED tests/unit/test_execution_checkpoint_gates.py::test_slice_status_values_are_checked_and_a_non_pass_status_needs_no_seal
+5 failed, 26 passed in 2.97s

@@ -46,6 +46,20 @@
         "S00-GATE-04"
       ],
       "supersedes": "S00-GATE-02-EVIDENCE_VERIFIED-001"
+    },
+    {
+      "seal_id": "S00-SLICE_ACCEPTED-001",
+      "path": "governance/seals/S00-SLICE_ACCEPTED-001.json",
+      "record_sha256": "30a9721e9fc0a5a6d422b6cca3c250f7208fe79f6b36be527436b6ce270fd421",
+      "kind": "SLICE_ACCEPTED",
+      "scope_ids": [
+        "S00",
+        "S00-GATE-01",
+        "S00-GATE-02",
+        "S00-GATE-03",
+        "S00-GATE-04"
+      ],
+      "supersedes": null
     }
   ],
   "lookup_rule": "Canonical state names exact seal refs. Verify immutable record hash, scope/kind, issuer independence, all artifact digests and supersession. Missing or ambiguous current valid seal blocks gate. Never choose by timestamp alone."

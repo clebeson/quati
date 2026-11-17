@@ -37,6 +37,7 @@ DEFAULT_STATE = Path(__file__).resolve().parents[1] / "docs/implementation/imple
 DEFAULT_LEDGER = DEFAULT_STATE.with_name("execution_ledger.jsonl")
 DEFAULT_SEAL_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SEAL_INDEX = DEFAULT_SEAL_ROOT / "governance/seals/index.json"
+SLICE_STATUSES = {"NOT_STARTED", "IN_PROGRESS", "PASS", "FAIL", "BLOCKED"}
 GATE_STATUSES = {"NOT_RUN", "IN_PROGRESS", "PASS", "FAIL", "BLOCKED"}
 MANDATORY_GATE_SEAL_KINDS = {"TESTS_VERIFIED", "EVIDENCE_VERIFIED"}
 COMMIT_PATTERN = re.compile(r"^([a-f0-9]{40}|[a-f0-9]{64})$")
@@ -76,6 +77,8 @@ def parser():
     result.add_argument("--slice-evidence-ref", action="append", default=[])
     result.add_argument("--slice-blocker", action="append", default=[])
     result.add_argument("--resolve-blocker", action="append", default=[])
+    result.add_argument("--slice-status", help="Slice status; PASS needs every gate PASS and a SLICE_ACCEPTED seal on each")
+    result.add_argument("--advance-to", help="Set current_slice, provided every earlier slice is PASS with all gates PASS")
     return result
 
 
@@ -360,7 +363,7 @@ def split_pair(value, shape):
     return left.strip(), right.strip()
 
 
-def build_slice_request(slice_id, gates, gate_seals, commit, evidence_refs, blockers, resolve_blockers):
+def build_slice_request(slice_id, gates, gate_seals, commit, evidence_refs, blockers, resolve_blockers, slice_status=None):
     """Parse slice options into a request; return None when no slice option was given."""
     request = {"gates": {}, "gate_seals": {}}
     for value in gates:
@@ -384,6 +387,10 @@ def build_slice_request(slice_id, gates, gate_seals, commit, evidence_refs, bloc
         if not COMMIT_PATTERN.match(commit):
             raise ValueError("Slice commit must be a 40- or 64-character lowercase hexadecimal identifier")
         request["commit"] = commit
+    if slice_status is not None:
+        if slice_status not in SLICE_STATUSES:
+            raise ValueError(f"Unsupported slice status {slice_status!r}")
+        request["status"] = slice_status
     if slice_id is not None:
         request["slice_id"] = slice_id
     has_options = bool(request["gates"] or request["gate_seals"] or len(request) > 2)
@@ -485,7 +492,7 @@ def resolve_slice_patch(state, request, seal_index, seal_root):
         patch["gate_seal_refs"] = new_refs
     if superseded:
         patch["superseded_seal_refs"] = superseded
-    for key in ("commit", "evidence_refs", "blockers", "resolve_blockers"):
+    for key in ("commit", "evidence_refs", "blockers", "resolve_blockers", "status"):
         if key in request:
             patch[key] = request[key]
     for blocker in patch.get("resolve_blockers", []):
@@ -503,12 +510,36 @@ def resolve_slice_patch(state, request, seal_index, seal_root):
             raise ValueError(f"PASS gate {gate} requires TESTS_VERIFIED and EVIDENCE_VERIFIED seal references")
         if not (patch.get("commit") or item.get("commit")):
             raise ValueError(f"PASS gate {gate} requires a slice commit")
+    if patch.get("status") == "PASS":
+        final_gates = {**item.get("gates", {}), **request["gates"]}
+        if not final_gates or any(value != "PASS" for value in final_gates.values()):
+            raise ValueError(f"PASS slice {slice_id} requires every gate to be PASS")
+        for gate in final_gates:
+            kept = [ref for ref in item.get("gate_seal_refs", {}).get(gate, [])
+                    if ref["seal_id"] not in superseded.get(gate, [])]
+            if "SLICE_ACCEPTED" not in {ref["kind"] for ref in [*kept, *new_refs.get(gate, [])]}:
+                raise ValueError(f"PASS slice {slice_id} requires a SLICE_ACCEPTED seal reference on gate {gate}")
     return patch
+
+
+def apply_advance(state, target):
+    slices = state["slices"]
+    if target not in slices:
+        raise ValueError(f"Unknown slice: {target}")
+    for name in sorted(slices):
+        if name == target:
+            break
+        gates = slices[name].get("gates", {})
+        if slices[name].get("status") != "PASS" or not gates or any(value != "PASS" for value in gates.values()):
+            raise ValueError(f"Cannot advance to {target}: earlier slice {name} is not PASS with every gate PASS")
+    state["current_slice"] = target
 
 
 def apply_slice_patch(state, patch):
     item = state["slices"][patch["slice_id"]]
     item["gates"].update(patch.get("gates", {}))
+    if "status" in patch:
+        item["status"] = patch["status"]
     for gate, seal_ids in patch.get("superseded_seal_refs", {}).items():
         current = item.setdefault("gate_seal_refs", {}).setdefault(gate, [])
         current[:] = [ref for ref in current if ref["seal_id"] not in seal_ids]
@@ -538,7 +569,7 @@ def update_active_work(state, phase, next_action, steps, patch):
 
 
 def prepare_event(state, expected_revision, phase, next_action, steps, previous_hash, patch=None,
-                  slice_request=None, seal_index=DEFAULT_SEAL_INDEX, seal_root=DEFAULT_SEAL_ROOT):
+                  slice_request=None, seal_index=DEFAULT_SEAL_INDEX, seal_root=DEFAULT_SEAL_ROOT, advance_to=None):
     if state.get("revision") != expected_revision:
         raise ValueError(f"Revision conflict: expected {expected_revision}, found {state.get('revision')}")
     patch = patch or {}
@@ -552,6 +583,8 @@ def prepare_event(state, expected_revision, phase, next_action, steps, previous_
     update_active_work(updated, phase, next_action, steps, patch)
     if slice_patch is not None:
         apply_slice_patch(updated, slice_patch)
+    if advance_to is not None:
+        apply_advance(updated, advance_to)
     timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     updated["revision"] = expected_revision + 1
     if "last_updated_at" in updated:
@@ -569,11 +602,13 @@ def prepare_event(state, expected_revision, phase, next_action, steps, previous_
     }
     if slice_patch is not None:
         event["slice_patch"] = slice_patch
+    if advance_to is not None:
+        event["advance_to"] = advance_to
     return {"event": event, "state_after": updated, "event_hash": digest(event)}
 
 
 def update(state_path, ledger_path, expected_revision, phase, next_action, steps, patch=None,
-           slice_request=None, seal_index=DEFAULT_SEAL_INDEX, seal_root=DEFAULT_SEAL_ROOT):
+           slice_request=None, seal_index=DEFAULT_SEAL_INDEX, seal_root=DEFAULT_SEAL_ROOT, advance_to=None):
     with exclusive_lock(state_path):
         state, recovered = recover(state_path, ledger_path)
         if recovered:
@@ -583,7 +618,7 @@ def update(state_path, ledger_path, expected_revision, phase, next_action, steps
         rows = read_ledger(ledger_path)
         previous_hash = rows[-1]["event_hash"] if rows else ""
         prepared = prepare_event(state, expected_revision, phase, next_action, steps, previous_hash, patch,
-                                 slice_request, seal_index, seal_root)
+                                 slice_request, seal_index, seal_root, advance_to)
         journal_dir = ledger_path.with_name("execution_journal")
         journal_dir.mkdir(parents=True, exist_ok=True)
         fsync_directory(journal_dir.parent)
@@ -618,9 +653,10 @@ def main(argv=None):
         patch["resolve_findings"] = args.resolve_finding
     try:
         slice_request = build_slice_request(args.slice_id, args.gate, args.gate_seal, args.slice_commit,
-                                            args.slice_evidence_ref, args.slice_blocker, args.resolve_blocker)
+                                            args.slice_evidence_ref, args.slice_blocker, args.resolve_blocker,
+                                            args.slice_status)
         revision = update(args.state, args.ledger, args.expected_revision, args.phase, args.next_action, args.step,
-                          patch, slice_request, args.seal_index, args.seal_root)
+                          patch, slice_request, args.seal_index, args.seal_root, args.advance_to)
     except OSError as exc:
         diagnostic = {
             "status": "CHECKPOINT_PENDING",

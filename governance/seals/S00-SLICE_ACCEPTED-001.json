@@ -1,0 +1,46 @@
+{
+  "commit_evidence": {
+    "commit_sha": "5063071062318b0505873f2d78dfb8286bb4d5f8",
+    "test_log_ref": "evidence/S00/GATES-FINAL-2026-11-16/tests-verified.txt",
+    "transcript_ref": "evidence/S00/GATES-FINAL-2026-11-16/transcript-ref.json"
+  },
+  "evidence_refs": [
+    "evidence/S00/GATES-FINAL-2026-11-16/tests-verified.txt",
+    "evidence/S00/GATES-FINAL-2026-11-16/transcript-ref.json",
+    "governance/seals/S00-GATES-TESTS_VERIFIED-002.json",
+    "governance/seals/S00-GATES-EVIDENCE_VERIFIED-002.json"
+  ],
+  "evidence_sha256": {
+    "evidence/S00/GATES-FINAL-2026-11-16/tests-verified.txt": "62aea2870d7fa5e6bdf175f1c1a4ff03b17b082d027262896a46a31dd9bca652",
+    "evidence/S00/GATES-FINAL-2026-11-16/transcript-ref.json": "25266881516cdd86445ed1339efaf9c59a9c4da0c7b7163ecbbdae31d4f0246c",
+    "governance/seals/S00-GATES-EVIDENCE_VERIFIED-002.json": "1753499c65cf8dc32c26bc49d736715f5887e39b88e3ece062f79f3dc8eb0f6f",
+    "governance/seals/S00-GATES-TESTS_VERIFIED-002.json": "1dfb377a7a4ceaaae951a4fd95acc4a5f0afce434382aa27d690e54e0c1d7e44"
+  },
+  "issued_at": "2026-11-17T02:10:00Z",
+  "issuer": {
+    "identity": "project owner, in the working session of 2026-11-17 (recorded by the root coordinator)",
+    "independent_of_authors": true,
+    "role": "human owner"
+  },
+  "kind": "SLICE_ACCEPTED",
+  "proof_tiers": [
+    "L1",
+    "L2",
+    "L3"
+  ],
+  "rationale": "The project owner accepted slice S00 in the working session after being shown the limits recorded with the gate seals (LOG-0049: CAP-02 single eligible candidate; 2 of 60 passes with one continuation; classification-timeout leg covered only with a scripted provider; policy gate denial proven by test, not live). All four S00 gates are PASS with TESTS_VERIFIED and EVIDENCE_VERIFIED seals on the same commit. Acceptance does not close requirement plans, does not authorize release, merge or deployment, and carries the S01 debt of LOG-0049 and LOG-0052. This record is an unsigned process record written by the root coordinator.",
+  "requirement_ids": [],
+  "scope_ids": [
+    "S00",
+    "S00-GATE-01",
+    "S00-GATE-02",
+    "S00-GATE-03",
+    "S00-GATE-04"
+  ],
+  "seal_id": "S00-SLICE_ACCEPTED-001",
+  "signature": null,
+  "supersedes": null,
+  "test_ids": [],
+  "unresolved_findings": [],
+  "verdict": "PASS"
+}
