@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 31,
+  "revision": 32,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S01",
@@ -245,7 +245,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-17T15:23:59.511609Z",
+  "last_updated_at": "2026-11-17T21:21:58.199596Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -286,9 +286,10 @@
       "TESTS_VERIFIED and EVIDENCE_VERIFIED seals issued for the four S00 gates on one commit; all four gates PASS",
       "Specification text synced (LOG-0052); owner accepted slice S00; SLICE_ACCEPTED issued; S00 PASS; current slice S01 (LOG-0053)",
       "Resumed at 9c8689d; both L0 validators exited 0; sandbox suite exited 1 with 2251 passed, 10 skipped and one local-socket PermissionError. Fresh Sonnet review accepts the recorded S00 acceptance with limits and identifies helper P1 corrections.",
-      "S00 acceptance resume full suite outside sandbox exited 0: 2252 passed, 10 skipped in 570.32s; both specification validators exited 0. Evidence under evidence/S00/ACCEPTANCE-RESUME-2026-11-17/20261117T152158Z-d80f9810. No S01 source changed."
+      "S00 acceptance resume full suite outside sandbox exited 0: 2252 passed, 10 skipped in 570.32s; both specification validators exited 0. Evidence under evidence/S00/ACCEPTANCE-RESUME-2026-11-17/20261117T152158Z-d80f9810. No S01 source changed.",
+      "LOG-0054 H1/H2/H3/H5/H6 corrected test-first; fresh independent Sonnet review ACCEPT with recorded P2 limits. Final Haiku seven-file run exited 0: 144 passed; final L0 validators exited 0. S00 acceptance checkpoint 1f77060 was pushed to origin/main using noreply identity."
     ],
-    "next_action": "Commit/push the validated S00 acceptance checkpoint if not yet recorded; then correct LOG-0054 helper H1-H3/H5-H6 test-first and obtain independent re-review. Resume S01-T01 specification gap resolution only after that correction.",
+    "next_action": "Commit/push the verified LOG-0054 helper correction if pending. Then resolve S01-T01 specification gaps G1-G10 in docs/implementation/S01_T01_DESIGN.md against the named normative sources, record SDD readiness, and only then author public-path tests before S01 source. S01-T01 has no implementation yet.",
     "owned_files": [
       "src/quati",
       "tests",
@@ -297,8 +298,7 @@
     "pending_findings": [
       "Independent review: malformed identity JSON and FIFO credentials must fail closed without traceback or hang; canonical JSON and token schema conformity require correction.",
       "LOG-0013 open specification questions need owner confirmation before the consuming work package starts",
-      "LOG-0014 owner decisions from the architecture re-audit are pending",
-      "S00 acceptance helper H1-H3 must be corrected before S01 implementation; see independent review 2026-11-17."
+      "LOG-0014 owner decisions from the architecture re-audit are pending"
     ],
     "evidence_refs": [
       "evidence/S00/T01-2026-11-15/authorization.json",
@@ -341,7 +341,9 @@
       "docs/audit/S00_AUDIT5_RETEST_2026-11-16.md",
       "docs/audit/S00_ACCEPTANCE_HELPER_REVIEW_2026-11-17.md",
       "docs/implementation/S01_T01_DESIGN.md",
-      "evidence/S00/ACCEPTANCE-RESUME-2026-11-17/20261117T152158Z-d80f9810/manifest.json"
+      "evidence/S00/ACCEPTANCE-RESUME-2026-11-17/20261117T152158Z-d80f9810/manifest.json",
+      "docs/audit/S00_HELPER_INTEGRITY_RETEST_2026-11-17.md",
+      "evidence/S00/HELPER-INTEGRITY-2026-11-17/final-runner/20261117T212051Z-3859e46d/manifest.json"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",

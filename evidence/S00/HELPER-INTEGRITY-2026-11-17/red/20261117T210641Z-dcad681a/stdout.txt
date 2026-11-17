@@ -1,0 +1,889 @@
+FFFFFFFFFFFFFFFFFFFFF.................................                   [100%]
+=================================== FAILURES ===================================
+___________ test_nonpassing_acceptance_cannot_promote_a_slice[FAIL] ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_nonpassing_acceptance_can0')
+verdict = 'FAIL'
+
+    @pytest.mark.parametrize('verdict', ['FAIL', 'BLOCKED'])
+    def test_nonpassing_acceptance_cannot_promote_a_slice(tmp_path, verdict):
+        _slice_workspace(tmp_path)
+        _edit_seal(tmp_path, 'S00-ACCEPTED-001', verdict=verdict)
+>       _rejected(tmp_path, 8, *_acceptance_args(), '--advance-to', 'S01')
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_nonpassing_acceptance_can0')
+revision = 8
+arguments = ('--gate-seal', 'S00-GATE-01=S00-ACCEPTED-001', '--gate-seal', 'S00-GATE-02=S00-ACCEPTED-001', '--slice-status', 'PASS', ...)
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 9
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...-status', 'PASS', '--advance-to', 'S01'], returncode=0, stdout='Execution checkpoint saved at revision 9\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+__________ test_nonpassing_acceptance_cannot_promote_a_slice[BLOCKED] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_nonpassing_acceptance_can1')
+verdict = 'BLOCKED'
+
+    @pytest.mark.parametrize('verdict', ['FAIL', 'BLOCKED'])
+    def test_nonpassing_acceptance_cannot_promote_a_slice(tmp_path, verdict):
+        _slice_workspace(tmp_path)
+        _edit_seal(tmp_path, 'S00-ACCEPTED-001', verdict=verdict)
+>       _rejected(tmp_path, 8, *_acceptance_args(), '--advance-to', 'S01')
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_nonpassing_acceptance_can1')
+revision = 8
+arguments = ('--gate-seal', 'S00-GATE-01=S00-ACCEPTED-001', '--gate-seal', 'S00-GATE-02=S00-ACCEPTED-001', '--slice-status', 'PASS', ...)
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 9
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...-status', 'PASS', '--advance-to', 'S01'], returncode=0, stdout='Execution checkpoint saved at revision 9\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+___ test_retained_seals_are_verified_on_acceptance_and_advance[bytes-accept] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi0')
+operation = 'accept', damage = 'bytes'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi0')
+revision = 8
+arguments = ('--gate-seal', 'S00-GATE-01=S00-ACCEPTED-001', '--gate-seal', 'S00-GATE-02=S00-ACCEPTED-001', '--slice-status', 'PASS')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 9
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...ACCEPTED-001', '--slice-status', 'PASS'], returncode=0, stdout='Execution checkpoint saved at revision 9\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+__ test_retained_seals_are_verified_on_acceptance_and_advance[bytes-advance] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi1')
+operation = 'advance', damage = 'bytes'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi1')
+revision = 9, arguments = ('--advance-to', 'S01')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 10
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...on', 'continue', '--advance-to', 'S01'], returncode=0, stdout='Execution checkpoint saved at revision 10\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+__ test_retained_seals_are_verified_on_acceptance_and_advance[missing-accept] __
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi2')
+operation = 'accept', damage = 'missing'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi2')
+revision = 8
+arguments = ('--gate-seal', 'S00-GATE-01=S00-ACCEPTED-001', '--gate-seal', 'S00-GATE-02=S00-ACCEPTED-001', '--slice-status', 'PASS')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 9
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...ACCEPTED-001', '--slice-status', 'PASS'], returncode=0, stdout='Execution checkpoint saved at revision 9\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+_ test_retained_seals_are_verified_on_acceptance_and_advance[missing-advance] __
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi3')
+operation = 'advance', damage = 'missing'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi3')
+revision = 9, arguments = ('--advance-to', 'S01')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 10
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...on', 'continue', '--advance-to', 'S01'], returncode=0, stdout='Execution checkpoint saved at revision 10\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+_ test_retained_seals_are_verified_on_acceptance_and_advance[deindexed-accept] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi4')
+operation = 'accept', damage = 'deindexed'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi4')
+revision = 8
+arguments = ('--gate-seal', 'S00-GATE-01=S00-ACCEPTED-001', '--gate-seal', 'S00-GATE-02=S00-ACCEPTED-001', '--slice-status', 'PASS')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 9
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...ACCEPTED-001', '--slice-status', 'PASS'], returncode=0, stdout='Execution checkpoint saved at revision 9\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+_ test_retained_seals_are_verified_on_acceptance_and_advance[deindexed-advance] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi5')
+operation = 'advance', damage = 'deindexed'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi5')
+revision = 9, arguments = ('--advance-to', 'S01')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 10
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...on', 'continue', '--advance-to', 'S01'], returncode=0, stdout='Execution checkpoint saved at revision 10\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+__ test_retained_seals_are_verified_on_acceptance_and_advance[verdict-accept] __
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi6')
+operation = 'accept', damage = 'verdict'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi6')
+revision = 8
+arguments = ('--gate-seal', 'S00-GATE-01=S00-ACCEPTED-001', '--gate-seal', 'S00-GATE-02=S00-ACCEPTED-001', '--slice-status', 'PASS')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 9
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...ACCEPTED-001', '--slice-status', 'PASS'], returncode=0, stdout='Execution checkpoint saved at revision 9\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+_ test_retained_seals_are_verified_on_acceptance_and_advance[verdict-advance] __
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi7')
+operation = 'advance', damage = 'verdict'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi7')
+revision = 9, arguments = ('--advance-to', 'S01')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 10
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...on', 'continue', '--advance-to', 'S01'], returncode=0, stdout='Execution checkpoint saved at revision 10\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+__ test_retained_seals_are_verified_on_acceptance_and_advance[source-accept] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi8')
+operation = 'accept', damage = 'source'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi8')
+revision = 8
+arguments = ('--gate-seal', 'S00-GATE-01=S00-ACCEPTED-001', '--gate-seal', 'S00-GATE-02=S00-ACCEPTED-001', '--slice-status', 'PASS')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 9
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...ACCEPTED-001', '--slice-status', 'PASS'], returncode=0, stdout='Execution checkpoint saved at revision 9\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+__ test_retained_seals_are_verified_on_acceptance_and_advance[source-advance] __
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi9')
+operation = 'advance', damage = 'source'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi9')
+revision = 9, arguments = ('--advance-to', 'S01')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 10
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...on', 'continue', '--advance-to', 'S01'], returncode=0, stdout='Execution checkpoint saved at revision 10\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+_ test_retained_seals_are_verified_on_acceptance_and_advance[superseded-accept] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi10')
+operation = 'accept', damage = 'superseded'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi10')
+revision = 8
+arguments = ('--gate-seal', 'S00-GATE-01=S00-ACCEPTED-001', '--gate-seal', 'S00-GATE-02=S00-ACCEPTED-001', '--slice-status', 'PASS')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 9
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...ACCEPTED-001', '--slice-status', 'PASS'], returncode=0, stdout='Execution checkpoint saved at revision 9\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+_ test_retained_seals_are_verified_on_acceptance_and_advance[superseded-advance] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi11')
+operation = 'advance', damage = 'superseded'
+
+    @pytest.mark.parametrize('operation', ['accept', 'advance'])
+    @pytest.mark.parametrize('damage', ['bytes', 'missing', 'deindexed', 'verdict', 'source', 'superseded'])
+    def test_retained_seals_are_verified_on_acceptance_and_advance(tmp_path, operation, damage):
+        _slice_workspace(tmp_path)
+        revision = 8
+        if operation == 'advance':
+            result = _second_cli(tmp_path, 8, *_acceptance_args())
+            assert result.returncode == 0, result.stderr
+            revision = 9
+        seal_id = 'S00-TESTS-001'
+        path = tmp_path / f'governance/seals/{seal_id}.json'
+        if damage == 'bytes':
+            path.write_bytes(path.read_bytes() + b' ')
+        elif damage == 'missing':
+            path.unlink()
+        elif damage == 'deindexed':
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            write_index(tmp_path, [row for row in index['records'] if row['seal_id'] != seal_id])
+        elif damage == 'verdict':
+            _edit_seal(tmp_path, seal_id, verdict='FAIL')
+        elif damage == 'source':
+            _edit_seal(tmp_path, seal_id, commit_evidence={'commit_sha': 'b' * 40})
+        else:
+            index = json.loads((tmp_path / 'governance/seals/index.json').read_text())
+            replacement = write_seal(tmp_path, 'S00-TESTS-002', 'TESTS_VERIFIED', ['S00'])
+            replacement['supersedes'] = seal_id
+            write_index(tmp_path, [*index['records'], replacement])
+        arguments = _acceptance_args() if operation == 'accept' else ['--advance-to', 'S01']
+>       _rejected(tmp_path, revision, *arguments)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_retained_seals_are_verifi11')
+revision = 9, arguments = ('--advance-to', 'S01')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 10
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...on', 'continue', '--advance-to', 'S01'], returncode=0, stdout='Execution checkpoint saved at revision 10\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+____________ test_gate_seals_must_match_the_recorded_source_commit _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_gate_seals_must_match_the0')
+
+    def test_gate_seals_must_match_the_recorded_source_commit(tmp_path):
+        workspace(tmp_path)
+>       _rejected(tmp_path, 7, *PASS_ARGS[:-1], 'b' * 40)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_gate_seals_must_match_the0')
+revision = 7
+arguments = ('--gate', 'S00-GATE-02=PASS', '--gate-seal', 'S00-GATE-02=S00-GATE-02-TESTS-001', '--gate-seal', 'S00-GATE-02=S00-GATE-02-EVIDENCE-001', ...)
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 8
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'], returncode=0, stdout='Execution checkpoint saved at revision 8\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+____________ test_commit_only_patch_cannot_rebind_an_accepted_slice ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_commit_only_patch_cannot_0')
+
+    def test_commit_only_patch_cannot_rebind_an_accepted_slice(tmp_path):
+        _slice_workspace(tmp_path)
+        assert _second_cli(tmp_path, 8, *_acceptance_args()).returncode == 0
+>       _rejected(tmp_path, 9, '--slice', 'S00', '--slice-commit', 'b' * 40)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_commit_only_patch_cannot_0')
+revision = 9
+arguments = ('--slice', 'S00', '--slice-commit', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 10
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'], returncode=0, stdout='Execution checkpoint saved at revision 10\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+_________________ test_acceptance_rejects_unresolved_blockers __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_acceptance_rejects_unreso0')
+
+    def test_acceptance_rejects_unresolved_blockers(tmp_path):
+        _slice_workspace(tmp_path)
+>       _rejected(tmp_path, 8, *_acceptance_args(), '--slice-blocker', 'verification pending')
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_acceptance_rejects_unreso0')
+revision = 8
+arguments = ('--gate-seal', 'S00-GATE-01=S00-ACCEPTED-001', '--gate-seal', 'S00-GATE-02=S00-ACCEPTED-001', '--slice-status', 'PASS', ...)
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 9
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...-slice-blocker', 'verification pending'], returncode=0, stdout='Execution checkpoint saved at revision 9\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+__________ test_gate_downgrade_requires_reconciling_the_slice_status ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_gate_downgrade_requires_r0')
+
+    def test_gate_downgrade_requires_reconciling_the_slice_status(tmp_path):
+        _slice_workspace(tmp_path)
+        assert _second_cli(tmp_path, 8, *_acceptance_args()).returncode == 0
+>       _rejected(tmp_path, 9, '--gate', 'S00-GATE-01=BLOCKED')
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_gate_downgrade_requires_r0')
+revision = 9, arguments = ('--gate', 'S00-GATE-01=BLOCKED')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 10
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...inue', '--gate', 'S00-GATE-01=BLOCKED'], returncode=0, stdout='Execution checkpoint saved at revision 10\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+______________________ test_advance_cannot_move_backwards ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_advance_cannot_move_backw0')
+
+    def test_advance_cannot_move_backwards(tmp_path):
+        _slice_workspace(tmp_path)
+        assert _second_cli(tmp_path, 8, *_acceptance_args(), '--advance-to', 'S01').returncode == 0
+>       _rejected(tmp_path, 9, '--advance-to', 'S00')
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:112: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_advance_cannot_move_backw0')
+revision = 9, arguments = ('--advance-to', 'S00')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 10
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...on', 'continue', '--advance-to', 'S00'], returncode=0, stdout='Execution checkpoint saved at revision 10\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+___________ test_missing_source_identity_cannot_support_a_pass_gate ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_missing_source_identity_c0')
+
+    def test_missing_source_identity_cannot_support_a_pass_gate(tmp_path):
+        state, _, records = workspace(tmp_path)
+        path = tmp_path / records[0]['path']
+        record = json.loads(path.read_text())
+        record.pop('commit_evidence', None)
+        path.write_text(json.dumps(record))
+        records[0]['record_sha256'] = hashlib.sha256(path.read_bytes()).hexdigest()
+        write_index(tmp_path, records)
+>       _rejected(tmp_path, 7, *PASS_ARGS)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:123: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_missing_source_identity_c0')
+revision = 7
+arguments = ('--gate', 'S00-GATE-02=PASS', '--gate-seal', 'S00-GATE-02=S00-GATE-02-TESTS-001', '--gate-seal', 'S00-GATE-02=S00-GATE-02-EVIDENCE-001', ...)
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 8
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'], returncode=0, stdout='Execution checkpoint saved at revision 8\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+____________ test_snapshot_seals_require_one_common_source_identity ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_snapshot_seals_require_on0')
+
+    def test_snapshot_seals_require_one_common_source_identity(tmp_path):
+        workspace(tmp_path)
+        snapshot = {'manifest_path': 'source.json', 'manifest_sha256': 'c' * 64}
+        for seal_id in ('S00-GATE-02-TESTS-001', 'S00-GATE-02-EVIDENCE-001'):
+            _edit_seal(tmp_path, seal_id, commit_evidence=None, source_snapshot=snapshot)
+        result = cli(tmp_path, *PASS_ARGS)
+        assert result.returncode == 0, result.stderr
+        # Full snapshot provenance remains the readiness validator's responsibility.
+        # The helper must still reject a later mixed source identity.
+        _edit_seal(tmp_path, 'S00-GATE-02-EVIDENCE-001',
+                   source_snapshot={**snapshot, 'manifest_sha256': 'd' * 64})
+>       _rejected(tmp_path, 8, '--gate', 'S00-GATE-02=PASS')
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:137: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1953/test_snapshot_seals_require_on0')
+revision = 8, arguments = ('--gate', 'S00-GATE-02=PASS')
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('Execution checkpoint saved at revision 9
+E         ', '')
+E       assert 0 == 2
+E        +  where 0 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...continue', '--gate', 'S00-GATE-02=PASS'], returncode=0, stdout='Execution checkpoint saved at revision 9\n', stderr='').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_nonpassing_acceptance_cannot_promote_a_slice[FAIL]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_nonpassing_acceptance_cannot_promote_a_slice[BLOCKED]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[bytes-accept]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[bytes-advance]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[missing-accept]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[missing-advance]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[deindexed-accept]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[deindexed-advance]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[verdict-accept]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[verdict-advance]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[source-accept]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[source-advance]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[superseded-accept]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_retained_seals_are_verified_on_acceptance_and_advance[superseded-advance]
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_gate_seals_must_match_the_recorded_source_commit
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_commit_only_patch_cannot_rebind_an_accepted_slice
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_acceptance_rejects_unresolved_blockers
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_gate_downgrade_requires_reconciling_the_slice_status
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_advance_cannot_move_backwards
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_missing_source_identity_cannot_support_a_pass_gate
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_snapshot_seals_require_one_common_source_identity
+21 failed, 33 passed in 4.11s

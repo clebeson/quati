@@ -58,10 +58,12 @@ ones. Consult transitive references as needed and record the visited scope.
 
 ## Next actions
 
-First finish the S00 acceptance commit validation and correct acceptance helper
-findings H1-H3 in the independent review. Then finalize this design and amend the
-specific normative documents before any S01 test or implementation. Tests are
-written by the larger model, run by Haiku, and reviewed independently. Record red,
-green, requirement portions, evidence digests and a revision-CAS checkpoint.
-Only English and Portuguese product output is in scope. No UI, production,
-external write, merge, release or deployment is authorized.
+S00 acceptance is committed/pushed as 1f77060. The prerequisite helper integrity
+correction is independently accepted with limits; see LOG-0056 and
+S00_HELPER_INTEGRITY_RETEST_2026-11-17.md. Verify its checkpoint is committed before
+continuing. Finalize this design and amend the specific normative documents before
+any S01 test or implementation. Tests are written by the larger model, run by
+Haiku, and reviewed independently. Record red, green, requirement portions,
+evidence digests and a revision-CAS checkpoint. Only English and Portuguese
+product output is in scope. No UI, production, external write, merge, release or
+deployment is authorized.

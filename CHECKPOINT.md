@@ -4,7 +4,7 @@ Implementation is authorized. Read docs/implementation/implementation_state.json
 its revision, active task, phase and next_action are the only progress authority.
 Do not trust historical PASS claims that are not backed by seal records.
 
-Current slice: S01 (state revision 31). Slice S00 is PASS: four gates sealed on commit
+Current slice: S01 (state revision 32). Slice S00 is PASS: four gates sealed on commit
 5063071 and accepted by the owner (governance/seals; LOG-0049, LOG-0050, LOG-0053).
 Changing src/quati, contracts/, examples/, the gate datasets or tests/evals expires the
 S00 live evidence; S01 work that touches them must plan its own requalification.
@@ -33,27 +33,36 @@ usable. Publication to github.com/clebeson/quati was requested by the owner; che
 
 ## Latest resume checkpoint (2026-11-17)
 
-Canonical revision 31, S01-T01 DISCOVER. The acceptance commit is ready only
-because the full outside-sandbox suite exited zero: 2252 passed, 10 skipped in
-570.32s. Both L0 validators also exited zero. The preceding sandbox run failed
-only on the real loopback-socket measurement; preserve its failure as evidence.
-The current run and source hashes are retained at:
-`evidence/S00/ACCEPTANCE-RESUME-2026-11-17/20261117T152158Z-d80f9810`.
-Do not interpret the ten existing opt-in live/packaging skips as new external proof.
-Check `git log -1` and `git status -sb` for acceptance commit/push completion.
+Canonical revision 32, S01-T01 DISCOVER. S00 acceptance is committed and pushed
+as 1f77060 on origin/main, using only the GitHub noreply identity. Its full-suite
+proof is 2252 passed, 10 skipped, pytest exit 0; both L0 validators exited zero.
+The sandbox socket failure remains retained as an environment limitation, not a
+waived test. No new real-provider qualification is claimed by these local runs.
 
-Fresh Sonnet review: docs/audit/S00_ACCEPTANCE_HELPER_REVIEW_2026-11-17.md.
-H1-H3 are P1 helper bugs, with shared-boundary H5/H6 follow-ups (LOG-0054).
-Correct them test-first before using the helper to promote S01. The reviewer accepts
-S00's recorded acceptance with limits; this does not accept the helper for future
-promotion. Preserve the seal/event timestamp discrepancy as a provenance limitation.
+The helper correction for LOG-0054 H1/H2/H3/H5/H6 is complete and independently
+reviewed: docs/audit/S00_HELPER_INTEGRITY_RETEST_2026-11-17.md. The final explicit
+seven-file run by Haiku exited zero with 144 passed, no skips, and both final L0
+validators exited zero. See:
+`evidence/S00/HELPER-INTEGRITY-2026-11-17/final-runner/20261117T212051Z-3859e46d`.
+The broader earlier runner accidentally included `.`; it passed, but began before
+final corrections, so use the final explicit run for helper acceptance.
 
-S01 discovery is now recorded in docs/implementation/S01_T01_DESIGN.md, with ten
-specification gaps. It is not SPEC_READY. No S01 source or tests have been authored.
-Resolve the consuming package's gaps in normative specifications before code.
-Next: commit/push the validated acceptance checkpoint if not already recorded,
-using the noreply identity and excluding PACKAGE_MANIFEST.json. Correct and
-independently re-review the helper; continue S01-T01 in order.
+Remaining helper debt: malformed non-PASS references on manually corrupted state
+can produce an untyped exception without writing a checkpoint. Snapshot commit
+rebinds are now rejected even when every gate is downgraded. Full provenance is
+still checked separately. Preserve the historical seal/event timestamp discrepancy
+(H4) as disclosed debt; do not rewrite immutable history.
+
+S01 discovery is recorded in docs/implementation/S01_T01_DESIGN.md with ten
+specification gaps. It is not SPEC_READY. No S01 source or tests exist. The S00
+runtime/qualification inputs remain unchanged. Next: verify this helper checkpoint
+is committed/pushed (`git log -1`, `git status -sb`), resolve G1-G10 in the consuming
+normative specifications, record SDD readiness, then write public-path tests before
+implementation. Do not skip to S01-T02 or treat contribution cases as full proof.
+
+State writes: scripts/checkpoint_execution.py with revision CAS, journal and ledger.
+Commit identity: clebeson <clebeson@users.noreply.github.com> for author and committer.
+PACKAGE_MANIFEST.json is stale, remains untracked, and must not enter commits.
 
 ## Earlier handoff (2026-11-16, historical)
 

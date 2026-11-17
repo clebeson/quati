@@ -56,11 +56,12 @@ def write_state(root):
     return path
 
 
-def write_seal(root, seal_id, kind, scope_ids, verdict="PASS"):
+def write_seal(root, seal_id, kind, scope_ids, verdict="PASS", commit=COMMIT):
     relative = f"governance/seals/{seal_id}.json"
     target = root / relative
     target.parent.mkdir(parents=True, exist_ok=True)
-    record = {"seal_id": seal_id, "kind": kind, "scope_ids": scope_ids, "verdict": verdict}
+    record = {"seal_id": seal_id, "kind": kind, "scope_ids": scope_ids, "verdict": verdict,
+              "commit_evidence": {"commit_sha": commit}}
     target.write_text(json.dumps(record, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     return {
         "seal_id": seal_id,
@@ -413,9 +414,9 @@ def _second_cli(tmp_path, revision, *args):
 def test_a_superseding_seal_replaces_the_reference_it_names(tmp_path):
     state_path, ledger_path, records = workspace(tmp_path)
     assert cli(tmp_path, *PASS_ARGS).returncode == 0
-    newer_tests = write_seal(tmp_path, "S00-GATE-02-TESTS-002", "TESTS_VERIFIED", ["S00-GATE-02"])
+    newer_tests = write_seal(tmp_path, "S00-GATE-02-TESTS-002", "TESTS_VERIFIED", ["S00-GATE-02"], commit="b" * 40)
     newer_tests["supersedes"] = "S00-GATE-02-TESTS-001"
-    newer_evidence = write_seal(tmp_path, "S00-GATE-02-EVIDENCE-002", "EVIDENCE_VERIFIED", ["S00"])
+    newer_evidence = write_seal(tmp_path, "S00-GATE-02-EVIDENCE-002", "EVIDENCE_VERIFIED", ["S00"], commit="b" * 40)
     newer_evidence["supersedes"] = "S00-GATE-02-EVIDENCE-001"
     write_index(tmp_path, [*records, newer_tests, newer_evidence])
 
@@ -477,7 +478,7 @@ def _slice_workspace(tmp_path, with_acceptance=True):
     for gate in ("S00-GATE-01", "S00-GATE-02"):
         gate_args += ["--gate", f"{gate}=PASS", "--gate-seal", f"{gate}=S00-TESTS-001",
                       "--gate-seal", f"{gate}=S00-EVIDENCE-001"]
-    assert cli(tmp_path, *gate_args, "--slice-commit", COMMIT).returncode == 0
+    assert cli(tmp_path, *gate_args, "--slice-commit", COMMIT, "--resolve-blocker", BLOCKER).returncode == 0
     return state_path, ledger_path
 
 

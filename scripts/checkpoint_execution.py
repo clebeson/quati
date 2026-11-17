@@ -7,7 +7,8 @@ references and blockers. A gate becomes PASS only with indexed, hash-verified
 TESTS_VERIFIED and EVIDENCE_VERIFIED seal records whose scope covers the gate or
 its slice, and a recorded slice commit. A seal whose index record names a
 referenced seal in `supersedes` replaces that reference for the gate. This helper checks the seal locator, the
-record hash, identity, scope and verdict; full provenance validation remains in
+record hash, identity, scope, verdict and source binding, including retained PASS
+references on promotion or advance; full provenance validation remains in
 spec_tools/validate_readiness.py.
 
 The JSONL ledger is an engineering execution journal, not Quati's product ledger.
@@ -434,7 +435,7 @@ def read_seal_index(seal_index):
 
 
 def resolve_seal(seal_id, gate, slice_id, by_id, seal_root):
-    """Return (state reference, verdict) for one indexed, hash-verified seal record."""
+    """Return (state reference, record) for one indexed, hash-verified seal record."""
     if seal_id not in by_id:
         raise ValueError(f"Seal not in canonical index: {seal_id}")
     indexed = by_id[seal_id]
@@ -461,33 +462,105 @@ def resolve_seal(seal_id, gate, slice_id, by_id, seal_root):
         raise ValueError(f"Seal scope does not cover {gate} or {slice_id}: {seal_id}")
     reference = {"seal_id": seal_id, "path": indexed["path"], "record_sha256": indexed["record_sha256"],
                  "kind": indexed["kind"], "scope_id": scope_id}
-    return reference, verdict
+    return reference, record
 
 
-def resolve_slice_patch(state, request, seal_index, seal_root):
-    """Validate a slice request against state and seals; return the patch recorded in the event."""
-    slice_id = target_slice(state, request)
-    item = state["slices"][slice_id]
-    patch = {"slice_id": slice_id}
-    if request["gates"]:
-        patch["gates"] = dict(request["gates"])
-    by_id = read_seal_index(seal_index) if request["gate_seals"] else {}
-    verdicts = {}
-    new_refs = {}
-    superseded = {}
+def _source_identity(record, commit):
+    """Check the source form and return a comparable, immutable source identity."""
+    source = record.get("commit_evidence")
+    snapshot = record.get("source_snapshot")
+    if (source is None) == (snapshot is None):
+        raise ValueError("Seal requires exactly one source identity")
+    if source is not None:
+        if not isinstance(source, dict) or source.get("commit_sha") != commit:
+            raise ValueError("Seal commit mismatch")
+        return "commit:" + commit
+    if (not isinstance(snapshot, dict) or not isinstance(snapshot.get("manifest_path"), str)
+            or not snapshot["manifest_path"] or not isinstance(snapshot.get("manifest_sha256"), str)
+            or re.fullmatch(r"[a-f0-9]{64}", snapshot["manifest_sha256"]) is None):
+        raise ValueError("Invalid seal source snapshot identity")
+    return "snapshot:" + canonical_bytes(snapshot).decode("utf-8")
+
+
+def _verify_pass_gate(slice_id, gate, item, by_id, seal_root):
+    references = item.get("gate_seal_refs", {}).get(gate, [])
+    fields = {"seal_id", "kind", "path", "record_sha256", "scope_id"}
+    if (not isinstance(references, list)
+            or any(not isinstance(ref, dict) or not fields <= ref.keys() for ref in references)):
+        raise ValueError(f"Malformed seal reference for {gate}")
+    kinds = {ref["kind"] for ref in references}
+    if not MANDATORY_GATE_SEAL_KINDS <= kinds:
+        raise ValueError(f"PASS gate {gate} requires TESTS_VERIFIED and EVIDENCE_VERIFIED seal references")
+    if item.get("status") == "PASS" and "SLICE_ACCEPTED" not in kinds:
+        raise ValueError(f"PASS slice {slice_id} requires a SLICE_ACCEPTED seal reference on gate {gate}")
+    commit = item.get("commit")
+    if not isinstance(commit, str) or COMMIT_PATTERN.fullmatch(commit) is None:
+        raise ValueError(f"PASS gate {gate} requires a slice commit")
+    sources = set()
+    superseded_ids = {entry.get("supersedes") for entry in by_id.values()}
+    for ref in references:
+        if ref["seal_id"] in superseded_ids:
+            raise ValueError(f"Superseded seal cannot support PASS gate {gate}: {ref['seal_id']}")
+        actual, record = resolve_seal(ref["seal_id"], gate, slice_id, by_id, seal_root)
+        if ref != actual:
+            raise ValueError(f"Seal reference conflict for {gate}: {ref['seal_id']}")
+        if record["verdict"] != "PASS":
+            raise ValueError(f"Nonpassing seal used for PASS gate {gate}")
+        sources.add(_source_identity(record, commit))
+    return sources
+
+
+def _verify_slice_claims(slice_id, item, by_id, seal_root):
+    gates = item.get("gates", {})
+    if item.get("status") == "PASS":
+        if not gates or any(status != "PASS" for status in gates.values()):
+            raise ValueError(f"PASS slice {slice_id} requires every gate to be PASS")
+        if item.get("blockers"):
+            raise ValueError(f"PASS slice {slice_id} requires all blockers resolved")
+    sources = set()
+    for gate, status in gates.items():
+        if status == "PASS":
+            sources.update(_verify_pass_gate(slice_id, gate, item, by_id, seal_root))
+    if len(sources) > 1:
+        raise ValueError(f"Slice {slice_id} seals reference different source identities")
+
+
+def _resolve_gate_references(item, request, slice_id, by_id, seal_root):
+    new_refs, superseded = {}, {}
     for gate, seal_ids in request["gate_seals"].items():
         existing = {ref["seal_id"]: ref for ref in item.get("gate_seal_refs", {}).get(gate, [])}
         for seal_id in seal_ids:
-            reference, verdict = resolve_seal(seal_id, gate, slice_id, by_id, seal_root)
-            verdicts[(gate, seal_id)] = verdict
+            reference, _record = resolve_seal(seal_id, gate, slice_id, by_id, seal_root)
             replaced = by_id[seal_id].get("supersedes")
             if replaced in existing and replaced not in superseded.get(gate, []):
                 superseded.setdefault(gate, []).append(replaced)
             if seal_id in existing:
                 if existing[seal_id] != reference:
                     raise ValueError(f"Seal reference conflict for {gate}: {seal_id}")
-                continue
-            new_refs.setdefault(gate, []).append(reference)
+            else:
+                new_refs.setdefault(gate, []).append(reference)
+    return new_refs, superseded
+
+
+def _verify_commit_change(slice_id, previous, candidate, by_id, seal_root):
+    if previous.get("commit") is None or previous.get("commit") == candidate.get("commit"):
+        return
+    for gate, references in candidate.get("gate_seal_refs", {}).items():
+        for ref in references:
+            _reference, record = resolve_seal(ref["seal_id"], gate, slice_id, by_id, seal_root)
+            if record.get("source_snapshot") is not None:
+                raise ValueError("Retained snapshot seals cannot authorize a commit rebind; replace them first")
+
+
+def resolve_slice_patch(state, request, seal_index, seal_root):
+    """Validate the entire resulting PASS claim before preparing any journal write."""
+    slice_id = target_slice(state, request)
+    item = state["slices"][slice_id]
+    patch = {"slice_id": slice_id}
+    if request["gates"]:
+        patch["gates"] = dict(request["gates"])
+    by_id = read_seal_index(seal_index) if request["gate_seals"] else None
+    new_refs, superseded = _resolve_gate_references(item, request, slice_id, by_id, seal_root)
     if new_refs:
         patch["gate_seal_refs"] = new_refs
     if superseded:
@@ -498,40 +571,33 @@ def resolve_slice_patch(state, request, seal_index, seal_root):
     for blocker in patch.get("resolve_blockers", []):
         if blocker not in item.get("blockers", []):
             raise ValueError(f"Cannot resolve untracked blocker: {blocker}")
-    for gate, status in request["gates"].items():
-        if status != "PASS":
-            continue
-        if any(verdict != "PASS" for (seal_gate, _), verdict in verdicts.items() if seal_gate == gate):
-            raise ValueError(f"Nonpassing seal used for PASS gate {gate}")
-        kept = [ref for ref in item.get("gate_seal_refs", {}).get(gate, [])
-                if ref["seal_id"] not in superseded.get(gate, [])]
-        references = [*kept, *new_refs.get(gate, [])]
-        if not MANDATORY_GATE_SEAL_KINDS <= {ref["kind"] for ref in references}:
-            raise ValueError(f"PASS gate {gate} requires TESTS_VERIFIED and EVIDENCE_VERIFIED seal references")
-        if not (patch.get("commit") or item.get("commit")):
-            raise ValueError(f"PASS gate {gate} requires a slice commit")
-    if patch.get("status") == "PASS":
-        final_gates = {**item.get("gates", {}), **request["gates"]}
-        if not final_gates or any(value != "PASS" for value in final_gates.values()):
-            raise ValueError(f"PASS slice {slice_id} requires every gate to be PASS")
-        for gate in final_gates:
-            kept = [ref for ref in item.get("gate_seal_refs", {}).get(gate, [])
-                    if ref["seal_id"] not in superseded.get(gate, [])]
-            if "SLICE_ACCEPTED" not in {ref["kind"] for ref in [*kept, *new_refs.get(gate, [])]}:
-                raise ValueError(f"PASS slice {slice_id} requires a SLICE_ACCEPTED seal reference on gate {gate}")
+    candidate = json.loads(json.dumps(item))
+    apply_slice_patch({"slices": {slice_id: candidate}}, patch)
+    needs_index = (any(status == "PASS" for status in candidate.get("gates", {}).values())
+                   or (item.get("commit") != candidate.get("commit")
+                       and any(candidate.get("gate_seal_refs", {}).values())))
+    if needs_index:
+        by_id = read_seal_index(seal_index) if by_id is None else by_id
+    _verify_slice_claims(slice_id, candidate, by_id, seal_root)
+    _verify_commit_change(slice_id, item, candidate, by_id, seal_root)
     return patch
 
 
-def apply_advance(state, target):
+def apply_advance(state, target, seal_index=DEFAULT_SEAL_INDEX, seal_root=DEFAULT_SEAL_ROOT):
     slices = state["slices"]
     if target not in slices:
         raise ValueError(f"Unknown slice: {target}")
+    if target < state["current_slice"]:
+        raise ValueError("Cannot advance backwards")
+    by_id = None
     for name in sorted(slices):
         if name == target:
             break
         gates = slices[name].get("gates", {})
         if slices[name].get("status") != "PASS" or not gates or any(value != "PASS" for value in gates.values()):
             raise ValueError(f"Cannot advance to {target}: earlier slice {name} is not PASS with every gate PASS")
+        by_id = read_seal_index(seal_index) if by_id is None else by_id
+        _verify_slice_claims(name, slices[name], by_id, seal_root)
     state["current_slice"] = target
 
 
@@ -584,7 +650,7 @@ def prepare_event(state, expected_revision, phase, next_action, steps, previous_
     if slice_patch is not None:
         apply_slice_patch(updated, slice_patch)
     if advance_to is not None:
-        apply_advance(updated, advance_to)
+        apply_advance(updated, advance_to, seal_index, seal_root)
     timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     updated["revision"] = expected_revision + 1
     if "last_updated_at" in updated:

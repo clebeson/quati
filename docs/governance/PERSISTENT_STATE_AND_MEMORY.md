@@ -23,6 +23,26 @@ The legacy `lease_token` and `lease_expires_at` fields were removed from the sta
 
 A crash before rename leaves the previous revision authoritative. A crash after rename requires reading the new revision, not retrying the update blindly. If directory fsync is unsupported, record the platform limitation; native crash durability remains S07 qualification. A failed save leaves CHECKPOINT_PENDING and the exact next action; it does not mark a slice PASS.
 
+### Promotion and source identity checks
+
+A slice patch revalidates every resulting PASS gate, including retained seal
+references. Advancing revalidates every earlier accepted slice. Supporting records
+must resolve through the current index with matching hashes, scope, kind and PASS
+verdict, must not be superseded, and must share one source identity. Commit-form
+seals bind the exact recorded slice commit. Slice PASS also requires all gates
+PASS, no unresolved blockers and a SLICE_ACCEPTED reference for each gate.
+Downgrading an accepted gate requires a non-PASS slice status in the same patch;
+`--advance-to` cannot move backwards. Rejected transitions write no event.
+
+Snapshot-form seals identify the source snapshot; they do not authenticate a Git
+commit. The helper therefore rejects changing a slice's recorded commit while
+snapshot references are retained, even if the same patch downgrades the gates.
+Reconcile affected claims and replace the snapshot references with fresh
+commit-form seals bound to the new commit before promoting again. A downgrade
+alone cannot authorize rebinding old snapshot evidence to a new Git commit.
+Full evidence/snapshot provenance and issuer independence still require the
+readiness validator and independent review; these helper checks do not replace them.
+
 ## Resume procedure for any model
 
 1. Read AGENTS, README, canonical state and latest checkpoint manifest; verify source/evidence hashes.

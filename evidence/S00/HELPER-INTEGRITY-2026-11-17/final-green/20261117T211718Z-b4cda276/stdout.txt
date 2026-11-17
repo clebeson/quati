@@ -1,0 +1,60 @@
+......................F................................................. [ 50%]
+......................................................................   [100%]
+=================================== FAILURES ===================================
+_ test_independent_negative_snapshot_acceptance_cannot_rebind_its_commit[True] _
+
+tmp_path = PosixPath('/tmp/pytest-of-clebeson/pytest-1960/test_independent_negative_snap1')
+reconcile = True
+
+    @pytest.mark.parametrize('reconcile', [False, True])
+    def test_independent_negative_snapshot_acceptance_cannot_rebind_its_commit(tmp_path, reconcile):
+        """Fresh reviewer chose this negative after inspecting the first correction."""
+        records = [write_seal(tmp_path, f'S00-{name}-001', kind, ['S00'])
+                   for name, kind in [('TESTS', 'TESTS_VERIFIED'), ('EVIDENCE', 'EVIDENCE_VERIFIED'),
+                                      ('ACCEPTED', 'SLICE_ACCEPTED')]]
+        snapshot = {'manifest_path': 'source.json', 'manifest_sha256': 'c' * 64}
+        for indexed in records:
+            path = tmp_path / indexed['path']
+            record = json.loads(path.read_text())
+            record.pop('commit_evidence')
+            record['source_snapshot'] = snapshot
+            path.write_text(json.dumps(record))
+            indexed['record_sha256'] = hashlib.sha256(path.read_bytes()).hexdigest()
+        workspace(tmp_path, records)
+        arguments = ['--slice-commit', COMMIT, '--resolve-blocker', BLOCKER]
+        for gate in ('S00-GATE-01', 'S00-GATE-02'):
+            arguments += ['--gate', f'{gate}=PASS', '--gate-seal', f'{gate}=S00-TESTS-001',
+                          '--gate-seal', f'{gate}=S00-EVIDENCE-001']
+        result = cli(tmp_path, *arguments)
+        assert result.returncode == 0, result.stderr
+        accepted = _second_cli(tmp_path, 8, *_acceptance_args())
+        assert accepted.returncode == 0, accepted.stderr
+        rebind = ['--slice', 'S00', '--slice-commit', 'b' * 40]
+        if reconcile:
+            rebind += ['--slice-status', 'BLOCKED', '--gate', 'S00-GATE-01=BLOCKED',
+                       '--gate', 'S00-GATE-02=BLOCKED']
+>       _rejected(tmp_path, 9, *rebind)
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/tmp/pytest-of-clebeson/pytest-1960/test_independent_negative_snap1')
+revision = 9
+arguments = ('--slice', 'S00', '--slice-commit', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', '--slice-status', 'BLOCKED', ...)
+
+    def _rejected(root, revision, *arguments):
+        before = _checkpoint_bytes(root)
+        result = _second_cli(root, revision, *arguments)
+>       assert result.returncode == 2, (result.stdout, result.stderr)
+E       AssertionError: ('', 'Traceback (most recent call last):
+E           File "/home/clebeson/dev/SECMA/scripts/checkpoint_execution.py", line 748,...    if seal_id not in by_id:
+E                ^^^^^^^^^^^^^^^^^^^^
+E         TypeError: argument of type \'NoneType\' is not iterable
+E         ')
+E       assert 1 == 2
+E        +  where 1 = CompletedProcess(args=['/home/clebeson/dev/SECMA/.venv/bin/python', '/home/clebeson/dev/SECMA/scripts/checkpoint_execu...    if seal_id not in by_id:\n       ^^^^^^^^^^^^^^^^^^^^\nTypeError: argument of type \'NoneType\' is not iterable\n').returncode
+
+tests/unit/test_execution_checkpoint_acceptance_integrity.py:25: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_execution_checkpoint_acceptance_integrity.py::test_independent_negative_snapshot_acceptance_cannot_rebind_its_commit[True]
+1 failed, 141 passed in 6.78s
