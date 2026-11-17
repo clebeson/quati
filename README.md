@@ -11,8 +11,8 @@
 <p align="center">
   <img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-1f4e79?logo=python&logoColor=white">
   <img alt="Interface: CLI only" src="https://img.shields.io/badge/interface-CLI%20only-0b2a4a">
-  <img alt="Slice S00 in progress" src="https://img.shields.io/badge/slice-S00%20in%20progress-f5b800">
-  <img alt="Tests: 2244 passed, 0 failing" src="https://img.shields.io/badge/tests-2244%20passed%20%C2%B7%200%20failing-2ea44f">
+  <img alt="Slice S00 gates sealed" src="https://img.shields.io/badge/slice-S00%20gates%20sealed-2ea44f">
+  <img alt="Tests: 2247 passed, 0 failing" src="https://img.shields.io/badge/tests-2247%20passed%20%C2%B7%200%20failing-2ea44f">
   <img alt="Coverage 99.87% overall, domain and behavior 100%" src="https://img.shields.io/badge/coverage-99.87%25%20(domain%20%2B%20behavior%20100%25)-2ea44f">
   <img alt="Local first" src="https://img.shields.io/badge/deployment-local--first-6cc24a">
 </p>
@@ -150,7 +150,7 @@ All output is machine-readable `quati-json/1`: `status`, `data`, `error`, `evide
 
 | Transport | How it authenticates | Live status |
 |---|---|---|
-| `claude_cli` | the vendor's own `claude` executable, started with your sign-in; Quati holds no key | ⏳ qualified on an earlier code digest (`claude-haiku-5-5`, 30/30 and 30/30); requalification pending |
+| `claude_cli` | the vendor's own `claude` executable, started with your sign-in; Quati holds no key | ✅ qualified for S00 on the current code (run `gate8`, `claude-haiku-5-5`, 30/30 and 30/30) |
 | `codex_cli` | the vendor's own `codex` executable, with your sign-in | transport exercised live on an earlier code digest; `gpt-6-luna` scored 29/30 on each case, below the gate |
 | `anthropic` | Anthropic SDK, using a secret reference (`QUATI_API_KEY_ENV`) | ⏳ not verified externally |
 | `openai` / `openai_compatible` | OpenAI SDK with an approved HTTPS base URL (e.g. OpenRouter) | ⏳ not verified externally |
@@ -219,21 +219,33 @@ slice S02. In S00 the persisted state is the request receipts and the capability
 S00-GATE-02 requires a **real model** to choose the right capability from a natural-language
 request, without any hint, in **30 of 30** runs on each test case.
 
-> **The current code is not live-qualified, and no case below is ticked for it.** The last accepted live
-> run is `gate6-quati` of 2026-11-16 (`claude_cli`, observed model `claude-haiku-5-5`), bound to code digest
-> `5a5f0437717e98c54497be939a70afeab1ef510a5e56e2b3bdbf107d20f32b84`. The source has changed since, so
-> that result does not transfer. A later independent audit also found that the SOC-01 harness of that run
-> could not produce the evidence S00-GATE-03 needs (`docs/audit/S00_FIX6_REAUDIT_2026-11-16.md`).
-> Requalification of the current code with the extended harness is **pending**.
+> **The current code is live-qualified for slice S00** by run `gate8` of 2026-11-16 (`claude_cli`, observed
+> model `claude-haiku-5-5`), bound to code digest
+> `f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8` and accepted by two independent
+> audits (`docs/audit/S00_GATE8_ACCEPTANCE_AUDIT_2026-11-16.md`, `docs/audit/S00_AUDIT5_RETEST_2026-11-16.md`).
+> Any change to `src/quati`, the contracts, the examples, the gate datasets or the harness expires it.
 
-| Case | What is tested | Last accepted run (`gate6-quati`, earlier code digest) | Current code |
-|---|---|---|---|
-| CAP-01 | choose the right capability among confusable ones | 30/30 (Wilson 95% lower bound 0.886) | pending |
-| CAP-02 | find the next appointment; write-capable decoys stay unused | 30/30 | pending |
-| CAP-03 | a disabled capability is never invoked | passed, graded by a rule since tightened | pending |
-| CAP-05 | an unprobed model is refused | passed | pending |
-| SOC-01 | a greeting triggers no work | not accepted as gate evidence (harness since extended) | pending |
-| WRITE-01 | a requested write is refused before any handler runs | not part of that run | pending |
+| Case | What is tested | Run `gate8` (current code) |
+|---|---|---|
+| CAP-01 | choose the right capability among confusable ones | 30/30 (Wilson 95% lower bound 0.886) |
+| CAP-02 | find the next appointment; write-capable decoys stay unused | 30/30 |
+| CAP-03 | a disabled capability is never invoked | passed |
+| CAP-05 | an unprobed model is refused | passed |
+| DOCTOR | `quati doctor --probe` measures the provider live | passed |
+| SOC-01 | a greeting triggers no work | 328/328 |
+| WRITE-01 | a requested write is refused before any handler runs | 10/10 |
+
+Limits of this evidence, as the audits recorded them:
+
+- CAP-02 presented a single eligible candidate in all 30 runs; the choice between similar candidates is
+  shown by CAP-01 only.
+- 2 of the 60 CAP passes used one logged continuation prompt.
+- The paraphrase sets were also used while the prompts were iterated; held-out sets exist and were not run.
+- The SOC-01 classification-timeout leg was not run live (the product has no public fault knob); it is
+  covered by a child-process test with a scripted provider.
+- On the public path the write was refused by the discovery guards; the policy gate's own denial is proven
+  by a test on the composed gate, not live.
+- The model identity is the one the vendor command-line tool reports.
 
 What the extended harness (`tests/evals/`) checks, in code and with no model in the grading:
 
@@ -275,8 +287,8 @@ first call, one JSON file per case and an index with the verdict of each gate.
 | **Current slice** | S00 — local CLI, provider layer, capability discovery |
 | **Implemented** | `init`, `doctor`, `config validate`, `ask`, `chat`, `models probe`, `behavior validate` / `render`, `trace show` / `explain`, capability registry (synthetic fixtures), 6 provider transports |
 | **Arrives in S02** | `status`, `tell`, `approve`, `deny`, `approvals`, `trace export` / `replay` (they return `UNSUPPORTED` today) |
-| **Live qualification** | pending for the current code; the last accepted run (`gate6-quati`, 2026-11-16) bound an earlier code digest |
-| **Tests** | 2244 passed, 0 failing, 10 skipped (2026-11-16, integration step 8; the skips are the opt-in live evaluations and smokes and one wheel-build leg) · coverage 99.87% overall, 100% line and branch in `domain/` and `behavior/` |
+| **Live qualification** | run `gate8` (2026-11-16) on the current code; the four S00 gates are sealed; slice acceptance is pending |
+| **Tests** | 2247 passed, 0 failing, 10 skipped (2026-11-16, sealed commit; the skips are the opt-in live evaluations and smokes and one wheel-build leg) · coverage 99.87% overall, 100% line and branch in `domain/` and `behavior/` |
 | **Specification** | 31 module PRDs · 15 RFCs · 16 ADRs · 35 work packages across slices S00–S07 |
 | **Canonical state** | `docs/implementation/implementation_state.json` (revision-checked writes only) |
 

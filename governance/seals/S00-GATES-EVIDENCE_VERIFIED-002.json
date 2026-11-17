@@ -1,0 +1,70 @@
+{
+  "commit_evidence": {
+    "commit_sha": "5063071062318b0505873f2d78dfb8286bb4d5f8",
+    "test_log_ref": "evidence/S00/GATES-FINAL-2026-11-16/tests-verified.txt",
+    "transcript_ref": "evidence/S00/GATES-FINAL-2026-11-16/transcript-ref.json"
+  },
+  "evidence_refs": [
+    "evidence/S00/GATES-FINAL-2026-11-16/tests-verified.txt",
+    "evidence/S00/GATES-FINAL-2026-11-16/transcript-ref.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/BEH.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-01.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-02.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-03.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-05.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/DOCTOR.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/INDEX.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/PREREG.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/SOC-01.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/WRITE-01.json",
+    "docs/audit/S00_GATE8_ACCEPTANCE_AUDIT_2026-11-16.md",
+    "docs/audit/S00_AUDIT5_RETEST_2026-11-16.md"
+  ],
+  "evidence_sha256": {
+    "docs/audit/S00_AUDIT5_RETEST_2026-11-16.md": "05bd94b73090210d273984a6a42eaff9ba74ed2d62237279c26fc3e987d51b76",
+    "docs/audit/S00_GATE8_ACCEPTANCE_AUDIT_2026-11-16.md": "558a2ea232ebbbe0acb9251a182f0014370d6ee39d94f40b86c4aecae7d6fa06",
+    "evidence/S00/GATES-FINAL-2026-11-16/tests-verified.txt": "62aea2870d7fa5e6bdf175f1c1a4ff03b17b082d027262896a46a31dd9bca652",
+    "evidence/S00/GATES-FINAL-2026-11-16/transcript-ref.json": "25266881516cdd86445ed1339efaf9c59a9c4da0c7b7163ecbbdae31d4f0246c",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/BEH.json": "af5aeba70aa121022555bbb7fecf0e2a2412d7ddf5f2423d6a22ba866b54a268",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-01.json": "cc4faac28096f276640f81e68d3c7627294dc0da42f483fc1cd1fecf5cca2f51",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-02.json": "194932f969932b95364c5dad4462a56ebb08b44038f2169ccced22d57032dd5f",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-03.json": "8dbbe748bd88de052f5eed6f054da17ac2e9e3762fed27063ae039ead9c9a2ee",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-05.json": "b10cd005be982731d889d1ee02f43b96c81438c2f28a812b1a42ce6a6161998e",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/DOCTOR.json": "0b90e0b3fd7438d01cca76d06fa1ccb8342aa25ccc74a738ba304c39dffd37e8",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/INDEX.json": "8d521279a0539216e1352c4ace2e8a35bf0bb54fd21789230708567d63420ed7",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/PREREG.json": "0b9a9892c2351bbb853a54d169b228ebc50c7be336b7c954a920e0381eee41ae",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/SOC-01.json": "65761352784731842cbe16be4a7dd11bf6290b2bc15fed80b46e3499f3385571",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/WRITE-01.json": "4230ff6321da16836dd5a174667741be577584acded70fd66e60c04f2c0dced5"
+  },
+  "issued_at": "2026-11-17T00:40:00Z",
+  "issuer": {
+    "identity": "independent audit agent sessions (fresh context, sonnet, 2026-11-16; transcript hashes in transcript-ref.json)",
+    "independent_of_authors": true,
+    "role": "independent evidence reviewers"
+  },
+  "kind": "EVIDENCE_VERIFIED",
+  "proof_tiers": [
+    "L3"
+  ],
+  "rationale": "Two independent read-only audits with no P1 and no P2 finding. docs/audit/S00_GATE8_ACCEPTANCE_AUDIT_2026-11-16.md recomputed run gate8 from raw records with its own scripts: CAP-01 30/30 and CAP-02 30/30 with exact arguments and tool order, INDEX and PREREG hashes equal to the files at the run commit, code and asset digests equal at the run commit and at HEAD, 415 embedded receipts carrying both digests, no outage, no vacuous pass, no gold-label leak, no secret; verdict ACCEPT for S00-GATE-01 (live part), S00-GATE-02 and S00-GATE-03. docs/audit/S00_AUDIT5_RETEST_2026-11-16.md re-tested the third audit's findings on the same source through the public CLI and found them fixed (two partly, as recorded debt) with no regression in the source diff. The deterministic proof of S00-GATE-01 and S00-GATE-04 was accepted by the earlier independent audits (docs/audit/S00_FIX6_REAUDIT_2026-11-16.md, docs/audit/S00_AUDIT3_2026-11-16.md). This record was written by the root coordinator from the auditors' reports; it is a process control, not a cryptographic proof of who reviewed. Limits (LOG-0049): CAP-02 presents a single eligible candidate in 30 of 30 runs; 2 of 60 passes used one logged continuation; the paraphrase sets were also used while iterating prompts; model identity is as reported by the vendor CLI; the SOC-01 classification-timeout leg was NOT_RUN live (no public fault knob) and is covered at L2 with a scripted provider; on the public path the write was refused by the discovery guards and a live model never attempted a write invoke, so the policy gate's denial is proven at L1 on the composed gate, as the owner-amended S00-GATE-03 sentence states (LOG-0043); S00-GATE-04 and the deterministic part of S00-GATE-01 have no live component. The seal closes no requirement plan (requirement_ids is empty on purpose) and is not slice acceptance. It expires on any change to src/quati, contracts, examples, the gate datasets, the harness or the model configuration.",
+  "requirement_ids": [],
+  "scope_ids": [
+    "S00-GATE-01",
+    "S00-GATE-02",
+    "S00-GATE-03",
+    "S00-GATE-04"
+  ],
+  "seal_id": "S00-GATES-EVIDENCE_VERIFIED-002",
+  "signature": null,
+  "supersedes": "S00-GATE-02-EVIDENCE_VERIFIED-001",
+  "test_ids": [
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "POL-01"
+  ],
+  "unresolved_findings": [],
+  "verdict": "PASS"
+}

@@ -1,0 +1,74 @@
+{
+  "commit_evidence": {
+    "commit_sha": "5063071062318b0505873f2d78dfb8286bb4d5f8",
+    "test_log_ref": "evidence/S00/GATES-FINAL-2026-11-16/tests-verified.txt",
+    "transcript_ref": "evidence/S00/GATES-FINAL-2026-11-16/transcript-ref.json"
+  },
+  "evidence_refs": [
+    "evidence/S00/GATES-FINAL-2026-11-16/tests-verified.txt",
+    "evidence/S00/GATES-FINAL-2026-11-16/transcript-ref.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/BEH.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-01.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-02.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-03.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-05.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/DOCTOR.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/INDEX.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/PREREG.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/SOC-01.json",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/WRITE-01.json"
+  ],
+  "evidence_sha256": {
+    "evidence/S00/GATES-FINAL-2026-11-16/tests-verified.txt": "62aea2870d7fa5e6bdf175f1c1a4ff03b17b082d027262896a46a31dd9bca652",
+    "evidence/S00/GATES-FINAL-2026-11-16/transcript-ref.json": "25266881516cdd86445ed1339efaf9c59a9c4da0c7b7163ecbbdae31d4f0246c",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/BEH.json": "af5aeba70aa121022555bbb7fecf0e2a2412d7ddf5f2423d6a22ba866b54a268",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-01.json": "cc4faac28096f276640f81e68d3c7627294dc0da42f483fc1cd1fecf5cca2f51",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-02.json": "194932f969932b95364c5dad4462a56ebb08b44038f2169ccced22d57032dd5f",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-03.json": "8dbbe748bd88de052f5eed6f054da17ac2e9e3762fed27063ae039ead9c9a2ee",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/CAP-05.json": "b10cd005be982731d889d1ee02f43b96c81438c2f28a812b1a42ce6a6161998e",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/DOCTOR.json": "0b90e0b3fd7438d01cca76d06fa1ccb8342aa25ccc74a738ba304c39dffd37e8",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/INDEX.json": "8d521279a0539216e1352c4ace2e8a35bf0bb54fd21789230708567d63420ed7",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/PREREG.json": "0b9a9892c2351bbb853a54d169b228ebc50c7be336b7c954a920e0381eee41ae",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/SOC-01.json": "65761352784731842cbe16be4a7dd11bf6290b2bc15fed80b46e3499f3385571",
+    "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/WRITE-01.json": "4230ff6321da16836dd5a174667741be577584acded70fd66e60c04f2c0dced5"
+  },
+  "issued_at": "2026-11-17T00:40:00Z",
+  "issuer": {
+    "identity": "root coordinator (Claude Code session ea3a9e09)",
+    "independent_of_authors": false,
+    "role": "test runner and reviewing owner"
+  },
+  "kind": "TESTS_VERIFIED",
+  "proof_tiers": [
+    "L1",
+    "L2",
+    "L3"
+  ],
+  "rationale": "All four S00 gate sentences (docs/implementation/SLICES/S00.md) observed passing on one source identity. Deterministic lanes on the sealed commit: 2247 passed, 10 skipped (7 opt-in live evaluations, 2 opt-in external smokes, 1 fresh-wheel leg). S00-GATE-01: doctor reports provider feature support and missing credentials without failing unrelated commands (public child-process tests) plus the live doctor probe of run gate8 (PROBED, SUPPORTED). S00-GATE-02: CAP-01 30/30 and CAP-02 30/30 live on claude_cli with observed model claude-haiku-5-5, logged trajectories, no gold labels. S00-GATE-03: table greetings answered by code with no capability invocation (SOC-01 328/328 live, public child-process tests), write refused before any handler on the public path (WRITE-01 10/10 live, POL-01 tests) and denied by the composed policy gate (test_pol_01_k3_is_denied_by_the_composed_gate_over_the_installed_policy). S00-GATE-04: deterministic compile hashes across processes and hash seeds and path-specific rejection of invalid statecharts through `quati behavior validate` (CMP-01..03 and CLI tests). Run gate8 was executed at commit 30d9993; src, tests/evals, contracts and examples are byte-identical on the sealed commit and the code digest f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8 was recomputed on it. Limits (LOG-0049): CAP-02 presents a single eligible candidate in 30 of 30 runs; 2 of 60 passes used one logged continuation; the paraphrase sets were also used while iterating prompts; model identity is as reported by the vendor CLI; the SOC-01 classification-timeout leg was NOT_RUN live (no public fault knob) and is covered at L2 with a scripted provider; on the public path the write was refused by the discovery guards and a live model never attempted a write invoke, so the policy gate's denial is proven at L1 on the composed gate, as the owner-amended S00-GATE-03 sentence states (LOG-0043); S00-GATE-04 and the deterministic part of S00-GATE-01 have no live component. The seal closes no requirement plan (requirement_ids is empty on purpose) and is not slice acceptance. It expires on any change to src/quati, contracts, examples, the gate datasets, the harness or the model configuration.",
+  "requirement_ids": [],
+  "scope_ids": [
+    "S00-GATE-01",
+    "S00-GATE-02",
+    "S00-GATE-03",
+    "S00-GATE-04"
+  ],
+  "seal_id": "S00-GATES-TESTS_VERIFIED-002",
+  "signature": null,
+  "supersedes": "S00-GATE-02-TESTS_VERIFIED-001",
+  "test_ids": [
+    "CAP-01",
+    "CAP-02",
+    "CAP-03",
+    "CAP-05",
+    "SOC-01",
+    "POL-01",
+    "POL-04",
+    "CMP-01",
+    "CMP-02",
+    "CMP-03",
+    "IDN-01",
+    "IDN-02"
+  ],
+  "unresolved_findings": [],
+  "verdict": "PASS"
+}

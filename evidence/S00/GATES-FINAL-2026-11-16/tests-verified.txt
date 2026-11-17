@@ -1,0 +1,32 @@
+S00 gates test log
+tested commit: 5063071062318b0505873f2d78dfb8286bb4d5f8 (clean working tree; one untracked file PACKAGE_MANIFEST.json)
+host: Linux 6.17.0-41-generic; Python 3.13.7
+
+## Deterministic lanes
+command: .venv/bin/python -m pytest -q -p no:cacheprovider -rs
+2247 passed, 10 skipped in 568.73s (0:09:28)
+exit code: 0
+SKIPPED [1] tests/evals/test_discovery.py:36
+SKIPPED [1] tests/evals/test_discovery.py:40
+SKIPPED [1] tests/evals/test_discovery.py:44
+SKIPPED [1] tests/evals/test_discovery.py:49
+SKIPPED [1] tests/evals/test_discovery.py:54
+SKIPPED [1] tests/evals/test_social.py:22
+SKIPPED [1] tests/evals/test_social.py:30
+SKIPPED [1] tests/external/test_live_claude_cli.py:26
+SKIPPED [1] tests/external/test_live_codex_cli.py:26
+SKIPPED [1] tests/packaging/test_fresh_install.py:97
+skips: 7 opt-in live evaluations and 2 opt-in external smokes (their gate-relevant content is the live run below); 1 fresh-wheel packaging leg (setuptools not importable in the test environment; run by hand in the integration step, LOG-0043).
+validators: L0 SPEC VALIDATION: PASS (contracts, examples, reference freshness, states, requirement references). NO APP RUNTIME PROOF.
+validators: {"fixture_recipes": 125, "requirement_plans": 243, "requirements": 243, "runtime_qualified": false, "semantic_coverage_requires_review": true, "shared_cases": 101, "status": "PASS", "tier": "L0", "wor
+
+## Live gate run (L3)
+run: evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8, executed 2026-11-16T23:39Z at commit 30d9993
+command: .venv/bin/python tests/evals/run_live_eval.py --transport claude_cli --model haiku --workers 4 --label gate8 --accept-not-run f_classification_timeout --allow-untracked PACKAGE_MANIFEST.json --confirm-spend
+provider/model: claude_cli (vendor CLI 2.1.326, owner sign-in) / observed model id claude-haiku-5-5
+code digest pre-registered: f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8; recomputed on the tested commit: f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8
+git diff 30d9993 5063071062318b0505873f2d78dfb8286bb4d5f8 -- src tests/evals contracts examples: 0 changed lines of stat (0 means identical)
+CAP-01 30/30; CAP-02 30/30; CAP-03 pass; CAP-05 pass; DOCTOR pass; SOC-01 328/328 with leg f_classification_timeout NOT_RUN (accepted); WRITE-01 10/10; behavior suite 13/13 (informational)
+verdict of the harness: GATE_PROTOCOL_PASS_WITH_NOT_RUN_LEGS: SOC-01:f_classification_timeout
+provider calls 1224; provider-reported cost US$0.399
+INDEX.json sha256: 8d521279a0539216e1352c4ace2e8a35bf0bb54fd21789230708567d63420ed7

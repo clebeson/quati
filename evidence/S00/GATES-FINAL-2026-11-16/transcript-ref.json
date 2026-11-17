@@ -1,0 +1,9 @@
+{
+  "note": "Hashes of local session transcripts; the transcripts are not published. The root transcript hash was taken while the session was still running, so it identifies the transcript up to the moment of sealing only.",
+  "gate8_acceptance_audit_report": "docs/audit/S00_GATE8_ACCEPTANCE_AUDIT_2026-11-16.md",
+  "gate8_acceptance_audit_session_transcript_sha256": "ce7b37857f57dd9de687853e9b5637b0392c207c3e20d5b4c0935a7c9a51e0ec",
+  "retest_audit_report": "docs/audit/S00_AUDIT5_RETEST_2026-11-16.md",
+  "retest_audit_session_transcript_sha256": "76d2b215af8b66fb36cdc0c6cedd34d991a2433549fd8b10fec2475906c4227f",
+  "root_coordinator_session_id": "ea3a9e09-79d5-485a-82d9-f4d6ac48dccd",
+  "root_coordinator_session_transcript_sha256_at_sealing": "8574be878de3add9dc01795b5c7db8262cd898d3395a9bd972944ad26750f6d7"
+}

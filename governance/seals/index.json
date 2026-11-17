@@ -20,6 +20,32 @@
         "S00-GATE-02"
       ],
       "supersedes": null
+    },
+    {
+      "seal_id": "S00-GATES-TESTS_VERIFIED-002",
+      "path": "governance/seals/S00-GATES-TESTS_VERIFIED-002.json",
+      "record_sha256": "1dfb377a7a4ceaaae951a4fd95acc4a5f0afce434382aa27d690e54e0c1d7e44",
+      "kind": "TESTS_VERIFIED",
+      "scope_ids": [
+        "S00-GATE-01",
+        "S00-GATE-02",
+        "S00-GATE-03",
+        "S00-GATE-04"
+      ],
+      "supersedes": "S00-GATE-02-TESTS_VERIFIED-001"
+    },
+    {
+      "seal_id": "S00-GATES-EVIDENCE_VERIFIED-002",
+      "path": "governance/seals/S00-GATES-EVIDENCE_VERIFIED-002.json",
+      "record_sha256": "1753499c65cf8dc32c26bc49d736715f5887e39b88e3ece062f79f3dc8eb0f6f",
+      "kind": "EVIDENCE_VERIFIED",
+      "scope_ids": [
+        "S00-GATE-01",
+        "S00-GATE-02",
+        "S00-GATE-03",
+        "S00-GATE-04"
+      ],
+      "supersedes": "S00-GATE-02-EVIDENCE_VERIFIED-001"
     }
   ],
   "lookup_rule": "Canonical state names exact seal refs. Verify immutable record hash, scope/kind, issuer independence, all artifact digests and supersession. Missing or ambiguous current valid seal blocks gate. Never choose by timestamp alone."

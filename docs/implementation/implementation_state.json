@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 26,
+  "revision": 27,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S00",
@@ -8,40 +8,85 @@
     "S00": {
       "status": "IN_PROGRESS",
       "gates": {
-        "S00-GATE-01": "NOT_RUN",
-        "S00-GATE-02": "BLOCKED",
-        "S00-GATE-03": "NOT_RUN",
-        "S00-GATE-04": "NOT_RUN"
+        "S00-GATE-01": "PASS",
+        "S00-GATE-02": "PASS",
+        "S00-GATE-03": "PASS",
+        "S00-GATE-04": "PASS"
       },
       "evidence_refs": [
         "evidence/S00/runtime_green_attempt1.txt",
         "evidence/S00/provider-tdd/green-final.txt",
-        "evidence/S00/GATE-02-2026-11-16/tests-verified.txt"
+        "evidence/S00/GATE-02-2026-11-16/tests-verified.txt",
+        "evidence/S00/T05-20261116T233925Z-claude_cli-haiku-gate8/INDEX.json",
+        "evidence/S00/GATES-FINAL-2026-11-16/tests-verified.txt"
       ],
-      "blockers": [
-        "S00-GATE-02 seals on a655c20 expired: src/quati changed for IDN-02 (LOG-0038); live requalification required"
-      ],
-      "commit": "a655c20966b6687545f771182fb04dde663a1fb7",
+      "blockers": [],
+      "commit": "5063071062318b0505873f2d78dfb8286bb4d5f8",
       "gate_seal_refs": {
-        "S00-GATE-01": [],
+        "S00-GATE-01": [
+          {
+            "seal_id": "S00-GATES-TESTS_VERIFIED-002",
+            "path": "governance/seals/S00-GATES-TESTS_VERIFIED-002.json",
+            "record_sha256": "1dfb377a7a4ceaaae951a4fd95acc4a5f0afce434382aa27d690e54e0c1d7e44",
+            "kind": "TESTS_VERIFIED",
+            "scope_id": "S00-GATE-01"
+          },
+          {
+            "seal_id": "S00-GATES-EVIDENCE_VERIFIED-002",
+            "path": "governance/seals/S00-GATES-EVIDENCE_VERIFIED-002.json",
+            "record_sha256": "1753499c65cf8dc32c26bc49d736715f5887e39b88e3ece062f79f3dc8eb0f6f",
+            "kind": "EVIDENCE_VERIFIED",
+            "scope_id": "S00-GATE-01"
+          }
+        ],
         "S00-GATE-02": [
           {
-            "seal_id": "S00-GATE-02-TESTS_VERIFIED-001",
-            "path": "governance/seals/S00-GATE-02-TESTS_VERIFIED-001.json",
-            "record_sha256": "b6ca06583a02eb464c9c03e360222d2733ab41dec2cd10abdcd10b8000c3d703",
+            "seal_id": "S00-GATES-TESTS_VERIFIED-002",
+            "path": "governance/seals/S00-GATES-TESTS_VERIFIED-002.json",
+            "record_sha256": "1dfb377a7a4ceaaae951a4fd95acc4a5f0afce434382aa27d690e54e0c1d7e44",
             "kind": "TESTS_VERIFIED",
             "scope_id": "S00-GATE-02"
           },
           {
-            "seal_id": "S00-GATE-02-EVIDENCE_VERIFIED-001",
-            "path": "governance/seals/S00-GATE-02-EVIDENCE_VERIFIED-001.json",
-            "record_sha256": "dbc2bf253201c5207648fb5802214d1567b3fd90ae6d26d037ffbc59266c4a68",
+            "seal_id": "S00-GATES-EVIDENCE_VERIFIED-002",
+            "path": "governance/seals/S00-GATES-EVIDENCE_VERIFIED-002.json",
+            "record_sha256": "1753499c65cf8dc32c26bc49d736715f5887e39b88e3ece062f79f3dc8eb0f6f",
             "kind": "EVIDENCE_VERIFIED",
             "scope_id": "S00-GATE-02"
           }
         ],
-        "S00-GATE-03": [],
-        "S00-GATE-04": []
+        "S00-GATE-03": [
+          {
+            "seal_id": "S00-GATES-TESTS_VERIFIED-002",
+            "path": "governance/seals/S00-GATES-TESTS_VERIFIED-002.json",
+            "record_sha256": "1dfb377a7a4ceaaae951a4fd95acc4a5f0afce434382aa27d690e54e0c1d7e44",
+            "kind": "TESTS_VERIFIED",
+            "scope_id": "S00-GATE-03"
+          },
+          {
+            "seal_id": "S00-GATES-EVIDENCE_VERIFIED-002",
+            "path": "governance/seals/S00-GATES-EVIDENCE_VERIFIED-002.json",
+            "record_sha256": "1753499c65cf8dc32c26bc49d736715f5887e39b88e3ece062f79f3dc8eb0f6f",
+            "kind": "EVIDENCE_VERIFIED",
+            "scope_id": "S00-GATE-03"
+          }
+        ],
+        "S00-GATE-04": [
+          {
+            "seal_id": "S00-GATES-TESTS_VERIFIED-002",
+            "path": "governance/seals/S00-GATES-TESTS_VERIFIED-002.json",
+            "record_sha256": "1dfb377a7a4ceaaae951a4fd95acc4a5f0afce434382aa27d690e54e0c1d7e44",
+            "kind": "TESTS_VERIFIED",
+            "scope_id": "S00-GATE-04"
+          },
+          {
+            "seal_id": "S00-GATES-EVIDENCE_VERIFIED-002",
+            "path": "governance/seals/S00-GATES-EVIDENCE_VERIFIED-002.json",
+            "record_sha256": "1753499c65cf8dc32c26bc49d736715f5887e39b88e3ece062f79f3dc8eb0f6f",
+            "kind": "EVIDENCE_VERIFIED",
+            "scope_id": "S00-GATE-04"
+          }
+        ]
       }
     },
     "S01": {
@@ -172,7 +217,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-16T23:31:36.549834Z",
+  "last_updated_at": "2026-11-17T00:41:17.513304Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -183,7 +228,7 @@
   "execution_authorized": true,
   "active_work": {
     "work_package_id": "S00-T05",
-    "phase": "EDD",
+    "phase": "CHECKPOINT",
     "owner": "root coordinator",
     "input_snapshot_ref": "evidence/S00/T01-2026-11-15/input_snapshot.json",
     "completed_steps": [
@@ -208,9 +253,11 @@
       "Integration step done (1622 passed, 10 skipped); owner amended the S00-GATE-03 sentence (LOG-0043)",
       "Third independent audit at a5a3af3: NOT READY for the live run; 5 P1, 5 P2 findings (LOG-0044)",
       "Fix round 8 and harness round 8 done test-first; 2180 passed, 10 skipped (LOG-0046); audit 3 test part recorded (LOG-0045)",
-      "Integration step 8 done; social table reduced to English and Portuguese by owner decision; main published to the owner's repository (LOG-0047, LOG-0048); 2244 passed, 10 skipped"
+      "Integration step 8 done; social table reduced to English and Portuguese by owner decision; main published to the owner's repository (LOG-0047, LOG-0048); 2244 passed, 10 skipped",
+      "Live pilot8 and gate run gate8 passed; two independent audits accepted with no P1 or P2 (LOG-0049)",
+      "TESTS_VERIFIED and EVIDENCE_VERIFIED seals issued for the four S00 gates on one commit; all four gates PASS"
     ],
-    "next_action": "Run the live pilot, then the gate run gate8 on the committed tree; focused audit of the diff since a5a3af3 and of the live evidence; seals for all four S00 gates on one commit; SLICE_ACCEPTED; then sync the specification debt listed in LOG-0048",
+    "next_action": "Sync the specification debt of LOG-0048 (documents only; the contract schema item is deferred to S01 because it changes the asset digest); owner or orchestrator issues SLICE_ACCEPTED for S00; then start S01 from its handoff with smaller models by complexity",
     "owned_files": [
       "src/quati",
       "tests",
@@ -220,9 +267,7 @@
     "pending_findings": [
       "Independent review: malformed identity JSON and FIFO credentials must fail closed without traceback or hang; canonical JSON and token schema conformity require correction.",
       "LOG-0013 open specification questions need owner confirmation before the consuming work package starts",
-      "LOG-0014 owner decisions from the architecture re-audit are pending",
-      "All S00 gate seals must reference one commit; S00-GATE-02 seals on a655c20 must be superseded by new records on the final S00 commit after requalification",
-      "LOG-0044 X1-X5 (P1) and X6-X10 (P2) must be fixed and re-audited before the live run"
+      "LOG-0014 owner decisions from the architecture re-audit are pending"
     ],
     "evidence_refs": [
       "evidence/S00/T01-2026-11-15/authorization.json",
@@ -260,7 +305,9 @@
       "evidence/S00/T05-fix8-social-outcomes-2026-11-16/green.txt",
       "evidence/S00/T05-harness8-2026-11-16/green.txt",
       "docs/audit/S00_AUDIT3_PART3_TESTS_2026-11-16.md",
-      "evidence/S00/T05-integration8-2026-11-16/green.txt"
+      "evidence/S00/T05-integration8-2026-11-16/green.txt",
+      "docs/audit/S00_GATE8_ACCEPTANCE_AUDIT_2026-11-16.md",
+      "docs/audit/S00_AUDIT5_RETEST_2026-11-16.md"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",
