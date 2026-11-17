@@ -47,7 +47,9 @@ def test_requirement_cannot_be_orphaned_from_final_task():
 def test_pass_gate_requires_exact_seal_record():
     from validate_readiness import validate_seal_references
     state=read('docs/implementation/implementation_state.json')
+    # Independent of the live gate status: a PASS gate whose seal references are removed must be rejected.
     state['slices']['S00']['gates']['S00-GATE-01']='PASS'
+    state['slices']['S00']['gate_seal_refs']['S00-GATE-01']=[]
     with pytest.raises(ValueError,match='seal'):
         validate_seal_references(state)
 
