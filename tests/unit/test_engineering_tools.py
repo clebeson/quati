@@ -26,6 +26,9 @@ def cli(script, *args, **kwargs):
 def test_checkpoint_state_requires_cas_and_never_skips_incomplete_slice(tmp_path):
     state = json.loads((ROOT / "docs/implementation/implementation_state.json").read_text())
     state["revision"] = 0
+    # Independent of the live gate status: the slice under test is incomplete in this copy.
+    state["slices"]["S00"]["status"] = "IN_PROGRESS"
+    state["slices"]["S00"]["gates"]["S00-GATE-01"] = "NOT_RUN"
     path = tmp_path / "state.json"
     path.write_text(json.dumps(state))
 
