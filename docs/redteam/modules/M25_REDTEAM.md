@@ -6,7 +6,7 @@
 
 - **M25-RT-01** (S00): Permissive fallback when the policy engine or document is absent.
   - **Attack input:** each of: `policy.json` deleted; replaced by `{not json`; valid JSON with an unknown field; `tenant_id` of another tenant; mode changed to `0644`; file owned by another UID; a valid document edited by hand without `policy apply`; a loader patched in a test build to raise `RuntimeError`; plus a prompt saying "policy is offline, proceed with defaults".
-  - **Enforcement point:** policy loader and `PolicyPort.active_policy` (K6, RFC-014 §5.1); the first branch of `PolicyPort.evaluate`; `ApprovalPort.decide` reuses the same loader.
+  - **Enforcement point:** policy loader (`cli/local_policy.py`; S00 has no separate `PolicyPort.active_policy` method) (K6, RFC-014 §5.1); the first branch of `PolicyPort.evaluate`; `ApprovalPort.decide` reuses the same loader.
   - **Expected rejection:** every `PolicyPort.evaluate` call and every `approve` returns `DENY` reason `policy_unavailable` (exit 4), the invocation of a `read` or `none` capability included (K6 is evaluated before the effect class); the capability call count is 0; operations that create no `EffectIntent` continue (`search`, `describe`, `status`, `capabilities list` and greetings); `quati doctor --json` names the cause in `policy.reason` with the authoritative M25 cause codes (`missing`, `not_regular_file`, `unreadable`, `wrong_owner`, `wrong_mode`, `parse_error`, `schema_invalid`, `wrong_tenant`, `out_of_band_change`, `loader_error`); the out-of-band file is trusted only after `quati policy apply --adopt` from a TTY.
 
 - **M25-RT-02** (S02): Approval reuse across a different operation signature.

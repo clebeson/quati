@@ -11,7 +11,7 @@
 
 - **M15-RT-02**: A malformed tool call becomes an unvalidated side effect.
   - Attack input: `quati_invoke` with truncated JSON `{"capability_id":"x`, an unknown tool `quati_exec`, an id outside the shortlist, and `{"amount":"ten"}` against an integer schema.
-  - Enforcement point: invoke guard steps 1–7 (M15 Normative detail) executed before `DurableRunner.enqueue` and `PolicyPort.evaluate`.
+  - Enforcement point: the invoke guard order (M15 Normative detail) executed before `PolicyPort.evaluate` (and, from S02, before `DurableRunner.enqueue`; S00: not delivered, delivered in S02).
   - Expected observable rejection: `TOOL_CALL_MALFORMED`, `TOOL_CALL_MALFORMED`, `NOT_IN_SHORTLIST`, `ARGUMENTS_SCHEMA_INVALID`; zero EffectIntents, zero enqueues and zero binding calls.
 
 ## Fail-closed and recovery requirements
