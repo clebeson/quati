@@ -55,6 +55,18 @@ S00 realization of the S00 ports above (the signatures in the table are the targ
 
 Internal functions, not ports (pure or module-internal; no adapter implements them and they are not substitutable): `classify_turn(context, turn, work_snapshot, policy, now)->(RequestClassification, TriageMeta)` (M08); `resolve_references(context, classification, request_text, candidates_source, now)->ReferenceResolution` (M04); `clarify(classification, resolution, work_snapshot, eligible_capabilities, policy)->ClarificationVerdict` (M05); `plan_contact(commitment_snapshot, event, now, policy, availability)->CommunicationPlan` (M06); `build_envelope(context, work_ref, decision_kind, sources)->ContextEnvelope` in `src/quati/behavior/context/` (M31); `record_signal(context, PreferenceSignal)` (M13); `SkillLoader.load_body` / `load_reference` returning DataBlock (M16); `AudienceAdapter.render(result:ResultRecord, audience:Audience)->RenderedPayload` (M10); `SourceFetcher.fetch(ref, max_bytes, deadline)->FetchResult` (M21).
 
+## S01 staged realization
+
+`docs/implementation/S01_RUNTIME_CONTRACT.md` defines the per-package realization.
+T01 validates typed RequestClassification ingress, provides the pure M08 reducer
+and attaches a process-only conversation projection through the existing CLI ask
+use case. It does not implement InteractionPort or activate the new routing policy.
+InteractionPort instances in T02/T03 are bound to a trusted conversation and owner;
+authentication session_id is not that locator. request_id is the scoped per-turn
+idempotency key; expected_revision refers to the conversation, not work_revision.
+S01 logical work is ephemeral; commitment_id remains null and TurnResult.work_ref
+carries its logical identity. The real CommitmentLedger arrives in S02.
+
 ## ContextEnvelope and model budget
 
 Contains schema_version, goal, actor/tenant references, policy ref, active work summary/revision, recent relevant turns, uncertainty, selected evidence refs, permitted action enum, candidate summaries and effective limits. Kernel/identity/ownership facts cannot be trimmed. Trim low-trust retrieved text first; if mandatory content exceeds budget, return BUDGET_EXCEEDED before dispatch. No hidden chain-of-thought is requested or stored. All imported text is data; delimiters are not the security boundary.

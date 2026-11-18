@@ -34,8 +34,12 @@
           "minLength": 1
         },
         "policy_version": {
-          "type": "string",
-          "minLength": 1
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Authorization policy identity when known; null grants no authority. Effects still require the independently loaded trusted policy."
         },
         "deadline_at": {
           "type": "string",

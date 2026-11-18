@@ -150,7 +150,7 @@ All output is machine-readable `quati-json/1`: `status`, `data`, `error`, `evide
 
 | Transport | How it authenticates | Live status |
 |---|---|---|
-| `claude_cli` | the vendor's own `claude` executable, started with your sign-in; Quati holds no key | ✅ qualified for S00 on the current code (run `gate8`, `claude-haiku-5-5`, 30/30 and 30/30) |
+| `claude_cli` | the vendor's own `claude` executable, started with your sign-in; Quati holds no key | historically qualified for S00 on the sealed source; S01 requalification pending (run `gate8`, `claude-haiku-5-5`, 30/30 and 30/30) |
 | `codex_cli` | the vendor's own `codex` executable, with your sign-in | transport exercised live on an earlier code digest; `gpt-6-luna` scored 29/30 on each case, below the gate |
 | `anthropic` | Anthropic SDK, using a secret reference (`QUATI_API_KEY_ENV`) | ⏳ not verified externally |
 | `openai` / `openai_compatible` | OpenAI SDK with an approved HTTPS base URL (e.g. OpenRouter) | ⏳ not verified externally |
@@ -219,13 +219,14 @@ slice S02. In S00 the persisted state is the request receipts and the capability
 S00-GATE-02 requires a **real model** to choose the right capability from a natural-language
 request, without any hint, in **30 of 30** runs on each test case.
 
-> **The current code is live-qualified for slice S00** by run `gate8` of 2026-11-16 (`claude_cli`, observed
+> **Historical S00 qualification** was established by run `gate8` of 2026-11-16 (`claude_cli`, observed
 > model `claude-haiku-5-5`), bound to code digest
 > `f9029dea81304be64ac528008e1e5021d628d1b32e9081bb329689daf5395db8` and accepted by two independent
 > audits (`docs/audit/S00_GATE8_ACCEPTANCE_AUDIT_2026-11-16.md`, `docs/audit/S00_AUDIT5_RETEST_2026-11-16.md`).
-> Any change to `src/quati`, the contracts, the examples, the gate datasets or the harness expires it.
+> The current S01 working tree is not live-qualified: its source/assets require requalification.
+> Historical acceptance remains bound to the sealed S00 commit; it is not proof for changed code/assets.
 
-| Case | What is tested | Run `gate8` (current code) |
+| Case | What is tested | Run `gate8` (historical sealed S00 source) |
 |---|---|---|
 | CAP-01 | choose the right capability among confusable ones | 30/30 (Wilson 95% lower bound 0.886) |
 | CAP-02 | find the next appointment; write-capable decoys stay unused | 30/30 |
@@ -287,7 +288,7 @@ first call, one JSON file per case and an index with the verdict of each gate.
 | **Current slice** | S00 — local CLI, provider layer, capability discovery |
 | **Implemented** | `init`, `doctor`, `config validate`, `ask`, `chat`, `models probe`, `behavior validate` / `render`, `trace show` / `explain`, capability registry (synthetic fixtures), 6 provider transports |
 | **Arrives in S02** | `status`, `tell`, `approve`, `deny`, `approvals`, `trace export` / `replay` (they return `UNSUPPORTED` today) |
-| **Live qualification** | run `gate8` (2026-11-16) on the current code; the four S00 gates are sealed and slice S00 is accepted (2026-11-17) |
+| **Live qualification** | historical run `gate8` on the sealed S00 source; S00 accepted (2026-11-17); changed S01 source/assets not yet live-qualified |
 | **Tests** | 2247 passed, 0 failing, 10 skipped (2026-11-16, sealed commit; the skips are the opt-in live evaluations and smokes and one wheel-build leg) · coverage 99.87% overall, 100% line and branch in `domain/` and `behavior/` |
 | **Specification** | 31 module PRDs · 15 RFCs · 16 ADRs · 35 work packages across slices S00–S07 |
 | **Canonical state** | `docs/implementation/implementation_state.json` (revision-checked writes only) |

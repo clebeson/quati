@@ -4,7 +4,7 @@ Implementation is authorized. Read docs/implementation/implementation_state.json
 its revision, active task, phase and next_action are the only progress authority.
 Do not trust historical PASS claims that are not backed by seal records.
 
-Current slice: S01 (state revision 32). Slice S00 is PASS: four gates sealed on commit
+Current slice: S01 (state revision 34). Slice S00 is PASS: four gates sealed on commit
 5063071 and accepted by the owner (governance/seals; LOG-0049, LOG-0050, LOG-0053).
 Changing src/quati, contracts/, examples/, the gate datasets or tests/evals expires the
 S00 live evidence; S01 work that touches them must plan its own requalification.
@@ -31,38 +31,42 @@ Git: the repository was re-created from source-history.bundle on 2026-11-16 and 
 usable. Publication to github.com/clebeson/quati was requested by the owner; check
 `git remote -v` and `git status -sb` to see whether the push has happened.
 
-## Latest resume checkpoint (2026-11-17)
+## Latest resume checkpoint (2026-11-17, S01-T01)
 
-Canonical revision 32, S01-T01 DISCOVER. S00 acceptance is committed and pushed
-as 1f77060 on origin/main, using only the GitHub noreply identity. Its full-suite
-proof is 2252 passed, 10 skipped, pytest exit 0; both L0 validators exited zero.
-The sandbox socket failure remains retained as an environment limitation, not a
-waived test. No new real-provider qualification is claimed by these local runs.
+Canonical revision 34, S01-T01 TDD_RED. HEAD before this SDD checkpoint is c5ec5b0;
+S00 acceptance and helper fixes are already pushed. S01 status is IN_PROGRESS,
+all S01 gates remain NOT_RUN. No S01 runtime source or new tests exist yet.
 
-The helper correction for LOG-0054 H1/H2/H3/H5/H6 is complete and independently
-reviewed: docs/audit/S00_HELPER_INTEGRITY_RETEST_2026-11-17.md. The final explicit
-seven-file run by Haiku exited zero with 144 passed, no skips, and both final L0
-validators exited zero. See:
-`evidence/S00/HELPER-INTEGRITY-2026-11-17/final-runner/20261117T212051Z-3859e46d`.
-The broader earlier runner accidentally included `.`; it passed, but began before
-final corrections, so use the final explicit run for helper acceptance.
+Read docs/implementation/S01_RUNTIME_CONTRACT.md and S01_T01_DESIGN.md. They
+resolve G1-G10 for T01's bounded foundation: typed ingress, pure policy building
+block (not activated routing) and a constant-space process-only conversation
+projection in the existing CLI chat use case. T02/T03 own the explicitly deferred
+behavior; T04 owns full slice proof. No new port, worker, command or UI is implied.
 
-Remaining helper debt: malformed non-PASS references on manually corrupted state
-can produce an untyped exception without writing a checkpoint. Snapshot commit
-rebinds are now rejected even when every gate is downgraded. Full provenance is
-still checked separately. Preserve the historical seal/event timestamp discrepancy
-(H4) as disclosed debt; do not rewrite immutable history.
+Fresh Sonnet SDD review accepted with eight P2 corrections, incorporated before
+TDD (docs/audit/S01_T01_SDD_REVIEW_2026-11-17.md; LOG-0058/0059). Haiku ran 55 L0
+regressions and both validators with child exit zero. Evidence and input hashes:
+`evidence/S01/T01-2026-11-17/`. This is specification proof only.
 
-S01 discovery is recorded in docs/implementation/S01_T01_DESIGN.md with ten
-specification gaps. It is not SPEC_READY. No S01 source or tests exist. The S00
-runtime/qualification inputs remain unchanged. Next: verify this helper checkpoint
-is committed/pushed (`git log -1`, `git status -sb`), resolve G1-G10 in the consuming
-normative specifications, record SDD readiness, then write public-path tests before
-implementation. Do not skip to S01-T02 or treat contribution cases as full proof.
+Next: root authors tests/unit/test_s01_t01.py and
+ tests/integration/cli/test_s01_conversation.py (distinct basenames). Haiku must
+record actual public-path red before runtime source. Use explicit command
+boundaries with no standalone trailing dot. Then implement the declared seams,
+run scoped regressions and coverage, obtain independent conformity/quality review,
+and CAS-checkpoint again. Do not move to T02 before accepting T01 contribution.
 
-State writes: scripts/checkpoint_execution.py with revision CAS, journal and ledger.
-Commit identity: clebeson <clebeson@users.noreply.github.com> for author and committer.
-PACKAGE_MANIFEST.json is stale, remains untracked, and must not enter commits.
+Current runtime-boundary assets differ from the sealed S00 source. README now
+states that old live qualification is historical and current S01 qualification
+is NOT_RUN. Preserve immutable S00 seals; plan affected-path requalification at
+S01-T04. Product languages remain English/Portuguese; internal artifacts English.
+
+Retained helper debt: LOG-0057 (malformed non-PASS references fail without a
+checkpoint but may have an untyped diagnostic; historical seal/event timestamp
+inconsistency). No production, merge, release or deployment is authorized.
+
+State writes: scripts/checkpoint_execution.py only, with revision CAS/journal.
+Commit author and committer: clebeson <clebeson@users.noreply.github.com>.
+PACKAGE_MANIFEST.json is stale and must remain untracked/out of commits.
 
 ## Earlier handoff (2026-11-16, historical)
 

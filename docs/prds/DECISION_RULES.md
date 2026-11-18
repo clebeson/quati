@@ -108,7 +108,7 @@ test feeds an out-of-vocabulary value and asserts R0.
 
 ## 4. Reference candidate score (owner M04)
 
-For each candidate reference `c` (prior commitment, turn artifact or memory episode already filtered by the current ACL
+First, intent social or simple_answer returns NO_REFERENCE without any candidate retrieval/scoring; M04 never changes the classification. For other intents, for each candidate reference `c` (prior commitment, turn artifact or memory episode already filtered by the current ACL
 and tenant before scoring), M04 computes five features in [0,1] from the request text `q`, the injected clock `now` and
 the requester time zone:
 

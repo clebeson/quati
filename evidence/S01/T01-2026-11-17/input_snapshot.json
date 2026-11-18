@@ -1,0 +1,46 @@
+{
+  "schema_version": "quati-task-input/1",
+  "work_package_id": "S01-T01",
+  "created_at": "2026-11-17T21:51:46.157145+00:00",
+  "base_commit": "c5ec5b0d31967316cfb2aa3e7c08b5afb2791261",
+  "stage": "SDD",
+  "local_assertions": [
+    "S01-T01-A01",
+    "S01-T01-A02",
+    "S01-T01-A03"
+  ],
+  "shared_cases_contribution_only": [
+    "SOC-02",
+    "CAP-04",
+    "INT-01"
+  ],
+  "scope": "Typed ingress, pure policy building block, process-only conversation projection; no full InteractionPort, worker or live proof.",
+  "files": {
+    "AGENTS.md": "ae2dcea6bb266a6cefd9fc874c1551804e557c22d3c018fdaa8939a18283de04",
+    "README.md": "0d2fb72833e1194a13f16865854583bd23eb60e41d78ae52eec4251ec89eed98",
+    "docs/implementation/WORK_PACKAGES.json": "d53afd73a82839e93a88cdbb26a2887149fa2b55790d4868688c4d9fbe661994",
+    "docs/implementation/S01_RUNTIME_CONTRACT.md": "4c275ef094575968558b4e57e639ef8c44f7c6be6a5eb4c857fe01f942bf2f61",
+    "docs/implementation/S01_T01_DESIGN.md": "2bbd8f033636eb6fa7f171a09ab66a04100d88bc40a52a42ebf2670378ccf832",
+    "docs/audit/S01_T01_SDD_REVIEW_2026-11-17.md": "0b56514212914c568d632cbaf46e70ca70809d94ceb632bdfb8182401f788908",
+    "docs/implementation/SLICES/S01.md": "f795d306c4d4f4e2073ee2574329c465ffa05306377c514f837a00e3b328a4fe",
+    "docs/implementation/work_packages/S01.md": "fc5c2afd2f4dacf9d258cee537439058659dd476fdca444fbc73e83884a9738b",
+    "docs/architecture/BOUNDARY_CONTRACTS.md": "244859f761ff80ef0b6f30716c4f41eccf9dca3a561fe8a060c84421adf7fee7",
+    "docs/architecture/TYPE_CATALOG.md": "e0bcdb68ce0339cf59896d99110f0788f4468d8f33a8675df17b6ae90093c10a",
+    "docs/prds/DECISION_RULES.md": "b34e879baacb1145f9da4f9e21910cabb96567a70fdc9a7660edd6ba4d871637",
+    "docs/prds/M01.md": "f2a0b3aa6838f67de1b063ea8bfc781d0fa35675818d0dc4c896664ec9f331e6",
+    "docs/prds/M02.md": "07446008d5ed5ebe7da3fa86202c7048207f3cce451bcffd211a46b1fbd1c79f",
+    "docs/prds/M03.md": "35810501d041b88d55c6299a8817a0f96abb7c609e2cfeb586f7d6a2123bc26c",
+    "docs/prds/M04.md": "01fb4c56b5135143be3a270530bc90df38bba85f95ed677d646db3164e498ab8",
+    "docs/prds/M08.md": "2c6ba3c616b33ef27060af128d54429556a6cde456c424ff7dcdb8fb390dda63",
+    "docs/prds/M31.md": "c18de8c7abfd591cc01d778a0c30919ea3f1b33cbb5397d6a35b4169f7145c7b",
+    "contracts/request-classification.schema.json": "a3828ec3eff8a652630ad9f23e7285c7f35d6fa8e9dfe0e3966699b9c4fcf509",
+    "contracts/interaction-decision.schema.json": "506535c31d06249d18a839b776ab4766ada0d95b1e165b22f71990e7b6479be7",
+    "contracts/runtime-boundaries.schema.json": "a6cd4bcabb199866549a4948dbe816d9864b598f2b0799642e87ed251ebf0cf0",
+    "src/quati/application/ask.py": "9d07dc863e3bb7fd5093e332718ab3fae878563d0c9a1e6584b30c943e752c6a",
+    "src/quati/application/cli_service.py": "a0c1577f5ab9f47942dd9e83ca235b0cffdd401a110c6b30b3dbf699d75a07ee",
+    "src/quati/application/identity.py": "9da6f37a5284925ae96e5619424869b1d04b382960a7033426e82ce11d1e705b",
+    "src/quati/cli/main.py": "e808cd0012d60e4d92416d775f84aafee7a5de46861ab36242c257ce464ecac7",
+    "src/quati/cli/chat.py": "de8eeebe439030cc1de61cae23e9507aa3fca7d4d67351c746489f926c641fc8",
+    "src/quati/cli/composition.py": "4266ac0f2ba36a26a3b996f6af777133703c274f6e9502d898483d500d345e42"
+  }
+}

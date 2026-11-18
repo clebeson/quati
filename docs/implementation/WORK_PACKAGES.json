@@ -1238,9 +1238,13 @@
       "owned_paths": [
         "src/quati/domain",
         "src/quati/application",
-        "tests/unit"
+        "tests/unit",
+        "src/quati/cli/main.py",
+        "contracts/runtime-boundaries.schema.json",
+        "tests/integration/cli/test_s01_conversation.py",
+        "tests/integration/cli/test_chat_session.py"
       ],
-      "deliverable": "typed context and ephemeral conversation revision",
+      "deliverable": "typed context/classification and an explicit process-only conversation revision",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
       "contract_detail": "InteractionDecision, RequestClassification and InteractionPort",
       "test_case_ids": [
@@ -1326,19 +1330,19 @@
         {
           "assertion_id": "S01-T01-A01",
           "expected_observation": "request intent/risk/complexity separated",
-          "planned_test_path": "tests/unit/test_s01_t01.py::test_a01",
+          "planned_test_path": "tests/integration/cli/test_s01_conversation.py::test_a01",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T01-A02",
           "expected_observation": "no model text grants authority",
-          "planned_test_path": "tests/unit/test_s01_t01.py::test_a02",
+          "planned_test_path": "tests/integration/cli/test_s01_conversation.py::test_a02",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T01-A03",
           "expected_observation": "non-durable scope explicitly disclosed",
-          "planned_test_path": "tests/unit/test_s01_t01.py::test_a03",
+          "planned_test_path": "tests/integration/cli/test_s01_conversation.py::test_a03",
           "status": "NOT_RUN"
         }
       ],

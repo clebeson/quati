@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 32,
+  "revision": 34,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S01",
@@ -118,7 +118,7 @@
       }
     },
     "S01": {
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "gates": {
         "S01-GATE-01": "NOT_RUN",
         "S01-GATE-02": "NOT_RUN",
@@ -245,7 +245,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-17T21:21:58.199596Z",
+  "last_updated_at": "2026-11-17T22:11:05.664799Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -256,9 +256,9 @@
   "execution_authorized": true,
   "active_work": {
     "work_package_id": "S01-T01",
-    "phase": "DISCOVER",
+    "phase": "TDD_RED",
     "owner": "root coordinator",
-    "input_snapshot_ref": "evidence/S00/T01-2026-11-15/input_snapshot.json",
+    "input_snapshot_ref": "evidence/S01/T01-2026-11-17/input_snapshot.json",
     "completed_steps": [
       "User authorized sequential SDD/TDD/EDD implementation",
       "Verified 352 input package file hashes",
@@ -287,9 +287,11 @@
       "Specification text synced (LOG-0052); owner accepted slice S00; SLICE_ACCEPTED issued; S00 PASS; current slice S01 (LOG-0053)",
       "Resumed at 9c8689d; both L0 validators exited 0; sandbox suite exited 1 with 2251 passed, 10 skipped and one local-socket PermissionError. Fresh Sonnet review accepts the recorded S00 acceptance with limits and identifies helper P1 corrections.",
       "S00 acceptance resume full suite outside sandbox exited 0: 2252 passed, 10 skipped in 570.32s; both specification validators exited 0. Evidence under evidence/S00/ACCEPTANCE-RESUME-2026-11-17/20261117T152158Z-d80f9810. No S01 source changed.",
-      "LOG-0054 H1/H2/H3/H5/H6 corrected test-first; fresh independent Sonnet review ACCEPT with recorded P2 limits. Final Haiku seven-file run exited 0: 144 passed; final L0 validators exited 0. S00 acceptance checkpoint 1f77060 was pushed to origin/main using noreply identity."
+      "LOG-0054 H1/H2/H3/H5/H6 corrected test-first; fresh independent Sonnet review ACCEPT with recorded P2 limits. Final Haiku seven-file run exited 0: 144 passed; final L0 validators exited 0. S00 acceptance checkpoint 1f77060 was pushed to origin/main using noreply identity.",
+      "Resumed from pushed c5ec5b0; resolved G1-G10 for the consuming T01 scope in normative sources and task ownership. L0 validators exit 0; no runtime source or S01 tests written yet. Current changed runtime assets are not live-qualified; historical S00 evidence remains bound to its sealed commit.",
+      "S01-T01 SDD independently reviewed and eight P2 test-plan corrections incorporated; Haiku 55 L0 tests and both validators exited zero. No runtime source or new tests implemented. Historical S00 qualification is not reused for changed S01 assets."
     ],
-    "next_action": "Commit/push the verified LOG-0054 helper correction if pending. Then resolve S01-T01 specification gaps G1-G10 in docs/implementation/S01_T01_DESIGN.md against the named normative sources, record SDD readiness, and only then author public-path tests before S01 source. S01-T01 has no implementation yet.",
+    "next_action": "SDD ready (LOG-0058/0059). Root authors tests/unit/test_s01_t01.py and tests/integration/cli/test_s01_conversation.py against S01_RUNTIME_CONTRACT, preserving existing chat assertions. Haiku records genuine public-path red before any runtime source change. Implement only after red; no full shared-case, gate or live claim.",
     "owned_files": [
       "src/quati",
       "tests",
@@ -343,7 +345,12 @@
       "docs/implementation/S01_T01_DESIGN.md",
       "evidence/S00/ACCEPTANCE-RESUME-2026-11-17/20261117T152158Z-d80f9810/manifest.json",
       "docs/audit/S00_HELPER_INTEGRITY_RETEST_2026-11-17.md",
-      "evidence/S00/HELPER-INTEGRITY-2026-11-17/final-runner/20261117T212051Z-3859e46d/manifest.json"
+      "evidence/S00/HELPER-INTEGRITY-2026-11-17/final-runner/20261117T212051Z-3859e46d/manifest.json",
+      "docs/implementation/S01_RUNTIME_CONTRACT.md",
+      "docs/implementation/S01_T01_DESIGN.md",
+      "docs/audit/S01_T01_SDD_REVIEW_2026-11-17.md",
+      "evidence/S01/T01-2026-11-17/input_snapshot.json",
+      "evidence/S01/T01-2026-11-17/sdd/20261117T220652Z-885dbc87/manifest.json"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",

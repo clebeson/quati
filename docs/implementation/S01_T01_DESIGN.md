@@ -1,69 +1,107 @@
-# S01-T01 discovery checkpoint
+# S01-T01 design
 
-Status: DISCOVER; not specification-ready and no S01 source implemented.
-Canonical progress remains `implementation_state.json`.
+Status: SDD candidate, before runtime code and TDD red. Canonical progress is
+implementation_state.json. Normative realization: S01_RUNTIME_CONTRACT.md.
 
-## Scope and authoritative inputs
+## Scope
 
-Read: README, IMPLEMENTATION_READY_INDEX, project structure, delivery governance,
-persistent-state protocol, parallel model roles, S01 slice and handoff, the
-S01-T01 task in WORK_PACKAGES, PRDs M03/M04/M08/M31, PRD_COMMON, DECISION_RULES,
-InteractionPort, TYPE_CATALOG, classification/interaction schemas, the three
-acceptance cases, test engineering rules and legacy DEC-001/LESSON-001.
-The S00 debt is recorded in LOG-0049/LOG-0052 and CHECKPOINT.
+Deliver typed RequestContext/RequestClassification boundaries, a pure M08 policy
+building block and an application-owned, constant-space conversation projection
+through existing quati chat. T01 does not activate the policy or implement the
+full InteractionPort. S00 dispatch guards remain until T02 consumes the new
+policy. No new command, UI, transport, dependency, ledger or worker is introduced.
 
-Dependency chain: S00-T05 -> S01-T01 -> S01-T02 -> S01-T03 -> S01-T04.
-T02/T03 cannot overlap under the current DAG. T01 is single-owner by default.
+Local assertions S01-T01-A01/A02/A03 remain the exact completion conditions.
+SOC-02, CAP-04 and INT-01 are CONTRIBUTION_ONLY; T04 owns their real-model proof.
+No owned requirement plan or full module is completed by this package.
 
-T01 owns domain/application foundation and unit tests. Its exact assertions are
-S01-T01-A01 (separate intent/risk/complexity), A02 (model text grants no authority)
-and A03 (explicit non-durable lifetime). SOC-02, CAP-04 and INT-01 are
-CONTRIBUTION_ONLY here; S01-T04 owns their real-model full proof. T01 has no
-owned_requirement_plan_ids or final_acceptance_plan_ids; related IDs are not
-completed requirements. Full module tables must not silently expand this task.
+## Gap dispositions before source
 
-## Reusable source and limits
-
-- `application/context_envelope.py`: existing immutable envelope and protected
-  segment/trimming logic; reuse rather than introduce a competing envelope.
-- `application/ask.py`: current schema-bound classification ladder and provider
-  budgets, but no complete S01 routing reducer.
-- `domain/decision_policy.py` and `behavior/trusted_config.py`: existing sidecar
-  validation and digest; consume validated policy rather than duplicate it.
-- `domain/canonical.py`: canonical JSON and hashes.
-- `application/identity.py`: trusted RequestContext. Its act/policy_version
-  contract mismatch remains open; never derive identity from model text.
-- `cli/chat.py`: S00 intentionally builds a service per turn and keeps no history.
-  `LocalIdentity` mints a fresh authentication session per turn. Neither gives a
-  stable conversation identity for S01 without explicit composition work.
-
-## Specification gaps to resolve before source
-
-| ID | Gap | Required resolution |
+| Gap | Resolution for T01 | Later owner / source |
 |---|---|---|
-| G1 | The S01 handoff still says SPECIFICATION_ONLY, contrary to canonical authorization. | Update the stale handoff to defer to canonical state. |
-| G2 | S01 oracles name SQLite/CommitmentLedger but the slice explicitly has only in-process state until S02. | Define the S01 equivalents and keep real durability proof in S02; do not count an in-memory fake as ledger proof. |
-| G3 | Public CLI acceptance is required but T01/T02 owned paths omit CLI composition and integration tests. | Assign the exact wiring and public-path test ownership without introducing a new CLI surface. |
-| G4 | WorkSnapshot exists in TYPE_CATALOG but state/binding/revision semantics and prototype work identity need executable precision. | Specify ephemeral conversation ownership, expected conversation versus work revision, and unavailable event types for this package. |
-| G5 | InteractionPort.apply lacks a conversation locator and idempotency input; RequestContext.session_id changes per authenticated turn. | Specify trusted conversation binding and replay body/key scope without treating text or a model reference as authority. |
-| G6 | M03 consumes M05/M06 verdicts before their S01 tasks and later modules exist. | Specify the bounded T01 input contract and fail-closed unavailable decisions; do not invent timers, outcomes or delivery acknowledgements. |
-| G7 | M03's totality oracle forbids D0 for every enum tuple although its table leaves valid-vocabulary combinations unmatched. | Define valid cross-field combinations or correct the exhaustive oracle before implementation. |
-| G8 | M04's social/simple-answer negative conflicts with unconditional candidate scoring when a title matches. | Specify the intent guard before candidate retrieval/scoring. |
-| G9 | S00 never displays model-authored answers; S01 SOC-02/CAP-04 require direct answers. | Define the S01 ANSWER boundary, output validation and evidence without weakening progress/completion guards. |
-| G10 | RequestContext act/policy_version schema mismatch is carried explicitly from S00. | Choose and document the contract-compatible representation; any asset change invalidates applicable S00 live evidence. |
+| G1 stale authorization | Handoff now defers to canonical authority. | work_packages/S01.md |
+| G2 SQLite before S02 | S01 prototype work semantics explicitly separated from real S02 ledger proof; T01 creates no work. | M03/M04; runtime contract section 5; T02/T03 |
+| G3 CLI ownership | T01 owns main.py composition and focused public chat tests; business projection stays in application. Existing chat/one-shot comparisons allow only declared metadata differences. | WORK_PACKAGES.json; M01 state rule |
+| G4 work snapshot precision | T01 has only ConversationProjection (ID/owner/revision), not WorkSnapshot. Snapshot construction and later-module fields belong to T02/T03 before those implementations. | TYPE_CATALOG; runtime contract sections 4-5 |
+| G5 conversation and idempotency binding | Conversation is application-owned, separate from authentication session_id. Future InteractionPort is instance-bound; request_id is its scoped key; conversation and work revisions are distinct. T01 promises no decision replay. | BOUNDARY_CONTRACTS; runtime contract section 5; T02/T03 |
+| G6 missing M05/M06/M09 | No fabricated verdicts or placeholder decisions. Full port consumption explicitly scheduled to T02/T03. | M03/M08 staged realization |
+| G7 impossible totality oracle | M03 Cartesian combinations may select fail-closed D0; every tuple still selects exactly one first-match row and every WAIT has a next contact. | M03-FR-02 oracle; T02 |
+| G8 coincidental references | Social/simple_answer return NO_REFERENCE before retrieval/scoring, without changing classification. | M04 normative detail and DECISION_RULES section 4; T02 |
+| G9 model ANSWER boundary | S00 text boundary retained through T01; bounded direct ANSWER is T02 and full L3 proof T04. | runtime contract section 6 |
+| G10 RequestContext mismatch | Wire retains required fields; direct act=null; policy_version may be null without granting authority. Typed serializer adds direct act and JSON arrays. | runtime-boundaries schema; TYPE_CATALOG |
 
-Gaps are discovery findings, not silently adopted design decisions. Resolve only
-the obligations consumed by T01, with explicit follow-up ownership for later
-ones. Consult transitive references as needed and record the visited scope.
+These are resolved T01 boundaries, not claims that the deferred behaviors exist.
+Read M05/M06/M09 and their transitive references before T02/T03 consume them.
 
-## Next actions
+## Structure and seams
 
-S00 acceptance is committed/pushed as 1f77060. The prerequisite helper integrity
-correction is independently accepted with limits; see LOG-0056 and
-S00_HELPER_INTEGRITY_RETEST_2026-11-17.md. Verify its checkpoint is committed before
-continuing. Finalize this design and amend the specific normative documents before
-any S01 test or implementation. Tests are written by the larger model, run by
-Haiku, and reviewed independently. Record red, green, requirement portions,
-evidence digests and a revision-CAS checkpoint. Only English and Portuguese
-product output is in scope. No UI, production, external write, merge, release or
-deployment is authorized.
+Reuse canonical JSON/digest in domain/canonical.py, Refusal for typed failures,
+existing DecisionPolicy loader/hash, existing Provider structured-output ladder,
+and CLIService._record for the receipt/output-hash transaction boundary.
+
+New domain classification module: immutable contract value, schema-equivalent
+validation/serialization, fail-closed factory and pure route/role/priority reducer.
+No I/O or vendor/schema-library dependency. Policy input is loaded/validated;
+reducer output is advisory and dispatches nothing.
+
+New domain conversation module: immutable owner/ID/revision projection and pure
+expected-revision advance. New application ConversationSession coordinates owner
+admission, prepared metadata and commit after receipt success. It stores no
+transcript, credentials or jobs. Production IDs reuse composition.random_ids;
+tests inject a seeded generator. Main.chat constructs one session and passes it
+to per-turn CLIService instances. Ask authenticates anew on every turn.
+
+AskSession exposes the full schema-validated proposal (including required reason_code) with classification_stage=SCHEMA_VALIDATED; it is not the activated step-5 M08 output yet
+and stores fail-closed classification after classifier failure. It does not change
+the discovery tool loop or display model text. CLIService verifies conversation
+ownership before effects, decorates response before computing output_hash, and
+commits the revision after the sink returns. Receipt failure leaves revision
+unchanged. The projection is single-owner/synchronous; work concurrency is T03.
+
+## Test plan, before implementation
+
+- tests/integration/cli/test_s01_conversation.py::test_a01: public CLI fake-provider classification satisfies the
+  complete schema, with independently varied intent/risk/complexity; pure reducer
+  exhaustively covers 1344 tuples, restrictive routes, effect floors, missing
+  capability, roles and priority boundaries against fixed policy/clock.
+- tests/integration/cli/test_s01_conversation.py::test_a02: hostile model extra privilege/identity fields exhaust
+  the real structured-output ladder, publish fail-closed classification and cause
+  zero discovery effects; untrusted text never alters authenticated conversation
+  owner. State projection rejects another tenant/actor and stale revisions.
+- tests/integration/cli/test_s01_conversation.py::test_a03: public quati chat keeps one opaque ID, increments only
+  receipted ask turns and explicitly reports PROCESS_ONLY/no continuation after
+  exit; one-shot requests have no conversation metadata. Verify output_hash and
+  zero durable job/commitment claims.
+- Unit lane tests/unit/test_s01_t01.py covers the typed values, pure reducer and revision/owner guards; integration/cli/test_s01_conversation.py owns all public CLI assertions A01-A03 and the receipt failure path.
+- Fault: injected ReceiptNotWritten leaves projection unchanged; M01 maps exit 1 / receipt_not_written / operation_may_have_taken_effect=true with no conversation metadata, and chat ends before the next line. A retried application turn uses the unchanged revision. Authentication/owner failures cannot bind/advance the session; owner mismatch writes no receipt and performs no effects.
+- Policy-boundary tests: null context policy version plus missing trusted policy denies; forged context versions do not change decisions; EffectIntent uses only its trusted version argument. Direct act serializes null. Full audit act_chain emission belongs to S02; T01 does not invent it.
+- Assert that pure reducer recommendations do not alter current dispatch before T02 activation; expose SCHEMA_VALIDATED versus FAIL_CLOSED stages explicitly.
+- Remaining M08 oracle responsibilities, reachable D0 checks and ModelResult construction are assigned in the runtime contract to T02/T03/T04.
+- Schema equivalence: required/extra keys, booleans, all vocabularies, optional
+  fields, confidence boundaries/nonfinite inputs and direct context serialization.
+- Existing chat framing/injection and equivalent one-shot content assertions stay;
+  add only the normative S01 metadata normalization and verify it independently.
+
+Root (larger model) authors tests before source. Haiku runs explicit test-file
+commands with record_evidence.py, no trailing standalone dot. Independent Sonnet
+review checks conformity/quality and chooses a fresh adversarial negative. Source
+checks use ripwire change-check and quality-delta. Domain/behavior coverage is
+100% line/branch, overall thresholds unchanged. Record all missing/failed proof.
+
+## Discovery scope and evidence plan
+
+Visited: AGENTS, README, canonical state/checkpoint, implementation-ready index,
+project layout, governance/state/model-role documents, S01 slice/task/DAG, PRDs
+M01/M02/M03/M04/M08/M31, PRD_COMMON, DECISION_RULES, TYPE_CATALOG,
+BOUNDARY_CONTRACTS, runtime/classification/interaction schemas, test engineering
+standard, three acceptance cases, existing CLI/ask/context/composition seams and
+LOG-0049 through LOG-0057. Earlier legacy DEC-001/LESSON-001 are historical inputs;
+LOG-0004 supersedes specification-only authority. No provider or production access.
+
+Changing runtime source/assets expires old live-digest reuse on the current tree.
+Preserve historical S00 seals; mark current S01 live qualification NOT_RUN. T04
+must requalify affected old paths plus its ERI cases on the current snapshot.
+T01 accepts only its deterministic contribution, not S01 gate PASS.
+
+Rollback: revert the package source/config changes, retain immutable evidence and
+journal history. No durable product data migration or external effect exists here.
