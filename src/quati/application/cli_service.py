@@ -63,7 +63,7 @@ class CLIService:
     def __init__(self, identity: IdentityPort, config: ProviderConfig, evidence_sink: Callable[[dict], dict],
                  provider_factory=create_provider, policy_loader=None, policy_installer=None,
                  feature_reports=None, ask_runtime=None, clock=None, behavior_check=None, runtime_facts=None,
-                 authorize=None, state_guard=None, identity_inspector=None):
+                 authorize=None, state_guard=None, identity_inspector=None, conversation=None):
         # feature_reports / ask_runtime default to None: the model path then stays closed (fail closed).
         # behavior_check() -> the active behavior package status; runtime_facts() -> measured host facts.
         # authorize(context, operation, action) -> None or a denial with to_response(): the AuthorizationPort
@@ -74,6 +74,7 @@ class CLIService:
         # '<name>:read' verifies as a reader, and 'audit_log' raises the Refusal audit_unavailable for an
         # unusable registry audit log.
         # identity_inspector() -> {present, cause, detail}: why an unaccepted credential is not accepted.
+        self.conversation = conversation
         self.authorize = authorize
         self.state_guard = state_guard
         self.identity_inspector = identity_inspector
@@ -332,6 +333,8 @@ class CLIService:
                                message=f'Request must contain 1 to {MAX_TEXT_BYTES} UTF-8 bytes.',
                                next_action='Provide a nonempty request within the byte limit.')
         context = self.identity.authenticate()
+        if self.conversation is not None:
+            self.conversation.admit(context)
         self._require_state('receipts')  # LOG-0041 N1: before any read, handler or receipt
         data = {'request_id': context.request_id, 'trace_id': context.trace_id, 'commitment_id': None,
                 'scope': 'S00_T01_LOCAL_CLI', 'provider_used': False, 'tool_calls': [], 'usage': {'cost_usd': None},
@@ -432,6 +435,10 @@ class CLIService:
                            'Complete the remaining S00 tasks; no durable work was accepted.')
 
     def _record(self, text, context, code, result, extra=None):
+        # Prepare metadata before hashing; only an acknowledged receipt advances the projection.
+        prepared = None
+        if self.conversation is not None:
+            prepared, result = self.conversation.prepare(context, result)
         # ``proof_tier`` is null: proof tiers classify tests, and a product receipt proves none (LOG-0044 X8).
         record = {'request_id': context.request_id, 'trace_id': context.trace_id,
                   'principal_hash': hashlib.sha256(context.actor_id.encode()).hexdigest(),
@@ -440,8 +447,14 @@ class CLIService:
                   'status': result['status'], 'result_kind': result['data'].get('result_kind'),
                   'policy_version': self._policy_version(context),
                   'proof_tier': None, 'provider_used': False, 'cost_usd': None, **(extra or {})}
-        receipt = self.evidence_sink(record)
-        result['evidence_refs'] = [f"sha256:{receipt['sha256']}:{receipt['path']}"]
+        try:
+            receipt = self.evidence_sink(record)
+            result['evidence_refs'] = [f"sha256:{receipt['sha256']}:{receipt['path']}"]
+            if prepared is not None:
+                self.conversation.commit(context, expected_revision=prepared.revision - 1, candidate=prepared)
+        finally:
+            if self.conversation is not None:
+                self.conversation.discard()
         return code, result
 
     def _policy_version(self, context):

@@ -121,7 +121,12 @@ def test_m17_at_02_repair_then_blocked(workspace, monkeypatch, capsys):
     evidence = receipt(value)["synthetic_evidence"]
     assert [call["purpose"] for call in evidence["model_calls"]] == ["classify", "classify_repair", "classify_repair"]
     assert all(call["outcome"] == "OUTPUT_INVALID:SCHEMA_INVALID_OUTPUT" for call in evidence["model_calls"])
-    assert evidence["limits"]["max_escalations"] == 0 and evidence["classification"] is None
+    assert evidence["limits"]["max_escalations"] == 0
+    assert evidence["classification"] == {"intent": "professional_work", "work_needed": True,
+            "complexity": "investigative", "risk": "high", "uncertainty": "high",
+            "safe_work_allowed": False, "next_action": "escalate",
+            "reason_code": "CLASSIFICATION_INVALID_ESCALATE"}
+    assert value["data"]["classification_stage"] == "FAIL_CLOSED"
     assert workspace.calls == [] and len(active.items) == 1
 
 

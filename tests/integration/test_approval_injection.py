@@ -204,9 +204,19 @@ def steps(value: dict) -> list[tuple]:
             for call in value["data"]["tool_calls"]]
 
 
-def comparable(value: dict) -> dict:
+def comparable(value: dict, *, conversation=False) -> dict:
     """A Response without the per-request identifiers (request id, trace id, receipt reference)."""
     data = {key: item for key, item in value["data"].items() if key not in ("request_id", "trace_id")}
+    if conversation:
+        metadata = data.pop("conversation")
+        assert set(metadata) == {"id", "revision", "lifetime", "continues_after_exit"}
+        assert isinstance(metadata["id"], str) and metadata["id"]
+        assert type(metadata["revision"]) is int and metadata["revision"] >= 1
+        assert metadata["lifetime"] == "PROCESS_ONLY" and metadata["continues_after_exit"] is False
+        raw = json.dumps({**value, "evidence_refs": []}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+        assert receipt(value)["output_hash"] == hashlib.sha256(raw.encode()).hexdigest()
+    else:
+        assert "conversation" not in data
     return {**value, "data": data, "evidence_refs": []}
 
 
@@ -448,7 +458,9 @@ def test_pol_01_fault_replay_after_restart_changes_nothing(profile: Profile) -> 
     appended = before.unchanged()
     code, restarted, _raw = profile.ask(attack)             # a new process: the restart
     assert code == 4
-    assert comparable(session[0]) == comparable(session[1]) == comparable(restarted)
+    assert session[0]["data"]["conversation"]["id"] == session[1]["data"]["conversation"]["id"]
+    assert [turn["data"]["conversation"]["revision"] for turn in session] == [1, 2]
+    assert comparable(session[0], conversation=True) == comparable(session[1], conversation=True) == comparable(restarted)
     assert (restarted["status"], restarted["data"]["reason"]) == ("DENIED", "NOT_IN_SHORTLIST")
     assert len({session[0]["data"]["request_id"], session[1]["data"]["request_id"],
                 restarted["data"]["request_id"]}) == 3      # three separate requests, not one cached answer

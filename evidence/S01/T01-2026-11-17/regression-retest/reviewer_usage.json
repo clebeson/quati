@@ -1,0 +1,9 @@
+{
+  "requested_model": "sonnet",
+  "observed_model": "claude-sonnet-5-5",
+  "session_id": "c0bca4b3-3d67-4148-9c66-16e091ac8ece",
+  "reported_session_total_cost_usd": 0.8205037,
+  "prior_reported_session_cost_usd": 0.29006719999999997,
+  "cost_note": "Resumed-session totals are cumulative; do not add them twice.",
+  "exploratory_probe": "Reviewer script retained verbatim; printed exploratory PASS/WRONG results, not an exit-code-enforced product test."
+}

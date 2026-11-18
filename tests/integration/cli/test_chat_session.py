@@ -105,7 +105,7 @@ def tree(root: Path) -> dict[str, bytes]:
     return {str(path.relative_to(root)): path.read_bytes() for path in sorted(root.rglob('*')) if path.is_file()}
 
 
-def normalize(value: dict, root: Path) -> tuple[dict, list[dict]]:
+def normalize(value: dict, root: Path, *, conversation=False) -> tuple[dict, list[dict]]:
     """Apply the documented normalization; return the value and its referenced receipts."""
     receipts = []
     data = value['data']
@@ -124,6 +124,15 @@ def normalize(value: dict, root: Path) -> tuple[dict, list[dict]]:
             assert receipt.pop('output_hash') == expected_hash
             receipt.pop('timestamp')
             receipts.append(receipt)
+        if conversation:
+            metadata = data['conversation']
+            assert set(metadata) == {'id', 'revision', 'lifetime', 'continues_after_exit'}
+            assert isinstance(metadata['id'], str) and metadata['id']
+            assert type(metadata['revision']) is int and metadata['revision'] >= 1
+            assert metadata['lifetime'] == 'PROCESS_ONLY' and metadata['continues_after_exit'] is False
+            data = {key: value for key, value in data.items() if key != 'conversation'}
+        else:
+            assert 'conversation' not in data
         value = {**value, 'data': {**data, 'request_id': '<request_id>', 'trace_id': '<trace_id>'},
                  'evidence_refs': ['<receipt>' for _ in value['evidence_refs']]}
     else:
@@ -152,16 +161,22 @@ def test_chat_transcript_equals_one_shot_sequence(seeded):
     assert len(chat_lines) == len(expected_turns)  # one per non-blank line; nothing after /quit
 
     one_shot_exits, chat_receipts, one_shot_receipts = [], [], []
+    conversation_id, conversation_revision = None, 0
     for text, (line, target) in zip(chat_lines, expected_turns):
         got = json.loads(text)
         assert text == canonical(got)  # single canonical JSON line
         if isinstance(target, list):
+            if got['data'] and 'request_id' in got['data']:
+                metadata = got['data']['conversation']
+                conversation_id = conversation_id or metadata['id']
+                conversation_revision += 1
+                assert metadata['id'] == conversation_id and metadata['revision'] == conversation_revision
             single = quati(profile_b, *target)
             one_shot_exits.append(single.returncode)
             assert single.stderr == b''
             expected_text = single.stdout.decode('ascii')
             assert expected_text == canonical(json.loads(expected_text)) + '\n'  # one-shot is quati-json/1 too
-            got, got_receipts = normalize(got, profile_a)
+            got, got_receipts = normalize(got, profile_a, conversation=True)
             expected, expected_receipts = normalize(json.loads(expected_text), profile_b)
             assert canonical(got) == canonical(expected), line
             chat_receipts += got_receipts
@@ -191,14 +206,14 @@ def test_chat_transcript_over_limit_line_exits_2_with_earlier_turns_intact(seede
     first, rejected = [json.loads(line) for line in chat.stdout.decode().splitlines()]
     assert (rejected['error']['code'], rejected['data']['reason']) == ('INVALID_INPUT', 'chat_line_too_long')
     single = quati(profile_b, 'ask', '--json', '--', 'Hello')
-    got, got_receipts = normalize(first, profile_a)
+    got, got_receipts = normalize(first, profile_a, conversation=True)
     expected, expected_receipts = normalize(json.loads(single.stdout), profile_b)
     assert got == expected and got_receipts == expected_receipts
     assert len(list((profile_a / 'data' / 'receipts').iterdir())) == 1
 
 
 def test_chat_restart_loses_nothing_and_writes_only_receipts(seeded):
-    """M01-FR-04: no session state; a second session sees the first one's ledger rows unchanged."""
+    """S01 has no persistent session state; restarting preserves the earlier receipt files."""
     profile_a, _ = seeded
     before = tree(profile_a)
     first = quati(profile_a, 'chat', '--jsonl', stdin=b'Hello\n')
@@ -206,6 +221,10 @@ def test_chat_restart_loses_nothing_and_writes_only_receipts(seeded):
     second = quati(profile_a, 'chat', '--jsonl', stdin=b'hi\n/quit\n')
     after_second = tree(profile_a)
     assert first.returncode == second.returncode == 0
+    first_projection = json.loads(first.stdout)['data']['conversation']
+    second_projection = json.loads(second.stdout.splitlines()[0])['data']['conversation']
+    assert first_projection['revision'] == second_projection['revision'] == 1
+    assert first_projection['id'] != second_projection['id']
     added = set(after_first) - set(before)
     assert len(added) == 1 and all(k.startswith('data/receipts/') for k in added)
     assert {k: after_second[k] for k in after_first} == after_first
@@ -259,7 +278,7 @@ def test_chat_jsonl_emits_one_response_per_line_through_one_shot_use_cases(seede
         ask = quati(profile_b, 'ask', '--json', '--', 'Hello')
         status = quati(profile_b, 'status', 'c-1', '--json')
         assert (ask.returncode, status.returncode) == (0, 4)
-        assert normalize(values[0], profile_a) == normalize(json.loads(ask.stdout), profile_b)
+        assert normalize(values[0], profile_a, conversation=True) == normalize(json.loads(ask.stdout), profile_b)
         assert lines[2] + '\n' == status.stdout.decode('ascii')
         assert values[1]['status'] == 'SUCCEEDED' and values[1]['data']['commands']
         assert (values[3]['error']['code'], values[3]['data']['reason']) == ('INVALID_INPUT', 'chat_unknown_command')

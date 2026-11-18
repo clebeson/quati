@@ -1,0 +1,2 @@
+Combined 701 files, skipped 2073
+Wrote JSON report to /home/clebeson/dev/SECMA/evidence/S01/T01-2026-11-17/coverage/final/coverage.json

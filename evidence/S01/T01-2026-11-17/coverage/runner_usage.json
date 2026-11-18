@@ -1,0 +1,13 @@
+{
+  "requested_model": "haiku",
+  "observed_model": "claude-haiku-5-5",
+  "session_id": "7e7e2f74-559a-4e57-a119-81ec2e81fe6b",
+  "reported_cost_usd": 0.23247948,
+  "scope": "Broad deterministic runtime L1/L2 plus separate L0 validators",
+  "report_corrections": [
+    "The runtime test run is not L0.",
+    "All 28 failures were old assertions for deliberately changed S01 metadata/classification contracts; provider deadline/error assertions themselves passed.",
+    "No coverage percentage was claimed before combining actual child-process data."
+  ],
+  "supervisor_note": "Root paused the Claude supervisor watchdog while recorder/pytest ran unchanged, then automatically resumed it after recorder completion. Actual recorded child exit was 1; no timeout was accepted as a pass."
+}

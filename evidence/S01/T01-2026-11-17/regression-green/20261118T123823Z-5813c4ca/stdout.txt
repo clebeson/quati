@@ -1,0 +1,268 @@
+FFFFFF......................                                             [100%]
+=================================== FAILURES ===================================
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured] _
+
+state = 'no_provider_configured'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+            assert stable(value, conversation=True)["data"] == social_data(reply), text
+>           assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:317: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_fix7_social_authz.py:254: in assert_social
+    assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+           ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversat...f-clebeson/pytest-1978/probed0/profile/data/receipts/3130e15bd35b429c9f82b865c5254158.json'], 'next_action': None, ...}
+conversation = False
+
+    def stable(value: dict, *, conversation=False) -> dict:
+        """Validate the S01 projection before comparing the unchanged S00 response content."""
+        data = {key: item for key, item in value["data"].items() if key not in ("request_id", "trace_id")}
+        if conversation:
+            metadata = data.pop("conversation")
+            assert set(metadata) == {"id", "revision", "lifetime", "continues_after_exit"}
+            assert isinstance(metadata["id"], str) and metadata["id"]
+            assert type(metadata["revision"]) is int and metadata["revision"] >= 1
+            assert metadata["lifetime"] == "PROCESS_ONLY" and metadata["continues_after_exit"] is False
+            raw = json.dumps({**value, "evidence_refs": []}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+            assert receipt(value)["output_hash"] == hashlib.sha256(raw.encode()).hexdigest()
+        else:
+>           assert "conversation" not in data
+E           AssertionError: assert 'conversation' not in {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversation-91ceb95577ea443b8fa1fca4bbaadb8b', 'lifetime': 'PROCESS_ONLY', 'revision': 1}, 'delivered': False, ...}
+
+tests/unit/test_s00_fix7_social_authz.py:244: AssertionError
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[configured_not_probed] _
+
+state = 'configured_not_probed'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[configured_not_probed]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+            assert stable(value, conversation=True)["data"] == social_data(reply), text
+>           assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:317: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_fix7_social_authz.py:254: in assert_social
+    assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+           ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversat...clebeson/pytest-1978/unprobed0/profile/data/receipts/6f9e11b22a1b40968e33eccf90fdda70.json'], 'next_action': None, ...}
+conversation = False
+
+    def stable(value: dict, *, conversation=False) -> dict:
+        """Validate the S01 projection before comparing the unchanged S00 response content."""
+        data = {key: item for key, item in value["data"].items() if key not in ("request_id", "trace_id")}
+        if conversation:
+            metadata = data.pop("conversation")
+            assert set(metadata) == {"id", "revision", "lifetime", "continues_after_exit"}
+            assert isinstance(metadata["id"], str) and metadata["id"]
+            assert type(metadata["revision"]) is int and metadata["revision"] >= 1
+            assert metadata["lifetime"] == "PROCESS_ONLY" and metadata["continues_after_exit"] is False
+            raw = json.dumps({**value, "evidence_refs": []}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+            assert receipt(value)["output_hash"] == hashlib.sha256(raw.encode()).hexdigest()
+        else:
+>           assert "conversation" not in data
+E           AssertionError: assert 'conversation' not in {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversation-02cde42d9f9d4949b163fa9d134327a4', 'lifetime': 'PROCESS_ONLY', 'revision': 1}, 'delivered': False, ...}
+
+tests/unit/test_s00_fix7_social_authz.py:244: AssertionError
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_work_label] _
+
+state = 'probed_work_label'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_work_label]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+            assert stable(value, conversation=True)["data"] == social_data(reply), text
+>           assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:317: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_fix7_social_authz.py:254: in assert_social
+    assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+           ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversat...f-clebeson/pytest-1978/probed0/profile/data/receipts/06616707b786401aa56ddd3f62f0819b.json'], 'next_action': None, ...}
+conversation = False
+
+    def stable(value: dict, *, conversation=False) -> dict:
+        """Validate the S01 projection before comparing the unchanged S00 response content."""
+        data = {key: item for key, item in value["data"].items() if key not in ("request_id", "trace_id")}
+        if conversation:
+            metadata = data.pop("conversation")
+            assert set(metadata) == {"id", "revision", "lifetime", "continues_after_exit"}
+            assert isinstance(metadata["id"], str) and metadata["id"]
+            assert type(metadata["revision"]) is int and metadata["revision"] >= 1
+            assert metadata["lifetime"] == "PROCESS_ONLY" and metadata["continues_after_exit"] is False
+            raw = json.dumps({**value, "evidence_refs": []}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+            assert receipt(value)["output_hash"] == hashlib.sha256(raw.encode()).hexdigest()
+        else:
+>           assert "conversation" not in data
+E           AssertionError: assert 'conversation' not in {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversation-c8f9de69105f49d090cfad4ce7f456be', 'lifetime': 'PROCESS_ONLY', 'revision': 1}, 'delivered': False, ...}
+
+tests/unit/test_s00_fix7_social_authz.py:244: AssertionError
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_social_label] _
+
+state = 'probed_social_label'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_social_label]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+            assert stable(value, conversation=True)["data"] == social_data(reply), text
+>           assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:317: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_fix7_social_authz.py:254: in assert_social
+    assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+           ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversat...f-clebeson/pytest-1978/probed0/profile/data/receipts/010ae4b3a73f458b9e6f05413e151b9f.json'], 'next_action': None, ...}
+conversation = False
+
+    def stable(value: dict, *, conversation=False) -> dict:
+        """Validate the S01 projection before comparing the unchanged S00 response content."""
+        data = {key: item for key, item in value["data"].items() if key not in ("request_id", "trace_id")}
+        if conversation:
+            metadata = data.pop("conversation")
+            assert set(metadata) == {"id", "revision", "lifetime", "continues_after_exit"}
+            assert isinstance(metadata["id"], str) and metadata["id"]
+            assert type(metadata["revision"]) is int and metadata["revision"] >= 1
+            assert metadata["lifetime"] == "PROCESS_ONLY" and metadata["continues_after_exit"] is False
+            raw = json.dumps({**value, "evidence_refs": []}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+            assert receipt(value)["output_hash"] == hashlib.sha256(raw.encode()).hexdigest()
+        else:
+>           assert "conversation" not in data
+E           AssertionError: assert 'conversation' not in {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversation-a38e1f3d58224aaf895aa175ef284d44', 'lifetime': 'PROCESS_ONLY', 'revision': 1}, 'delivered': False, ...}
+
+tests/unit/test_s00_fix7_social_authz.py:244: AssertionError
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_model_unavailable] _
+
+state = 'probed_model_unavailable'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_model_unavailable]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+            assert stable(value, conversation=True)["data"] == social_data(reply), text
+>           assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:317: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_fix7_social_authz.py:254: in assert_social
+    assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+           ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversat...f-clebeson/pytest-1978/probed0/profile/data/receipts/f83746bedd2d471987824ab2ca3f6521.json'], 'next_action': None, ...}
+conversation = False
+
+    def stable(value: dict, *, conversation=False) -> dict:
+        """Validate the S01 projection before comparing the unchanged S00 response content."""
+        data = {key: item for key, item in value["data"].items() if key not in ("request_id", "trace_id")}
+        if conversation:
+            metadata = data.pop("conversation")
+            assert set(metadata) == {"id", "revision", "lifetime", "continues_after_exit"}
+            assert isinstance(metadata["id"], str) and metadata["id"]
+            assert type(metadata["revision"]) is int and metadata["revision"] >= 1
+            assert metadata["lifetime"] == "PROCESS_ONLY" and metadata["continues_after_exit"] is False
+            raw = json.dumps({**value, "evidence_refs": []}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+            assert receipt(value)["output_hash"] == hashlib.sha256(raw.encode()).hexdigest()
+        else:
+>           assert "conversation" not in data
+E           AssertionError: assert 'conversation' not in {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversation-b9b6e8d873594615a9f92cb0d5c5d800', 'lifetime': 'PROCESS_ONLY', 'revision': 1}, 'delivered': False, ...}
+
+tests/unit/test_s00_fix7_social_authz.py:244: AssertionError
+_ test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_invalid_classification] _
+
+state = 'probed_invalid_classification'
+request = <FixtureRequest for <Function test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_invalid_classification]>>
+
+    @pytest.mark.parametrize("state", STATES)
+    def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state(state, request):
+        """The whole sample table through ``quati chat --jsonl``: one process per provider state."""
+        fixture, script = STATES[state]
+        workspace = request.getfixturevalue(fixture)
+        before = len(workspace.audit())
+        code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
+        assert code == 0
+        for (_language, text, reply), value in zip(SAMPLES, values):
+            assert stable(value, conversation=True)["data"] == social_data(reply), text
+>           assert_social(value, reply)
+
+tests/unit/test_s00_fix7_social_authz.py:317: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_s00_fix7_social_authz.py:254: in assert_social
+    assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+           ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'data': {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversat...f-clebeson/pytest-1978/probed0/profile/data/receipts/46e86547671d4881a29c920117395446.json'], 'next_action': None, ...}
+conversation = False
+
+    def stable(value: dict, *, conversation=False) -> dict:
+        """Validate the S01 projection before comparing the unchanged S00 response content."""
+        data = {key: item for key, item in value["data"].items() if key not in ("request_id", "trace_id")}
+        if conversation:
+            metadata = data.pop("conversation")
+            assert set(metadata) == {"id", "revision", "lifetime", "continues_after_exit"}
+            assert isinstance(metadata["id"], str) and metadata["id"]
+            assert type(metadata["revision"]) is int and metadata["revision"] >= 1
+            assert metadata["lifetime"] == "PROCESS_ONLY" and metadata["continues_after_exit"] is False
+            raw = json.dumps({**value, "evidence_refs": []}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+            assert receipt(value)["output_hash"] == hashlib.sha256(raw.encode()).hexdigest()
+        else:
+>           assert "conversation" not in data
+E           AssertionError: assert 'conversation' not in {'actions_taken': [], 'commitment_id': None, 'conversation': {'continues_after_exit': False, 'id': 'conversation-0a372360fff249d7a1192b72eb8861e8', 'lifetime': 'PROCESS_ONLY', 'revision': 1}, 'delivered': False, ...}
+
+tests/unit/test_s00_fix7_social_authz.py:244: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[no_provider_configured]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[configured_not_probed]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_work_label]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_social_label]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_model_unavailable]
+FAILED tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state[probed_invalid_classification]
+6 failed, 22 passed in 27.95s

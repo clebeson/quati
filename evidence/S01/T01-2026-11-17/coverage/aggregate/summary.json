@@ -1,0 +1,65 @@
+{
+  "schema_version": "quati-coverage-gates/1",
+  "groups": {
+    "domain": {
+      "covered_lines": 1166,
+      "num_statements": 1166,
+      "covered_branches": 414,
+      "num_branches": 414,
+      "line_percent": 100.0,
+      "branch_percent": 100.0,
+      "passed": true
+    },
+    "behavior": {
+      "covered_lines": 877,
+      "num_statements": 877,
+      "covered_branches": 282,
+      "num_branches": 282,
+      "line_percent": 100.0,
+      "branch_percent": 100.0,
+      "passed": true
+    },
+    "application": {
+      "covered_lines": 2700,
+      "num_statements": 2701,
+      "covered_branches": 755,
+      "num_branches": 756,
+      "line_percent": 99.96297667530544,
+      "branch_percent": 99.86772486772487,
+      "passed": true
+    },
+    "adapters": {
+      "covered_lines": 1473,
+      "num_statements": 1477,
+      "covered_branches": 374,
+      "num_branches": 376,
+      "line_percent": 99.7291807718348,
+      "branch_percent": 99.46808510638297,
+      "passed": true
+    },
+    "cli": {
+      "covered_lines": 371,
+      "num_statements": 373,
+      "covered_branches": 93,
+      "num_branches": 94,
+      "line_percent": 99.46380697050938,
+      "branch_percent": 98.93617021276596,
+      "passed": true
+    },
+    "overall": {
+      "covered_lines": 6590,
+      "num_statements": 6597,
+      "covered_branches": 1918,
+      "num_branches": 1922,
+      "line_percent": 99.8938911626497,
+      "branch_percent": 99.79188345473464,
+      "passed": true
+    }
+  },
+  "all_gates_passed": true,
+  "source_and_output_hashes_verified": true,
+  "validation_strategy": "Full 2285-case deterministic run plus two added supplemental cases. Production code and every original test file unchanged between runs; original source hashes all match. Combined same-production-snapshot data includes both runs.",
+  "os": "Linux",
+  "kernel": "6.17.0-41-generic",
+  "python": "3.13.7"
+}

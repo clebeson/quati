@@ -1,0 +1,15 @@
+[
+  "tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_provider_state",
+  "tests/unit/test_s00_fix7_social_authz.py::test_d1_chat_jsonl_turn_equals_the_one_shot_ask",
+  "tests/unit/test_s00_fix7_social_authz.py::test_d2_human_rendering_and_chat_jsonl_agree_with_the_one_shot_ask",
+  "tests/unit/test_s00_fix8_social_outcomes.py::test_x4_social_sample_is_answered_identically_by_ask_and_chat_jsonl",
+  "tests/unit/test_s00_fix8_social_outcomes.py::test_x4_request_bearing_sample_is_never_a_greeting_without_a_provider",
+  "tests/unit/test_s00_fix8_social_outcomes.py::test_x4_request_bearing_sample_reaches_the_model_and_a_social_label_is_blocked",
+  "tests/unit/test_s00_fix8_social_outcomes.py::test_d7_no_capability_is_a_typed_non_success_with_exit_4",
+  "tests/unit/test_s00_t04.py::test_a03",
+  "tests/unit/test_s00_t04_fixes.py::test_p2_1_model_written_reason_code_is_never_displayed",
+  "tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_other_text_fails_typed_on_a_model_timeout",
+  "tests/integration/cli/test_s00_fix8_social_timeout.py::test_soc_01_fault_chat_jsonl_session_gives_the_same_three_outcomes",
+  "tests/integration/test_approval_injection.py::test_pol_01_fault_replay_after_restart_changes_nothing",
+  "tests/integration/test_s00_t04_cli.py::test_m17_at_02_repair_then_blocked"
+]

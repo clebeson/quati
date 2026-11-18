@@ -1,0 +1,83 @@
+{
+  "schema_version": "quati-coverage-gates/1",
+  "groups": {
+    "domain": {
+      "files": 13,
+      "covered_lines": 1166,
+      "num_statements": 1166,
+      "covered_branches": 414,
+      "num_branches": 414,
+      "line_percent": 100.0,
+      "branch_percent": 100.0,
+      "required_line": 100,
+      "required_branch": 100,
+      "passed": true
+    },
+    "behavior": {
+      "files": 7,
+      "covered_lines": 877,
+      "num_statements": 877,
+      "covered_branches": 282,
+      "num_branches": 282,
+      "line_percent": 100.0,
+      "branch_percent": 100.0,
+      "required_line": 100,
+      "required_branch": 100,
+      "passed": true
+    },
+    "application": {
+      "files": 15,
+      "covered_lines": 2700,
+      "num_statements": 2701,
+      "covered_branches": 754,
+      "num_branches": 756,
+      "line_percent": 99.96297667530544,
+      "branch_percent": 99.73544973544973,
+      "required_line": 95,
+      "required_branch": 95,
+      "passed": true
+    },
+    "adapters": {
+      "files": 16,
+      "covered_lines": 1473,
+      "num_statements": 1477,
+      "covered_branches": 374,
+      "num_branches": 376,
+      "line_percent": 99.7291807718348,
+      "branch_percent": 99.46808510638297,
+      "required_line": 90,
+      "required_branch": 85,
+      "passed": true
+    },
+    "cli": {
+      "files": 6,
+      "covered_lines": 371,
+      "num_statements": 373,
+      "covered_branches": 93,
+      "num_branches": 94,
+      "line_percent": 99.46380697050938,
+      "branch_percent": 98.93617021276596,
+      "required_line": 90,
+      "required_branch": 85,
+      "passed": true
+    },
+    "overall": {
+      "files": 59,
+      "covered_lines": 6590,
+      "num_statements": 6597,
+      "covered_branches": 1917,
+      "num_branches": 1922,
+      "line_percent": 99.8938911626497,
+      "branch_percent": 99.73985431841831,
+      "required_line": 95,
+      "required_branch": 90,
+      "passed": true
+    }
+  },
+  "failed": [],
+  "source_and_output_hashes_verified": true,
+  "os": "Linux",
+  "kernel": "6.17.0-41-generic",
+  "python": "3.13.7",
+  "proof": "Deterministic Linux unit/integration including actual CLI subprocesses; no real-model or provider qualification."
+}

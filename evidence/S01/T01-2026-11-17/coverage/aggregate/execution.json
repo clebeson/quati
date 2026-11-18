@@ -1,0 +1,9 @@
+{
+  "data_file": "/tmp/quati-s01-t01-aggregate-bzw3uijq/.coverage",
+  "config": "/home/clebeson/dev/SECMA/evidence/S01/T01-2026-11-17/coverage/final/coverage.rc",
+  "inputs": [
+    "coverage/final/data.coverage.gz",
+    "supplemental combined data from two new cases"
+  ],
+  "note": "Coverage run reset its parallel directory for supplemental tests. Aggregate restored retained full-run data plus supplemental data, same production source. Partial supplemental report is not full-package coverage."
+}

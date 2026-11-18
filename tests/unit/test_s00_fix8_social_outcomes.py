@@ -412,7 +412,7 @@ def test_x4_social_sample_is_answered_identically_by_ask_and_chat_jsonl(probed):
     for (text, reply), turn in zip(SOCIAL_SAMPLE, turns):
         code, value, _output = probed.ask(HOSTILE, text)
         assert code == 0 and value["status"] == "SUCCEEDED", text
-        assert stable(value)["data"] == social_data(reply) and stable(turn) == stable(value), text
+        assert stable(value)["data"] == social_data(reply) and stable(turn, conversation=True) == stable(value), text
         assert probed.spied("request") == [] and probed.spied("handler") == []
         code, plain, _output = probed.ask(None, text)                 # no provider configured: the same answer
         assert code == 0 and stable(plain) == stable(value), text
@@ -428,7 +428,7 @@ def test_x4_request_bearing_sample_is_never_a_greeting_without_a_provider(probed
         assert (code, value["status"], value["error"]["code"]) == (3, "BLOCKED", "NOT_CONFIGURED"), ascii(text)
         assert value["data"]["result_kind"] == "BLOCKED" and "text" not in value["data"]
         assert "Hello!" not in output and "Ciao!" not in output
-        assert stable(turn) == stable(value), ascii(text)
+        assert stable(turn, conversation=True) == stable(value), ascii(text)
 
 
 def test_x4_request_bearing_sample_reaches_the_model_and_a_social_label_is_blocked(probed):
@@ -444,7 +444,7 @@ def test_x4_request_bearing_sample_reaches_the_model_and_a_social_label_is_block
         assert (value["data"]["result_kind"], value["data"]["provider_used"], value["data"]["launched"]) == (
             "BLOCKED", True, False)
         assert len(probed.spied("request")) == 3 and probed.spied("handler") == [] and CLAIM not in output
-        assert stable(turn) == stable(value), ascii(text)
+        assert stable(turn, conversation=True) == stable(value), ascii(text)
 
 
 # ----------------------------------------------------------------- X5 / D7: NO_CAPABILITY is not a success
@@ -483,7 +483,7 @@ def test_d7_no_capability_is_a_typed_non_success_with_exit_4(probed, name):
                                  "executed_capabilities": []}
     assert len(probed.receipt_names()) == len(before) + 1
     _code, turns, _output = probed.chat(script, [text])               # the chat turn is the same Response
-    assert stable(turns[0]) == stable(value)
+    assert stable(turns[0], conversation=True) == stable(value)
 
 
 def test_d7_none_fits_after_a_refused_invoke_is_still_not_a_success(probed):

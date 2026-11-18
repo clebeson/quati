@@ -16,6 +16,7 @@ from quati.application.ports import ProviderConfig
 from quati.application.trace_commands import TraceCommands
 from quati.cli import composition, local_policy
 from quati.cli.chat import run_chat
+from quati.application.conversation import ConversationSession
 from quati.cli.rendering import failure, render, settled_exit
 
 app = typer.Typer(no_args_is_help=False, add_completion=False, pretty_exceptions_enable=False,
@@ -79,9 +80,9 @@ def _state(*names):
             private_fs.state_directory(name)
 
 
-def _service(config=None):
+def _service(config=None, *, conversation=None):
     identity = LocalIdentity()
-    return CLIService(identity, config or _config(), receipt_sink,
+    return CLIService(identity, config or _config(), receipt_sink, conversation=conversation,
                       authorize=composition.registry_authorizer(identity), state_guard=_state,
                       identity_inspector=lambda: runtime_facts.identity_state(identity.directory),
                       policy_loader=lambda tenant_id: local_policy.state(identity.directory, tenant_id),
@@ -159,7 +160,8 @@ def ask(text: str, json_output: bool = typer.Option(False, '--json'),
 @app.command()
 def chat(jsonl: bool = typer.Option(False, '--jsonl', help='Print exactly one JSON Response per input line.')):
     """Line-based terminal session: each line is one turn through the one-shot use cases."""
-    raise typer.Exit(run_chat(lambda: _service(), sys.stdin.buffer, sys.stdout, sys.stderr,
+    conversation = ConversationSession(ids=composition.random_ids)
+    raise typer.Exit(run_chat(lambda: _service(conversation=conversation), sys.stdin.buffer, sys.stdout, sys.stderr,
                               jsonl=jsonl, interactive=sys.stdin.isatty()))
 
 

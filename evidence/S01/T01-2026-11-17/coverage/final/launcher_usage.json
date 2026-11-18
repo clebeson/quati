@@ -1,0 +1,8 @@
+{
+  "requested_model": "haiku",
+  "observed_model": "claude-haiku-5-5",
+  "session_id": "928ae451-fb9f-4cee-8b2c-2c614570af5a",
+  "reported_cost_usd": 0.007993120000000001,
+  "launcher_session_exit": 1,
+  "launcher_note": "Model reached max_turns after shell scratch cwd error. Root verified exactly one detached recorder and pytest child alive; no test outcome inferred from launcher exit. Actual child recorder manifest is authoritative."
+}

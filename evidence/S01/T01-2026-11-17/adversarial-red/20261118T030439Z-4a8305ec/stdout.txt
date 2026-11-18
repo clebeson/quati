@@ -1,0 +1,25 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_policy_objects_cannot_bypass_limits_or_schema_field_presence _______
+
+    def test_policy_objects_cannot_bypass_limits_or_schema_field_presence():
+        from quati.domain.canonical import digest
+        from quati.domain.classification import ClassificationError, RequestClassification, reduce_classification
+        from quati.domain.decision_policy import DecisionPolicy
+        documents = [{}]
+        for key, value in (('small_model_max_complexity', 'unbounded'), ('small_model_max_complexity', 'multi_step'),
+                           ('small_model_max_complexity', 'investigative'), ('urgent_deadline_s', True),
+                           ('urgent_deadline_s', -1)):
+            document = policy().document
+            section = 'routing_policy' if key == 'small_model_max_complexity' else 'behavior_policy'
+            document[section][key] = value
+            documents.append(document)
+        for document in documents:
+>           with pytest.raises(Refusal) as error:
+                 ^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE Refusal
+
+tests/unit/test_s01_t01.py:164: Failed
+=========================== short test summary info ============================
+FAILED tests/unit/test_s01_t01.py::test_policy_objects_cannot_bypass_limits_or_schema_field_presence
+1 failed in 0.15s

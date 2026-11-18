@@ -148,8 +148,8 @@ def test_p2_1_model_written_reason_code_is_never_displayed(tmp_path, monkeypatch
     code, value = harness.ask(CALENDAR_QUERY)
     shown = json.dumps(value)
     assert "Dr. Smith" not in shown and "commitment-forged-1" not in shown
-    assert set(value["data"]["classification"]) == {"intent", "work_needed", "complexity", "risk", "uncertainty",
-                                                    "safe_work_allowed", "next_action"}
+    assert value["data"]["classification"] == dict(evil, reason_code="CLASSIFICATION_VALIDATED", commitment_ref=None)
+    assert value["data"]["classification_stage"] == "SCHEMA_VALIDATED"
     assert value["data"]["classification_sha256"] == digest(evil) == receipt_of(value)["classification_sha256"]
 
 

@@ -1,0 +1,7 @@
+{
+  "requested_model": "haiku",
+  "observed_model": "claude-haiku-5-5",
+  "session_id": "bdd2c8ac-6881-4650-b309-23ebeec5f29f",
+  "cost_usd": 0.0091659,
+  "report_correction": "Root inspected manifest child exit zero; manifest records hashes/exits, not pytest skip reasons. Skip names and reasons were not captured by -q."
+}

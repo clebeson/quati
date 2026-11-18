@@ -1,0 +1,13 @@
+{
+  "schema_version": "quati-agent-usage/1",
+  "role": "independent correction reviewer",
+  "requested_model": "sonnet",
+  "observed_model": "claude-sonnet-5-5",
+  "session_id": "c0bca4b3-3d67-4148-9c66-16e091ac8ece",
+  "cost_usd": 0.29006719999999997,
+  "input_tokens": 12,
+  "output_tokens": 3450,
+  "cache_read_input_tokens": 208352,
+  "cache_creation_input_tokens": 58677,
+  "source": "Claude CLI JSON response; unsigned process report"
+}

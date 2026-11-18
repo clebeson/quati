@@ -1,0 +1,2 @@
+Combined 2 files
+Wrote JSON report to evidence/S01/T01-2026-11-17/coverage/supplemental/coverage.json

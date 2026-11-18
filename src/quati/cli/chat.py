@@ -3,7 +3,8 @@
 Presentation only. Each input line is classified from its first character before any use-case,
 model, tool or ledger call; nothing the session prints is ever parsed again. A turn calls the
 same application function as its one-shot command, through a service built per turn exactly as
-a one-shot invocation builds it. The loop keeps no history, session file or session id.
+a one-shot invocation builds it. The loop keeps no history or business state. S01 composition passes an application-owned
+process-only conversation projection into those use cases; the loop never interprets it.
 
 Session exit rule (docs/prds/M01.md, Chat session rules 7 and 8): end of input or ``/quit`` -> 0;
 a failed turn is reported in its own Response and the loop continues; a line over

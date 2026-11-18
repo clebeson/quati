@@ -1,6 +1,6 @@
 # S01-T01 design
 
-Status: SDD candidate, before runtime code and TDD red. Canonical progress is
+Status: implemented candidate under EDD and independent review. Canonical progress is
 implementation_state.json. Normative realization: S01_RUNTIME_CONTRACT.md.
 
 ## Scope
@@ -51,7 +51,7 @@ transcript, credentials or jobs. Production IDs reuse composition.random_ids;
 tests inject a seeded generator. Main.chat constructs one session and passes it
 to per-turn CLIService instances. Ask authenticates anew on every turn.
 
-AskSession exposes the full schema-validated proposal (including required reason_code) with classification_stage=SCHEMA_VALIDATED; it is not the activated step-5 M08 output yet
+AskSession exposes a schema-shaped projection with code-owned CLASSIFICATION_VALIDATED reason and null model commitment_ref, tagged SCHEMA_VALIDATED; raw proposal hashes remain separate. Free model strings are not displayed, and this is not the activated step-5 M08 output yet
 and stores fail-closed classification after classifier failure. It does not change
 the discovery tool loop or display model text. CLIService verifies conversation
 ownership before effects, decorates response before computing output_hash, and
@@ -105,3 +105,17 @@ T01 accepts only its deterministic contribution, not S01 gate PASS.
 
 Rollback: revert the package source/config changes, retain immutable evidence and
 journal history. No durable product data migration or external effect exists here.
+
+## S00 regression migration after broad execution
+
+The first broad deterministic run (2257 passed, 28 failed) exposed remaining old
+assertions for exact chat/ask equality and classification=null on failed ingress.
+These contradict the accepted S01 metadata/fail-closed contract. Migrate only
+those explicit deltas: validate all four conversation fields, same-session ID and
+exact revisions, verify the receipt hash over the full response, then compare all
+remaining S00 content unchanged. One-shot normalization rejects conversation data.
+Failed ingress asserts the exact independent fail-closed literal and FAIL_CLOSED
+stage while retaining all prior provider-error, repair-budget and zero-effect
+checks. Model text non-disclosure now asserts the entire sanitized projection
+(and unchanged raw hash), rather than the old seven-key subset. No runtime source,
+threshold, skip, refusal, capability, audit or outcome expectation is relaxed.

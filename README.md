@@ -287,6 +287,7 @@ first call, one JSON file per case and an index with the verdict of each gate.
 |---|---|
 | **Current slice** | S00 — local CLI, provider layer, capability discovery |
 | **Implemented** | `init`, `doctor`, `config validate`, `ask`, `chat`, `models probe`, `behavior validate` / `render`, `trace show` / `explain`, capability registry (synthetic fixtures), 6 provider transports |
+| **S01 foundation** | T01 contribution accepted: typed classification and receipt-coordinated process-only conversation revision; S01 gates and current real-model qualification remain pending |
 | **Arrives in S02** | `status`, `tell`, `approve`, `deny`, `approvals`, `trace export` / `replay` (they return `UNSUPPORTED` today) |
 | **Live qualification** | historical run `gate8` on the sealed S00 source; S00 accepted (2026-11-17); changed S01 source/assets not yet live-qualified |
 | **Tests** | 2247 passed, 0 failing, 10 skipped (2026-11-16, sealed commit; the skips are the opt-in live evaluations and smokes and one wheel-build leg) · coverage 99.87% overall, 100% line and branch in `domain/` and `behavior/` |

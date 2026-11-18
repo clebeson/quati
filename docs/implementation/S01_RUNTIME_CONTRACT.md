@@ -19,8 +19,17 @@ policy. It consumes an already validated DecisionPolicy and never dispatches a
 model or a capability. Runtime policy installation/consumption belongs to T02;
 role availability and fallback belong to T03. The S00 public read-discovery path
 and its guards continue during T01. No model recommendation grants authority.
-T01 validates and exposes the full observed proposal as data.classification, labelled classification_stage=SCHEMA_VALIDATED (or FAIL_CLOSED after classifier failure). It is not yet the step-5 M08 value consumed by M03/M04. Reducer results are advisory and do not change dispatch, including role/priority recommendations, before T02; it does not silently
-replace the S00 dispatch policy with an incomplete M03 implementation.
+T01 exposes a complete schema-shaped public classification projection, labelled
+classification_stage=SCHEMA_VALIDATED, or the code-owned FAIL_CLOSED value after
+classifier failure. Free model strings remain undisplayed: public reason_code is
+CLASSIFICATION_VALIDATED and any present commitment_ref is null. The raw proposal
+is retained only through classification_sha256 and approved synthetic evidence;
+that hash does not identify the sanitized public projection. Optional confidence
+is a bounded number, never authority. Typed domain serialization remains lossless.
+This is not the step-5 M08 value consumed by M03/M04. Pure reducer recommendations
+do not change dispatch, role or priority before T02. In particular, publishing a
+complete schema shape must not regress the S00 prohibition on model-written
+completion claims in free-text classification fields.
 
 ## 2. Classification foundation (T01)
 
@@ -52,6 +61,8 @@ routes. A result's role is a recommendation, not measured role qualification.
 
 All existing required context fields remain required on the wire. Direct LOCAL
 requests serialize `act: null`; T01 implements no delegated authentication.
+The direct serializer discards caller-supplied delegation data and always emits
+null; an invalid informational policy version is rejected before serialization.
 `policy_version` may be null when identity authentication cannot determine the
 authorization policy. Null never means ALLOW: authorization still loads and
 checks the trusted policy before effects, independently of this informational

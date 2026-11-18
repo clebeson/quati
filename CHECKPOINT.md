@@ -4,7 +4,7 @@ Implementation is authorized. Read docs/implementation/implementation_state.json
 its revision, active task, phase and next_action are the only progress authority.
 Do not trust historical PASS claims that are not backed by seal records.
 
-Current slice: S01 (state revision 34). Slice S00 is PASS: four gates sealed on commit
+Current slice: S01 (state revision 40). Slice S00 is PASS: four gates sealed on commit
 5063071 and accepted by the owner (governance/seals; LOG-0049, LOG-0050, LOG-0053).
 Changing src/quati, contracts/, examples/, the gate datasets or tests/evals expires the
 S00 live evidence; S01 work that touches them must plan its own requalification.
@@ -31,42 +31,59 @@ Git: the repository was re-created from source-history.bundle on 2026-11-16 and 
 usable. Publication to github.com/clebeson/quati was requested by the owner; check
 `git remote -v` and `git status -sb` to see whether the push has happened.
 
-## Latest resume checkpoint (2026-11-17, S01-T01)
+## Latest resume checkpoint (2026-11-18, S01-T02 discovery)
 
-Canonical revision 34, S01-T01 TDD_RED. HEAD before this SDD checkpoint is c5ec5b0;
-S00 acceptance and helper fixes are already pushed. S01 status is IN_PROGRESS,
-all S01 gates remain NOT_RUN. No S01 runtime source or new tests exist yet.
+Canonical revision 40 selects S01-T02 DISCOVER. S01-T01 is accepted only as a
+local contribution (LOG-0064), not as a full module or S01 slice. All S01 gates
+remain NOT_RUN. HEAD before this implementation checkpoint is 0b19427; inspect
+Git for the actual resulting checkpoint commit and remote synchronization.
 
-Read docs/implementation/S01_RUNTIME_CONTRACT.md and S01_T01_DESIGN.md. They
-resolve G1-G10 for T01's bounded foundation: typed ingress, pure policy building
-block (not activated routing) and a constant-space process-only conversation
-projection in the existing CLI chat use case. T02/T03 own the explicitly deferred
-behavior; T04 owns full slice proof. No new port, worker, command or UI is implied.
+T01 delivery: docs/implementation/S01_T01_DELIVERY.md and
+ evidence/S01/T01-2026-11-17/DELIVERY.json. Independent Sonnet reviews accepted
+source, corrections, exact legacy assertion migration and optional-field cases.
+Full deterministic run: 2285 passed, child exit 0; two supplemental public CLI
+cases passed with unchanged production and all prior test files. Complementary
+lanes: 56 passed, 10 explicit skips. Inventory 2353 = 2343 distinct passed + 10
+skipped. All source/output hashes match. Aggregate coverage: domain and behavior
+100% line/branch; overall 99.89% line / 99.79% branch; all package thresholds pass.
+Both final validators passed. Repeated retests are not counted again.
 
-Fresh Sonnet SDD review accepted with eight P2 corrections, incorporated before
-TDD (docs/audit/S01_T01_SDD_REVIEW_2026-11-17.md; LOG-0058/0059). Haiku ran 55 L0
-regressions and both validators with child exit zero. Evidence and input hashes:
-`evidence/S01/T01-2026-11-17/`. This is specification proof only.
+Use coverage/aggregate, not the partial supplemental report. The supplemental
+coverage startup reset its temporary directory; aggregation restored retained
+full-run compressed data and the supplemental data on the same production code.
+Both raw combined snapshots and earlier red outputs are retained. No process
+remains paused. Earlier 28 legacy assertion failures and the 6-case forwarding
+miss were corrected and independently retested; never rewrite those red records.
 
-Next: root authors tests/unit/test_s01_t01.py and
- tests/integration/cli/test_s01_conversation.py (distinct basenames). Haiku must
-record actual public-path red before runtime source. Use explicit command
-boundaries with no standalone trailing dot. Then implement the declared seams,
-run scoped regressions and coverage, obtain independent conformity/quality review,
-and CAS-checkpoint again. Do not move to T02 before accepting T01 contribution.
+Delivered source: typed classification and advisory pure routing (not activated),
+direct context serialization, receipt-coordinated process-only conversation
+identity/revision. Public model strings are sanitized; hashes bind raw proposals.
+No transcript persistence, worker, durable obligation or process-exit continuation.
+Current changed S01 source remains NOT_RUN for real-model qualification (T04).
+The nine live skips and missing setuptools wheel leg are not accepted provider,
+OS or packaging proof. Preserve historical source-bound S00 seals.
 
-Current runtime-boundary assets differ from the sealed S00 source. README now
-states that old live qualification is historical and current S01 qualification
-is NOT_RUN. Preserve immutable S00 seals; plan affected-path requalification at
-S01-T04. Product languages remain English/Portuguese; internal artifacts English.
+Next: read the S01-T02 handoff and exact task JSON, PRD normative details/oracles,
+contracts and transitive references before authoring T02 specifications/tests/code.
+Only T01 is accepted. T02 source has not started. Known discovery questions to
+resolve, not guess: M05 C4 excludes next_action=ask while its following paragraph
+requires safe starts for that route without missing blocking fields; M05-FR-03
+still names SQLite despite S01 ephemeral scope; the temporal catalog/time-zone,
+request language, initial WorkSnapshot/CommunicationPlan, policy activation and
+role-availability staging need exact consuming definitions. Confirm these against
+all relevant sources, log specification bugs and fix them before code.
 
-Retained helper debt: LOG-0057 (malformed non-PASS references fail without a
-checkpoint but may have an untyped diagnostic; historical seal/event timestamp
-inconsistency). No production, merge, release or deployment is authorized.
+Owner requires exhaustive meaningful tests and continuous checkpoints; continue
+in dependency order without unnecessary questions or stopping at a partial task.
+Use Haiku runners and fresh bounded Sonnet independent audits sparingly. All
+internal artifacts are English; product languages English/Portuguese; terminal first.
+No production, merge, release or deployment is authorized.
 
-State writes: scripts/checkpoint_execution.py only, with revision CAS/journal.
+State writes: scripts/checkpoint_execution.py only, revision CAS/journal.
 Commit author and committer: clebeson <clebeson@users.noreply.github.com>.
 PACKAGE_MANIFEST.json is stale and must remain untracked/out of commits.
+Retained debt: LOG-0057 engineering helper; LOG-0061 foundation integration
+preconditions, owned by T02/T03. Keep evidence immutable and honest about tiers.
 
 ## Earlier handoff (2026-11-16, historical)
 

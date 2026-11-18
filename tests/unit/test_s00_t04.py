@@ -166,7 +166,11 @@ def test_a03(tmp_path, monkeypatch):
     assert all(call.output_schema is not None and not call.tools for call in calls)
     assert "SCHEMA_INVALID_OUTPUT" in calls[1].messages[-1].content    # repair carries the validator error only
     assert harness.handlers.total_invocations() == 0
-    assert value["data"]["classification"] is None
+    assert value["data"]["classification"] == {"intent": "professional_work", "work_needed": True,
+            "complexity": "investigative", "risk": "high", "uncertainty": "high",
+            "safe_work_allowed": False, "next_action": "escalate",
+            "reason_code": "CLASSIFICATION_INVALID_ESCALATE"}
+    assert value["data"]["classification_stage"] == "FAIL_CLOSED"
     assert len(script.items) == 1                                     # the false "done" reply was never requested
 
 

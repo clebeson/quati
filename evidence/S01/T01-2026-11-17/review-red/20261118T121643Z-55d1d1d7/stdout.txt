@@ -1,0 +1,208 @@
+FFFFFFF..........F................                                       [100%]
+=================================== FAILURES ===================================
+_ test_direct_context_never_serializes_a_caller_supplied_delegation_chain[forged0] _
+
+forged = [{'actor_id': 'root', 'principal_kind': 'AGENT'}]
+
+    @pytest.mark.parametrize('forged', [
+        [{'actor_id': 'root', 'principal_kind': 'AGENT'}], {'actor_id': 'root'}, 'admin', []])
+    def test_direct_context_never_serializes_a_caller_supplied_delegation_chain(forged):
+        """T01 implements no delegated authentication: a direct LOCAL context must emit act=null.
+    
+        The field is annotated ``None`` but nothing enforces it, so a forged chain would reach the wire.
+        """
+        wire = context(act=forged).to_wire()
+>       assert wire['act'] is None
+E       AssertionError: assert [{'actor_id': 'root', 'principal_kind': 'AGENT'}] is None
+
+tests/unit/test_s01_t01_review.py:63: AssertionError
+_ test_direct_context_never_serializes_a_caller_supplied_delegation_chain[forged1] _
+
+forged = {'actor_id': 'root'}
+
+    @pytest.mark.parametrize('forged', [
+        [{'actor_id': 'root', 'principal_kind': 'AGENT'}], {'actor_id': 'root'}, 'admin', []])
+    def test_direct_context_never_serializes_a_caller_supplied_delegation_chain(forged):
+        """T01 implements no delegated authentication: a direct LOCAL context must emit act=null.
+    
+        The field is annotated ``None`` but nothing enforces it, so a forged chain would reach the wire.
+        """
+        wire = context(act=forged).to_wire()
+>       assert wire['act'] is None
+E       AssertionError: assert {'actor_id': 'root'} is None
+
+tests/unit/test_s01_t01_review.py:63: AssertionError
+_ test_direct_context_never_serializes_a_caller_supplied_delegation_chain[admin] _
+
+forged = 'admin'
+
+    @pytest.mark.parametrize('forged', [
+        [{'actor_id': 'root', 'principal_kind': 'AGENT'}], {'actor_id': 'root'}, 'admin', []])
+    def test_direct_context_never_serializes_a_caller_supplied_delegation_chain(forged):
+        """T01 implements no delegated authentication: a direct LOCAL context must emit act=null.
+    
+        The field is annotated ``None`` but nothing enforces it, so a forged chain would reach the wire.
+        """
+        wire = context(act=forged).to_wire()
+>       assert wire['act'] is None
+E       AssertionError: assert 'admin' is None
+
+tests/unit/test_s01_t01_review.py:63: AssertionError
+_ test_direct_context_never_serializes_a_caller_supplied_delegation_chain[forged3] _
+
+forged = []
+
+    @pytest.mark.parametrize('forged', [
+        [{'actor_id': 'root', 'principal_kind': 'AGENT'}], {'actor_id': 'root'}, 'admin', []])
+    def test_direct_context_never_serializes_a_caller_supplied_delegation_chain(forged):
+        """T01 implements no delegated authentication: a direct LOCAL context must emit act=null.
+    
+        The field is annotated ``None`` but nothing enforces it, so a forged chain would reach the wire.
+        """
+        wire = context(act=forged).to_wire()
+>       assert wire['act'] is None
+E       assert [] is None
+
+tests/unit/test_s01_t01_review.py:63: AssertionError
+____ test_context_policy_version_is_null_or_a_nonempty_string_on_the_wire[] ____
+
+version = ''
+
+    @pytest.mark.parametrize('version', ['', 7, ['v']])
+    def test_context_policy_version_is_null_or_a_nonempty_string_on_the_wire(version):
+        """Contract section 3: null or a nonempty string; the schema has minLength 1 and type string."""
+        try:
+            wire = context(policy_version=version).to_wire()
+        except (ValueError, TypeError, Refusal):
+            return  # rejecting at construction or serialization is conforming
+>       CONTEXT_VALIDATOR.validate(wire)
+
+tests/unit/test_s01_t01_review.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Draft202012Validator(schema={'$defs': {'CommitmentUsage': {'additionalProperties': False, 'description': 'Cumulative u...ecker=<FormatChecker checkers=['date', 'email', 'idn-email', 'idn-hostname', 'ipv4', 'ipv6', 'regex', 'time', 'uuid']>)
+args = ({'act': None, 'actor_id': 'actor-1', 'authenticated_origin_ref': 'fixture:authenticated', 'channel': 'cli', ...},)
+kwargs = {}
+
+    def validate(self, *args, **kwargs):
+        for error in self.iter_errors(*args, **kwargs):
+>           raise error
+E           jsonschema.exceptions.ValidationError: '' should be non-empty
+E           
+E           Failed validating 'minLength' in schema['properties']['policy_version']:
+E               {'type': ['string', 'null'],
+E                'minLength': 1,
+E                'description': 'Authorization policy identity when known; null grants '
+E                               'no authority. Effects still require the independently '
+E                               'loaded trusted policy.'}
+E           
+E           On instance['policy_version']:
+E               ''
+
+.venv/lib/python3.13/site-packages/jsonschema/validators.py:450: ValidationError
+___ test_context_policy_version_is_null_or_a_nonempty_string_on_the_wire[7] ____
+
+version = 7
+
+    @pytest.mark.parametrize('version', ['', 7, ['v']])
+    def test_context_policy_version_is_null_or_a_nonempty_string_on_the_wire(version):
+        """Contract section 3: null or a nonempty string; the schema has minLength 1 and type string."""
+        try:
+            wire = context(policy_version=version).to_wire()
+        except (ValueError, TypeError, Refusal):
+            return  # rejecting at construction or serialization is conforming
+>       CONTEXT_VALIDATOR.validate(wire)
+
+tests/unit/test_s01_t01_review.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Draft202012Validator(schema={'$defs': {'CommitmentUsage': {'additionalProperties': False, 'description': 'Cumulative u...ecker=<FormatChecker checkers=['date', 'email', 'idn-email', 'idn-hostname', 'ipv4', 'ipv6', 'regex', 'time', 'uuid']>)
+args = ({'act': None, 'actor_id': 'actor-1', 'authenticated_origin_ref': 'fixture:authenticated', 'channel': 'cli', ...},)
+kwargs = {}
+
+    def validate(self, *args, **kwargs):
+        for error in self.iter_errors(*args, **kwargs):
+>           raise error
+E           jsonschema.exceptions.ValidationError: 7 is not of type 'string', 'null'
+E           
+E           Failed validating 'type' in schema['properties']['policy_version']:
+E               {'type': ['string', 'null'],
+E                'minLength': 1,
+E                'description': 'Authorization policy identity when known; null grants '
+E                               'no authority. Effects still require the independently '
+E                               'loaded trusted policy.'}
+E           
+E           On instance['policy_version']:
+E               7
+
+.venv/lib/python3.13/site-packages/jsonschema/validators.py:450: ValidationError
+_ test_context_policy_version_is_null_or_a_nonempty_string_on_the_wire[version2] _
+
+version = ['v']
+
+    @pytest.mark.parametrize('version', ['', 7, ['v']])
+    def test_context_policy_version_is_null_or_a_nonempty_string_on_the_wire(version):
+        """Contract section 3: null or a nonempty string; the schema has minLength 1 and type string."""
+        try:
+            wire = context(policy_version=version).to_wire()
+        except (ValueError, TypeError, Refusal):
+            return  # rejecting at construction or serialization is conforming
+>       CONTEXT_VALIDATOR.validate(wire)
+
+tests/unit/test_s01_t01_review.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Draft202012Validator(schema={'$defs': {'CommitmentUsage': {'additionalProperties': False, 'description': 'Cumulative u...ecker=<FormatChecker checkers=['date', 'email', 'idn-email', 'idn-hostname', 'ipv4', 'ipv6', 'regex', 'time', 'uuid']>)
+args = ({'act': None, 'actor_id': 'actor-1', 'authenticated_origin_ref': 'fixture:authenticated', 'channel': 'cli', ...},)
+kwargs = {}
+
+    def validate(self, *args, **kwargs):
+        for error in self.iter_errors(*args, **kwargs):
+>           raise error
+E           jsonschema.exceptions.ValidationError: ['v'] is not of type 'string', 'null'
+E           
+E           Failed validating 'type' in schema['properties']['policy_version']:
+E               {'type': ['string', 'null'],
+E                'minLength': 1,
+E                'description': 'Authorization policy identity when known; null grants '
+E                               'no authority. Effects still require the independently '
+E                               'loaded trusted policy.'}
+E           
+E           On instance['policy_version']:
+E               ['v']
+
+.venv/lib/python3.13/site-packages/jsonschema/validators.py:450: ValidationError
+___ test_absent_proposed_capabilities_value_fails_closed_without_a_raw_crash ___
+
+    def test_absent_proposed_capabilities_value_fails_closed_without_a_raw_crash():
+        """A caller passing None for the capability list must not escape as an untyped TypeError."""
+        try:
+>           route = reduce_classification(dict(BASE), policy(), now=NOW, proposed_capabilities=None)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_s01_t01_review.py:108: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/quati/domain/classification.py:173: in reduce_classification
+    effect = _effect(parsed.intent, proposed_capabilities, effects or {})
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+intent = 'context_lookup', proposed = None, effects = {}
+
+    def _effect(intent: str, proposed: Sequence[str], effects: Mapping[str, str]) -> str:
+        observed = [FLOORS[intent]]
+>       for capability in proposed:
+                          ^^^^^^^^
+E       TypeError: 'NoneType' object is not iterable
+
+src/quati/domain/classification.py:140: TypeError
+=========================== short test summary info ============================
+FAILED tests/unit/test_s01_t01_review.py::test_direct_context_never_serializes_a_caller_supplied_delegation_chain[forged0]
+FAILED tests/unit/test_s01_t01_review.py::test_direct_context_never_serializes_a_caller_supplied_delegation_chain[forged1]
+FAILED tests/unit/test_s01_t01_review.py::test_direct_context_never_serializes_a_caller_supplied_delegation_chain[admin]
+FAILED tests/unit/test_s01_t01_review.py::test_direct_context_never_serializes_a_caller_supplied_delegation_chain[forged3]
+FAILED tests/unit/test_s01_t01_review.py::test_context_policy_version_is_null_or_a_nonempty_string_on_the_wire[]
+FAILED tests/unit/test_s01_t01_review.py::test_context_policy_version_is_null_or_a_nonempty_string_on_the_wire[7]
+FAILED tests/unit/test_s01_t01_review.py::test_context_policy_version_is_null_or_a_nonempty_string_on_the_wire[version2]
+FAILED tests/unit/test_s01_t01_review.py::test_absent_proposed_capabilities_value_fails_closed_without_a_raw_crash
+8 failed, 26 passed in 0.24s

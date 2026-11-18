@@ -1,0 +1,63 @@
+Name                                                Stmts   Miss Branch BrPart   Cover   Missing
+------------------------------------------------------------------------------------------------
+src/quati/__init__.py                                   1      0      0      0 100.00%
+src/quati/__main__.py                                   2      0      0      0 100.00%
+src/quati/adapters/__init__.py                          0      0      0      0 100.00%
+src/quati/adapters/capability_store.py                207      0     36      0 100.00%
+src/quati/adapters/evidence.py                         43      0      6      0 100.00%
+src/quati/adapters/feature_reports.py                  42      0      8      0 100.00%
+src/quati/adapters/fixture_capabilities.py            137      0     14      0 100.00%
+src/quati/adapters/fts_index.py                        17      0      2      0 100.00%
+src/quati/adapters/local_identity.py                  135      4     26      2  96.27%   53, 96, 112-113
+src/quati/adapters/policy_gate.py                      46      0      4      0 100.00%
+src/quati/adapters/private_fs.py                      126      0     40      0 100.00%
+src/quati/adapters/providers/__init__.py                4      0      0      0 100.00%
+src/quati/adapters/providers/_sdk.py                   99      0     54      0 100.00%
+src/quati/adapters/providers/anthropic.py              57      0     16      0 100.00%
+src/quati/adapters/providers/cli.py                   317      0     92      0 100.00%
+src/quati/adapters/providers/openai_compatible.py     112      0     36      0 100.00%
+src/quati/adapters/runtime_facts.py                   103      0     32      0 100.00%
+src/quati/adapters/trace_store.py                      32      0     10      0 100.00%
+src/quati/application/__init__.py                       0      0      0      0 100.00%
+src/quati/application/ask.py                          407      0    112      1  99.81%   513->515
+src/quati/application/behavior_commands.py             56      0      6      0 100.00%
+src/quati/application/capability_commands.py           91      0     24      0 100.00%
+src/quati/application/capability_registry.py          372      0     86      0 100.00%
+src/quati/application/cli_service.py                  343      0    120      0 100.00%
+src/quati/application/code_identity.py                 14      0      0      0 100.00%
+src/quati/application/context_envelope.py              93      0     18      0 100.00%
+src/quati/application/conversation.py                  44      0     18      0 100.00%
+src/quati/application/discovery.py                    257      0     78      0 100.00%
+src/quati/application/discovery_tools.py               80      0     20      0 100.00%
+src/quati/application/identity.py                     145      1     36      1  98.90%   59
+src/quati/application/ports.py                         29      0      0      0 100.00%
+src/quati/application/providers.py                    535      0    166      0 100.00%
+src/quati/application/trace_commands.py               235      0     72      0 100.00%
+src/quati/behavior/__init__.py                          0      0      0      0 100.00%
+src/quati/behavior/compiler.py                        189      0     56      0 100.00%
+src/quati/behavior/contracts.py                       196      0     68      0 100.00%
+src/quati/behavior/fsutil.py                           39      0      4      0 100.00%
+src/quati/behavior/manifest.py                        136      0     64      0 100.00%
+src/quati/behavior/store.py                           223      0     64      0 100.00%
+src/quati/behavior/trusted_config.py                   94      0     26      0 100.00%
+src/quati/cli/__init__.py                               0      0      0      0 100.00%
+src/quati/cli/chat.py                                  66      0     26      0 100.00%
+src/quati/cli/composition.py                           48      0      0      0 100.00%
+src/quati/cli/local_policy.py                          37      0      8      0 100.00%
+src/quati/cli/main.py                                 173      2     38      1  98.58%   306, 319
+src/quati/cli/rendering.py                             49      0     22      0 100.00%
+src/quati/domain/__init__.py                            0      0      0      0 100.00%
+src/quati/domain/canonical.py                          31      0     16      0 100.00%
+src/quati/domain/capability_import.py                  27      0      8      0 100.00%
+src/quati/domain/capability_lint.py                    29      0     16      0 100.00%
+src/quati/domain/capability_registry.py               155      0     50      0 100.00%
+src/quati/domain/classification.py                    120      0     36      0 100.00%
+src/quati/domain/conversation.py                       19      0      8      0 100.00%
+src/quati/domain/decision_policy.py                    42      0     18      0 100.00%
+src/quati/domain/diagnostics.py                        55      0      2      0 100.00%
+src/quati/domain/discovery.py                         103      0     16      0 100.00%
+src/quati/domain/policy.py                            321      0    106      0 100.00%
+src/quati/domain/social.py                            107      0     46      0 100.00%
+src/quati/domain/statechart.py                        157      0     92      0 100.00%
+------------------------------------------------------------------------------------------------
+TOTAL                                                6597      7   1922      5  99.86%

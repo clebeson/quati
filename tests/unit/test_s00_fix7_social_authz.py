@@ -170,6 +170,8 @@ class Profile:
         code, output = self.run(script, "chat", "--jsonl", stdin="".join(f"{line}\n" for line in lines).encode())
         values = [json.loads(line) for line in output.splitlines()]
         assert len(values) == len(lines), output
+        assert len({value["data"]["conversation"]["id"] for value in values}) == 1
+        assert [value["data"]["conversation"]["revision"] for value in values] == list(range(1, len(values) + 1))
         return code, values, output
 
     def spied(self, kind: str) -> list:
@@ -227,9 +229,19 @@ def sha(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def stable(value: dict) -> dict:
-    """A Response without the per-request identifiers and the receipt reference."""
+def stable(value: dict, *, conversation=False) -> dict:
+    """Validate the S01 projection before comparing the unchanged S00 response content."""
     data = {key: item for key, item in value["data"].items() if key not in ("request_id", "trace_id")}
+    if conversation:
+        metadata = data.pop("conversation")
+        assert set(metadata) == {"id", "revision", "lifetime", "continues_after_exit"}
+        assert isinstance(metadata["id"], str) and metadata["id"]
+        assert type(metadata["revision"]) is int and metadata["revision"] >= 1
+        assert metadata["lifetime"] == "PROCESS_ONLY" and metadata["continues_after_exit"] is False
+        raw = json.dumps({**value, "evidence_refs": []}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+        assert receipt(value)["output_hash"] == hashlib.sha256(raw.encode()).hexdigest()
+    else:
+        assert "conversation" not in data
     return {**value, "data": data, "evidence_refs": []}
 
 
@@ -238,8 +250,8 @@ def steps(value: dict) -> list[tuple]:
             for step in value["data"]["tool_calls"]]
 
 
-def assert_social(value: dict, reply: str) -> None:
-    assert stable(value) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
+def assert_social(value: dict, reply: str, *, conversation=False) -> None:
+    assert stable(value, conversation=conversation) == {"status": "SUCCEEDED", "data": social_data(reply), "evidence_refs": [],
                              "uncertainties": [], "next_action": None, "error": None}
     stored = receipt(value)
     assert (stored["provider_used"], stored["status"], stored["cost_usd"]) == (False, "SUCCEEDED", None)
@@ -301,8 +313,8 @@ def test_d1_chat_jsonl_answers_every_social_only_sample_identically_in_every_pro
     code, values, output = workspace.chat(script, [text for _language, text, _reply in SAMPLES])
     assert code == 0
     for (_language, text, reply), value in zip(SAMPLES, values):
-        assert stable(value)["data"] == social_data(reply), text
-        assert_social(value, reply)
+        assert stable(value, conversation=True)["data"] == social_data(reply), text
+        assert_social(value, reply, conversation=True)
     assert CLAIM not in output
     assert_no_model_and_no_registry_use(workspace, script, before)
 
@@ -335,7 +347,7 @@ def test_d1_chat_jsonl_turn_equals_the_one_shot_ask(probed):
     lines = ["Hi, how are you?", "Olá, isto é urgente", "Boa tarde"]       # the third was "こんにちは" (removed language)
     _code, turns, _output = probed.chat(HOSTILE, lines)
     for line, turn in zip(lines, turns):
-        assert stable(turn) == stable(probed.ask(HOSTILE, line)[1])
+        assert stable(turn, conversation=True) == stable(probed.ask(HOSTILE, line)[1])
 
 
 @pytest.fixture(scope="module")
@@ -449,8 +461,8 @@ def test_d2_human_rendering_and_chat_jsonl_agree_with_the_one_shot_ask(probed):
     lines = ["Hi, how are you?", text, mixed]
     _code, turns, output = probed.chat([*script, *HOSTILE], lines)
     assert CLAIM not in output
-    assert stable(turns[0])["data"] == social_data("Hello!")
-    assert stable(turns[1]) == one_shot
+    assert stable(turns[0], conversation=True)["data"] == social_data("Hello!")
+    assert stable(turns[1], conversation=True) == one_shot
     assert (turns[2]["status"], turns[2]["data"]["result_kind"]) == ("SUCCEEDED", "FIXTURE_RESULT")
     assert probed.spied("handler") == ["calendar-read"] and probed.spied("script_left") == [0]
 

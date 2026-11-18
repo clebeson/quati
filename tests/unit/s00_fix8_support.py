@@ -80,6 +80,8 @@ class Profile:
         code, output = self.run(script, "chat", "--jsonl", stdin="".join(f"{line}\n" for line in lines).encode())
         values = [json.loads(line) for line in output.splitlines()]
         assert len(values) == len(lines), output
+        assert len({value["data"]["conversation"]["id"] for value in values}) == 1
+        assert [value["data"]["conversation"]["revision"] for value in values] == list(range(1, len(values) + 1))
         return code, values, output
 
     def spied(self, kind: str) -> list:
@@ -118,9 +120,19 @@ def receipt(value: dict) -> dict:
     return json.loads(raw)
 
 
-def stable(value: dict) -> dict:
-    """A Response without the per-request identifiers and the receipt reference."""
+def stable(value: dict, *, conversation=False) -> dict:
+    """Validate the S01 projection before comparing the unchanged S00 response content."""
     data = {key: item for key, item in value["data"].items() if key not in ("request_id", "trace_id")}
+    if conversation:
+        metadata = data.pop("conversation")
+        assert set(metadata) == {"id", "revision", "lifetime", "continues_after_exit"}
+        assert isinstance(metadata["id"], str) and metadata["id"]
+        assert type(metadata["revision"]) is int and metadata["revision"] >= 1
+        assert metadata["lifetime"] == "PROCESS_ONLY" and metadata["continues_after_exit"] is False
+        raw = json.dumps({**value, "evidence_refs": []}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+        assert receipt(value)["output_hash"] == hashlib.sha256(raw.encode()).hexdigest()
+    else:
+        assert "conversation" not in data
     return {**value, "data": data, "evidence_refs": []}
 
 

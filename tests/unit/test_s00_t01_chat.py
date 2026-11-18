@@ -320,7 +320,13 @@ def test_at03_in_process_chat_equals_one_shot_for_real_local_identity(local_prof
         exit_code, text, _ = run_main(monkeypatch, capsys, argv)
         one_shot.append((exit_code, json.loads(text)))
     assert [e for e, _ in one_shot] == [0, 3, 4]
-    for got, (_, expected) in zip(chat[:3], one_shot):
+    conversation_id = chat[0]['data']['conversation']['id']
+    for index, (got, (_, expected)) in enumerate(zip(chat[:3], one_shot), 1):
+        if got['data'] and 'request_id' in got['data']:
+            metadata = got['data'].pop('conversation')
+            assert metadata == dict(id=conversation_id, revision=index, lifetime='PROCESS_ONLY',
+                                    continues_after_exit=False)
+            assert 'conversation' not in expected['data']
         for value in (got, expected):
             if value['data'] and 'request_id' in value['data']:
                 value['data'].update(request_id='<id>', trace_id='<id>')

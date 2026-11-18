@@ -1,0 +1,13 @@
+........................................................ssssssssss       [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/packaging/test_fresh_install.py:97: fresh-wheel install NOT VERIFIED here: the build backend declared in pyproject.toml (setuptools>=75) is not importable in this environment and no package index is reachable offline
+SKIPPED [1] tests/evals/test_discovery.py:36: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_discovery.py:40: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_discovery.py:44: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_discovery.py:49: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_discovery.py:54: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_social.py:22: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/evals/test_social.py:30: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_EVAL=1 to run live evals
+SKIPPED [1] tests/external/test_live_claude_cli.py:26: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_SMOKE=claude_cli
+SKIPPED [1] tests/external/test_live_codex_cli.py:26: NOT_VERIFIED_EXTERNAL: set QUATI_LIVE_SMOKE=codex_cli
+56 passed, 10 skipped in 1.39s

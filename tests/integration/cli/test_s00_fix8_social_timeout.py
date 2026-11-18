@@ -68,7 +68,11 @@ def test_soc_01_fault_other_text_fails_typed_on_a_model_timeout(probed, text):
     assert (data["launched"], data["delivered"], data["commitment_id"], data["tool_calls"]) == (
         False, False, None, [])
     assert "text" not in data and "fixture_results" not in data and "display_lines" not in data
-    assert data["classification"] is None
+    assert data["classification"] == {"intent": "professional_work", "work_needed": True,
+            "complexity": "investigative", "risk": "high", "uncertainty": "high",
+            "safe_work_allowed": False, "next_action": "escalate",
+            "reason_code": "CLASSIFICATION_INVALID_ESCALATE"}
+    assert data["classification_stage"] == "FAIL_CLOSED"
     assert "Hello!" not in output and "GREETING" not in output and CLAIM not in output
     assert "No capability result was produced" in value["next_action"]
     # Exactly one model request (the classification that timed out); the obedient rest was never consumed.
@@ -87,10 +91,10 @@ def test_soc_01_fault_chat_jsonl_session_gives_the_same_three_outcomes(probed):
     lines = ["Hi, how are you?", "Moikka!", "Find my next appointment", "hello ❤\ufe0f"]
     code, turns, output = probed.chat([*TIMEOUT, *TIMEOUT], lines)
     assert code == 0 and CLAIM not in output
-    assert stable(turns[0])["data"] == social_data("Hello!") and stable(turns[3])["data"] == social_data("Hello!")
+    assert stable(turns[0], conversation=True)["data"] == social_data("Hello!") and stable(turns[3], conversation=True)["data"] == social_data("Hello!")
     for index in (1, 2):
         one_shot = probed.ask(TIMEOUT, lines[index])[1]
-        assert stable(turns[index]) == stable(one_shot)
+        assert stable(turns[index], conversation=True) == stable(one_shot)
         assert (turns[index]["status"], turns[index]["error"]["code"], turns[index]["data"]["launched"]) == (
             "BLOCKED", "DEADLINE_EXCEEDED", False)
     code, turns, _output = probed.chat([*TIMEOUT, *TIMEOUT], lines)

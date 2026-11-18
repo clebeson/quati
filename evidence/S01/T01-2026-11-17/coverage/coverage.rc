@@ -1,0 +1,8 @@
+[run]
+branch = True
+parallel = True
+source = /home/clebeson/dev/SECMA/src/quati
+data_file = /tmp/quati-s01-t01-coverage-97f1v3eo/.coverage
+[report]
+show_missing = True
+precision = 2

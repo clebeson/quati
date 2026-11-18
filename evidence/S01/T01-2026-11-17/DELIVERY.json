@@ -1,0 +1,83 @@
+{
+  "schema_version": "quati-task-delivery/1",
+  "task_id": "S01-T01",
+  "verdict": "PASS",
+  "scope": "T01 local contribution only; no S01 gate or full requirement plan accepted",
+  "accepted_by": "root coordinator after independent reviews and actual test evidence inspection",
+  "assertions": {
+    "S01-T01-A01": "tests/integration/cli/test_s01_conversation.py::test_a01",
+    "S01-T01-A02": "tests/integration/cli/test_s01_conversation.py::test_a02",
+    "S01-T01-A03": "tests/integration/cli/test_s01_conversation.py::test_a03"
+  },
+  "distinct_results": {
+    "deterministic_full_passed": 2285,
+    "additional_public_cli_passed": 2,
+    "complementary_passed": 56,
+    "total_passed": 2343,
+    "skipped": 10,
+    "collected": 2353,
+    "failed": 0
+  },
+  "validation_strategy": "Reuse unchanged full-run code/tests plus two added supplemental tests; all original source hashes and outputs verified, only added source is the new test file. No prior runtime or assertion file changed after the full passing run.",
+  "new_source_since_full_run": [
+    "tests/integration/cli/test_s01_optional_classification.py"
+  ],
+  "coverage_summary_ref": "evidence/S01/T01-2026-11-17/coverage/aggregate/summary.json",
+  "runtime": {
+    "os": "Linux",
+    "kernel": "6.17.0-41-generic",
+    "python": "3.13.7",
+    "test_provider": "SCRIPTED_FAKE",
+    "test_model_id": "fake-model-1",
+    "runner_model": "claude-haiku-5-5",
+    "independent_review_model": "claude-sonnet-5-5"
+  },
+  "limitations": [
+    "Nine live evaluations/provider smokes not executed in this contribution",
+    "Fresh-wheel test skipped: setuptools backend missing",
+    "Current S01 live qualification remains NOT_RUN",
+    "LOG-0057 and LOG-0061 remain bounded debt",
+    "No production access, merge, release or deployment"
+  ],
+  "rollback": "Revert this contribution source/test/config changes, retaining immutable evidence and journal history. No product-data migration.",
+  "evidence_refs": [
+    "evidence/S01/T01-2026-11-17/coverage/final/runs/20261118T125826Z-3e3f0532/manifest.json",
+    "evidence/S01/T01-2026-11-17/coverage/final/runs/20261118T125826Z-3e3f0532/stdout.txt",
+    "evidence/S01/T01-2026-11-17/coverage/supplemental/runs/20261118T130213Z-6f35c5f6/manifest.json",
+    "evidence/S01/T01-2026-11-17/coverage/supplemental/runs/20261118T130213Z-6f35c5f6/stdout.txt",
+    "evidence/S01/T01-2026-11-17/coverage/aggregate/summary.json",
+    "evidence/S01/T01-2026-11-17/coverage/aggregate/coverage.json",
+    "evidence/S01/T01-2026-11-17/coverage/aggregate/data.coverage.gz",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130532Z-5ff7e49d/manifest.json",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130532Z-f4948128/manifest.json",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130534Z-8ef17285/manifest.json",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130534Z-8ef17285/stdout.txt",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130535Z-1da9fbd7/manifest.json",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130535Z-1da9fbd7/stdout.txt",
+    "docs/audit/S01_T01_CODE_REVIEW_2026-11-18.md",
+    "docs/audit/S01_T01_RETEST_2026-11-18.md",
+    "docs/audit/S01_T01_REGRESSION_REVIEW_2026-11-18.md",
+    "docs/audit/S01_T01_OPTIONAL_FIELDS_REVIEW_2026-11-18.md",
+    "docs/implementation/S01_T01_DELIVERY.md"
+  ],
+  "evidence_sha256": {
+    "evidence/S01/T01-2026-11-17/coverage/final/runs/20261118T125826Z-3e3f0532/manifest.json": "90e7c93bbdbc1dddbd05d03b6248c2f4579fbfa41e738bc602c38c636194a190",
+    "evidence/S01/T01-2026-11-17/coverage/final/runs/20261118T125826Z-3e3f0532/stdout.txt": "343567090d64fc991ab7fab2a24c80d63443363a927515adca7df1609ca843db",
+    "evidence/S01/T01-2026-11-17/coverage/supplemental/runs/20261118T130213Z-6f35c5f6/manifest.json": "f5b446d73f313b780886d2c473083ca726aa077e41858ce7c237ad20773c0cee",
+    "evidence/S01/T01-2026-11-17/coverage/supplemental/runs/20261118T130213Z-6f35c5f6/stdout.txt": "3fcb38e1fcfa38dc1085502533c71aa59ca438c8f584e3256efb4ba9c28a5474",
+    "evidence/S01/T01-2026-11-17/coverage/aggregate/summary.json": "42b410f2570ebd4f571c814ebcf0406738afd616aaf58dc56aeb9e3c7f7e0cd2",
+    "evidence/S01/T01-2026-11-17/coverage/aggregate/coverage.json": "4222c2eadf0bd9a70c9a055d598c6eb540d46479d3b3a24a864bccbde6664f61",
+    "evidence/S01/T01-2026-11-17/coverage/aggregate/data.coverage.gz": "035c6bfd44d0e5e33df6a6aa8b73dc8d8007c51b5b8f32aec8c85587e5ac9f6b",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130532Z-5ff7e49d/manifest.json": "2d9ab3e1574a217309f9309ee67d4412b43dd9b1459900b94d126c42f4cb8b10",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130532Z-f4948128/manifest.json": "6303c633d12e8ed3bb92e14403936d86392728d6c5c82f9ebe95acb5d6045a60",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130534Z-8ef17285/manifest.json": "4ec55255155f263ff06efc4aa009e14e53318a125cfe240a2a56e271f6d80b74",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130534Z-8ef17285/stdout.txt": "5604ace78b6562ed16dbefa38fdefc09dca77cd5aa09dbca94a8fbe52ec42fcc",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130535Z-1da9fbd7/manifest.json": "be3be055a315bf194ea1f9f68a393e25b03116cd5eec83b45bf801a4231f0103",
+    "evidence/S01/T01-2026-11-17/acceptance-checks/20261118T130535Z-1da9fbd7/stdout.txt": "e2bce53ef7fe32127fd7d69eeafef18866cba6a76803bdeac8d4f8199f7121b9",
+    "docs/audit/S01_T01_CODE_REVIEW_2026-11-18.md": "57d4c5fcb594d222597ac147b776bc09eb244babdae6f2be24424709c774bb32",
+    "docs/audit/S01_T01_RETEST_2026-11-18.md": "2b7593fdc229a75a8524d4b2a586241610412441b7f5f91da992b5ce46b82e5e",
+    "docs/audit/S01_T01_REGRESSION_REVIEW_2026-11-18.md": "476f5beca7f95b13ddfba3f600b9d746c0fcabcce7f5dbf9539b11b3ac846cf0",
+    "docs/audit/S01_T01_OPTIONAL_FIELDS_REVIEW_2026-11-18.md": "934012710c6009b8d29dbeaf36b49cd683798ae977a91a40f6a2226a30f30a3c",
+    "docs/implementation/S01_T01_DELIVERY.md": "8098fe1f41b3c6f85804adfab889d3c0f0254f26a2fc777eebe4f755ead2f4aa"
+  }
+}

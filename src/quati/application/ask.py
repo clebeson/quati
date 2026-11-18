@@ -63,6 +63,7 @@ from quati.application.discovery_tools import DISCOVERY_TOOLS, execute_tool_call
 from quati.application.providers import Message, ModelRequest, ProbeProfile, ProviderError, ToolSpec
 from quati.behavior.contracts import default_catalog
 from quati.domain.canonical import digest
+from quati.domain.classification import ClassificationError, RequestClassification, fail_closed
 from quati.domain.diagnostics import settled_exit
 from quati.domain.discovery import MAX_TOOL_CALLS_PER_TURN
 from quati.domain.social import social_match
@@ -87,10 +88,6 @@ ASK_LIMITS = {"max_provider_requests": ASK_MAX_PROVIDER_REQUESTS, "max_tool_call
               "max_loop_repairs": MAX_LOOP_REPAIRS, "max_continuations": MAX_CONTINUATIONS,
               "feature_report_max_age_s": FEATURE_REPORT_MAX_AGE_S, "max_escalations": 0}
 RESULT_KINDS = ("GREETING", "FIXTURE_RESULT", "NO_CAPABILITY", "BLOCKED")
-# Closed-vocabulary classification fields that may be displayed; free text (reason_code,
-# commitment_ref) and confidence are only hashed (classification_sha256) and kept in evidence.
-DISPLAYED_CLASSIFICATION_FIELDS = ("intent", "work_needed", "complexity", "risk", "uncertainty",
-                                   "safe_work_allowed", "next_action")
 DIGEST_FIELDS = ("config_hash", "model_digest", "behavior_build_digest", "behavior_prompt_hash", "behavior_hash",
                  "statechart_hash", "policy_ref", "envelope_stable_hash", "envelope_hash", "effective_prompt_hash",
                  "classification_prompt_hash", "catalog_digest", "tool_schema_digest", "feature_report_sha256",
@@ -308,6 +305,7 @@ class AskSession:
         self.steps: list[tuple[dict, str]] = []
         self.final_text: str | None = None
         self.classification: dict | None = None
+        self.classification_stage: str | None = None
         self.classification_mode = ("native_json_schema" if gate.get("structured_output") == "SUPPORTED"
                                     else "forced_tool_call")
         self.classification_attempts = 0
@@ -485,9 +483,13 @@ class AskSession:
                                                   "Shorten the request; no model was called.", [exc.reason]), None)
         self.current = envelope
         try:
-            self.classification = self.classify(envelope)
-        except ProviderError as exc:
-            return self.finish(self.provider_failure(exc), envelope)
+            self.classification = RequestClassification.from_wire(self.classify(envelope)).to_wire()
+            self.classification_stage = "SCHEMA_VALIDATED"
+        except (ProviderError, ClassificationError) as exc:
+            self.classification = fail_closed().to_wire()
+            self.classification_stage = "FAIL_CLOSED"
+            failure = exc if isinstance(exc, ProviderError) else ProviderError("OUTPUT_INVALID", "CLASSIFICATION_INVALID")
+            return self.finish(self.provider_failure(failure), envelope)
         stop = self.loop(envelope)
         return self.finish(self.outcome(stop), envelope)
 
@@ -498,13 +500,19 @@ class AskSession:
                 "usage": self.usage(), "result_status": None, "result_kind": kind, "received": True,
                 "launched": False, "delivered": False, "feature_support": self.gate["tools"],
                 "classification": self.displayed_classification(),
+                "classification_stage": self.classification_stage,
                 "classification_sha256": None if self.classification is None else digest(self.classification),
                 "reason": None, **extra}
 
     def displayed_classification(self) -> dict | None:
         if self.classification is None:
             return None
-        return {name: self.classification[name] for name in DISPLAYED_CLASSIFICATION_FIELDS}
+        public = dict(self.classification)
+        if self.classification_stage == "SCHEMA_VALIDATED":
+            public["reason_code"] = "CLASSIFICATION_VALIDATED"
+            if "commitment_ref" in public:
+                public["commitment_ref"] = None
+        return public
 
     def provider_failure(self, exc) -> dict:
         status = _provider_status(exc.code)

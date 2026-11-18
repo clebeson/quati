@@ -40,6 +40,17 @@ class RequestContext:
     channel: str = 'cli'
     principal_kind: str = 'HUMAN'
     profile: str = 'LOCAL'
+    act: None = None
+
+    def to_wire(self) -> dict:
+        """Serialize the complete direct context; an unknown policy never grants authority."""
+        if self.policy_version is not None and (
+                not isinstance(self.policy_version, str) or not self.policy_version):
+            raise ValueError('Context policy version must be null or a nonempty string')
+        wire = asdict(self)
+        # Delegation is unavailable in direct LOCAL contexts.
+        wire['act'] = None
+        return json.loads(canonical_bytes(wire))
 
 
 def _check_json_keys(value):

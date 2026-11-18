@@ -1,0 +1,42 @@
+{
+  "schema_version": "quati-coverage-run/1",
+  "lanes": [
+    "tests/unit",
+    "tests/integration"
+  ],
+  "coverage_config": "/home/clebeson/dev/SECMA/evidence/S01/T01-2026-11-17/coverage/coverage.rc",
+  "data_file": "/tmp/quati-s01-t01-coverage-97f1v3eo/.coverage",
+  "scope": "Reference Linux host only; deterministic lanes and actual CLI subprocesses.",
+  "required": {
+    "domain_line": 100,
+    "domain_branch": 100,
+    "behavior_line": 100,
+    "behavior_branch": 100,
+    "overall_line": 95,
+    "overall_branch": 90,
+    "application_line": 95,
+    "application_branch": 95,
+    "adapters_line": 90,
+    "adapters_branch": 85,
+    "cli_line": 90,
+    "cli_branch": 85
+  },
+  "command": [
+    "env",
+    "QUATI_TEST_COVERAGE_BOOTSTRAP=/home/clebeson/dev/SECMA/tests/coverage",
+    "COVERAGE_PROCESS_START=/home/clebeson/dev/SECMA/evidence/S01/T01-2026-11-17/coverage/coverage.rc",
+    "COVERAGE_FILE=/tmp/quati-s01-t01-coverage-97f1v3eo/.coverage",
+    ".venv/bin/python",
+    "-m",
+    "coverage",
+    "run",
+    "--rcfile=/home/clebeson/dev/SECMA/evidence/S01/T01-2026-11-17/coverage/coverage.rc",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/unit",
+    "tests/integration"
+  ]
+}

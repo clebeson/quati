@@ -1240,9 +1240,14 @@
         "src/quati/application",
         "tests/unit",
         "src/quati/cli/main.py",
+        "src/quati/cli/chat.py",
         "contracts/runtime-boundaries.schema.json",
         "tests/integration/cli/test_s01_conversation.py",
-        "tests/integration/cli/test_chat_session.py"
+        "tests/integration/cli/test_chat_session.py",
+        "tests/integration/cli/test_s00_fix8_social_timeout.py",
+        "tests/integration/test_approval_injection.py",
+        "tests/integration/test_s00_t04_cli.py",
+        "tests/integration/cli/test_s01_optional_classification.py"
       ],
       "deliverable": "typed context/classification and an explicit process-only conversation revision",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",

@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 34,
+  "revision": 40,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S01",
@@ -245,7 +245,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-17T22:11:05.664799Z",
+  "last_updated_at": "2026-11-18T13:06:28.557408Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -255,8 +255,8 @@
   "work_mode": "IMPLEMENTATION_AUTHORIZED",
   "execution_authorized": true,
   "active_work": {
-    "work_package_id": "S01-T01",
-    "phase": "TDD_RED",
+    "work_package_id": "S01-T02",
+    "phase": "DISCOVER",
     "owner": "root coordinator",
     "input_snapshot_ref": "evidence/S01/T01-2026-11-17/input_snapshot.json",
     "completed_steps": [
@@ -289,13 +289,17 @@
       "S00 acceptance resume full suite outside sandbox exited 0: 2252 passed, 10 skipped in 570.32s; both specification validators exited 0. Evidence under evidence/S00/ACCEPTANCE-RESUME-2026-11-17/20261117T152158Z-d80f9810. No S01 source changed.",
       "LOG-0054 H1/H2/H3/H5/H6 corrected test-first; fresh independent Sonnet review ACCEPT with recorded P2 limits. Final Haiku seven-file run exited 0: 144 passed; final L0 validators exited 0. S00 acceptance checkpoint 1f77060 was pushed to origin/main using noreply identity.",
       "Resumed from pushed c5ec5b0; resolved G1-G10 for the consuming T01 scope in normative sources and task ownership. L0 validators exit 0; no runtime source or S01 tests written yet. Current changed runtime assets are not live-qualified; historical S00 evidence remains bound to its sealed commit.",
-      "S01-T01 SDD independently reviewed and eight P2 test-plan corrections incorporated; Haiku 55 L0 tests and both validators exited zero. No runtime source or new tests implemented. Historical S00 qualification is not reused for changed S01 assets."
+      "S01-T01 SDD independently reviewed and eight P2 test-plan corrections incorporated; Haiku 55 L0 tests and both validators exited zero. No runtime source or new tests implemented. Historical S00 qualification is not reused for changed S01 assets.",
+      "SDD checkpoint 0b19427 pushed. Root authored unit and public integration tests before runtime source. Haiku recorded child exit 1: 22 failed, 1 passed; twelve public CLI behavioral failures plus missing foundation entries. The passing missing-policy guard is retained regression evidence, not new feature proof.",
+      "Implemented typed classification and constant-space conversation after preserved public-path red; independent review found context serialization and null-capability faults, corrected after eight reproduced failures; 61 scoped tests pass in development.",
+      "Fresh Sonnet retest accepts T01 contribution: 61 scoped tests passed, source/output hashes verified. Complementary lanes passed 56 with 10 pre-existing opt-in/build skips, child exit zero. Broad deterministic coverage still running; no gate promoted.",
+      "Broad deterministic run completed: 28 failed, 2257 passed, child exit 1. Both L0 validators passed. Root traced all failures to declared S01 conversation/public-classification/fail-closed deltas and is migrating exact legacy assertions with metadata/hash checks; runtime source unchanged.",
+      "Independent Sonnet accepted exact legacy assertion migration; 28 previously failing cases passed, child exit zero. Final full deterministic branch coverage launched with isolated config and data; actual exit remains pending.",
+      "Accepted S01-T01 local contribution A01/A02/A03: independent reviews accepted, 2343 distinct tests passed with 10 declared pre-existing nonmandatory skips; all coverage thresholds and both validators passed, source/output hashes and 2353-node inventory verified. Full S01 gates remain NOT_RUN."
     ],
-    "next_action": "SDD ready (LOG-0058/0059). Root authors tests/unit/test_s01_t01.py and tests/integration/cli/test_s01_conversation.py against S01_RUNTIME_CONTRACT, preserving existing chat assertions. Haiku records genuine public-path red before any runtime source change. Implement only after red; no full shared-case, gate or live claim.",
+    "next_action": "Read S01-T02 handoff, exact ownership and transitive M03/M04/M05/M06/M08/M09/M31 contracts; resolve M05 route/SQLite, temporal/language/snapshot/policy staging gaps in specification before tests or code.",
     "owned_files": [
-      "src/quati",
-      "tests",
-      "docs"
+      "src/quati/cli/chat.py"
     ],
     "pending_findings": [
       "Independent review: malformed identity JSON and FIFO credentials must fail closed without traceback or hang; canonical JSON and token schema conformity require correction.",
@@ -350,7 +354,18 @@
       "docs/implementation/S01_T01_DESIGN.md",
       "docs/audit/S01_T01_SDD_REVIEW_2026-11-17.md",
       "evidence/S01/T01-2026-11-17/input_snapshot.json",
-      "evidence/S01/T01-2026-11-17/sdd/20261117T220652Z-885dbc87/manifest.json"
+      "evidence/S01/T01-2026-11-17/sdd/20261117T220652Z-885dbc87/manifest.json",
+      "evidence/S01/T01-2026-11-17/red/20261118T024549Z-7811c200/manifest.json",
+      "docs/audit/S01_T01_CODE_REVIEW_2026-11-18.md",
+      "evidence/S01/T01-2026-11-17/review-red/20261118T121643Z-55d1d1d7/manifest.json",
+      "docs/audit/S01_T01_RETEST_2026-11-18.md",
+      "evidence/S01/T01-2026-11-17/review-retest/20261118T121756Z-d2baa32e/manifest.json",
+      "evidence/S01/T01-2026-11-17/complement/20261118T122623Z-8218e047/manifest.json",
+      "evidence/S01/T01-2026-11-17/coverage/runs/20261118T123351Z-a725fb1b/manifest.json",
+      "docs/audit/S01_T01_REGRESSION_REVIEW_2026-11-18.md",
+      "evidence/S01/T01-2026-11-17/regression-retest/20261118T124011Z-85e2ea4e/manifest.json",
+      "evidence/S01/T01-2026-11-17/DELIVERY.json",
+      "docs/implementation/S01_T01_DELIVERY.md"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",
