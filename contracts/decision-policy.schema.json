@@ -279,7 +279,7 @@
         },
         "max_reference_candidates": {
           "type": "integer",
-          "minimum": 1,
+          "minimum": 2,
           "maximum": 20,
           "default": 5,
           "description": "Maximum ranked reference candidates kept per request (M04)."

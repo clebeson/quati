@@ -158,10 +158,15 @@ producers and assert that no supported reachable tuple falls into D0 by accident
 Cartesian incompatible tuples still fail closed through D0. T02 also owns
 ModelResult construction; the TYPE_CATALOG S01 milestone is not a T01 delivery.
 
+T02's exact consuming realization is specified by
+`docs/implementation/S01_T02_RUNTIME_CONTRACT.md`. It defines USER_TURN snapshots,
+selective questions, policy installation, locale, raw-attempt budgets and the
+receipt-coordinated ephemeral aggregate. It claims no T03 or S02 behavior.
+
 ## 6. Model text and qualification
 
-During T01, model-authored text remains undisplayed on the S00 path. T02 may
-display only a validated, bounded M03 ANSWER for informational requests; receipt,
+During T01, model-authored text remains undisplayed on the S00 path. T02 displays a code-owned uncertainty statement for non-social M03 ANSWER;
+no trusted D5 answer context is provided and model prose is not displayed; receipt,
 progress, question and work-start messages remain code-owned templates based on
 observed state. In both languages (English/Portuguese), no model text is evidence
 of completed work, authority or provider delivery. SOC-02/CAP-04/INT-01 remain

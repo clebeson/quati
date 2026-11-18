@@ -4,7 +4,7 @@ Implementation is authorized. Read docs/implementation/implementation_state.json
 its revision, active task, phase and next_action are the only progress authority.
 Do not trust historical PASS claims that are not backed by seal records.
 
-Current slice: S01 (state revision 40). Slice S00 is PASS: four gates sealed on commit
+Current slice: S01 (state revision 43). Slice S00 is PASS: four gates sealed on commit
 5063071 and accepted by the owner (governance/seals; LOG-0049, LOG-0050, LOG-0053).
 Changing src/quati, contracts/, examples/, the gate datasets or tests/evals expires the
 S00 live evidence; S01 work that touches them must plan its own requalification.
@@ -31,59 +31,47 @@ Git: the repository was re-created from source-history.bundle on 2026-11-16 and 
 usable. Publication to github.com/clebeson/quati was requested by the owner; check
 `git remote -v` and `git status -sb` to see whether the push has happened.
 
-## Latest resume checkpoint (2026-11-18, S01-T02 discovery)
+## Latest resume checkpoint (2026-11-18, S01-T02 SDD ready)
 
-Canonical revision 40 selects S01-T02 DISCOVER. S01-T01 is accepted only as a
-local contribution (LOG-0064), not as a full module or S01 slice. All S01 gates
-remain NOT_RUN. HEAD before this implementation checkpoint is 0b19427; inspect
-Git for the actual resulting checkpoint commit and remote synchronization.
+Canonical revision 43 selects S01-T02 SDD. S01-T01 is accepted/pushed at 8706018
+as a local contribution only; all S01 gates remain NOT_RUN. No T02 source/tests
+exist yet. Read S01_T02_RUNTIME_CONTRACT.md and S01_T02_DESIGN.md before tests.
+Independent Sonnet SDD FINAL verdict SPEC_READY; earlier two NEEDS_CORRECTION
+reports are preserved. Both final validators and 56 selected regressions exit 0
+(evidence/S01/T02-2026-11-18/sdd-final). Frozen sdd_ready_snapshot.json binds inputs.
+E1 reason follows canonical M03 DEPENDENCY_UNAVAILABLE; dependency_error is separate.
 
-T01 delivery: docs/implementation/S01_T01_DELIVERY.md and
- evidence/S01/T01-2026-11-17/DELIVERY.json. Independent Sonnet reviews accepted
-source, corrections, exact legacy assertion migration and optional-field cases.
-Full deterministic run: 2285 passed, child exit 0; two supplemental public CLI
-cases passed with unchanged production and all prior test files. Complementary
-lanes: 56 passed, 10 explicit skips. Inventory 2353 = 2343 distinct passed + 10
-skipped. All source/output hashes match. Aggregate coverage: domain and behavior
-100% line/branch; overall 99.89% line / 99.79% branch; all package thresholds pass.
-Both final validators passed. Repeated retests are not counted again.
+Next action: root authors discriminating tests, Haiku runs genuine red, then source
+implementation and independent conformity/quality audit. Start with M05 pure
+clarification and raw provider attempt/deadline budgets, then M04 locale/scoring,
+M03 exact first-match table, receipt-coordinated aggregate/replay and public CLI.
+A01-A03 are descriptive functions in tests/integration/test_clarify_cli.py; do not
+create duplicate wrappers. No full requirement plan is owned by T02; T04 full L3
+proof and T03 follow-up/fallback stay required. SDD is not implementation proof.
 
-Use coverage/aggregate, not the partial supplemental report. The supplemental
-coverage startup reset its temporary directory; aggregation restored retained
-full-run compressed data and the supplemental data on the same production code.
-Both raw combined snapshots and earlier red outputs are retained. No process
-remains paused. Earlier 28 legacy assertion failures and the 6-case forwarding
-miss were corrected and independently retested; never rewrite those red records.
+T02: explicit decision sidecar install/hash, real normalized policy pass, two
+unpublished M05 phases with per-DiscoveryTurn deny-only invocation veto, actual
+read observations retained on late veto. No unchecked model prose displayed.
+Social preflight is typed/code-owned. Default provider is fixed, not EVALUATED;
+missing strong role blocks. D7 mutation unavailable until T03; D6 status remains
+usable. Existing S01 read-only effect ceiling is mandatory. One immutable session
+aggregate publishes only after receipt acknowledgement; exact replay reuses its
+original receipt/revision and checks current access before disclosure. Quotas
+1000 turns/20 works never silently evict keys. Nothing survives process exit.
 
-Delivered source: typed classification and advisory pure routing (not activated),
-direct context serialization, receipt-coordinated process-only conversation
-identity/revision. Public model strings are sanitized; hashes bind raw proposals.
-No transcript persistence, worker, durable obligation or process-exit continuation.
-Current changed S01 source remains NOT_RUN for real-model qualification (T04).
-The nine live skips and missing setuptools wheel leg are not accepted provider,
-OS or packaging proof. Preserve historical source-bound S00 seals.
+T01 proof: docs/implementation/S01_T01_DELIVERY.md and evidence/S01/T01-2026-11-17/DELIVERY.json.
+2343 distinct passed + 10 explicit skips = 2353 inventory. Aggregate coverage:
+domain/behavior 100% line/branch; overall 99.89% line/99.79% branch. Both validators
+passed. Nine live skips and one missing-build-backend packaging skip remain
+unverified, not provider/OS/production proof. Historical S00 seals stay immutable.
 
-Next: read the S01-T02 handoff and exact task JSON, PRD normative details/oracles,
-contracts and transitive references before authoring T02 specifications/tests/code.
-Only T01 is accepted. T02 source has not started. Known discovery questions to
-resolve, not guess: M05 C4 excludes next_action=ask while its following paragraph
-requires safe starts for that route without missing blocking fields; M05-FR-03
-still names SQLite despite S01 ephemeral scope; the temporal catalog/time-zone,
-request language, initial WorkSnapshot/CommunicationPlan, policy activation and
-role-availability staging need exact consuming definitions. Confirm these against
-all relevant sources, log specification bugs and fix them before code.
-
-Owner requires exhaustive meaningful tests and continuous checkpoints; continue
-in dependency order without unnecessary questions or stopping at a partial task.
-Use Haiku runners and fresh bounded Sonnet independent audits sparingly. All
-internal artifacts are English; product languages English/Portuguese; terminal first.
-No production, merge, release or deployment is authorized.
-
-State writes: scripts/checkpoint_execution.py only, revision CAS/journal.
-Commit author and committer: clebeson <clebeson@users.noreply.github.com>.
-PACKAGE_MANIFEST.json is stale and must remain untracked/out of commits.
-Retained debt: LOG-0057 engineering helper; LOG-0061 foundation integration
-preconditions, owned by T02/T03. Keep evidence immutable and honest about tiers.
+Owner: continue sequentially without unnecessary questions; meaningful exhaustive
+coverage and durable checkpoints. Use economical Haiku runners / Sonnet reviews.
+Internal artifacts English; product English/Portuguese; owner replies Portuguese.
+No production, live writes, merge, release or deployment. State writes only through
+scripts/checkpoint_execution.py with revision CAS. Git author/committer must be
+clebeson <clebeson@users.noreply.github.com>. Never commit stale PACKAGE_MANIFEST.json.
+Retained debts LOG-0049/0052/0057/0061 remain owned by their tasks, not silently closed.
 
 ## Earlier handoff (2026-11-16, historical)
 

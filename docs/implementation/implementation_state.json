@@ -1,6 +1,6 @@
 {
   "schema_version": "secma-implementation-state/3",
-  "revision": 40,
+  "revision": 43,
   "project": "SECMA",
   "source_spec_version": "8.1-audited",
   "current_slice": "S01",
@@ -245,7 +245,7 @@
     }
   },
   "owner": "implementation_agent",
-  "last_updated_at": "2026-11-18T13:06:28.557408Z",
+  "last_updated_at": "2026-11-18T14:45:14.574225Z",
   "known_unverified": [
     "Actual LLM discovery",
     "Ledger/worker fault recovery (SQLite; PostgreSQL conformance)",
@@ -256,9 +256,9 @@
   "execution_authorized": true,
   "active_work": {
     "work_package_id": "S01-T02",
-    "phase": "DISCOVER",
+    "phase": "SDD",
     "owner": "root coordinator",
-    "input_snapshot_ref": "evidence/S01/T01-2026-11-17/input_snapshot.json",
+    "input_snapshot_ref": "evidence/S01/T02-2026-11-18/sdd_ready_snapshot.json",
     "completed_steps": [
       "User authorized sequential SDD/TDD/EDD implementation",
       "Verified 352 input package file hashes",
@@ -295,9 +295,12 @@
       "Fresh Sonnet retest accepts T01 contribution: 61 scoped tests passed, source/output hashes verified. Complementary lanes passed 56 with 10 pre-existing opt-in/build skips, child exit zero. Broad deterministic coverage still running; no gate promoted.",
       "Broad deterministic run completed: 28 failed, 2257 passed, child exit 1. Both L0 validators passed. Root traced all failures to declared S01 conversation/public-classification/fail-closed deltas and is migrating exact legacy assertions with metadata/hash checks; runtime source unchanged.",
       "Independent Sonnet accepted exact legacy assertion migration; 28 previously failing cases passed, child exit zero. Final full deterministic branch coverage launched with isolated config and data; actual exit remains pending.",
-      "Accepted S01-T01 local contribution A01/A02/A03: independent reviews accepted, 2343 distinct tests passed with 10 declared pre-existing nonmandatory skips; all coverage thresholds and both validators passed, source/output hashes and 2353-node inventory verified. Full S01 gates remain NOT_RUN."
+      "Accepted S01-T01 local contribution A01/A02/A03: independent reviews accepted, 2343 distinct tests passed with 10 declared pre-existing nonmandatory skips; all coverage thresholds and both validators passed, source/output hashes and 2353-node inventory verified. Full S01 gates remain NOT_RUN.",
+      "Started T02 discovery after pushed T01 acceptance at 8706018; mapped actual application/CLI/policy/compiler seams and recorded G01-G14 consuming specification gaps. No T02 test or runtime code written.",
+      "Resolved G01-G25 in an SDD candidate runtime contract and authoritative tables/types/task ownership, preserving T04 L3 gates; no T02 tests/runtime code. Candidate addresses raw retry budgets, missing producers, question/scope/ambiguity safety and atomic receipt publication.",
+      "T02 consuming specification independently SPEC_READY; both validators and 56 selected regressions exit zero"
     ],
-    "next_action": "Read S01-T02 handoff, exact ownership and transitive M03/M04/M05/M06/M08/M09/M31 contracts; resolve M05 route/SQLite, temporal/language/snapshot/policy staging gaps in specification before tests or code.",
+    "next_action": "Author T02 discriminating tests before runtime source; record genuine red with Haiku, then implement within the accepted USER_TURN scope and independent audit.",
     "owned_files": [
       "src/quati/cli/chat.py"
     ],
@@ -365,7 +368,12 @@
       "docs/audit/S01_T01_REGRESSION_REVIEW_2026-11-18.md",
       "evidence/S01/T01-2026-11-17/regression-retest/20261118T124011Z-85e2ea4e/manifest.json",
       "evidence/S01/T01-2026-11-17/DELIVERY.json",
-      "docs/implementation/S01_T01_DELIVERY.md"
+      "docs/implementation/S01_T01_DELIVERY.md",
+      "docs/implementation/S01_T02_DESIGN.md",
+      "evidence/S01/T02-2026-11-18/input_snapshot.json",
+      "docs/implementation/S01_T02_RUNTIME_CONTRACT.md",
+      "evidence/S01/T02-2026-11-18/sdd_review_inputs.json",
+      "docs/audit/S01_T02_SDD_FINAL_2026-11-18.md"
     ],
     "memory_refs": [
       "memory/achievements/ACH-001.json",

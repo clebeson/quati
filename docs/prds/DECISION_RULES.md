@@ -96,7 +96,9 @@ rank(`routing_policy.small_model_max_complexity`) AND effect in {none, read}, wi
 multi_step=2, investigative=3; otherwise `strong`. Low-risk multi_step and investigative work is therefore `strong`.
 Escalation to `strong` is available only when `model-competence.schema.json#/$defs/RoutingPolicy.escalation_order` is
 non-empty and names a role qualified for the task class; otherwise (MVP default, pre-MOD-01) a `strong` route returns
-response status `BLOCKED` with error code `NOT_CONFIGURED` and reason_code `ESCALATION_UNAVAILABLE`.
+response status `BLOCKED` with error code `NOT_CONFIGURED`. In the T02 consuming
+profile M03 E1 reason_code is `DEPENDENCY_UNAVAILABLE`, dependency_error is
+`ROLE_NOT_QUALIFIED`, and the localized code-owned template is `ESCALATION_UNAVAILABLE`.
 
 ### 3.4 Totality oracle
 
@@ -116,7 +118,7 @@ the requester time zone:
 |---|---|
 | `exact_id` | 1 if `q` contains `c.ref`, `c.commitment_id` or the exact normalized title of `c` in quotes; else 0 |
 | `title_overlap` | `|T(q) ∩ T(c.title)| / |T(c.title)|`, 0 if `T(c.title)` is empty; `T` = set of NFKC-casefolded tokens split on non-alphanumerics, tokens shorter than 3 characters dropped |
-| `time_window` | 1 if `q` contains a supported temporal expression and `c.observed_at` is inside its window; 0 if it contains one and `c` is outside; 0.5 if it contains none. Supported: ISO date, today, yesterday, this/last week (ISO weeks, Monday 00:00 local), this/last month; English plus the request language's catalog entries in the behavior policy |
+| `time_window` | 1 if `q` contains a supported temporal expression and `c.observed_at` is inside its window; 0 if it contains one and `c` is outside; 0.5 if it contains none. Supported: ISO date, today, yesterday, this/last week (ISO weeks, Monday 00:00 local), this/last month; the versioned English/Portuguese catalog defined by docs/implementation/S01_T02_RUNTIME_CONTRACT.md |
 | `ownership` | 1 if `c` was created by the same actor; 0.5 if visible to the actor through a shared ACL; 0 otherwise |
 | `recency` | `max(0, 1 - (now - c.observed_at) / recency_horizon_s)` |
 
@@ -124,7 +126,13 @@ the requester time zone:
 `routing_policy.candidate_score_weights` (defaults exact_id 0.35, title_overlap 0.25, time_window 0.20, ownership 0.10,
 recency 0.10). The config validator rejects weights whose sum differs from 1 by more than 1e-9 (CONFIG_INVALID).
 Candidates are ordered by score descending, then `observed_at` descending, then `ref` ascending (code-point order); at
-most `max_reference_candidates` are kept. Verdict: `NO_REFERENCE` if no candidate is plausible and
+most `max_reference_candidates` are displayed (minimum 2). Determine plausibility,
+ambiguity and the top-two gap before display truncation. Pass exactly the displayed
+plausible refs to M05; disclose CANDIDATE_LIST_TRUNCATED when additional plausible
+items are omitted. An omitted item never turns ambiguity into a resolved verdict.
+Candidates with malformed, naive or future observed_at are excluded after ACL
+filtering, with a generic source-time assumption and no private ref in that diagnostic.
+Verdict: `NO_REFERENCE` if no candidate is plausible and
 `classification.commitment_ref` is null; `UNRESOLVED` if none is plausible and `commitment_ref` is non-null;
 `AMBIGUOUS` per §2; otherwise `RESOLVED` to the first candidate. Gap = score(1st) - score(2nd), computed on rounded scores.
 

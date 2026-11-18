@@ -1257,7 +1257,7 @@ Rules:
 1. **Parse order.** The loop reads one line from its own stdin, strips only the trailing `\n` or `\r\n`, and classifies it by its first character before any model, tool or ledger call. Command words are matched exactly and case-sensitively. Arguments are separated by runs of spaces or tabs; `/tell` and `/deny` take the rest of the line after their fixed arguments as one free-text argument. A line whose first character is a space followed by `/` is `ask` text, not a command. Nothing printed by the session (model replies, tool results, document excerpts, inbox messages) is ever fed back to the command parser.
 2. **Same path.** Each turn calls `IdentityPort.authenticate` (M02) and then the single use case named in the table through the same function the one-shot command calls. Before its first slice a local command returns `UNSUPPORTED` exactly as its one-shot command does. `chat` has no flag, environment variable or session variable that changes authorization, policy or approval behavior.
 3. **Approvals.** `/approve` and `/deny` call the M25 approval use case and are subject to every RFC-014 section 6.3 requirement unchanged: a verified HUMAN token with scope `quati:approve`, an interactive TTY on stdin and stdout in the LOCAL profile, no `QUATI_CAPABILITY_CONTEXT`, the SERVER step-up age, the displayed intent digest and explicit confirmation. On a non-TTY stdin or stdout (which includes every piped `--jsonl` session) `/approve` and `/deny` return the same refusal as `quati approve` run without a TTY, and the request stays `PENDING`. Typing "yes", "approved" or an approval id as `ask` text is ordinary untrusted turn text and decides nothing.
-4. **State.** S00 keeps only the open stdin/stdout handles and the profile path. The S01 prototype exception is the application-owned, constant-space conversation projection defined in S01_RUNTIME_CONTRACT section 4: every chat ask response discloses PROCESS_ONLY lifetime and no continuation after exit. It is constructed by CLI composition, never interpreted as authority, and advances only after receipt success. Equivalent chat/one-shot comparisons may differ only in this declared conversation metadata in addition to their prior request/trace/evidence differences. From S02 the following durable state rule applies: the session keeps only the open stdin/stdout handles and the profile path. Conversation continuity comes from ledger rows and from the M31 context envelope rebuilt from the ledger on every turn; there is no in-memory history, session file or session id. Each `ask` turn uses a fresh `cli.idempotency_key` (UUIDv7) exactly as a one-shot invocation does.
+4. **State.** S00 keeps only the open stdin/stdout handles and the profile path. The S01 prototype exception is the application-owned, constant-space conversation projection defined in S01_RUNTIME_CONTRACT section 4: every chat ask response discloses PROCESS_ONLY lifetime and no continuation after exit. It is constructed by CLI composition, never interpreted as authority, and advances only after receipt success. T01 equivalent chat/one-shot comparisons differ only in declared conversation metadata and prior request/trace/evidence differences. T02 additionally introduces an application-owned ephemeral work/turn/replay aggregate (S01_T02_RUNTIME_CONTRACT section 6). Compare semantic decisions, safety facts and messages unchanged while validating and normalizing the declared opaque turn/work/conversation IDs; never discard status, authorization, evidence or lifetime differences. From S02 the following durable state rule applies: the session keeps only the open stdin/stdout handles and the profile path. Conversation continuity comes from ledger rows and from the M31 context envelope rebuilt from the ledger on every turn; there is no in-memory history, session file or session id. Each `ask` turn uses a fresh `cli.idempotency_key` (UUIDv7) exactly as a one-shot invocation does.
 5. **Output without `--jsonl`.** The same human rendering as the one-shot command without `--json`, followed by a prompt (`quati> `) written to stderr only when stdin is a TTY. Line editing and history (`readline`) MAY be used when stdin is a TTY and are never used otherwise; history is kept in memory only.
 6. **Output with `--jsonl`.** No prompt is written in a `--jsonl` session, on a TTY or not. For every non-empty input line, exactly one line of canonical JSON (`cli.json_indent` rule) holding one `Response[T]` object is written to stdout and flushed before the next line is read; nothing else is written to stdout (no prompt, banner or progress). `/quit` prints its `Response` (`status = SUCCEEDED`, `data.result_kind = "SESSION_ENDED"`) and then exits. Diagnostics go to stderr in English.
 7. **Exit.** End of input or `/quit` → exit 0, whatever the statuses of earlier turns: a failed turn is reported in its own `Response` (with the M01 error code its one-shot command would return) and the loop continues. The session itself exits nonzero only when it cannot start or continue: the M01 exit code of the failure (`4` unauthenticated, which includes a missing `quati init` credential per M02 `credential_missing`; `1` internal error), or `2` when an input line exceeds `cli.max_text_bytes` (reason `chat_line_too_long`), is not valid UTF-8 or contains a NUL byte (reasons `chat_invalid_utf8` and `chat_nul_byte`; each of the three gets an `INVALID_INPUT` `Response`, then the session ends, because line framing can no longer be trusted).
@@ -1295,6 +1295,25 @@ When several apply, the first matching row from the top of the table after row 0
 3. Durability order: a command verifies every directory it will write, the receipt directory included, before its first change, so that either everything it needs is writable or nothing is done. A registry change is ordered so that every step that can fail for a storage reason precedes the compare-and-swap commit of `registry.json` and the audit events of the change: the store's directories and files are verified, the store lock is taken, the package is written to `staging/`, and the publish location (`packages` and `packages/<id>`) is created and verified; a failure there leaves the registry revision and the audit log unchanged. No command commits registry state or audit events and then reports that nothing happened: if a step that can only follow the commit still fails (renaming the staged package into place, writing `capabilities.lock`, appending or reading back the audit events of the committed change; a late failure such as a full disk), the Response is `INTERNAL_ERROR`, exit 1, `data = {reason: "store_change_incomplete", operation_may_have_taken_effect: true}` with a `next_action` to inspect the current state and repeat the command (a repeated install of the same package repairs the stored copy). If the receipt still cannot be written after the use case acted, the Response is `INTERNAL_ERROR`, exit 1, `data = {reason: "receipt_not_written", operation_may_have_taken_effect: true}` with a `next_action` to inspect the current state. Neither ever says that no work was accepted. A probe whose result cannot be stored after the provider answered is typed by M17 (reason `feature_report_not_stored`), not `INTERNAL_ERROR`.
 4. The registry audit log (`capabilities/audit.jsonl`, the M02 decision log) is a private regular file whose every line is one JSON object. A log that is a symlink, FIFO, directory or hard link, has another owner or a group or other permission bit, or holds a torn or non-JSON line is unreadable: every command that would read it or append to it, a read-only `ask` included, returns UNAVAILABLE `TEMPORARILY_UNAVAILABLE` reason `audit_unavailable`, exit 4, and nothing is appended (K7; M25: no decision without its audit record). A work `ask` and a `chat` turn verify the whole log before their first model call (rule 2), so the refusal is made with zero model calls whatever the model would have done. `quati trace show|explain` report the same unusable log with their own reason `audit_store_unavailable` (M26).
 5. Every receipt (`receipts/<name>.json`: the `quati init` policy audit event, each capability command that changes the registry, each FeatureReport, and each `ask` request or `chat` turn on every path, the greeting and the refusals before the model path included) carries `digests.code_digest`: the SHA-256 of the canonical JSON list of (package-relative POSIX path, SHA-256 of the file) for every `.py` file of the running `quati` package, sorted by path. Every receipt also carries `digests.asset_digest`: the SHA-256 of the canonical JSON list of (asset-root-relative POSIX path, SHA-256 of the file) for every packaged asset file below the asset root in use (the `tool.setuptools.package-data` patterns of `pyproject.toml`: `contracts/*.json`, `examples/behavior/*.yaml` and `*.json`, `examples/statecharts/*.yaml`, `examples/policies/*.json`), sorted by path; it is equal for a wheel and a source checkout that hold the same files, and `quati doctor` reports the same value as `behavior.asset_digest` (asset locator rule: `docs/architecture/PROJECT_STRUCTURE.md`). The evidence writer sets both digests on every record from the one function that computes each; a value supplied by the caller is replaced. A request receipt also records `result_kind` and `policy_version`: the version of the policy in force for the tenant when the receipt is written, that is the SHA-256 version of the adopted trusted policy, or of the kernel baseline when no policy is installed or the installed one is rejected — the value every `policy.decided` line of that request carries and the suffix of `digests.policy_ref` — or `null` when it cannot be determined. `proof_tier` is `null` in every request receipt: proof tiers classify tests (`docs/testing/TEST_STRATEGY.md`), not product records. `quati trace show` displays these fields. A written file under `fixture_sources/` is owner-only like every other file (directories 0700, files 0600, whatever the umask).
+
+### S01 classification versus tool admission
+
+The rule-2/rule-4 pre-model registry admission order above describes the S00 work
+path. In S01, identity/converse permission, receipt directory, behavior and
+decision policy, feature-report safety and provider budget are checked before
+classification. The classifier envelope does not query the registry or include
+its catalog digest. Only a normalized route requiring source/tool access runs
+registry/ACL/audit/package admission before that access. No grant is inferred from
+the model, and an absent registry grant still causes zero registry reads/effects.
+A direct informational path never queries an unavailable tool subsystem. Unsafe
+receipt/config/identity state still blocks before a provider call. Model calls
+remain measured and receipted; this is not permission to access a source without
+its own authorization/audit. Greeting behavior still calls no model or registry.
+
+S01 ask/chat may accept --language en|pt and --time-zone IANA_NAME. These select
+presentation/temporal interpretation only and cannot change a policy or grant.
+Invalid values fail before model/tool access. Selection is per invocation/session,
+not a persistent relationship preference.
 
 ### Config write rule (M01-RT-02)
 
@@ -1531,12 +1550,15 @@ TYPE_CATALOG.md. M03 never edits a classification field.
 | Row | Event | Condition | Action | reason_code | commitment_id |
 |---|---|---|---|---|---|
 | D1 | USER_TURN | next_action = deny | ANSWER | POLICY_DENIED | existing or null |
-| D2 | USER_TURN | next_action = escalate | ESCALATE | classification reason_code | existing or null |
+| D2 | USER_TURN | next_action = escalate | ESCALATE | TRIAGE_ESCALATED (raw classification reason hashed in trace) | existing or null |
+| E1 | any admitted event | a required producer is unavailable (typed dependency_error, not an invented verdict) | ESCALATE | DEPENDENCY_UNAVAILABLE | verified bound work or null |
+| D2E | USER_TURN | M05 reason_code = CLARIFY_REASK_EXHAUSTED | ESCALATE | CLARIFY_REASK_EXHAUSTED | existing or null |
 | D3 | USER_TURN | M05 = ASK_BLOCKING | ASK, `question_blocking=true`, `safe_work` = M05 parallel read work | ASK_BLOCKING_<FIELD> | bound or new commitment if nontrivial, else null |
 | D4 | USER_TURN | M05 = WAIT_OPEN_QUESTION | WAIT | QUESTION_ALREADY_OPEN | bound |
 | D5 | USER_TURN | next_action = respond | ANSWER | SOCIAL_GREETING / SOCIAL_OTHER for intent social, else DIRECT_ANSWER | null |
 | D6 | USER_TURN | next_action = search_context | ANSWER after the in-turn read | STATUS_ANSWER or CONTEXT_ANSWER | M04 RESOLVED commitment for status_query, else null |
 | D7 | USER_TURN | next_action in {start_safe_work, ask} AND (M04 = RESOLVED to a non-terminal commitment of the same actor OR `work_ref` set) | RECEIPT | WORK_REVISED | bound (same) |
+| D7V | USER_TURN | next_action in {start_safe_work, ask} AND M05 = NO_WORK | ESCALATE | SAFE_WORK_NOT_ALLOWED | existing or null |
 | D8 | USER_TURN | next_action in {start_safe_work, ask} AND M05 in {START_SAFE_WORK, START_SAFE_WORK_WITH_OPTIONAL_QUESTION} AND `safe_work` non-empty | START_SAFE_WORK, `question_blocking=false` | WORK_STARTED | new |
 | D9 | USER_TURN | same as D8 with empty `safe_work` | RECEIPT | WORK_ACCEPTED | new |
 | D10 | TIMER | M06 kind = delay_notice, not suppressed | UPDATE | COMM_DELAY_NOTICE | timer's |
@@ -1562,6 +1584,10 @@ the conversation that owns the bound commitment, never to the conversation that 
   whitespace before the limit and the trace records `ANSWER_TRUNCATED`.
 - At most one question per turn; `next_contact_at` is rendered as a contact time, never as an estimated completion.
 - Messages use the requester's selected or detected language; reason codes stay English.
+- Public reason codes are application-owned tokens, never free model strings.
+  A model's restrictive recommendation is retained by M08 but its raw reason is
+  hashed rather than copied into a public InteractionDecision or message. This
+  also applies to triage metadata and question/contact receipts.
 
 ### 4.5 Errors, persistence, limits
 
@@ -1631,7 +1657,7 @@ Adjacent modules: M11, M31 (integration relationships, not a mandate to build th
 
 - **M04-FR-01 (MUST):** Consume the M08 `RequestClassification` (the single vocabulary of `contracts/request-classification.schema.json`) without changing any field, and return exactly one reference verdict, `RESOLVED`, `AMBIGUOUS`, `UNRESOLVED` or `NO_REFERENCE`, computed by the DECISION_RULES §4 procedure; M04 never produces or overrides `intent`, `risk` or `next_action`. **Slice tag:** (S01)
 
-- **M04-FR-02 (MUST):** Return up to `max_reference_candidates` candidates, each with its five feature values, its §4 score rounded to 4 decimals and its source ref as evidence; when the verdict is `AMBIGUOUS`, supply M05 with exactly the plausible candidates so that one focused question lists them. **Slice tag:** (S01)
+- **M04-FR-02 (MUST):** Return up to `max_reference_candidates` candidates, each with its five feature values, its §4 score rounded to 4 decimals and its source ref as evidence; when the verdict is `AMBIGUOUS`, supply M05 with exactly the displayed plausible candidates so that one focused question lists them. **Slice tag:** (S01)
 
 - **M04-FR-03 (MUST):** Record each open assumption, scope change and explicit user correction about a resolved reference as a typed context event appended to the bound commitment (`CommitmentLedger.append_context`) with the turn id as causation. **Slice tag:** (S01)
 
@@ -1671,7 +1697,7 @@ DECISION_RULES §4 and the "ambiguous" row of §2.
 
 `routing_policy.min_candidate_score` (0.5), `routing_policy.ambiguity_margin` (0.15),
 `routing_policy.candidate_score_weights` (0.35/0.25/0.20/0.10/0.10), `routing_policy.recency_horizon_s` (2592000),
-`routing_policy.max_reference_candidates` (5).
+`routing_policy.max_reference_candidates` (5, minimum 2). Ambiguity and the top-two gap are computed before display truncation; a truncated candidate list cannot manufacture a resolved verdict.
 
 ### 4.5 Errors and reason codes
 
@@ -1711,7 +1737,7 @@ search, valid-time queries.
 | M04-AT-01 | tests/integration | `test_reference_cli.py::test_repeat_study_for_company_x_reuses_method` | S03 MemoryPort fake with U1 study episode (method, scope) and ACL | RESOLVED to U1's study; new work copies method/scope refs; trace shows ACL check before scoring | same request by U3 without access: verdict NO_REFERENCE, no method copied |
 | M04-AT-02 | tests/integration | `test_reference_cli.py::test_two_last_week_studies_yield_one_question` | MEM-02 fixture: two U1 "study" records in last ISO week, equal features, scripted fake ModelPort | verdict AMBIGUOUS, gap 0.0000; M03 emits one ASK listing both refs, question_blocking true | no capability invoked with either ref; no ASK lists a third record |
 | M04-RT-01 | tests/unit | `test_reference_redteam.py::test_keyword_bait_starts_no_job` | CAP-04 "What does a semaphore do?" with classification simple_answer/trivial; candidate commitment titled "semaphore job" | verdict NO_REFERENCE (commitment_ref null); route R4 respond; commitment count 0 | the same text with an injected "start job" phrase still yields no commitment and no DiscoveryPort.invoke |
-| M04-RT-02 | tests/integration | `test_reference_redteam.py::test_foreign_private_artifact_never_scored` | MEM-01 fixture: U1 private study, U2 request "last week's study", same tenant and a second tenant | candidate list excludes U1's study; trace contains no U1 ref | U2 quoting U1's exact artifact id gets NO_REFERENCE (exact_id never evaluated for filtered items) |
+| M04-RT-02 | tests/integration | `test_reference_redteam.py::test_foreign_private_artifact_never_scored` | MEM-01 fixture: U1 private study, U2 request "last week's study", same tenant and a second tenant | candidate list excludes U1's study; trace contains no U1 ref | U2 quoting U1's exact artifact id has no candidates: NO_REFERENCE with null classification.commitment_ref, UNRESOLVED with a non-null hint, identically for an unknown id; exact_id is never evaluated for filtered items |
 
 Common PRD rules (scope limits, test policy, definition of done, slice-tag convention): see docs/prds/PRD_COMMON.md.
 
@@ -1760,11 +1786,11 @@ candidates: list[ref], reason_code}`. No I/O, no clock reads, no model calls.
 
 | Field | Missing when |
 |---|---|
-| target_resource | M04 verdict is UNRESOLVED or AMBIGUOUS |
+| target_resource | M04 verdict is UNRESOLVED or AMBIGUOUS, or the trusted reference_required cue has no resolved target (S01_T02_RUNTIME_CONTRACT); social/simple_answer bypass reference cues |
 | destructive_or_external_effect_confirmation | effect class (DECISION_RULES §3.1) is write or dangerous and the snapshot has no approval ref issued by M25 for this action |
 | recipient | the chosen capability's input schema requires a recipient property and no value is bound |
 | deadline_if_stated_relative_and_unresolvable | the request contains a deadline expression that the temporal resolver (DECISION_RULES §4 catalog, injected clock, requester time zone) cannot resolve to one instant |
-| authorization_scope | `context` lacks a tenant_ref and an explicit local principal, or M25 returns APPROVAL_REQUIRED for the scope |
+| authorization_scope | an authenticated context lacks the resource scope required for this work, or M25 returns APPROVAL_REQUIRED for that scope; missing authenticated tenant/principal is rejected upstream before clarification |
 
 Optional fields are the optional input properties of the work template not bound in the snapshot. Missing fields are
 checked in the `blocking_fields` order; the first missing one is the question field.
@@ -1773,16 +1799,23 @@ checked in the `blocking_fields` order; the first missing one is the question fi
 
 | Row | Condition | Verdict |
 |---|---|---|
-| C1 | the question field already has an open unanswered question | WAIT_OPEN_QUESTION |
+| C1 | a blocking field is missing AND (its question is already open OR a question was already emitted this turn) | WAIT_OPEN_QUESTION |
 | C2 | a blocking field is missing and the number of times it was already asked is < 1 + `max_reasks_per_field` | ASK_BLOCKING (`question_blocking=true`; `safe_work` = read-only capabilities not targeting the missing field's resource) |
 | C3 | a blocking field is missing and it was already asked 1 + `max_reasks_per_field` times | ASK_BLOCKING with reason CLARIFY_REASK_EXHAUSTED, and M03 escalates (classification is not changed) |
-| C4 | route != start_safe_work | NO_WORK |
+| C4 | route not in {start_safe_work, ask}, or classification.safe_work_allowed = false | NO_WORK |
 | C5 | an optional field is missing and open non-blocking questions < `max_open_questions` and no question was asked this turn | START_SAFE_WORK_WITH_OPTIONAL_QUESTION (`question_blocking=false`) |
 | C6 | otherwise | START_SAFE_WORK |
 
 A model `next_action=ask` without a missing blocking field reaches C5 or C6: read-only discovery runs instead of a
 question (M05-RT-02). `safe_work` never contains a capability whose registry effect is write or dangerous, or an absent
 registry entry, regardless of its name or label.
+
+C1 applies only when a blocking field is missing. An open optional question never
+blocks authorized read work; the optional question is not repeated, and C5 is
+ineligible when that field is already open or a question was emitted this turn.
+The existing C6 path starts safe work without emitting another question. The C3
+exhausted verdict is consumed by M03 row D2E before the ordinary blocking-question
+row, without rewriting the M08 classification.
 
 ### 4.4 Config
 
@@ -1804,7 +1837,7 @@ Choosing question wording (behavior templates), learning interruption cost, SME 
 
 - **M05-AT-01:** A PRD review request missing only the optional "preferred format" field yields START_SAFE_WORK_WITH_OPTIONAL_QUESTION, read-only safe_work runs, and the optional question has question_blocking=false. **Evidence:** public CLI/contract entry, trace, asserted state and negative-path observation. **Slice tag:** (S01)
 
-- **M05-AT-02:** A request with no tenant_ref or local principal, or an email send without an M25 approval ref, yields ASK_BLOCKING naming authorization_scope or destructive_or_external_effect_confirmation, and no write capability is invoked. **Evidence:** public CLI/contract entry, trace, asserted state and negative-path observation. **Slice tag:** (S01)
+- **M05-AT-02:** An authenticated request missing the required work-resource scope, or an email send without an M25 approval ref, yields ASK_BLOCKING naming authorization_scope or destructive_or_external_effect_confirmation. A missing authenticated tenant or principal is denied upstream before clarification, model or capability access; no write capability is invoked in any variant. **Evidence:** public CLI/contract entry, trace, asserted state and negative-path observation. **Slice tag:** (S01)
 
 ## 6. Threat model and per-module red team
 
@@ -1818,9 +1851,9 @@ Choosing question wording (behavior templates), learning interruption cost, SME 
 |---|---|---|---|---|---|
 | M05-FR-01 | tests/unit | `test_clarify.py::test_safe_start_admits_only_read_effects` | classification_research.json, registry with read, write and absent-entry capabilities | verdict START_SAFE_WORK; safe_work = the read capability ids only | write capability and absent registry entry are never in safe_work |
 | M05-FR-02 | tests/unit | `test_clarify.py::test_blocking_detectors_and_question_limits` | parametrized snapshots, one per detector, plus open-question and re-ask counters | each detector alone yields ASK_BLOCKING with its field; field order follows blocking_fields | an optional-only gap never yields ASK_BLOCKING; open question on field yields WAIT_OPEN_QUESTION; third ask on an answered field yields CLARIFY_REASK_EXHAUSTED |
-| M05-FR-03 | tests/integration | `test_clarify_flow.py::test_answer_in_parallel_revises_same_commitment` | SQLite temp ledger, C1 with open optional question, injected clock | answer marks question answered; verdict for C1; commitment count stays 1 | duplicate answer delivery (same idempotency key) does not create a second question or commitment |
+| M05-FR-03 | tests/integration | `test_clarify_flow.py::test_answer_in_parallel_revises_same_commitment` | S01 application-owned ephemeral logical-work store (S02 separately: real SQLite ledger), C1 with open optional question, injected clock | answer marks question answered; verdict for C1; logical-work count stays 1 (S01 commitment_id null, work_ref identifies C1) | duplicate answer delivery (same idempotency key) does not create a second question or logical work; no S01 crash-durability claim |
 | M05-AT-01 | tests/integration | `test_clarify_cli.py::test_optional_preference_does_not_block_research` | INT-01 fixture, scripted fake ModelPort, fake read capability | START_SAFE_WORK with optional question_blocking=false; read capability invoked once | no ASK with question_blocking=true is emitted |
-| M05-AT-02 | tests/integration | `test_clarify_cli.py::test_missing_tenant_or_approval_blocks_write` | INT-02 fixture: send-email request; variant without tenant_ref | ASK_BLOCKING for destructive_or_external_effect_confirmation (and authorization_scope in the variant) | DiscoveryPort.invoke call count for the write capability is 0 |
+| M05-AT-02 | tests/integration | `test_clarify_cli.py::test_missing_tenant_or_approval_blocks_write` | INT-02 send-email fixture; authenticated variant missing work-resource scope; unauthenticated variant without tenant_ref | authenticated variants ASK_BLOCKING for confirmation or authorization_scope; missing authenticated tenant/principal denied upstream | write invoke count 0 in all variants; missing authenticated identity also causes 0 model/candidate-source calls |
 | M05-RT-01 | tests/unit | `test_clarify_redteam.py::test_research_label_cannot_smuggle_write` | capability named "proactive_research" with registry effect write and description "safe read-only research" | not in safe_work; reason trace lists effect write | same capability with manifest self-claim effect read but registry write: still excluded |
 | M05-RT-02 | tests/unit | `test_clarify_redteam.py::test_no_serial_questions_when_discovery_possible` | model next_action=ask for optional "tone"; one question already asked this turn | verdict START_SAFE_WORK (no second question this turn) | no turn ever carries two questions; no ASK_BLOCKING for a non-blocking field |
 
@@ -2131,7 +2164,9 @@ an unresolvable deadline leaves it null.
 
 ### 4.4 Resource budget (S00 defaults, `Budget` in TYPE_CATALOG)
 
-Per turn: `max_requests` 8, `max_tool_calls` 8, `max_output_tokens` 2048, `timeout_seconds` 30. The check runs before
+Per turn: `max_requests` 8, `max_tool_calls` 6, `max_output_tokens` 2048 per request,
+whole-turn timeout 30 seconds for HTTP transports or 180 seconds for vendor CLI
+transports, matching BOUNDARY_CONTRACTS and the S00 safety envelope. The check runs before
 each ModelPort or DiscoveryPort call; exceeding any limit stops further calls, returns response status `BLOCKED` with
 error code `BUDGET_EXCEEDED` and keeps the last valid classification, or the fail-closed one if none exists. A
 schema-repair retry counts as a request.

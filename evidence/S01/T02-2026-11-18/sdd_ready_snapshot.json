@@ -1,0 +1,22 @@
+{
+  "status": "SPEC_READY_FOR_TDD_ONLY",
+  "predecessor_commit": "870601864365c2874e6760959be37b61c4263917",
+  "source_sha256": {
+    "docs/implementation/S01_T02_RUNTIME_CONTRACT.md": "8b13e75f6401df3467f1f0ec52625ef7400988c9578690c3dfc82be4854e3710",
+    "docs/implementation/S01_RUNTIME_CONTRACT.md": "b8f1f40f9c691b1f5c338debaa62cebb6a60bed529d7217e857a89eb46d18761",
+    "docs/implementation/WORK_PACKAGES.json": "7ee049ce8f12c1fa8d01c94937b86896452abd4777b3f7ae949efbb3810dcfdb",
+    "docs/architecture/TYPE_CATALOG.md": "e996c1232ba07396fe80a2355d47f96be77995fb3ff560cd9eab324bc19d38ce",
+    "docs/prds/DECISION_RULES.md": "d691c6044374acfeb5e0e512bfd0750aa79d686bfb17f9d4a197945e3bd451df",
+    "docs/prds/M03.md": "a2fc6fff04af7df1f9ad0ae1377aa0ba02087baa8280fb8101125ecf799637ea",
+    "docs/prds/M04.md": "5f053fce78447e5ce02388cc98b961c2f50ce0fa31c5bbc1f1775b19839f3fb2",
+    "docs/prds/M05.md": "12e3109e5eb3c38d8dde987b36c4a84465f7548f56beed014fff890d42c536dd",
+    "docs/prds/M08.md": "1a477c528e7ea571feebb50bff165ac3a1c59eb297bdab75b2c0221a0405aac2",
+    "contracts/decision-policy.schema.json": "2eb5d07861960907a195a614ddc49daf7493ed17ad8b1c1c0d35dda13ebd0e00",
+    "docs/audit/S01_T02_SDD_FINAL_2026-11-18.md": "2880e880a2fe0680943d17895ef274f1375e2529867c591f773f1ca95c0608cd"
+  },
+  "notes": [
+    "No T02 runtime or test source authored.",
+    "E1 reason follows canonical M03 DEPENDENCY_UNAVAILABLE; typed dependency_error remains separate. Review wording describing dependency_error as reason was reconciled to M03.",
+    "Both validators and 56 selected L0/compiler/policy tests exited zero. All S01 gates NOT_RUN."
+  ]
+}

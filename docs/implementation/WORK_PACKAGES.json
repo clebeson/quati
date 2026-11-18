@@ -1436,7 +1436,16 @@
       "owned_paths": [
         "src/quati/application",
         "tests/evals",
-        "tests/unit"
+        "tests/unit",
+        "src/quati/domain",
+        "src/quati/cli/main.py",
+        "src/quati/cli/composition.py",
+        "src/quati/adapters/decision_policy_store.py",
+        "src/quati/adapters/fixture_capabilities.py",
+        "tests/integration/test_s01_interaction_apply.py",
+        "tests/integration/test_clarify_cli.py",
+        "tests/integration/test_reference_cli.py",
+        "tests/integration/test_eri_cli.py"
       ],
       "deliverable": "critical vs optional clarification and safe read kickoff",
       "contract_source": "docs/architecture/BOUNDARY_CONTRACTS.md",
@@ -1506,19 +1515,19 @@
         {
           "assertion_id": "S01-T02-A01",
           "expected_observation": "optional preference does not block read-only discovery",
-          "planned_test_path": "tests/evals/test_s01_t02.py::test_a01",
+          "planned_test_path": "tests/integration/test_clarify_cli.py::test_optional_preference_does_not_block_research",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T02-A02",
           "expected_observation": "ambiguous authority stops unsafe dispatch",
-          "planned_test_path": "tests/evals/test_s01_t02.py::test_a02",
+          "planned_test_path": "tests/integration/test_clarify_cli.py::test_missing_tenant_or_approval_blocks_write",
           "status": "NOT_RUN"
         },
         {
           "assertion_id": "S01-T02-A03",
           "expected_observation": "no fabricated receipt",
-          "planned_test_path": "tests/evals/test_s01_t02.py::test_a03",
+          "planned_test_path": "tests/integration/test_clarify_cli.py::test_faults_never_fabricate_progress",
           "status": "NOT_RUN"
         }
       ],

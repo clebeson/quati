@@ -1,0 +1,25 @@
+{
+  "schema_version": "quati-source-snapshot/1",
+  "status": "SDD_CANDIDATE_NOT_READY",
+  "dependency_commit": "8706018",
+  "files": {
+    "AGENTS.md": "ae2dcea6bb266a6cefd9fc874c1551804e557c22d3c018fdaa8939a18283de04",
+    "docs/implementation/S01_T02_DESIGN.md": "374676547039ce4819ea58155e3ad7ddec8513035a1d471d5cbca4c94ea065cf",
+    "docs/implementation/S01_T02_RUNTIME_CONTRACT.md": "26a83c35c9f284906f690a2898300547a117af4365ea93e2e13b125605c19c27",
+    "docs/implementation/S01_RUNTIME_CONTRACT.md": "ac2f0d44c4db8ee021d5ce18f9da08dab255b384ca049ea84b40284596bf920c",
+    "docs/architecture/TYPE_CATALOG.md": "510023b9964e01c8d7bbf4901f4af0f1d218508920233ba59b6d3cf4732632b4",
+    "docs/implementation/WORK_PACKAGES.json": "fdd047f3b71702fdd9e37f4a3cbaad8d0010cb8539288bee9af36b413779d3de",
+    "docs/implementation/work_packages/S01.md": "9428abbf8275e8415b8ad8cd4ce1aff38a4898461d16070b21366d447bf29eb6",
+    "contracts/decision-policy.schema.json": "2eb5d07861960907a195a614ddc49daf7493ed17ad8b1c1c0d35dda13ebd0e00",
+    "contracts/interaction-decision.schema.json": "506535c31d06249d18a839b776ab4766ada0d95b1e165b22f71990e7b6479be7",
+    "docs/prds/DECISION_RULES.md": "7b7111476edc9464d2e57ee8b5488bc8d90f63fcfab30980addc4f49b6e3799a",
+    "docs/prds/M01.md": "c18a751f453d1f511c19ebd8f5582bcfbe943d030cc4f1b2688c82ae7489cb24",
+    "docs/prds/M03.md": "a2fc6fff04af7df1f9ad0ae1377aa0ba02087baa8280fb8101125ecf799637ea",
+    "docs/prds/M04.md": "5f053fce78447e5ce02388cc98b961c2f50ce0fa31c5bbc1f1775b19839f3fb2",
+    "docs/prds/M05.md": "7f98470886b13035946fc8ce5dc7eac3ebeef6494b1be296bb88ab600343e09d",
+    "docs/prds/M06.md": "a0dc505a9851e2558b17ea9c020516879a1e3ad257fa14e91fce0f2535dfdfdc",
+    "docs/prds/M08.md": "1a477c528e7ea571feebb50bff165ac3a1c59eb297bdab75b2c0221a0405aac2",
+    "docs/prds/M09.md": "9655a7657759c9b9094639c0b633be57381ae33c17cf5808f292f12437fd647c",
+    "docs/prds/M31.md": "c18de8c7abfd591cc01d778a0c30919ea3f1b33cbb5397d6a35b4169f7145c7b"
+  }
+}
